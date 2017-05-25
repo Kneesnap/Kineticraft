@@ -1,2 +1,2 @@
-# Kineticraft
-Kineticraft in-game plugin.
+# Kineticraft v4
+The Lost City's spigot plugin.
