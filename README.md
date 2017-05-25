@@ -1,2 +1,2 @@
-# Kineticraft v4
-The Lost City's spigot plugin.
+# Kineticraft v4 - The Lost City
+Main spigot plugin.
