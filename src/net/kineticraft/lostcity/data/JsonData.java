@@ -3,7 +3,6 @@ package net.kineticraft.lostcity.data;
 import com.google.gson.*;
 import lombok.Getter;
 import net.kineticraft.lostcity.Core;
-import org.bukkit.Bukkit;
 
 import java.io.BufferedReader;
 import java.io.File;

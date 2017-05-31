@@ -38,7 +38,7 @@ public class ChatMechanic extends Mechanic {
     public void onChat(AsyncPlayerChatEvent evt) {
         KCPlayer player = KCPlayer.getWrapper(evt.getPlayer());
         evt.setMessage(filterMessage(evt.getMessage()));
-        evt.setFormat(player.getRank().getChatPrefix() + "%s: " + ChatColor.WHITE + "%s");
+        evt.setFormat(player.getRank().getChatPrefix() + " %s: " + ChatColor.WHITE + "%s");
     }
 
     public static String filterMessage(String message) {

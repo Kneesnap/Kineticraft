@@ -5,6 +5,9 @@ import net.kineticraft.lostcity.data.KCPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.File;
+
 /**
  * Core - Kineticraft Core Plugin
  *
@@ -55,6 +58,7 @@ public class Core extends JavaPlugin {
     public static void alert(EnumRank minRank, String message) {
         Bukkit.getOnlinePlayers().stream().map(KCPlayer::getWrapper).filter(pw -> pw.getRank().isAtLeast(minRank))
                 .map(KCPlayer::getPlayer).forEach(p -> p.sendMessage(message));
+        Bukkit.getConsoleSender().sendMessage(message);
     }
 
     /**
@@ -66,6 +70,8 @@ public class Core extends JavaPlugin {
     }
 
     public static String getPlayerStoragePath() {
-        return getInstance().getDataFolder() + "players/";
+        String ret = getInstance().getDataFolder() + "/players/";
+        new File(ret).mkdirs();
+        return ret;
     }
 }

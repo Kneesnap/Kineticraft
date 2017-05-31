@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.bukkit.ChatColor;
 
+import java.util.Arrays;
+
 /**
  * EnumRank - Basic data about each player rank.
  *
@@ -57,5 +59,15 @@ public enum EnumRank {
      */
     public boolean isAtLeast(EnumRank other) {
         return ordinal() >= other.ordinal();
+    }
+
+
+    /**
+     * Get a rank by its name.
+     * @param name
+     * @return
+     */
+    public static EnumRank getByName(String name) {
+        return Arrays.stream(values()).filter(rank -> rank.name().equalsIgnoreCase(name)).findAny().orElse(null);
     }
 }

@@ -9,6 +9,7 @@ import net.kineticraft.lostcity.Home;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import java.io.File;
@@ -27,12 +28,10 @@ public class KCPlayer implements Jsonable {
     private static Map<UUID, KCPlayer> playerMap = new HashMap<>();
 
     private UUID uuid;
-    private String lastIP;
-    private String username;
-
     private JsonList<Home> homes = new JsonList<>();
     private EnumRank rank;
     private String icon;
+    private JsonData loadedData;
 
     public KCPlayer(UUID uuid, JsonData data) {
         this.setUuid(uuid);
@@ -70,7 +69,43 @@ public class KCPlayer implements Jsonable {
      * Save our playerdata to disk.
      */
     public void writeData() {
+        save().toFile(getFile(getUuid()));
+    }
 
+    /**
+     * Returns this player's last known IP.
+     * @return
+     */
+    public String getLastIP() {
+        return isOnline() ? getPlayer().getAddress().toString().split("/")[1].split(":")[0]
+                : getLoadedData().getString("lastIp");
+    }
+
+    /**
+     * Set a player's rank.
+     * @param newRank
+     */
+    public void setRank(EnumRank newRank) {
+        if (!getRank().isAtLeast(newRank)) // Broadcast the new rank if it's a promotion.
+            Bukkit.broadcastMessage(ChatColor.GREEN + " * " + ChatColor.YELLOW + getUsername() + ChatColor.GREEN
+                    + " has ranked up to " + newRank.getColor() + newRank.getName() + ChatColor.GREEN + ". * ");
+
+        if (isOnline()) {
+            // Tell the player they've been promoted.
+            Player player = getPlayer();
+            player.sendMessage(ChatColor.YELLOW + "Your rank is now: " + newRank.getColor() + newRank.getName());
+            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1F, 1F);
+        }
+
+        this.rank = newRank;
+    }
+
+    /**
+     * Gets this player's last seen username.
+     * @return
+     */
+    public String getUsername() {
+        return isOnline() ? getPlayer().getName() : getLoadedData().getString("username");
     }
 
     /**
@@ -115,17 +150,16 @@ public class KCPlayer implements Jsonable {
 
     @Override
     public void load(JsonData data) {
-        Player player = getPlayer();
-        setLastIP(isOnline() ? player.getAddress().toString().split("/")[1].split(":")[0] : data.getString("lastIp"));
-        setUsername(isOnline() ? player.getName() : data.getString("username"));
+        setLoadedData(data);
         setHomes(data.getList("homes", Home.class));
-        setRank(data.getEnum("rank", EnumRank.MU));
+        this.rank = data.getEnum("rank", EnumRank.MU);
         setIcon(data.getString("icon"));
     }
 
     @Override
     public JsonData save() {
         JsonData data = new JsonData();
+        data.setString("uuid", getUuid().toString());
         data.setString("lastIp", getLastIP());
         data.setString("username", getUsername());
         data.setElement("homes", getHomes().toJson());

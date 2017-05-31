@@ -2,6 +2,7 @@ package net.kineticraft.lostcity.data;
 
 import net.kineticraft.lostcity.Core;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
@@ -20,7 +21,7 @@ import java.util.stream.Stream;
  */
 public class QueryTools {
 
-    private static int FILES_PER_TICK = 10;
+    private static int FILES_PER_TICK = 20;
 
     /**
      * Asynchronously loads all playerdata then runs the callback.
@@ -30,7 +31,7 @@ public class QueryTools {
 
         final BukkitTask[] task = new BukkitTask[1]; // We use int[] because it can be final while allowing us to change the value.
         List<UUID> check = Arrays.stream(new File(Core.getPlayerStoragePath()).listFiles())
-                .filter(file -> file.getName().endsWith(".json")).map(f -> f.getName().split("\\.")[0].split("/")[1])
+                .filter(file -> file.getName().endsWith(".json")).map(f -> f.getName().split("\\.")[0])
                 .map(UUID::fromString).collect(Collectors.toList()); // Get a list of all UUIDs to check.
         List<KCPlayer> loaded = new ArrayList<>();
 
@@ -48,5 +49,32 @@ public class QueryTools {
                 Bukkit.getScheduler().runTaskAsynchronously(Core.getInstance(), () -> callback.accept(loaded.stream()));
             }
         }, 0, 1);
+    }
+
+    /**
+     * Gets the playerdata for the given username, if found.
+     * @param username
+     * @param callback
+     * @param fail
+     */
+    public static void getData(String username, Consumer<KCPlayer> callback, Runnable fail) {
+        Player player = Bukkit.getPlayer(username);
+        if (player != null) { // They're online.
+            callback.accept(KCPlayer.getWrapper(player));
+            return;
+        }
+
+        // They're offline, load it then made changes.
+        queryData(str -> {
+            KCPlayer p = str.filter(kc -> kc.getUsername().equalsIgnoreCase(username)).findAny().orElse(null);
+            if (p == null) {
+                if (fail != null)
+                    fail.run(); // Oh no, we couldn't find anyone matching this.
+                return;
+            }
+
+            callback.accept(p);
+            p.writeData(); // Save back to disk.
+        });
     }
 }
