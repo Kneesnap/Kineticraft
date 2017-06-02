@@ -1,8 +1,10 @@
 package net.kineticraft.lostcity;
 
 import lombok.Getter;
+import net.kineticraft.lostcity.data.JsonData;
 import net.kineticraft.lostcity.data.KCPlayer;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -40,6 +42,15 @@ public class Core extends JavaPlugin {
         Bukkit.getLogger().warning(message);
         //TODO: Broadcast to staff.
         //TODO: Broadcast discord
+    }
+
+    /**
+     * Broadcast a serwer-wide alert.
+     * @param alert
+     */
+    public static void announce(String alert) {
+        alert(EnumRank.values()[0], ChatColor.GOLD + "[" + ChatColor.RED + "!" + ChatColor.GOLD + "] "
+                + ChatColor.GREEN + alert);
     }
 
     /**

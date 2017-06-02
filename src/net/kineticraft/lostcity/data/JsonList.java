@@ -61,19 +61,7 @@ public class JsonList<T extends Jsonable> {
      */
     public static <T extends Jsonable> JsonList<T> fromJson(JsonArray array, Class<T> type) {
         JsonList<T> list = new JsonList<>();
-        array.forEach(je -> create(type, je.getAsJsonObject()));
+        array.forEach(je -> JsonUtil.fromJson(type, je.getAsJsonObject()));
         return list;
-    }
-
-    private static <T extends Jsonable> T create(Class<T> type, JsonObject object) {
-        try {
-            T load = type.getDeclaredConstructor().newInstance();
-            load.load(new JsonData(object));
-            return load;
-        } catch (Exception e) {
-            e.printStackTrace();
-            Bukkit.getLogger().warning("Failed to construct " + type.getClass() + " from Json.");
-            return null;
-        }
     }
 }

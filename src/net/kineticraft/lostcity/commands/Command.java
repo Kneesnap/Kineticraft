@@ -16,13 +16,13 @@ import java.util.List;
 public abstract class Command {
 
     private CommandType type;
-    private String usage;
+    private String rawUsage;
     private String help;
     private List<String> alias;
 
     public Command(CommandType type, String usage, String help, String... alias) {
         this.type = type;
-        this.usage = usage;
+        this.rawUsage = usage;
         this.help = help;
         this.alias = Arrays.asList(alias);
     }
@@ -40,7 +40,7 @@ public abstract class Command {
      * @return
      */
     public String getUsage(String alias) {
-        return ChatColor.RED + "Usage: " + getType().getPrefix() + alias + " " + this.usage;
+        return ChatColor.RED + "Usage: " + getType().getPrefix() + alias + " " + getRawUsage();
     }
 
     /**
@@ -48,7 +48,7 @@ public abstract class Command {
      * @return
      */
     public int getMinArgs() {
-        return (int) Arrays.stream(this.usage.split(" ")).filter(s -> s.startsWith("<") && s.endsWith(">")).count();
+        return (int) Arrays.stream(getRawUsage().split(" ")).filter(s -> s.startsWith("<") && s.endsWith(">")).count();
     }
 
     /**
@@ -56,6 +56,22 @@ public abstract class Command {
      */
     public String getName() {
         return getAlias().get(0);
+    }
+
+    /**
+     * Returns the string prefix that preceeds this command.
+     * @return
+     */
+    public String getCommandPrefix() {
+        return getType().getPrefix();
+    }
+
+    /**
+     * Show default usage to the player
+     * @param sender
+     */
+    protected void showUsage(CommandSender sender) {
+        showUsage(sender, getName());
     }
 
     /**

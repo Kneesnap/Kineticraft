@@ -3,11 +3,15 @@ package net.kineticraft.lostcity.data;
 import com.google.gson.*;
 import lombok.Getter;
 import net.kineticraft.lostcity.Core;
+import net.kineticraft.lostcity.Utils;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * A Wrapper around JsonObject.
@@ -62,6 +66,16 @@ public class JsonData {
     }
 
     /**
+     * Load a Json Map.
+     * @param key
+     * @param type
+     * @return
+     */
+    public <T extends Jsonable> JsonMap<T> getMap(String key, Class<T> type) {
+        return new JsonMap<T>(new JsonData(getObject(key)), type);
+    }
+
+    /**
      * Load a JsonArray
      * @param key
      * @return
@@ -77,10 +91,19 @@ public class JsonData {
      * @return
      */
     public JsonData setElement(String key, JsonElement val) {
-        if (val == null)
+        if (val == null || val.isJsonNull())
             return remove(key);
         getJsonObject().add(key, val);
         return this;
+    }
+
+    /**
+     * Get a Json Element.
+     * @param key
+     * @return
+     */
+    public JsonObject getObject(String key) {
+        return has(key) ? getJsonObject().get(key).getAsJsonObject() : new JsonObject();
     }
 
     /**
@@ -121,6 +144,14 @@ public class JsonData {
             return remove(key);
         getJsonObject().addProperty(key, value);
         return this;
+    }
+
+    /**
+     * Return the set of keys that make up this object.
+     * @return
+     */
+    public Set<String> keySet() {
+        return getJsonObject().entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toSet());
     }
 
     /**
@@ -173,11 +204,7 @@ public class JsonData {
     }
 
     private <T extends Enum<T>> T getEnum(String key, Class<T> clazz, T defaultValue) {
-        try {
-            return (T) clazz.getMethod("valueOf", String.class).invoke(null, getString(key));
-        } catch (Exception e) {
-            return defaultValue;
-        }
+        return Utils.getEnum(getString(key), clazz, defaultValue);
     }
 
     /**

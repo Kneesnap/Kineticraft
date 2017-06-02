@@ -4,13 +4,18 @@ import lombok.Getter;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.commands.Command;
 import net.kineticraft.lostcity.commands.CommandType;
+import net.kineticraft.lostcity.commands.player.*;
+import net.kineticraft.lostcity.commands.staff.CommandBright;
+import net.kineticraft.lostcity.commands.staff.CommandReboot;
 import net.kineticraft.lostcity.commands.staff.CommandSetRank;
+import net.kineticraft.lostcity.commands.staff.CommandSpectator;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.server.ServerCommandEvent;
 
@@ -33,7 +38,21 @@ public class CommandManager extends Mechanic {
      * Register all commands.
      */
     private static void registerCommands() {
+
+        // Player Commands
+        addCommand(new CommandDelHome());
+        addCommand(new CommandDungeon());
+        addCommand(new CommandHelp());
+        addCommand(new CommandHome());
+        addCommand(new CommandRTP());
+        addCommand(new CommandSetHome());
+        addCommand(new CommandSpawn());
+
+        // Staff Commands
+        addCommand(new CommandBright());
+        addCommand(new CommandReboot());
         addCommand(new CommandSetRank());
+        addCommand(new CommandSpectator());
     }
 
     private static void addCommand(Command command) {

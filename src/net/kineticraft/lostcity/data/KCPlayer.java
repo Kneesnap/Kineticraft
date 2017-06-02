@@ -28,7 +28,7 @@ public class KCPlayer implements Jsonable {
     private static Map<UUID, KCPlayer> playerMap = new HashMap<>();
 
     private UUID uuid;
-    private JsonList<Home> homes = new JsonList<>();
+    private JsonMap<Home> homes = new JsonMap<>();
     private EnumRank rank;
     private String icon;
     private JsonData loadedData;
@@ -151,7 +151,7 @@ public class KCPlayer implements Jsonable {
     @Override
     public void load(JsonData data) {
         setLoadedData(data);
-        setHomes(data.getList("homes", Home.class));
+        setHomes(data.getMap("homes", Home.class));
         this.rank = data.getEnum("rank", EnumRank.MU);
         setIcon(data.getString("icon"));
     }
@@ -162,7 +162,7 @@ public class KCPlayer implements Jsonable {
         data.setString("uuid", getUuid().toString());
         data.setString("lastIp", getLastIP());
         data.setString("username", getUsername());
-        data.setElement("homes", getHomes().toJson());
+        data.setElement("homes", getHomes().save().getJsonObject());
         data.setEnum("rank", getRank());
         data.setString("icon", getIcon());
         return data;

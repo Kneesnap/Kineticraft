@@ -35,6 +35,7 @@ public class MechanicManager implements Listener {
         registerMechanic(new CommandManager());
         registerMechanic(new GeneralMechanics());
         registerMechanic(new ChatMechanic());
+        registerMechanic(new MetadataManager());
         Core.logInfo("Mechanics Registered.");
     }
 

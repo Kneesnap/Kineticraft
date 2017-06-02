@@ -22,7 +22,7 @@ public class ChatMechanic extends Mechanic {
     private static Map<String, String> replace = new HashMap<>();
 
     static {
-        replace.put("shrug", "¯\\_(ツ)_/¯");
+        replace.put("shrug", "¯\\\\_(ツ)_/¯");
         replace.put("awesome", "ᕕ( ᐛ )ᕗ");
         replace.put("卐", "☹");
         replace.put("卍", "☹");

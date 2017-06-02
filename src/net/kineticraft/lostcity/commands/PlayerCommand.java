@@ -38,7 +38,6 @@ public abstract class PlayerCommand extends Command {
         if (isPlayer && !KCPlayer.getWrapper((Player) sender).isRank(getMinRank()))
             return;
 
-
         super.handle(sender, label, args);
     }
 }
