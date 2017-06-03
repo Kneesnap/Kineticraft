@@ -3,7 +3,7 @@ package net.kineticraft.lostcity.data;
 import com.google.gson.*;
 import lombok.Getter;
 import net.kineticraft.lostcity.Core;
-import net.kineticraft.lostcity.Utils;
+import net.kineticraft.lostcity.utils.Utils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -62,7 +62,17 @@ public class JsonData {
      * @param type
      */
     public <T extends Jsonable> JsonList<T> getList(String key, Class<T> type) {
-        return JsonList.fromJson(getArray(key), type);
+        return getList(key, type, Integer.MAX_VALUE);
+    }
+
+    /**
+     * Load a Json List.
+     * @param key
+     * @param type
+     * @param max
+     */
+    public <T extends Jsonable> JsonList<T> getList(String key, Class<T> type, int max) {
+        return JsonList.fromJson(getArray(key), type, max);
     }
 
     /**
@@ -82,6 +92,26 @@ public class JsonData {
      */
     public JsonArray getArray(String key) {
         return has(key) ? get(key).getAsJsonArray() : new JsonArray();
+    }
+
+    /**
+     * Store JSONable data.
+     * @param key
+     * @param jsonable
+     * @return
+     */
+    public JsonData setElement(String key, Jsonable jsonable) {
+        return jsonable == null ? remove(key) : setElement(key, jsonable.save());
+    }
+
+    /**
+     * Store JSONData by a key.
+     * @param key
+     * @param data
+     * @return
+     */
+    public JsonData setElement(String key, JsonData data) {
+        return data == null ? remove(key) : setElement(key, data.getJsonObject());
     }
 
     /**
@@ -131,6 +161,15 @@ public class JsonData {
      */
     public int getInt(String key) {
         return has(key) ? get(key).getAsInt() : 0;
+    }
+
+    /**
+     * Load a short value.
+     * @param key
+     * @return
+     */
+    public short getShort(String key) {
+        return has(key) ? get(key).getAsShort() : 0;
     }
 
     /**

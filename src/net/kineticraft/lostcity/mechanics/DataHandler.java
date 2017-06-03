@@ -1,12 +1,16 @@
 package net.kineticraft.lostcity.mechanics;
 
 import net.kineticraft.lostcity.Core;
+import net.kineticraft.lostcity.utils.Utils;
+import net.kineticraft.lostcity.data.JsonLocation;
 import net.kineticraft.lostcity.data.KCPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 
 /**
@@ -42,6 +46,14 @@ public class DataHandler extends Mechanic {
             evt.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
                     ChatColor.RED + "There was an error loading your playerdata. Staff have been notified.");
         }
+    }
+
+    @EventHandler
+    public void onPlayerDeath(PlayerDeathEvent evt) {
+        Location location = evt.getEntity().getLocation();
+        Bukkit.getLogger().info(evt.getEntity().getName() + " died at " + Utils.toString(location));
+        KCPlayer.getWrapper(evt.getEntity()).getDeaths().add(new JsonLocation(location));
+        //TODO: PowerNBT save data.
     }
 
     @EventHandler(priority = EventPriority.HIGHEST) // Run last.

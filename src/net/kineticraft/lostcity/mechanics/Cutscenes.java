@@ -5,5 +5,5 @@ package net.kineticraft.lostcity.mechanics;
  *
  * Created by Kneesnap on 6/1/2017.
  */
-public class CutsceneManager extends Mechanic {
+public class Cutscenes extends Mechanic {
 }

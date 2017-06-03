@@ -1,11 +1,9 @@
 package net.kineticraft.lostcity.data;
 
-import com.google.gson.JsonObject;
 import lombok.Getter;
 import lombok.Setter;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
-import net.kineticraft.lostcity.Home;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
@@ -28,10 +26,12 @@ public class KCPlayer implements Jsonable {
     private static Map<UUID, KCPlayer> playerMap = new HashMap<>();
 
     private UUID uuid;
-    private JsonMap<Home> homes = new JsonMap<>();
+    private JsonMap<JsonLocation> homes = new JsonMap<>();
+    private JsonList<JsonLocation> deaths = new JsonList<>(3);
     private EnumRank rank;
     private String icon;
     private JsonData loadedData;
+    private int selectedDeath;
 
     public KCPlayer(UUID uuid, JsonData data) {
         this.setUuid(uuid);
@@ -151,8 +151,9 @@ public class KCPlayer implements Jsonable {
     @Override
     public void load(JsonData data) {
         setLoadedData(data);
-        setHomes(data.getMap("homes", Home.class));
-        this.rank = data.getEnum("rank", EnumRank.MU);
+        setHomes(data.getMap("homes", JsonLocation.class));
+        setDeaths(data.getList("deaths", JsonLocation.class, 3));
+        this.rank = data.getEnum("rank", EnumRank.MU); // Don't use setRank() because it runs extra code.
         setIcon(data.getString("icon"));
     }
 
@@ -162,7 +163,8 @@ public class KCPlayer implements Jsonable {
         data.setString("uuid", getUuid().toString());
         data.setString("lastIp", getLastIP());
         data.setString("username", getUsername());
-        data.setElement("homes", getHomes().save().getJsonObject());
+        data.setElement("homes", getHomes());
+        data.setElement("deaths", getDeaths().toJson());
         data.setEnum("rank", getRank());
         data.setString("icon", getIcon());
         return data;

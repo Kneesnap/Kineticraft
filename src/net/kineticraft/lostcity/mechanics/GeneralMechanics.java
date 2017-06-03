@@ -1,14 +1,15 @@
 package net.kineticraft.lostcity.mechanics;
 
-import net.kineticraft.lostcity.Core;
+import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.entity.EntityType;
+import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.player.PlayerChatTabCompleteEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.vehicle.VehicleMoveEvent;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.*;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * GeneralMechanics - Small general mechanics.
@@ -26,17 +27,16 @@ public class GeneralMechanics extends Mechanic {
                 + ChatColor.GRAY + " to " + ChatColor.BOLD + "Kineticraft" + ChatColor.GRAY + "!");
     }
 
-    @EventHandler
-    public void onPlayerTabComplete(PlayerChatTabCompleteEvent evt) {
-        if (!"1234567890abcdefghijklmnopqrstuvwxyz".contains(evt.getChatMessage().substring(0, 1).toLowerCase()))
-            Core.alertStaff(ChatColor.RED + "[" + evt.getPlayer().getName() + "]" + ChatColor.GRAY + ": " + evt.getChatMessage());
-    }
+    @EventHandler(ignoreCancelled = true)
+    public void onEggPunch(PlayerInteractEvent evt) {
+        Block block = evt.getClickedBlock();
+        if ((evt.getAction() != Action.LEFT_CLICK_BLOCK && evt.getAction() != Action.LEFT_CLICK_BLOCK)
+                || block == null || block.getType() != Material.DRAGON_EGG)
+            return;
 
-    @EventHandler
-    public void onVehicleMove(VehicleMoveEvent evt) {
-        if (evt.getVehicle().getType() == EntityType.BOAT && !evt.getFrom().getBlock().isLiquid()
-                && evt.getTo().getY() > evt.getFrom().getY() && evt.getVehicle().getVelocity().length() == 0)
-            Core.alertStaff(ChatColor.RED + "[BoatFly] " + ChatColor.GRAY + evt.getVehicle().getPassenger().getName()
-                    + " may be using BoatFly!");
+        evt.getPlayer().sendMessage(ChatColor.DARK_PURPLE + "You have picked up the egg.");
+        block.setType(Material.AIR);
+        Utils.giveItem(evt.getPlayer(), new ItemStack(Material.DRAGON_EGG));
+        evt.setCancelled(true);
     }
 }

@@ -17,8 +17,12 @@ public class JsonMap<T extends Jsonable> implements Jsonable {
     private Map<String, T> map = new HashMap<>();
     private Class<T> classType;
 
-    public JsonMap() {
+    public JsonMap() { // When creating new data.
 
+    }
+
+    public JsonMap(JsonData obj) {
+        this(obj, null); // Null is ok only when we aren't loading data.
     }
 
     public JsonMap(JsonData object, Class<T> cls) {

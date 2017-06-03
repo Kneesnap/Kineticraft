@@ -18,9 +18,7 @@ public class JsonUtil {
      */
     public static <T extends Jsonable> T fromJson(Class<T> type, JsonObject object) {
         try {
-            T load = type.getDeclaredConstructor().newInstance();
-            load.load(new JsonData(object));
-            return load;
+            return type.getDeclaredConstructor(JsonData.class).newInstance(new JsonData(object));
         } catch (Exception e) {
             e.printStackTrace();
             Bukkit.getLogger().warning("Failed to construct " + type.getClass() + " from Json.");

@@ -32,9 +32,14 @@ public class MechanicManager implements Listener {
 
         // Register all mechanics here, in order of startup:
         registerMechanic(new DataHandler());
-        registerMechanic(new CommandManager());
+        registerMechanic(new Callbacks());
+        registerMechanic(new Commands());
+        registerMechanic(new Books());
         registerMechanic(new GeneralMechanics());
-        registerMechanic(new ChatMechanic());
+        registerMechanic(new SleepMechanics());
+        registerMechanic(new SlimeFinder());
+        registerMechanic(new Chat());
+        registerMechanic(new CompassMechanics());
         registerMechanic(new MetadataManager());
         Core.logInfo("Mechanics Registered.");
     }

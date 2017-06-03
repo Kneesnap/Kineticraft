@@ -17,13 +17,41 @@ import java.util.List;
 public class JsonList<T extends Jsonable> {
 
     private List<T> values = new ArrayList<>();
+    private int maxCount;
+
+    public JsonList() {
+        this(Integer.MAX_VALUE);
+    }
+
+    public JsonList(int maxCount) {
+        this.maxCount = maxCount;
+    }
 
     /**
      * Add a value to the list.
      * @param val
      */
     public void add(T val) {
+        if (maxCount >= size()) // If we're past the max value index, delete the first element.
+            getValues().remove(0);
         getValues().add(val);
+    }
+
+    /**
+     * Return the value at the given index.
+     * @param index
+     * @return
+     */
+    public T get(int index) {
+        return getValues().get(index);
+    }
+
+    /**
+     * Is this list empty?
+     * @return
+     */
+    public boolean isEmpty() {
+        return size() == 0;
     }
 
     /**
@@ -59,8 +87,8 @@ public class JsonList<T extends Jsonable> {
      * @param type
      * @return
      */
-    public static <T extends Jsonable> JsonList<T> fromJson(JsonArray array, Class<T> type) {
-        JsonList<T> list = new JsonList<>();
+    public static <T extends Jsonable> JsonList<T> fromJson(JsonArray array, Class<T> type, int max) {
+        JsonList<T> list = new JsonList<>(max);
         array.forEach(je -> JsonUtil.fromJson(type, je.getAsJsonObject()));
         return list;
     }

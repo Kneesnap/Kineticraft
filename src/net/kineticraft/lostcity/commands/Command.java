@@ -95,7 +95,12 @@ public abstract class Command {
             return;
         }
 
-        onCommand(sender, args);
+        try {
+            onCommand(sender, args);
+        } catch (NumberFormatException nfe) {
+            String input = nfe.getLocalizedMessage().split(": ")[1];
+            sender.sendMessage(ChatColor.RED + "Invalid number " + input + ".");
+        }
     }
 
     /**

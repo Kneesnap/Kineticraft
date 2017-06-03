@@ -1,6 +1,9 @@
-package net.kineticraft.lostcity;
+package net.kineticraft.lostcity.utils;
 
 import com.google.gson.JsonObject;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.data.JsonData;
 import net.kineticraft.lostcity.mechanics.MetadataManager;
 import net.kineticraft.lostcity.mechanics.MetadataManager.Metadata;
@@ -9,6 +12,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
@@ -62,27 +66,6 @@ public class Utils {
         for (String s : split)
             out.add(s.length() > 0 ? s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase() : "");
         return String.join(" ", out);
-    }
-
-    /**
-     * Save a Location as Json.
-     * @param loc
-     * @return
-     */
-    public static JsonObject saveLocation(Location loc) {
-        return new JsonData().setNum("x", loc.getX()).setNum("y", loc.getY()).setNum("z", loc.getZ()).setNum("yaw", loc.getYaw())
-                .setNum("pitch", loc.getPitch()).setString("world", loc.getWorld().getName()).getJsonObject();
-    }
-
-    /**
-     * Load a location from Json.
-     * @param jsonObject
-     * @return
-     */
-    public static Location loadLocation(JsonObject jsonObject) {
-        JsonData data = new JsonData(jsonObject);
-        return new Location(Bukkit.getWorld(data.getString("world")), data.getDouble("x"), data.getDouble("y"),
-                data.getDouble("z"), data.getFloat("yaw"), data.getFloat("pitch"));
     }
 
     /**
@@ -185,6 +168,7 @@ public class Utils {
         return formatted.equals("") ? "" : formatted.substring(1);
     }
 
+    @AllArgsConstructor @Getter
     private enum TimeInterval {
         SECOND("s", 1),
         MINUTE("min", 60 * SECOND.getInterval()),
@@ -195,18 +179,28 @@ public class Utils {
 
         private String suffix;
         private int interval;
+    }
 
-        TimeInterval(String s, int i) {
-            this.suffix = s;
-            this.interval = i;
-        }
+    /**
+     * Convert a location into a friendly string.
+     * @param location
+     * @return
+     */
+    public static String toString(Location location) {
+       return "[" + location.getWorld().getName() + "," + location.getX() + "," + location.getY() + "," + location.getZ() + "]";
+    }
 
-        public int getInterval() {
-            return this.interval;
-        }
-
-        public String getSuffix() {
-            return this.suffix;
+    /**
+     * Give an item to a player. If their inventory is full, it drops it at their feet.
+     * @param player
+     * @param itemStack
+     */
+    public static void giveItem(Player player, ItemStack itemStack) {
+        if (player.getInventory().firstEmpty() > -1) {
+            player.getInventory().addItem(itemStack);
+        } else {
+            player.getWorld().dropItem(player.getLocation(), itemStack);
+            player.sendMessage(ChatColor.RED + "Your inventory was full, so you dropped the item.");
         }
     }
 

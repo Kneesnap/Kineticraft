@@ -2,7 +2,7 @@ package net.kineticraft.lostcity.commands.staff;
 
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
-import net.kineticraft.lostcity.Utils;
+import net.kineticraft.lostcity.utils.Utils;
 import net.kineticraft.lostcity.commands.StaffCommand;
 import net.kineticraft.lostcity.mechanics.DataHandler;
 import org.bukkit.Bukkit;

@@ -1,8 +1,7 @@
 package net.kineticraft.lostcity.commands.player;
 
 import net.kineticraft.lostcity.Core;
-import net.kineticraft.lostcity.Utils;
-import net.kineticraft.lostcity.commands.Command;
+import net.kineticraft.lostcity.utils.Utils;
 import net.kineticraft.lostcity.commands.PlayerCommand;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;

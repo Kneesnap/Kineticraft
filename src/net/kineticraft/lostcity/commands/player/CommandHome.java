@@ -1,15 +1,12 @@
 package net.kineticraft.lostcity.commands.player;
 
-import com.mojang.authlib.yggdrasil.request.JoinMinecraftServerRequest;
-import net.kineticraft.lostcity.Home;
-import net.kineticraft.lostcity.Utils;
+import net.kineticraft.lostcity.data.JsonLocation;
+import net.kineticraft.lostcity.utils.Utils;
 import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.data.KCPlayer;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import java.security.cert.CertPathBuilderSpi;
 
 /**
  * CommandHome - Teleport to your home.
@@ -29,7 +26,7 @@ public class CommandHome extends PlayerCommand {
             return;
         }
 
-        Home teleport = player.getHomes().get(args[0]);
+        JsonLocation teleport = player.getHomes().get(args[0]);
         Utils.teleport((Player) sender, "Home", teleport.getLocation());
     }
 

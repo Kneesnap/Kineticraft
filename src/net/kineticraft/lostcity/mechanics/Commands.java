@@ -5,17 +5,13 @@ import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.commands.Command;
 import net.kineticraft.lostcity.commands.CommandType;
 import net.kineticraft.lostcity.commands.player.*;
-import net.kineticraft.lostcity.commands.staff.CommandBright;
-import net.kineticraft.lostcity.commands.staff.CommandReboot;
-import net.kineticraft.lostcity.commands.staff.CommandSetRank;
-import net.kineticraft.lostcity.commands.staff.CommandSpectator;
+import net.kineticraft.lostcity.commands.staff.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.server.ServerCommandEvent;
 
@@ -29,7 +25,7 @@ import java.util.stream.Collectors;
  *
  * Created by Kneesnap on 5/29/2017.
  */
-public class CommandManager extends Mechanic {
+public class Commands extends Mechanic {
 
     @Getter
     private static List<Command> commands = new ArrayList<>();
@@ -50,6 +46,7 @@ public class CommandManager extends Mechanic {
 
         // Staff Commands
         addCommand(new CommandBright());
+        addCommand(new CommandDeathTeleport());
         addCommand(new CommandReboot());
         addCommand(new CommandSetRank());
         addCommand(new CommandSpectator());

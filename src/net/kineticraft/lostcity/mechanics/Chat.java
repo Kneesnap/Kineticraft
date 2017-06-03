@@ -16,7 +16,7 @@ import java.util.Map;
  *
  * Created by Kneesnap on 5/29/2017.
  */
-public class ChatMechanic extends Mechanic {
+public class Chat extends Mechanic {
 
     @Getter
     private static Map<String, String> replace = new HashMap<>();
