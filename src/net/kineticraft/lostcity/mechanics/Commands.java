@@ -48,6 +48,7 @@ public class Commands extends Mechanic {
         addCommand(new CommandBright());
         addCommand(new CommandDeathTeleport());
         addCommand(new CommandReboot());
+        addCommand(new CommandRescue());
         addCommand(new CommandSetRank());
         addCommand(new CommandSpectator());
     }

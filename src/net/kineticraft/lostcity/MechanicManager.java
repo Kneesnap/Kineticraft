@@ -38,6 +38,7 @@ public class MechanicManager implements Listener {
         registerMechanic(new GeneralMechanics());
         registerMechanic(new SleepMechanics());
         registerMechanic(new SlimeFinder());
+        registerMechanic(new Restrictions());
         registerMechanic(new Chat());
         registerMechanic(new CompassMechanics());
         registerMechanic(new MetadataManager());

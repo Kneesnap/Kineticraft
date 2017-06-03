@@ -32,7 +32,7 @@ public class JsonList<T extends Jsonable> {
      * @param val
      */
     public void add(T val) {
-        if (maxCount >= size()) // If we're past the max value index, delete the first element.
+        if (maxCount <= size()) // If we're past the max value index, delete the first element.
             getValues().remove(0);
         getValues().add(val);
     }

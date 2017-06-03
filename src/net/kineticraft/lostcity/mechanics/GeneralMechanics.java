@@ -30,7 +30,7 @@ public class GeneralMechanics extends Mechanic {
     @EventHandler(ignoreCancelled = true)
     public void onEggPunch(PlayerInteractEvent evt) {
         Block block = evt.getClickedBlock();
-        if ((evt.getAction() != Action.LEFT_CLICK_BLOCK && evt.getAction() != Action.LEFT_CLICK_BLOCK)
+        if ((evt.getAction() != Action.LEFT_CLICK_BLOCK && evt.getAction() != Action.RIGHT_CLICK_BLOCK)
                 || block == null || block.getType() != Material.DRAGON_EGG)
             return;
 

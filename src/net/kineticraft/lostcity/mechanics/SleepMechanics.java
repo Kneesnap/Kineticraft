@@ -25,6 +25,7 @@ public class SleepMechanics extends Mechanic {
         World world = Core.getMainWorld();
         world.setTime(0);
         world.setStorm(false);
+        Bukkit.broadcastMessage(ChatColor.GRAY + "" + ChatColor.ITALIC+ " * The night has been vanquished by the wonders of sleep. *");
     }
 
     /**

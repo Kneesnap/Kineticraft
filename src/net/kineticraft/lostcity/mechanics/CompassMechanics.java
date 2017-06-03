@@ -42,7 +42,7 @@ public class CompassMechanics extends Mechanic {
             return;
         }
 
-        int newId = p.getSelectedDeath() == p.getDeaths().size() + 1 ? 0 : p.getSelectedDeath() + 1;
+        int newId = p.getSelectedDeath() >= p.getDeaths().size() + 2 ? 0 : p.getSelectedDeath() + 1;
         player.sendMessage(ChatColor.GRAY + "Compass pointed at your "
                 + (newId > 0 ? (newId == 1 ? "second" : "third") + " to " : "") + "last death.");
         p.setSelectedDeath(newId);

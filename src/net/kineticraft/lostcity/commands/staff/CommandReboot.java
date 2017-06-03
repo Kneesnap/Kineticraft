@@ -15,7 +15,7 @@ import org.bukkit.command.CommandSender;
 public class CommandReboot extends StaffCommand {
 
     public CommandReboot() {
-        super(EnumRank.ADMIN, "", "Reboot the server", "reboot", "shutdown", "stop");
+        super(EnumRank.ADMIN, "", "Reboot the server", "reboot", "shutdown");
     }
 
     @Override

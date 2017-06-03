@@ -24,7 +24,7 @@ public class CommandDeathTeleport extends StaffCommand {
         int deathId = args.length > 1 ? Integer.parseInt(args[1]) : 1;
 
         QueryTools.getData(args[0], kcPlayer -> {
-            if (deathId < 0 || deathId > kcPlayer.getDeaths().size()) {
+            if (deathId <= 0 || deathId > kcPlayer.getDeaths().size()) {
                 sender.sendMessage(ChatColor.RED + "Death " + deathId + " not found.");
                 return;
             }
