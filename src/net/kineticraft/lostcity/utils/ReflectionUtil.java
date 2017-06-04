@@ -45,13 +45,8 @@ public class ReflectionUtil {
      * Execute a method of a given class.
      */
     public static Object exec(Object obj, String methodName, Object... args) {
-
         // Generate a list of the classes used to get the method.
-        Class<?>[] argTypes = new Class<?>[args.length];
-        for (int i = 0; i < args.length; i++) {
-            Class<?> cls = args[i].getClass();
-            argTypes[i] = REPLACE.containsKey(cls) ? REPLACE.get(cls) : cls; // Primitives need to be replaced.
-        }
+        Class<?>[] argTypes = getClasses(args);
 
         try {
             if (obj instanceof Class<?>) { // Static.
@@ -64,6 +59,37 @@ public class ReflectionUtil {
             Bukkit.getLogger().warning("Failed to execute reflected method " + methodName + "!");
         }
         return null;
+    }
+
+    /**
+     * Construct a class with the given arguments.
+     * @param clazz
+     * @param args
+     * @return
+     * @throws Exception
+     */
+    public static <T> T construct(Class<T> clazz, Object... args) {
+        try {
+            return clazz.getDeclaredConstructor(getClasses(args)).newInstance(args);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Bukkit.getLogger().warning("Could not construct " + clazz.getSimpleName() + ".");
+            return null;
+        }
+    }
+
+    /**
+     * Get an array of classes from the arrays of the objects supplied.
+     * @param objects
+     * @return
+     */
+    private static Class<?>[] getClasses(Object... objects) {
+        Class<?>[] classes = new Class<?>[objects.length];
+        for (int i = 0; i < objects.length; i++) {
+            Class<?> cls = objects[i].getClass();
+            classes[i] = REPLACE.containsKey(cls) ? REPLACE.get(cls) : cls; // Primitives need to be replaced.
+        }
+        return classes;
     }
 
     /**

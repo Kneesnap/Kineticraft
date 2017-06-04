@@ -1,9 +1,8 @@
 package net.kineticraft.lostcity.data;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import lombok.Getter;
-import org.bukkit.Bukkit;
+import net.kineticraft.lostcity.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -89,7 +88,7 @@ public class JsonList<T extends Jsonable> {
      */
     public static <T extends Jsonable> JsonList<T> fromJson(JsonArray array, Class<T> type, int max) {
         JsonList<T> list = new JsonList<>(max);
-        array.forEach(je -> JsonUtil.fromJson(type, je.getAsJsonObject()));
+        array.forEach(je -> Utils.fromJson(type, je.getAsJsonObject()));
         return list;
     }
 }

@@ -1,8 +1,8 @@
 package net.kineticraft.lostcity.commands.player;
 
 import net.kineticraft.lostcity.commands.PlayerCommand;
-import net.kineticraft.lostcity.data.JsonLocation;
-import net.kineticraft.lostcity.data.KCPlayer;
+import net.kineticraft.lostcity.data.wrappers.JsonLocation;
+import net.kineticraft.lostcity.data.wrappers.KCPlayer;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;

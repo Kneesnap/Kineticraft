@@ -19,7 +19,11 @@ public class MetadataManager extends Mechanic {
     @AllArgsConstructor @Getter
     public enum Metadata {
 
-        TELEPORTING(false);
+        // Players
+        TELEPORTING(false),
+
+        // Entities
+        PLAYER_DAMAGE(0D);
 
         private Object fallback;
 

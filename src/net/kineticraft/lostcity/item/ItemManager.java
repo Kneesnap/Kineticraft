@@ -1,6 +1,8 @@
 package net.kineticraft.lostcity.item;
 
+import com.google.common.reflect.Reflection;
 import net.kineticraft.lostcity.item.guis.GenericItem;
+import net.kineticraft.lostcity.utils.ReflectionUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -24,16 +26,7 @@ public class ItemManager {
      */
     public static ItemWrapper constructItem(ItemStack itemStack) {
         ItemType itemType = ItemWrapper.getType(itemStack);
-        if (itemType == null) // Not a custom item, but we still want to edit it probably.
-            return new GenericItem(itemStack);
-
-        try {
-            return itemType.getItemClass().getDeclaredConstructor(ItemStack.class).newInstance(itemStack);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Bukkit.getLogger().warning("Failed to construct item '" + itemType.name() + "'.");
-            return null;
-        }
+        return itemType != null ? ReflectionUtil.construct(itemType.getItemClass(), itemStack) : new GenericItem(itemStack);
     }
 
     /**

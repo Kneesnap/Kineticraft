@@ -1,7 +1,7 @@
 package net.kineticraft.lostcity.mechanics;
 
 import lombok.Getter;
-import net.kineticraft.lostcity.data.KCPlayer;
+import net.kineticraft.lostcity.data.wrappers.KCPlayer;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;

@@ -1,8 +1,7 @@
 package net.kineticraft.lostcity;
 
 import lombok.Getter;
-import net.kineticraft.lostcity.data.JsonData;
-import net.kineticraft.lostcity.data.KCPlayer;
+import net.kineticraft.lostcity.data.wrappers.KCPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -49,8 +48,7 @@ public class Core extends JavaPlugin {
      * @param alert
      */
     public static void announce(String alert) {
-        alert(EnumRank.values()[0], ChatColor.GOLD + "[" + ChatColor.RED + "!" + ChatColor.GOLD + "] "
-                + ChatColor.GREEN + alert);
+        alert(EnumRank.values()[0], ChatColor.RED + "" + ChatColor.BOLD + " >> " + ChatColor.RED + alert);
     }
 
     /**
@@ -80,9 +78,20 @@ public class Core extends JavaPlugin {
         Bukkit.getLogger().info("[KCv4] - " + s);
     }
 
-    public static String getPlayerStoragePath() {
-        String ret = getInstance().getDataFolder() + "/players/";
-        new File(ret).mkdirs();
-        return ret;
+    /**
+     * Creates a folder if it does not exist.
+     * @param folder
+     */
+    public static void makeFolder(String folder) {
+        getFile(folder + "/").mkdirs();
+    }
+
+    /**
+     * Returns a File in the data storage folder with the given name.
+     * @param name
+     * @return File
+     */
+    public static File getFile(String name) {
+        return new File(Core.getInstance().getDataFolder() + "/" + name);
     }
 }

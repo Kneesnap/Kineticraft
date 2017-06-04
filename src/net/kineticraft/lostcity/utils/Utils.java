@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.data.JsonData;
+import net.kineticraft.lostcity.data.Jsonable;
+import net.kineticraft.lostcity.data.wrappers.KCPlayer;
 import net.kineticraft.lostcity.mechanics.MetadataManager;
 import net.kineticraft.lostcity.mechanics.MetadataManager.Metadata;
 import org.bukkit.Bukkit;
@@ -20,6 +22,7 @@ import org.bukkit.scheduler.BukkitTask;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -202,6 +205,36 @@ public class Utils {
             player.getWorld().dropItem(player.getLocation(), itemStack);
             player.sendMessage(ChatColor.RED + "Your inventory was full, so you dropped the item.");
         }
+    }
+
+    /**
+     * Construct an object from JSON.
+     * @param type
+     * @param object
+     * @return Constructed object
+     */
+    public static <T extends Jsonable> T fromJson(Class<T> type, JsonObject object) {
+        return ReflectionUtil.construct(type, new JsonData(object));
+    }
+
+    /**
+     * Gets a players username by their uuid. Offline safe.
+     * Returns null if this player has never joined.
+     * @param uuid
+     * @return name
+     */
+    public static String getPlayerName(UUID uuid) {
+        return KCPlayer.isWrapper(uuid) ? KCPlayer.getWrapper(uuid).getUsername() : null;
+    }
+
+    /**
+     * Return the display name of an ItemStack.
+     * @param itemStack
+     * @return Display Name
+     */
+    public static String getItemName(ItemStack itemStack) {
+        return itemStack.getItemMeta().hasDisplayName() ? itemStack.getItemMeta().getDisplayName()
+                : capitalize(itemStack.getType().name().replaceAll("_", " "));
     }
 
     /**

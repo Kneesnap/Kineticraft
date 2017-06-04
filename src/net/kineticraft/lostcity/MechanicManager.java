@@ -1,6 +1,7 @@
 package net.kineticraft.lostcity;
 
 import lombok.Getter;
+import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.mechanics.*;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -31,6 +32,7 @@ public class MechanicManager implements Listener {
         Bukkit.getPluginManager().registerEvents(new MechanicManager(), Core.getInstance()); // Ready to listen for events.
 
         // Register all mechanics here, in order of startup:
+        registerMechanic(new Configs());
         registerMechanic(new DataHandler());
         registerMechanic(new Callbacks());
         registerMechanic(new Commands());
@@ -41,6 +43,9 @@ public class MechanicManager implements Listener {
         registerMechanic(new Restrictions());
         registerMechanic(new Chat());
         registerMechanic(new CompassMechanics());
+        registerMechanic(new FarmLimiter());
+        registerMechanic(new Leashes());
+        registerMechanic(new Voting());
         registerMechanic(new MetadataManager());
         Core.logInfo("Mechanics Registered.");
     }

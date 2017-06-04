@@ -2,12 +2,14 @@ package net.kineticraft.lostcity.commands;
 
 import lombok.Getter;
 import net.kineticraft.lostcity.EnumRank;
-import net.kineticraft.lostcity.data.KCPlayer;
+import net.kineticraft.lostcity.data.wrappers.KCPlayer;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
+ * Represents a commands that can be run in-game as a player.
+ *
  * Created by Kneesnap on 5/29/2017.
  */
 @Getter

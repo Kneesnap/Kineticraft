@@ -1,6 +1,7 @@
 package net.kineticraft.lostcity.data;
 
 import lombok.Getter;
+import net.kineticraft.lostcity.utils.Utils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -84,7 +85,7 @@ public class JsonMap<T extends Jsonable> implements Jsonable {
 
     @Override
     public void load(JsonData data) {
-        data.keySet().forEach(key -> getMap().put(key, JsonUtil.fromJson(getClassType(), data.getObject(key))));
+        data.keySet().forEach(key -> getMap().put(key, Utils.fromJson(getClassType(), data.getObject(key))));
     }
 
     @Override

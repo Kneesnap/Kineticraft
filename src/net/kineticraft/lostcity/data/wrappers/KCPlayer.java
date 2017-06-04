@@ -1,16 +1,18 @@
-package net.kineticraft.lostcity.data;
+package net.kineticraft.lostcity.data.wrappers;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
+import net.kineticraft.lostcity.data.JsonData;
+import net.kineticraft.lostcity.data.JsonList;
+import net.kineticraft.lostcity.data.JsonMap;
+import net.kineticraft.lostcity.data.Jsonable;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
-import java.io.File;
 import java.util.*;
 
 /**
@@ -31,6 +33,10 @@ public class KCPlayer implements Jsonable {
     private EnumRank rank;
     private String icon;
     private JsonData loadedData;
+    private int monthlyVotes;
+    private int totalVotes;
+    private int pendingVotes;
+
     private int selectedDeath;
 
     public KCPlayer(UUID uuid, JsonData data) {
@@ -69,7 +75,7 @@ public class KCPlayer implements Jsonable {
      * Save our playerdata to disk.
      */
     public void writeData() {
-        save().toFile(getFile(getUuid()));
+        save().toFile(getPath(getUuid()));
     }
 
     /**
@@ -123,9 +129,7 @@ public class KCPlayer implements Jsonable {
      * @return
      */
     public static KCPlayer getWrapper(UUID uuid) {
-        if (!playerMap.containsKey(uuid))
-            playerMap.put(uuid, loadWrapper(uuid));
-        return playerMap.get(uuid);
+        return playerMap.containsKey(uuid) ? playerMap.get(uuid) : loadWrapper(uuid);
     }
 
     /**
@@ -133,7 +137,7 @@ public class KCPlayer implements Jsonable {
      * @param uuid
      */
     public static boolean isWrapper(UUID uuid) {
-        return getFile(uuid).exists();
+        return JsonData.isJson(getPath(uuid));
     }
 
     /**
@@ -141,11 +145,11 @@ public class KCPlayer implements Jsonable {
      * @param uuid
      */
     public static KCPlayer loadWrapper(UUID uuid) {
-        return new KCPlayer(uuid, isWrapper(uuid) ? JsonData.fromFile(getFile(uuid)) : new JsonData());
+        return new KCPlayer(uuid, isWrapper(uuid) ? JsonData.fromFile(getPath(uuid)) : new JsonData());
     }
 
-    private static File getFile(UUID uuid) {
-        return new File(Core.getPlayerStoragePath() + uuid.toString() + ".json");
+    private static String getPath(UUID uuid) {
+        return "players/" + uuid.toString();
     }
 
     @Override
@@ -155,18 +159,24 @@ public class KCPlayer implements Jsonable {
         setDeaths(data.getList("deaths", JsonLocation.class, 3));
         this.rank = data.getEnum("rank", EnumRank.MU); // Don't use setRank() because it runs extra code.
         setIcon(data.getString("icon"));
+        setMonthlyVotes(data.getInt("monthlyVotes"));
+        setTotalVotes(data.getInt("totalVotes"));
+        setPendingVotes(data.getInt("pendingVotes"));
     }
 
     @Override
     public JsonData save() {
         JsonData data = new JsonData();
-        data.setString("uuid", getUuid().toString());
+        data.setUUID("uuid", getUuid());
         data.setString("lastIp", getLastIP());
         data.setString("username", getUsername());
         data.setElement("homes", getHomes());
         data.setElement("deaths", getDeaths().toJson());
         data.setEnum("rank", getRank());
         data.setString("icon", getIcon());
+        data.setNum("monthlyVotes", getMonthlyVotes());
+        data.setNum("totalVotes", getTotalVotes());
+        data.setNum("pendingVotes", getPendingVotes());
         return data;
     }
 }

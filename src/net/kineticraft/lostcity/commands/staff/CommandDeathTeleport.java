@@ -16,7 +16,7 @@ import org.bukkit.entity.Player;
  */
 public class CommandDeathTeleport extends StaffCommand {
     public CommandDeathTeleport() {
-        super("<player> [times]", "Teleport to a player's death location.", "death", "backtp");
+        super("<player> [death]", "Teleport to a player's death location.", "death", "backtp");
     }
 
     @Override
@@ -32,5 +32,11 @@ public class CommandDeathTeleport extends StaffCommand {
             Location tp = kcPlayer.getDeaths().getValues().get(deathId - 1).getLocation();
             Bukkit.getScheduler().runTask(Core.getInstance(), () -> ((Player) sender).teleport(tp));
         }, () -> sender.sendMessage(ChatColor.RED + "Player not found."));
+    }
+
+    @Override
+    protected void showUsage(CommandSender sender) {
+        super.showUsage(sender);
+        sender.sendMessage(ChatColor.RED + "The 3 most recent deaths are recorded.");
     }
 }

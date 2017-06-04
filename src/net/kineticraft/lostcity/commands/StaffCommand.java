@@ -16,7 +16,7 @@ public abstract class StaffCommand extends PlayerCommand {
     }
 
     public StaffCommand(EnumRank minRank, String usage, String help, String... alias) {
-        this(minRank, false, usage, help, alias);
+        this(minRank, true, usage, help, alias);
     }
 
     public StaffCommand(EnumRank minRank, boolean playerOnly, String usage, String help, String... alias) {

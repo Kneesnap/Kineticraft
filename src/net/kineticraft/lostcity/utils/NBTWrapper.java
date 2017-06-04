@@ -158,13 +158,7 @@ public class NBTWrapper implements Jsonable {
     }
 
     public static Object newTagCompound() {
-        try {
-            return ReflectionUtil.getNMS("NBTTagCompound").getDeclaredConstructor().newInstance();
-        } catch (Exception e) {
-            e.printStackTrace();
-            Bukkit.getLogger().warning("Failed to create empty NBTTagCompound!");
-            return null;
-        }
+        return ReflectionUtil.construct(ReflectionUtil.getNMS("NBTTagCompound"));
     }
 
     /**

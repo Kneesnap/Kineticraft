@@ -1,6 +1,8 @@
 package net.kineticraft.lostcity.mechanics;
 
+import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.utils.Utils;
+import net.minecraft.server.v1_11_R1.EntityEnderDragon;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -8,6 +10,7 @@ import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 
@@ -38,5 +41,19 @@ public class GeneralMechanics extends Mechanic {
         block.setType(Material.AIR);
         Utils.giveItem(evt.getPlayer(), new ItemStack(Material.DRAGON_EGG));
         evt.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onDragonDeath(EntityDeathEvent evt) {
+        if (!(evt.getEntity() instanceof EntityEnderDragon))
+            return; // If it's not a dragon, ignore it.
+        evt.setDroppedExp(4000);
+        Block bk = evt.getEntity().getWorld().getBlockAt(0, 63, 0);
+
+        Bukkit.getScheduler().runTaskLater(Core.getInstance(), () -> {
+            bk.setType(Material.DRAGON_EGG);
+            bk.getWorld().getNearbyEntities(bk.getLocation(), 50, 50, 50)
+                    .forEach(e -> e.sendMessage(ChatColor.GRAY + "As the dragon dies, an egg forms below."));
+        }, 15 * 20);
     }
 }

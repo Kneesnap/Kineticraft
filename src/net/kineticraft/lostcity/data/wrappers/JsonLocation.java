@@ -1,6 +1,8 @@
-package net.kineticraft.lostcity.data;
+package net.kineticraft.lostcity.data.wrappers;
 
 import lombok.Getter;
+import net.kineticraft.lostcity.data.JsonData;
+import net.kineticraft.lostcity.data.Jsonable;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;

@@ -1,9 +1,8 @@
 package net.kineticraft.lostcity.commands.player;
 
-import net.kineticraft.lostcity.data.JsonLocation;
 import net.kineticraft.lostcity.utils.Utils;
 import net.kineticraft.lostcity.commands.PlayerCommand;
-import net.kineticraft.lostcity.data.KCPlayer;
+import net.kineticraft.lostcity.data.wrappers.KCPlayer;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -26,15 +25,13 @@ public class CommandHome extends PlayerCommand {
             return;
         }
 
-        JsonLocation teleport = player.getHomes().get(args[0]);
-        Utils.teleport((Player) sender, "Home", teleport.getLocation());
+        Utils.teleport((Player) sender, "Home", player.getHomes().get(args[0]).getLocation());
     }
 
     @Override
-    protected void showUsage(CommandSender sender, String label) {
-        super.showUsage(sender, label);
-        KCPlayer player = KCPlayer.getWrapper((Player) sender);
-        sender.sendMessage(ChatColor.GRAY + "Homes: " + Utils.join(ChatColor.GRAY + ", ", player.getHomes().keySet(),
-                h -> ChatColor.GREEN + h));
+    protected void showUsage(CommandSender sender) {
+        super.showUsage(sender);
+        sender.sendMessage(ChatColor.GRAY + "Homes: " + Utils.join(ChatColor.GRAY + ", ",
+                KCPlayer.getWrapper((Player) sender).getHomes().keySet(), h -> ChatColor.GREEN + h));
     }
 }

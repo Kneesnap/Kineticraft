@@ -2,6 +2,7 @@ package net.kineticraft.lostcity.data;
 
 import com.google.gson.*;
 import lombok.Getter;
+import lombok.Setter;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.utils.Utils;
 
@@ -11,6 +12,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -44,7 +46,8 @@ public class JsonData {
      * @param key
      */
     public boolean has(String key) {
-        return get(key) != null;
+        JsonElement element = get(key);
+        return element != null && !element.isJsonNull();
     }
 
     /**
@@ -139,48 +142,86 @@ public class JsonData {
     /**
      * Load a double value.
      * @param key
-     * @return
+     * @return double
      */
     public double getDouble(String key) {
-        return has(key) ? get(key).getAsDouble() : 0D;
+        return getDouble(key, 0D);
+    }
+
+    /**
+     * Load a double value. Defaults to the fallback.
+     * @param key
+     * @param fallback
+     * @return double
+     */
+    public double getDouble(String key, double fallback) {
+        return has(key) ? get(key).getAsDouble() : fallback;
     }
 
     /**
      * Load a float value.
      * @param key
-     * @return
+     * @return float
      */
     public float getFloat(String key) {
-        return has(key) ? get(key).getAsFloat() : 0F;
+        return getFloat(key, 0F);
+    }
+
+    /**
+     * Load a float value. Defaults to the fallback.
+     * @param key
+     * @param fallback
+     * @return float
+     */
+    public float getFloat(String key, float fallback) {
+        return has(key) ? get(key).getAsFloat() : fallback;
     }
 
     /**
      * Load an integer value.
      * @param key
-     * @return
+     * @return int
      */
     public int getInt(String key) {
-        return has(key) ? get(key).getAsInt() : 0;
+        return getInt(key, 0);
+    }
+
+    /**
+     * Loads an integer value. Defaults to the fallback.
+     * @param key
+     * @param fallback
+     * @return int
+     */
+    public int getInt(String key, int fallback) {
+        return has(key) ? get(key).getAsInt() : fallback;
     }
 
     /**
      * Load a short value.
      * @param key
-     * @return
+     * @return short
      */
     public short getShort(String key) {
-        return has(key) ? get(key).getAsShort() : 0;
+        return getShort(key, (short) 0);
+    }
+
+    /**
+     * Load a short value.  Defaults to the fallback.
+     * @param key
+     * @param fallback
+     * @return short
+     */
+    public short getShort(String key, short fallback) {
+        return has(key) ? get(key).getAsShort() : fallback;
     }
 
     /**
      * Store a number value.
      * @param key
      * @param value
-     * @return
+     * @return data
      */
     public JsonData setNum(String key, Number value) {
-        if (value.doubleValue() == 0D)
-            return remove(key);
         getJsonObject().addProperty(key, value);
         return this;
     }
@@ -196,10 +237,20 @@ public class JsonData {
     /**
      * Gets a stored string value.
      * @param key
-     * @return
+     * @return string
      */
     public String getString(String key) {
-        return has(key) ? get(key).getAsString() : null;
+        return getString(key, null);
+    }
+
+    /**
+     * Loads a stored string. Defaults to fallback.
+     * @param key
+     * @param fallback
+     * @return string
+     */
+    public String getString(String key, String fallback) {
+        return has(key) ? get(key).getAsString() : fallback;
     }
 
     /**
@@ -208,8 +259,7 @@ public class JsonData {
      * @param value
      */
     public JsonData setString(String key, String value) {
-        if (value == null)
-            return remove(key);
+        remove(key);
         getJsonObject().addProperty(key, value);
         return this;
     }
@@ -220,7 +270,7 @@ public class JsonData {
      * @param e
      */
     public JsonData setEnum(String key, Enum<?> e) {
-        setString(key, e.name());
+        setString(key, e != null ? e.name() : null);
         return this;
     }
 
@@ -247,11 +297,31 @@ public class JsonData {
     }
 
     /**
+     * Loads a UUID from stored data. Defaults to null.
+     * @param key
+     * @return uuid
+     */
+    public UUID getUUID(String key) {
+        return has(key) ? UUID.fromString(getString(key)) : null;
+    }
+
+    /**
+     * Store a uuid value.
+     * @param key
+     * @param uuid
+     * @return data
+     */
+    public JsonData setUUID(String key, UUID uuid) {
+        return setString(key, uuid != null ? uuid.toString() : null);
+    }
+
+    /**
      * Load JSON from a file.
-     * @param file
+     * @param path
      * @return
      */
-    public static JsonData fromFile(File file) {
+    public static JsonData fromFile(String path) {
+        File file = getFile(path);
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
             JsonData data = new JsonData(new JsonParser().parse(br).getAsJsonObject());
@@ -266,9 +336,11 @@ public class JsonData {
 
     /**
      * Save this Json Object to a file.
-     * @param file
+     * @param path
      */
-    public void toFile(File file) {
+    public void toFile(String path) {
+        File file = getFile(path);
+
         try {
             FileWriter writer = new FileWriter(file);
             writer.write(toPrettyJson());
@@ -277,6 +349,19 @@ public class JsonData {
             e.printStackTrace();
             Core.warn("Failed to save '" + file.getName() + "'.");
         }
+    }
+
+    /**
+     * Is this file a valid json file?
+     * @param path
+     * @return
+     */
+    public static boolean isJson(String path) {
+        return getFile(path).exists();
+    }
+
+    private static File getFile(String name) {
+        return Core.getFile(name + ".json");
     }
 
     /**

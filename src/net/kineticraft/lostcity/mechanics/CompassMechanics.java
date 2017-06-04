@@ -1,7 +1,7 @@
 package net.kineticraft.lostcity.mechanics;
 
 import net.kineticraft.lostcity.Core;
-import net.kineticraft.lostcity.data.KCPlayer;
+import net.kineticraft.lostcity.data.wrappers.KCPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

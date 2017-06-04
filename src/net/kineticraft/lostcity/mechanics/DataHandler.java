@@ -2,8 +2,8 @@ package net.kineticraft.lostcity.mechanics;
 
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.utils.Utils;
-import net.kineticraft.lostcity.data.JsonLocation;
-import net.kineticraft.lostcity.data.KCPlayer;
+import net.kineticraft.lostcity.data.wrappers.JsonLocation;
+import net.kineticraft.lostcity.data.wrappers.KCPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -23,6 +23,7 @@ public class DataHandler extends Mechanic {
 
     @Override
     public void onEnable() {
+        Core.makeFolder("players");
 
         // Every 5 minutes, save all playerdata
         Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), () -> saveAllPlayers(), 0, 5 * 60 * 20);
@@ -39,7 +40,7 @@ public class DataHandler extends Mechanic {
     public void onAttemptJoin(AsyncPlayerPreLoginEvent evt) {
         try {
             if (evt.getLoginResult() == AsyncPlayerPreLoginEvent.Result.ALLOWED)
-                KCPlayer.getWrapper(evt.getUniqueId()); // This will load their data from disk.
+                KCPlayer.getPlayerMap().put(evt.getUniqueId(), KCPlayer.getWrapper(evt.getUniqueId())); // Load player.
         } catch (Exception e) {
             e.printStackTrace();
             Core.warn("Failed to load " + evt.getName() + "'s player data!");

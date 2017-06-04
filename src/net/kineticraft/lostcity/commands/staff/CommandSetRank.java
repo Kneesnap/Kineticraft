@@ -3,7 +3,7 @@ package net.kineticraft.lostcity.commands.staff;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.StaffCommand;
-import net.kineticraft.lostcity.data.KCPlayer;
+import net.kineticraft.lostcity.data.wrappers.KCPlayer;
 import net.kineticraft.lostcity.data.QueryTools;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -50,11 +50,10 @@ public class CommandSetRank extends StaffCommand {
     }
 
     @Override
-    protected void showUsage(CommandSender sender,  String args) {
-        super.showUsage(sender, args);
+    protected void showUsage(CommandSender sender) {
+        super.showUsage(sender);
 
         EnumRank myRank = sender instanceof Player ? KCPlayer.getWrapper((Player) sender).getRank() : EnumRank.DEV;
-
 
         String ranks = "";
         for (EnumRank rank : EnumRank.values())

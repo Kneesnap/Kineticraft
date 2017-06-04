@@ -1,6 +1,7 @@
 package net.kineticraft.lostcity.data;
 
 import net.kineticraft.lostcity.Core;
+import net.kineticraft.lostcity.data.wrappers.KCPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
@@ -30,7 +31,7 @@ public class QueryTools {
     public static void queryData(Consumer<Stream<KCPlayer>> callback) {
 
         final BukkitTask[] task = new BukkitTask[1]; // We use int[] because it can be final while allowing us to change the value.
-        List<UUID> check = Arrays.stream(new File(Core.getPlayerStoragePath()).listFiles())
+        List<UUID> check = Arrays.stream(Core.getFile("players/").listFiles())
                 .filter(file -> file.getName().endsWith(".json")).map(f -> f.getName().split("\\.")[0])
                 .map(UUID::fromString).collect(Collectors.toList()); // Get a list of all UUIDs to check.
         List<KCPlayer> loaded = new ArrayList<>();
@@ -39,16 +40,26 @@ public class QueryTools {
             for (int i = 0; i < FILES_PER_TICK; i++) {
                 if (check.isEmpty())
                     break; // We've finished loading :)
-                loaded.add(KCPlayer.loadWrapper(check.get(0)));
+                loaded.add(KCPlayer.getWrapper(check.get(0)));
                 check.remove(0);
             }
 
             if (check.isEmpty()) {
                 // Done searching, time to perform operations.
                 task[0].cancel(); // Cancel this load task.
-                Bukkit.getScheduler().runTaskAsynchronously(Core.getInstance(), () -> callback.accept(loaded.stream()));
+                if (!loaded.isEmpty())
+                    Bukkit.getScheduler().runTaskAsynchronously(Core.getInstance(), () -> callback.accept(loaded.stream()));
             }
         }, 0, 1);
+    }
+
+    /**
+     * Loads the playerdata for the given username from disk, if found.
+     * @param username
+     * @param callback
+     */
+    public static void getData(String username, Consumer<KCPlayer> callback) {
+        getData(username, callback, null);
     }
 
     /**
