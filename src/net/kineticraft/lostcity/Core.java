@@ -27,6 +27,15 @@ public class Core extends JavaPlugin {
     }
 
     /**
+     * Broadcasts a message sent by Kinetica.
+     * @param message
+     */
+    public static void kineticaMessage(String message) {
+        Bukkit.broadcastMessage(ChatColor.DARK_RED.toString() + ChatColor.BOLD + "DOG" + ChatColor.GREEN + " Kinetica"
+                + ChatColor.GRAY + ": " + ChatColor.WHITE + message);
+    }
+
+    /**
      * Gets the main Kineticraft World.
      */
     public static World getMainWorld() {
@@ -39,7 +48,7 @@ public class Core extends JavaPlugin {
      */
     public static void warn(String message) {
         Bukkit.getLogger().warning(message);
-        //TODO: Broadcast to staff.
+        alertStaff(ChatColor.RED + message);
         //TODO: Broadcast discord
     }
 

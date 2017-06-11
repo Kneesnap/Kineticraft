@@ -1,10 +1,8 @@
 <component name="ArtifactManager">
   <artifact type="jar" name="Kineticraft:jar">
-    <output-path>$PROJECT_DIR$/out/artifacts/Kineticraft_jar</output-path>
+    <output-path>$PROJECT_DIR$/out/artifacts/Kineticraft</output-path>
     <root id="archive" name="Kineticraft.jar">
       <element id="module-output" name="Kineticraft" />
-      <element id="extracted-dir" path="$PROJECT_DIR$/../lombok-plugin-0.14.16.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$USER_HOME$/Desktop/Plugins/spigot/spigot_1.11.2.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

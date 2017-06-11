@@ -2,9 +2,11 @@ package net.kineticraft.lostcity.config.configs;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.config.JsonConfig;
 import net.kineticraft.lostcity.data.JsonData;
+import net.kineticraft.lostcity.data.lists.JsonList;
+import net.kineticraft.lostcity.data.wrappers.JsonItem;
+import net.kineticraft.lostcity.mechanics.Voting.*;
 
 import java.util.UUID;
 
@@ -19,9 +21,13 @@ public class VoteConfig extends JsonConfig {
     private int votesUntilParty;
     private int totalVotes;
     private UUID topVoter;
+    private JsonList<PartyReward> party = new JsonList<>();
+    private JsonList<JsonItem> normal = new JsonList<>();
+    private JsonList<VoteAchievement> achievements = new JsonList<>();
+    private String month; // The mount the votes are currently stored for.
 
     public VoteConfig() {
-        super(Configs.ConfigType.VOTES);
+        super("votes");
     }
 
     @Override
@@ -30,6 +36,10 @@ public class VoteConfig extends JsonConfig {
         setVotesUntilParty(data.getInt("votesToParty", getVotesPerParty()));
         setTotalVotes(data.getInt("totalVotes"));
         setTopVoter(data.getUUID("topVoter"));
+        setParty(data.getJsonList("party", PartyReward.class));
+        setNormal(data.getJsonList("normal", JsonItem.class));
+        setAchievements(data.getJsonList("achievements", VoteAchievement.class));
+        setMonth(data.getString("month"));
     }
 
     @Override
@@ -39,7 +49,10 @@ public class VoteConfig extends JsonConfig {
         data.setNum("votesToParty", getVotesUntilParty());
         data.setNum("totalVotes", getTotalVotes());
         data.setUUID("topVoter", getTopVoter());
-
+        data.setList("party", getParty());
+        data.setList("normal", getNormal());
+        data.setList("achievements", getAchievements());
+        data.setString("month", getMonth());
         return data;
     }
 }

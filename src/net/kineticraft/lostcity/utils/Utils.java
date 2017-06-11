@@ -5,14 +5,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.data.JsonData;
+import net.kineticraft.lostcity.data.lists.JsonList;
 import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
 import net.kineticraft.lostcity.mechanics.MetadataManager;
 import net.kineticraft.lostcity.mechanics.MetadataManager.Metadata;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Sound;
+import org.bukkit.*;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -64,7 +63,7 @@ public class Utils {
      * @return
      */
     public static String capitalize(String sentence) {
-        String[] split = sentence.split(" ");
+        String[] split = sentence.replaceAll("_", " ").split(" ");
         List<String> out = new ArrayList<>();
         for (String s : split)
             out.add(s.length() > 0 ? s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase() : "");
@@ -108,12 +107,13 @@ public class Utils {
             player.sendMessage(ChatColor.RED + "Please wait until your current teleport finishes.");
             return;
         }
+        KCPlayer p = KCPlayer.getWrapper(player);
 
         double lastDamage = player.getLastDamage();
         final Location startLocation = player.getLocation().clone();
         final BukkitTask[] tpTask = new BukkitTask[1]; // Have to use an array here to store a value, as otherwise it can't be final.
         // Must be final to work in the bukkit scheduler.
-        int[] tpTime = new int[] {5}; // TODO: Make this variable.
+        int[] tpTime = new int[] {p.getTemporaryRank().getTpTime()};
 
         MetadataManager.setMetadata(player, Metadata.TELEPORTING, true);
         player.playSound(player.getLocation(), Sound.ENTITY_ELDER_GUARDIAN_CURSE, 1F, 1F);
@@ -241,8 +241,110 @@ public class Utils {
      * Get a random number between the given range.
      * @param min
      * @param max
+     * @return int
      */
     public static int randInt(int min, int max) {
         return ThreadLocalRandom.current().nextInt(max - min) + min;
+    }
+
+    /**
+     * Get a random element from an array.
+     * @param arr
+     * @param <T>
+     * @return element
+     */
+    public static <T> T randElement(T[] arr) {
+        return randElement(Arrays.asList(arr));
+    }
+
+    /**
+     * Get a random element from a json list
+     * @param list
+     * @param <T>
+     * @return rand
+     */
+    public static <T extends Jsonable> T randElement(JsonList<T> list) {
+        return randElement(list.getValues());
+    }
+
+    /**
+     * Get a random element from a list.
+     * @param iterable
+     * @param <T>
+     * @return element
+     */
+    public static <T> T randElement(Iterable<T> iterable) {
+        List<T> list = new ArrayList<>();
+        iterable.forEach(list::add);
+        return list.get(nextInt(list.size()));
+    }
+
+    /**
+     * Gets a random number between 0 and max - 1
+     * @param max
+     * @return rand
+     */
+    public static int nextInt(int max) {
+        return randInt(0, max - 1);
+    }
+
+    /**
+     * Check if a random chance succeeds.
+     * @param chance
+     * @return success
+     */
+    public static boolean randChance(int chance) {
+        return nextInt(chance) == 0;
+    }
+
+    /**
+     * Replaces an existing itemstack in a player's inventory with a new one.
+     * @param player
+     * @param original
+     * @param newItem
+     */
+    public static void replaceItem(Player player, ItemStack original, ItemStack newItem) {
+        for (int i = 0; i < player.getInventory().getSize(); i++) {
+            if (original.equals(player.getInventory().getItem(i))) {
+                player.getInventory().setItem(i, newItem);
+                player.updateInventory();
+                return;
+            }
+        }
+
+        Core.warn("Failed to replace " + Utils.getItemName(original) + " in " + player.getName() + "'s inventory.");
+    }
+
+    /**
+     * Shave the first element of an array
+     * @param array
+     * @param <T>
+     * @return shavedArray
+     */
+    public static <T> T[] shift(T[] array) {
+        T[] ret = (T[]) new Object[array.length - 1];
+        for (int i = 0; i < ret.length; i++)
+            ret[i] = array[i + 1];
+        return ret;
+    }
+
+    /**
+     * Get the colored name of this CommandSender
+     * @param sender
+     * @return name
+     */
+    public static String getSenderName(CommandSender sender) {
+        return sender instanceof Player ? KCPlayer.getWrapper((Player) sender).getColoredName()
+                : ChatColor.YELLOW + sender.getName();
+    }
+
+    /**
+     * Use an item and decrement its amount.
+     * @param item
+     */
+    public static void useItem(ItemStack item) {
+        item.setAmount(item.getAmount() - 1);
+        if (item.getAmount() <= 0)
+            item.setType(Material.AIR);
     }
 }

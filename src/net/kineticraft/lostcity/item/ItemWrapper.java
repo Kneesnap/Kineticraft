@@ -27,6 +27,7 @@ public abstract class ItemWrapper {
 
     public ItemWrapper(ItemStack item) {
         this.item = item;
+        this.meta = item.getItemMeta();
         this.type = getEnum("type", ItemType.class);
     }
 
@@ -169,11 +170,30 @@ public abstract class ItemWrapper {
             getTag().setInt(key, val);
     }
 
-    public void addLore(List<String> lore) {
-        addLore(lore.toArray(new String[lore.size()]));
+    /**
+     * Clear all lore from the item.
+     * @return this
+     */
+    public ItemWrapper clearLore() {
+        getMeta().setLore(new ArrayList<>());
+        return this;
     }
 
-    public void addLore(String... lore) {
+    /**
+     * Add lore to this item
+     * @param lore
+     * @return this
+     */
+    public ItemWrapper addLore(List<String> lore) {
+        return addLore(lore.toArray(new String[lore.size()]));
+    }
+
+    /**
+     * Add lore to this item.
+     * @param lore
+     * @return this
+     */
+    public ItemWrapper addLore(String... lore) {
         List<String> loreList = getMeta().hasLore() ? getMeta().getLore() : new ArrayList<>();
 
         if (needsReset) {
@@ -184,6 +204,8 @@ public abstract class ItemWrapper {
         for (String loreLine : lore)
             loreList.add(ChatColor.GRAY + loreLine);
         getMeta().setLore(loreList);
+
+        return this;
     }
 
     /**

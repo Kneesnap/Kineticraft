@@ -28,7 +28,7 @@ public class CommandSetHome extends PlayerCommand {
             return;
         }
 
-        int maxHomes = 5; //TODO
+        int maxHomes = player.getRank().getHomes();
         if (player.getHomes().size() >= maxHomes) {
             p.sendMessage(ChatColor.RED + "You have reached the max number of homes for your rank.");
             return;

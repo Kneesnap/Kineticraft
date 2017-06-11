@@ -9,6 +9,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 /**
  * CommandSetRank - Set the rank of a player.
  *
@@ -52,14 +55,8 @@ public class CommandSetRank extends StaffCommand {
     @Override
     protected void showUsage(CommandSender sender) {
         super.showUsage(sender);
-
         EnumRank myRank = sender instanceof Player ? KCPlayer.getWrapper((Player) sender).getRank() : EnumRank.DEV;
-
-        String ranks = "";
-        for (EnumRank rank : EnumRank.values())
-            if (myRank.isAtLeast(rank))
-                ranks += " " + rank.getColor() + ChatColor.BOLD + rank.getName();
-
-        sender.sendMessage(ChatColor.RED + "Ranks:" + ranks);
+        sender.sendMessage(ChatColor.RED + "Ranks:" + Arrays.stream(EnumRank.values()).filter(myRank::isAtLeast)
+                .map(EnumRank::getFullName).collect(Collectors.joining(" ", ChatColor.RED + "Ranks: ", "")));
     }
 }

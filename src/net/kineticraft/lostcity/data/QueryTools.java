@@ -1,8 +1,11 @@
 package net.kineticraft.lostcity.data;
 
+import lombok.Getter;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -22,7 +25,11 @@ import java.util.stream.Stream;
  */
 public class QueryTools {
 
+    @Getter
+    private static int currentQueries;
+
     private static int FILES_PER_TICK = 20;
+    private static int MAX_PLAYER_QUERIES = 2;
 
     /**
      * Asynchronously loads all playerdata then runs the callback.
@@ -36,6 +43,7 @@ public class QueryTools {
                 .map(UUID::fromString).collect(Collectors.toList()); // Get a list of all UUIDs to check.
         List<KCPlayer> loaded = new ArrayList<>();
 
+        currentQueries++;
         task[0] = Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), () -> {
             for (int i = 0; i < FILES_PER_TICK; i++) {
                 if (check.isEmpty())
@@ -47,6 +55,7 @@ public class QueryTools {
             if (check.isEmpty()) {
                 // Done searching, time to perform operations.
                 task[0].cancel(); // Cancel this load task.
+                currentQueries--;
                 if (!loaded.isEmpty())
                     Bukkit.getScheduler().runTaskAsynchronously(Core.getInstance(), () -> callback.accept(loaded.stream()));
             }
@@ -87,5 +96,19 @@ public class QueryTools {
             callback.accept(p);
             p.writeData(); // Save back to disk.
         });
+    }
+
+    /**
+     * Returns if a non-staff member is clear to initiate a query.
+     * Prevents a player from spamming a bunch of queries.
+     *
+     * @param sender
+     * @return dontAcceptQuery
+     */
+    public static boolean isBusy(CommandSender sender) {
+        boolean busy = getCurrentQueries() >= MAX_PLAYER_QUERIES;
+        if (busy)
+            sender.sendMessage(ChatColor.GRAY + "Please wait before using this command");
+        return busy;
     }
 }

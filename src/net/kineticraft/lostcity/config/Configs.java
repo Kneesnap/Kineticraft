@@ -5,10 +5,11 @@ import lombok.Getter;
 import net.kineticraft.lostcity.config.configs.MainConfig;
 import net.kineticraft.lostcity.config.configs.PunishmentConfig;
 import net.kineticraft.lostcity.config.configs.VoteConfig;
-import net.kineticraft.lostcity.data.JsonMap;
 import net.kineticraft.lostcity.mechanics.Mechanic;
 import net.kineticraft.lostcity.utils.ReflectionUtil;
-import org.bukkit.Bukkit;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Configuration manager.
@@ -19,20 +20,20 @@ import org.bukkit.Bukkit;
  */
 public class Configs extends Mechanic {
 
-    private static JsonMap<Config> configs = new JsonMap<>();
+    private static Map<ConfigType, Config> configs = new HashMap<>();
 
     /**
      * Gets the given config data.
      * @param type
-     * @return
+     * @return config
      */
     public static Config getConfig(ConfigType type) {
-        return configs.get(type.name());
+        return configs.get(type);
     }
 
     /**
      * Get vote data.
-     * @return
+     * @return voteConfig
      */
     public static VoteConfig getVoteData() {
         return (VoteConfig) getConfig(ConfigType.VOTES);
@@ -40,7 +41,7 @@ public class Configs extends Mechanic {
 
     /**
      * Get the main config.
-     * @return
+     * @return mainConfig
      */
     public static MainConfig getMainConfig() {
         return (MainConfig) getConfig(ConfigType.MAIN);
@@ -48,39 +49,53 @@ public class Configs extends Mechanic {
 
     /**
      * Gets the punishment data.
-     * @return
+     * @return punishmentData
      */
     public static PunishmentConfig getPunishmentData() {
         return (PunishmentConfig) getConfig(ConfigType.BANS);
+    }
+
+    /**
+     * Get a raw text config of the specified type.
+     * @param type
+     * @return rawConfig
+     */
+    public static RawConfig getRawConfig(ConfigType type) {
+        return (RawConfig) getConfig(type);
     }
 
     @Override
     public void onEnable() {
         // Loads configs on startup.
         for (ConfigType type : ConfigType.values())
-            configs.put(type.name(), type.createConfig());
+            configs.put(type, type.createConfig());
     }
 
-    @AllArgsConstructor @Getter
+    @Getter
     public enum ConfigType {
 
         MAIN(MainConfig.class),
         VOTES(VoteConfig.class),
-        BANS(PunishmentConfig.class);
+        BANS(PunishmentConfig.class),
+        RULES(RawConfig.class, "rules"),
+        DONATE(RawConfig.class, "donate"),
+        ANNOUNCER(RawConfig.class, "announcer"),
+        RANKS(RawConfig.class, "ranks");
 
         private final Class<? extends Config> configClass;
+        private final Object[] args;
 
-        ConfigType() {
-            this(RawConfig.class);
+        ConfigType(Class<? extends Config> clazz, Object... args) {
+            this.configClass = clazz;
+            this.args = args;
         }
 
         /**
          * Construct this config.
-         * @return
+         * @return config
          */
         public Config createConfig() {
-            Object[] args = getConfigClass().equals(RawConfig.class) ? new Object[] {this} : null;
-            return ReflectionUtil.construct(getConfigClass(), args);
+            return ReflectionUtil.construct(getConfigClass(), getArgs());
         }
     }
 }

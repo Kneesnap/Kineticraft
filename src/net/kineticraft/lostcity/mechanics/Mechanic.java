@@ -43,6 +43,6 @@ public class Mechanic implements Listener {
      * We use this instead of listening for a bukkit event since multiple events can call.
      */
     public void onQuit(Player player) {
-        //TODO: Make sure this doesn't fire when a player fails login.
+
     }
 }

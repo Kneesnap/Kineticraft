@@ -1,6 +1,9 @@
 package net.kineticraft.lostcity.mechanics;
 
 import net.kineticraft.lostcity.Core;
+import net.kineticraft.lostcity.config.Configs;
+import net.kineticraft.lostcity.data.wrappers.KCPlayer;
+import net.kineticraft.lostcity.utils.TextUtils;
 import net.kineticraft.lostcity.utils.Utils;
 import net.minecraft.server.v1_11_R1.EntityEnderDragon;
 import org.bukkit.Bukkit;
@@ -20,6 +23,20 @@ import org.bukkit.inventory.ItemStack;
  * Created by Kneesnap on 5/29/2017.
  */
 public class GeneralMechanics extends Mechanic {
+
+    @EventHandler
+    public void onEnable() {
+
+        // Register announcer.
+        Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () ->
+                Bukkit.broadcast(TextUtils.fromMojangson(Utils.randElement(
+                        Configs.getRawConfig(Configs.ConfigType.ANNOUNCER).getLines()))), 0L, 5 * 20 * 60L);
+
+        // Increment time played.
+        Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), () ->
+            Bukkit.getOnlinePlayers().stream().map(KCPlayer::getWrapper)
+                    .forEach(p -> p.setSecondsPlayed(p.getSecondsPlayed() + 1)), 0L, 20L);
+    }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent evt) {

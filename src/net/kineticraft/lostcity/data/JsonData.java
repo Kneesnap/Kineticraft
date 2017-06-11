@@ -2,9 +2,17 @@ package net.kineticraft.lostcity.data;
 
 import com.google.gson.*;
 import lombok.Getter;
-import lombok.Setter;
 import net.kineticraft.lostcity.Core;
+import net.kineticraft.lostcity.data.lists.JsonList;
+import net.kineticraft.lostcity.data.lists.SaveableList;
+import net.kineticraft.lostcity.data.maps.JsonMap;
+import net.kineticraft.lostcity.data.maps.JsonEnumMap;
+import net.kineticraft.lostcity.data.maps.JsonStringMap;
+import net.kineticraft.lostcity.utils.NBTWrapper;
+import net.kineticraft.lostcity.utils.ReflectionUtil;
 import net.kineticraft.lostcity.utils.Utils;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -36,6 +44,7 @@ public class JsonData {
     /**
      * Gets the JsonElement with the specified key
      * @param key
+     * @return element
      */
     private JsonElement get(String key) {
         return getJsonObject().get(key);
@@ -44,6 +53,7 @@ public class JsonData {
     /**
      * Does this data have the given key?
      * @param key
+     * @return hasKey
      */
     public boolean has(String key) {
         JsonElement element = get(key);
@@ -53,6 +63,7 @@ public class JsonData {
     /**
      * Remove the given key.
      * @param key
+     * @return this
      */
     public JsonData remove(String key) {
         getJsonObject().remove(key);
@@ -60,38 +71,89 @@ public class JsonData {
     }
 
     /**
-     * Load a Json List.
+     * Load a json list
      * @param key
      * @param type
+     * @param <T>
+     * @return jsonList
      */
-    public <T extends Jsonable> JsonList<T> getList(String key, Class<T> type) {
-        return getList(key, type, Integer.MAX_VALUE);
+    public <T extends Jsonable> JsonList<T> getJsonList(String key, Class<T> type) {
+        return getList(key, JsonList.class, type);
     }
 
     /**
-     * Load a Json List.
+     * Load a List from json
      * @param key
      * @param type
-     * @param max
+     * @param <T>
+     * @return jsonList
      */
-    public <T extends Jsonable> JsonList<T> getList(String key, Class<T> type, int max) {
-        return JsonList.fromJson(getArray(key), type, max);
+    public <T extends SaveableList> T getList(String key, Class<T> type) {
+        T list = ReflectionUtil.construct(type);
+        list.load(getArray(key));
+        return list;
+    }
+
+    /**
+     * Load a JsonList with a subclass.
+     * @param key
+     * @param type
+     * @param subClass
+     * @param <T>
+     * @return
+     */
+    public <T extends SaveableList> T getList(String key, Class<T> type, Class<?> subClass) {
+        T list = ReflectionUtil.construct(type, subClass);
+        list.load(getArray(key));
+        return list;
+    }
+
+    /**
+     * Save a JSON list.
+     * @param key
+     * @param list
+     * @return this
+     */
+    public JsonData setList(String key, SaveableList<?> list) {
+        if (list == null || list.isEmpty())
+            return remove(key);
+        return setElement(key, list.save());
     }
 
     /**
      * Load a Json Map.
      * @param key
      * @param type
-     * @return
+     * @return map
      */
     public <T extends Jsonable> JsonMap<T> getMap(String key, Class<T> type) {
         return new JsonMap<T>(new JsonData(getObject(key)), type);
     }
 
     /**
+     * Load a Json Enum Map
+     * @param key
+     * @param enumClass
+     * @param valueClass
+     * @return map
+     */
+    public <E extends Enum<E>, V extends Jsonable> JsonEnumMap<E, V> getMap(String key, Class<E> enumClass, Class<V> valueClass) {
+        return new JsonEnumMap<>(getData(key), enumClass, valueClass);
+    }
+
+    /**
+     * Loads a json string map.
+     * @param key
+     * @return map
+     */
+    public JsonStringMap getStringMap(String key) {
+        return new JsonStringMap(getData(key));
+    }
+
+    /**
      * Load a JsonArray
      * @param key
-     * @return
+     * @return array
      */
     public JsonArray getArray(String key) {
         return has(key) ? get(key).getAsJsonArray() : new JsonArray();
@@ -101,7 +163,7 @@ public class JsonData {
      * Store JSONable data.
      * @param key
      * @param jsonable
-     * @return
+     * @return this
      */
     public JsonData setElement(String key, Jsonable jsonable) {
         return jsonable == null ? remove(key) : setElement(key, jsonable.save());
@@ -111,7 +173,7 @@ public class JsonData {
      * Store JSONData by a key.
      * @param key
      * @param data
-     * @return
+     * @return this
      */
     public JsonData setElement(String key, JsonData data) {
         return data == null ? remove(key) : setElement(key, data.getJsonObject());
@@ -121,7 +183,7 @@ public class JsonData {
      * Set a JsonElement.
      * @param key
      * @param val
-     * @return
+     * @return this
      */
     public JsonData setElement(String key, JsonElement val) {
         if (val == null || val.isJsonNull())
@@ -131,9 +193,30 @@ public class JsonData {
     }
 
     /**
-     * Get a Json Element.
+     * Load an ItemStack from Json.
      * @param key
-     * @return
+     * @return itemStack
+     */
+    public ItemStack getItem(String key) {
+        return has(key) ? new NBTWrapper(getData(key)).getItem() : new ItemStack(Material.AIR);
+    }
+
+    /**
+     * Save an ItemStack as JSON.
+     * @param key
+     * @param itemStack
+     * @return this
+     */
+    public JsonData setItem(String key, ItemStack itemStack) {
+        if (itemStack == null || itemStack.getType() == Material.AIR)
+            return remove(key);
+        return setElement(key, NBTWrapper.toJson(itemStack));
+    }
+
+    /**
+     * Get a Json Object.
+     * @param key
+     * @return object
      */
     public JsonObject getObject(String key) {
         return has(key) ? getJsonObject().get(key).getAsJsonObject() : new JsonObject();
@@ -228,7 +311,7 @@ public class JsonData {
 
     /**
      * Return the set of keys that make up this object.
-     * @return
+     * @return keys
      */
     public Set<String> keySet() {
         return getJsonObject().entrySet().stream().map(Map.Entry::getKey).collect(Collectors.toSet());
@@ -257,6 +340,7 @@ public class JsonData {
      * Sets a string value.
      * @param key
      * @param value
+     * @return this
      */
     public JsonData setString(String key, String value) {
         remove(key);
@@ -268,6 +352,7 @@ public class JsonData {
      * Store an enum value.
      * @param key
      * @param e
+     * @return this
      */
     public JsonData setEnum(String key, Enum<?> e) {
         setString(key, e != null ? e.name() : null);
@@ -278,6 +363,7 @@ public class JsonData {
      * Gets an enum value from the given class. Returns null if not found.
      * @param key
      * @param clazz
+     * @return enumValue
      */
     public <T extends Enum<T>> T getEnum(String key, Class<T> clazz) {
         return getEnum(key, clazz, null);
@@ -287,6 +373,7 @@ public class JsonData {
      * Gets an enum value, falling back on a default value.
      * @param key
      * @param defaultValue
+     * @return enumValue
      */
     public <T extends Enum<T>> T getEnum(String key, T defaultValue) {
         return getEnum(key, (Class<T>) defaultValue.getClass(), defaultValue);
@@ -294,6 +381,15 @@ public class JsonData {
 
     private <T extends Enum<T>> T getEnum(String key, Class<T> clazz, T defaultValue) {
         return Utils.getEnum(getString(key), clazz, defaultValue);
+    }
+
+    /**
+     * Load saved JsonData
+     * @param key
+     * @return this
+     */
+    public JsonData getData(String key) {
+        return new JsonData(getObject(key));
     }
 
     /**
@@ -318,10 +414,13 @@ public class JsonData {
     /**
      * Load JSON from a file.
      * @param path
-     * @return
+     * @return jsonData
      */
     public static JsonData fromFile(String path) {
         File file = getFile(path);
+        if (!file.exists())
+            return new JsonData();
+
         try {
             BufferedReader br = new BufferedReader(new FileReader(file));
             JsonData data = new JsonData(new JsonParser().parse(br).getAsJsonObject());
@@ -354,7 +453,7 @@ public class JsonData {
     /**
      * Is this file a valid json file?
      * @param path
-     * @return
+     * @return isJson
      */
     public static boolean isJson(String path) {
         return getFile(path).exists();
@@ -366,7 +465,7 @@ public class JsonData {
 
     /**
      * Convert this object into a pretty json string.
-     * @return
+     * @return formattedJson
      */
     public String toPrettyJson() {
         return new GsonBuilder().setPrettyPrinting().create().toJson(getJsonObject());

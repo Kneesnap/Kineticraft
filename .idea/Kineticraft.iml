@@ -10,6 +10,16 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="spigot_1.11.2" level="project" />
-    <orderEntry type="library" name="lombok-plugin-0.14.16" level="project" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../lombok-1.16.4.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="library" name="lombok-1.16.4" level="project" />
+    <orderEntry type="library" name="Votifier" level="project" />
   </component>
 </module>

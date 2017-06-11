@@ -10,6 +10,9 @@ import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Prevents farms from being too economically overpowered.
  *
@@ -24,6 +27,7 @@ public class FarmLimiter extends Mechanic {
 
     private static final int MAX_CRAMMING = 32;
     private static final int RADIUS = 8;
+    private static List<EntityType> IGNORE = Arrays.asList(EntityType.GUARDIAN, EntityType.ELDER_GUARDIAN);
 
     @EventHandler
     public void onChickenSpawn(CreatureSpawnEvent evt) {
@@ -35,7 +39,8 @@ public class FarmLimiter extends Mechanic {
     @EventHandler
     public void onEntityDeath(EntityDeathEvent evt) {
         if (!(evt.getEntity() instanceof Player) && evt.getEntity() instanceof LivingEntity // Not an applicable entity.
-                && getPlayerDamage(evt.getEntity()) < getDamageNeeded(evt.getEntity())) // Not enough player damage.
+                && getPlayerDamage(evt.getEntity()) < getDamageNeeded(evt.getEntity()) // Not enough player damage.
+                && !IGNORE.contains(evt.getEntityType())) // Not a type we ignore
             evt.getDrops().clear();
     }
 

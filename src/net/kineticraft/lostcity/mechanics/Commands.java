@@ -2,10 +2,15 @@ package net.kineticraft.lostcity.mechanics;
 
 import lombok.Getter;
 import net.kineticraft.lostcity.Core;
+import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.Command;
 import net.kineticraft.lostcity.commands.CommandType;
+import net.kineticraft.lostcity.commands.misc.CommandGUI;
+import net.kineticraft.lostcity.commands.misc.CommandInfo;
 import net.kineticraft.lostcity.commands.player.*;
 import net.kineticraft.lostcity.commands.staff.*;
+import net.kineticraft.lostcity.config.Configs;
+import net.kineticraft.lostcity.guis.GUIType;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -39,19 +44,34 @@ public class Commands extends Mechanic {
         addCommand(new CommandDelHome());
         addCommand(new CommandDungeon());
         addCommand(new CommandHelp());
+        addCommand(new CommandInfo(Configs.ConfigType.DONATE, "How to donate / donor perks.", "donate", "shop"));
         addCommand(new CommandHome());
+        addCommand(new CommandIgnore());
+        addCommand(new CommandMessage());
+        addCommand(new CommandMail());
+        addCommand(new CommandReply());
+        addCommand(new CommandRanks());
+        addCommand(new CommandRankup());
         addCommand(new CommandRTP());
+        addCommand(new CommandInfo(Configs.ConfigType.RULES, "Server rules.", "rules", "info"));
         addCommand(new CommandSetHome());
         addCommand(new CommandSpawn());
+        addCommand(new CommandUnignore());
+        addCommand(new CommandVote());
+        addCommand(new CommandVotes());
 
         // Staff Commands
+        addCommand(new CommandAnnounce());
         addCommand(new CommandBright());
         addCommand(new CommandConfig());
         addCommand(new CommandDeathTeleport());
+        addCommand(new CommandGUIs());
+        addCommand(new CommandMined());
         addCommand(new CommandReboot());
         addCommand(new CommandRescue());
         addCommand(new CommandSetRank());
         addCommand(new CommandSpectator());
+        addCommand(new CommandTestVote());
     }
 
     private static void addCommand(Command command) {
@@ -69,7 +89,7 @@ public class Commands extends Mechanic {
      * @return
      */
     public static List<Command> getCommands(CommandType type) {
-        return getCommands().stream().filter(c -> c.getType() == type).collect(Collectors.toList());
+        return getCommands().stream().filter(c -> c.getType() == type || type == null).collect(Collectors.toList());
     }
 
     /**
@@ -96,9 +116,9 @@ public class Commands extends Mechanic {
      * Tries to run a command. Returns true if the command was found / executed.
      * @param sender
      * @param type
-     * @return
+     * @return commandSuccess
      */
-    private boolean handleCommand(CommandSender sender, CommandType type, String input) {
+    public static boolean handleCommand(CommandSender sender, CommandType type, String input) {
         if (!input.startsWith(type.getPrefix()))
             return false; // Not this command type.
 
@@ -106,7 +126,7 @@ public class Commands extends Mechanic {
         String cmd = getLabel(type, input);
         Command command = getCommand(type, cmd);
         if (command == null) {
-            if (type == CommandType.PLAYER)
+            if (type == CommandType.CHAT)
                 sender.sendMessage(ChatColor.RED + "Unknown command. Type '.help' for help.");
             return false; // Not a command.
         }
@@ -131,16 +151,16 @@ public class Commands extends Mechanic {
 
     @EventHandler(priority = EventPriority.LOW) // Commands are top priority.
     public void onChat(AsyncPlayerChatEvent evt) {
-        handleCommand(evt.getPlayer(), CommandType.PLAYER, evt.getMessage());
+        handleCommand(evt.getPlayer(), CommandType.CHAT, evt.getMessage());
     }
 
     @EventHandler(priority = EventPriority.LOW)
     public void onCommand(PlayerCommandPreprocessEvent evt) {
-        if (handleCommand(evt.getPlayer(), CommandType.STAFF, evt.getMessage()))
+        if (handleCommand(evt.getPlayer(), CommandType.SLASH, evt.getMessage()))
             evt.setCancelled(true); // Don't show 'unknown command....'
 
-        String label = getLabel(CommandType.PLAYER, evt.getMessage());
-        Command cmd = getCommand(CommandType.PLAYER, label);
+        String label = getLabel(CommandType.CHAT, evt.getMessage());
+        Command cmd = getCommand(CommandType.CHAT, label);
         if (cmd != null) {
             evt.setCancelled(true);
             evt.getPlayer().sendMessage(ChatColor.RED + "We use . commands due to sVanilla rules. (Try ." + label +")");
@@ -158,7 +178,7 @@ public class Commands extends Mechanic {
 
     @EventHandler(priority = EventPriority.LOW)
     public void onServerCommand(ServerCommandEvent evt) {
-        if (handleCommand(evt.getSender(), CommandType.STAFF, CommandType.STAFF.getPrefix() + evt.getCommand()))
+        if (handleCommand(evt.getSender(), CommandType.SLASH, CommandType.SLASH.getPrefix() + evt.getCommand()))
             evt.setCancelled(true); // Handle console commands.
 
         if (evt.getCommand().startsWith(" ")) {

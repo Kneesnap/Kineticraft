@@ -1,6 +1,7 @@
 package net.kineticraft.lostcity.mechanics;
 
 import net.kineticraft.lostcity.Core;
+import net.kineticraft.lostcity.data.QueryTools;
 import net.kineticraft.lostcity.utils.Utils;
 import net.kineticraft.lostcity.data.wrappers.JsonLocation;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
@@ -12,6 +13,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Data Handler - Manages loading and unloading of player data.
@@ -49,18 +53,28 @@ public class DataHandler extends Mechanic {
         }
     }
 
-    @EventHandler
-    public void onPlayerDeath(PlayerDeathEvent evt) {
-        Location location = evt.getEntity().getLocation();
-        Bukkit.getLogger().info(evt.getEntity().getName() + " died at " + Utils.toString(location));
-        KCPlayer.getWrapper(evt.getEntity()).getDeaths().add(new JsonLocation(location));
-        //TODO: PowerNBT save data.
-    }
-
     @EventHandler(priority = EventPriority.HIGHEST) // Run last.
     public void onJoinResult(AsyncPlayerPreLoginEvent evt) {
-        if (evt.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED)
+        String ip = evt.getAddress().toString().split("/")[1].split(":")[0];
+        if (evt.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) {
             KCPlayer.getPlayerMap().remove(evt.getUniqueId()); // Remove their data if they weren't let on.
+            Core.alertStaff(ChatColor.RED + evt.getName() + " (" + ChatColor.YELLOW + evt.getAddress().toString()
+                    + ChatColor.RED + ") attempted login.");
+            return;
+        }
+
+        QueryTools.queryData(d -> {
+            List<KCPlayer> maybe = d.filter(k -> k.getLastIP().equals(ip)).collect(Collectors.toList());
+            boolean banned = maybe.stream().filter(kcPlayer -> false).count() > 0; //TODO Grab real
+            Core.alertStaff(evt.getName() + " shares the same IP as " + maybe.stream().map(KCPlayer::getUsername)
+                    .collect(Collectors.joining(", ")));
+            //TODO: Punish if found.
+        });
+    }
+
+    @Override
+    public void onJoin(Player player) {
+        KCPlayer.getWrapper(player).updatePlayer();
     }
 
     @Override

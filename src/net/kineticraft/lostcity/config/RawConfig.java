@@ -20,8 +20,8 @@ public class RawConfig extends Config {
 
     private List<String> lines = new ArrayList<>();
 
-    public RawConfig(Configs.ConfigType type) {
-        super(type);
+    public RawConfig(String name) {
+        super(name + ".txt");
     }
 
     @Override
@@ -51,10 +51,5 @@ public class RawConfig extends Config {
 
     private File getFile() {
         return Core.getFile(getFileName());
-    }
-
-    @Override
-    protected String getFileName() {
-        return super.getFileName() + ".txt";
     }
 }

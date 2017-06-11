@@ -11,8 +11,8 @@ import net.kineticraft.lostcity.data.Jsonable;
  */
 public abstract class JsonConfig extends Config implements Jsonable {
 
-    public JsonConfig(ConfigType type) {
-        super(type);
+    public JsonConfig(String fileName) {
+        super(fileName + ".json");
     }
 
     /**
@@ -28,8 +28,6 @@ public abstract class JsonConfig extends Config implements Jsonable {
      */
     @Override
     public void saveToDisk() {
-        JsonData data = save();
-        data.setSaveEmpty(true);
-        data.toFile(getFileName());
+        save().toFile(getFileName());
     }
 }

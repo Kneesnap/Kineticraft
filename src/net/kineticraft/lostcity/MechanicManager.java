@@ -37,6 +37,7 @@ public class MechanicManager implements Listener {
         registerMechanic(new Callbacks());
         registerMechanic(new Commands());
         registerMechanic(new Books());
+        registerMechanic(new GUIManager());
         registerMechanic(new GeneralMechanics());
         registerMechanic(new SleepMechanics());
         registerMechanic(new SlimeFinder());
@@ -46,6 +47,7 @@ public class MechanicManager implements Listener {
         registerMechanic(new FarmLimiter());
         registerMechanic(new Leashes());
         registerMechanic(new Voting());
+        registerMechanic(new Water());
         registerMechanic(new MetadataManager());
         Core.logInfo("Mechanics Registered.");
     }

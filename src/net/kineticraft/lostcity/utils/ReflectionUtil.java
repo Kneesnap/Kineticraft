@@ -1,7 +1,9 @@
 package net.kineticraft.lostcity.utils;
 
+import net.kineticraft.lostcity.Core;
 import org.bukkit.Bukkit;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -65,12 +67,24 @@ public class ReflectionUtil {
      * Construct a class with the given arguments.
      * @param clazz
      * @param args
-     * @return
+     * @return object
      * @throws Exception
      */
     public static <T> T construct(Class<T> clazz, Object... args) {
+        return construct(clazz, getClasses(args), args);
+    }
+
+    /**
+     * Constructa class with the given arguments.
+     * @param clazz
+     * @param args
+     * @param <T>
+     * @return object
+     */
+    public static <T> T construct(Class<T> clazz, Class[] argTypes, Object... args) {
+
         try {
-            return clazz.getDeclaredConstructor(getClasses(args)).newInstance(args);
+            return clazz.getDeclaredConstructor(argTypes).newInstance(args);
         } catch (Exception e) {
             e.printStackTrace();
             Bukkit.getLogger().warning("Could not construct " + clazz.getSimpleName() + ".");
@@ -81,15 +95,28 @@ public class ReflectionUtil {
     /**
      * Get an array of classes from the arrays of the objects supplied.
      * @param objects
-     * @return
+     * @return classes
      */
     private static Class<?>[] getClasses(Object... objects) {
+        if (objects == null)
+            objects = new Object[0];
+
         Class<?>[] classes = new Class<?>[objects.length];
         for (int i = 0; i < objects.length; i++) {
             Class<?> cls = objects[i].getClass();
             classes[i] = REPLACE.containsKey(cls) ? REPLACE.get(cls) : cls; // Primitives need to be replaced.
         }
         return classes;
+    }
+
+    public static Object getField(Object o, String field) {
+        try {
+            return o.getClass().getField(field).get(o);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Core.warn("Failed to get field '" + field + "'.");
+            return null;
+        }
     }
 
     /**

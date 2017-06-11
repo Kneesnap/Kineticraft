@@ -3,7 +3,9 @@ package net.kineticraft.lostcity.mechanics;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.kineticraft.lostcity.Core;
+import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
@@ -21,9 +23,14 @@ public class MetadataManager extends Mechanic {
 
         // Players
         TELEPORTING(false),
+        LAST_WHISPER(null),
 
         // Entities
-        PLAYER_DAMAGE(0D);
+        NORMAL_SPEED(.1F), // Normal Walkspeed.
+        PLAYER_DAMAGE(0D),
+
+        // Cooldowns
+        RTP(0L);
 
         private Object fallback;
 
@@ -88,15 +95,28 @@ public class MetadataManager extends Mechanic {
      * @param ticks
      */
     public static void setCooldown(Metadatable obj, Metadata type, int ticks) {
-        setMetadata(obj, type, true);
-        Bukkit.getScheduler().runTaskLater(Core.getInstance(), () -> removeMetadata(obj, type), ticks); // Remove.
+        setMetadata(obj, type, System.currentTimeMillis() + (ticks * 50));
     }
 
     /**
      * Does this object have a cooldown?
      */
     public static boolean hasCooldown(Metadatable obj, Metadata type) {
-        return getMetadata(obj, type).asBoolean();
+        return getMetadata(obj, type).asLong() > System.currentTimeMillis();
+    }
+
+    /**
+     * Does this player have a cooldown? Alerts them if they do.
+     * @param player
+     * @param type
+     * @return hasCooldown
+     */
+    public static boolean hasCooldown(Player player, Metadata type) {
+        boolean has = hasCooldown((Metadatable) player, type);
+        if (has)
+            player.sendMessage(ChatColor.RED + "You must wait "
+                    + Utils.formatTime(getMetadata(player, type).asLong() - System.currentTimeMillis()) + " before doing this.");
+        return has;
     }
 
     /**

@@ -1,6 +1,7 @@
 package net.kineticraft.lostcity.mechanics;
 
 import net.kineticraft.lostcity.Core;
+import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
@@ -27,10 +28,7 @@ public class Leashes extends Mechanic {
         if (!(e instanceof Villager) || hand == null || hand.getType() != Material.LEASH || !e.isLeashed())
             return;
 
-        hand.setAmount(hand.getAmount() - 1);
-        if (hand.getAmount() == 0)
-            hand.setType(Material.AIR);
-
+        Utils.useItem(hand);
         Bukkit.getScheduler().runTask(Core.getInstance(), () -> e.setLeashHolder(evt.getPlayer()));
     }
 

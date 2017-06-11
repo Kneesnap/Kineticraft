@@ -13,7 +13,7 @@ import net.kineticraft.lostcity.data.JsonData;
 public class PunishmentConfig extends JsonConfig {
 
     public PunishmentConfig() {
-        super(Configs.ConfigType.BANS);
+        super("bans");
     }
 
     @Override
@@ -23,6 +23,6 @@ public class PunishmentConfig extends JsonConfig {
 
     @Override
     public JsonData save() {
-        return null;
+        return new JsonData();
     }
 }

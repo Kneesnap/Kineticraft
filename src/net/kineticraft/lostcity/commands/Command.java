@@ -23,7 +23,7 @@ public abstract class Command {
     private String help;
     private List<String> alias;
 
-    @Setter  private String lastAlias; // A hacky method to allow us to thow the player the usage with the alias they used.
+    @Setter private String lastAlias; // A hacky method to allow us to thow the player the usage with the alias they used.
 
     public Command(CommandType type, String usage, String help, String... alias) {
         this.type = type;
@@ -37,7 +37,7 @@ public abstract class Command {
      * @return
      */
     public String getUsage() {
-        return ChatColor.RED + "Usage: " + getCommandPrefix() + getLastAlias() + " " + getRawUsage();
+        return "Usage: " + getCommandPrefix() + getLastAlias() + " " + getRawUsage();
     }
 
     /**
@@ -68,14 +68,14 @@ public abstract class Command {
      * @param sender
      */
     protected void showUsage(CommandSender sender) {
-        sender.sendMessage(getUsage());
+        sender.sendMessage(ChatColor.RED + getUsage());
     }
 
     /**
      * Returns the alias that should be shown to the player.
-     * @return
+     * @return lastAlias
      */
-    private String getLastAlias() {
+    protected String getLastAlias() {
         return lastAlias != null ? lastAlias : getName();
     }
 
@@ -101,12 +101,17 @@ public abstract class Command {
             sender.sendMessage(ChatColor.RED + "Invalid number " + input + ".");
         } catch (IllegalArgumentException iae) {
             //Couldn't find an enum value, comes from methods such as ChatColor.valueOf
-            Matcher mClassPath = Pattern.compile("No enum constant (.+) in").matcher(iae.getLocalizedMessage());
+            Matcher mClassPath = Pattern.compile("No enum constant (.+)").matcher(iae.getLocalizedMessage());
             mClassPath.find();
             String classPath = mClassPath.group(1);
             String[] split = classPath.split("\\.");
 
-            sender.sendMessage(ChatColor.RED + split[split.length - 1] + " is not a valid " + split[split.length - 2] + ".");
+            String input = split[split.length - 1];
+            for (String s : args)
+                if (s.equalsIgnoreCase(input))
+                    input = s; //Many enums use toUpperCase(), we'd rather display the input the user put in.
+
+            sender.sendMessage(ChatColor.RED + input + " is not a valid " + split[split.length - 2] + ".");
         }
     }
 

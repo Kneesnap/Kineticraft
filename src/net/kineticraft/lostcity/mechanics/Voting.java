@@ -1,16 +1,21 @@
 package net.kineticraft.lostcity.mechanics;
 
+import com.vexsoftware.votifier.model.Vote;
 import com.vexsoftware.votifier.model.VotifierEvent;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.config.configs.VoteConfig;
+import net.kineticraft.lostcity.data.JsonData;
+import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.data.QueryTools;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
 import net.kineticraft.lostcity.utils.Utils;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import org.bukkit.Achievement;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -18,9 +23,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Calendar;
-import java.util.Comparator;
-import java.util.Locale;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -30,13 +33,8 @@ import java.util.stream.Collectors;
  */
 public class Voting extends Mechanic {
 
-    @Override
-    public void onJoin(Player player) {
-        giveRewards(player); // Give the player any rewards they got while offline.
-    }
-
     @EventHandler
-    public void handleVote(VotifierEvent evt) {
+    public void onVote(VotifierEvent evt) {
         handleVote(evt.getVote().getUsername());
     }
 
@@ -51,10 +49,43 @@ public class Voting extends Mechanic {
                 .bold(true).event(new ClickEvent(ClickEvent.Action.OPEN_URL, Configs.getMainConfig().getVoteURL()));
         Bukkit.broadcast(cb.create());
 
+        if (!Configs.getVoteData().getMonth().equals(getMonthName()))
+            resetVotes(); // A new month! Time to reset the votes.
+
+
+        VoteConfig data = Configs.getVoteData();
+        data.setTotalVotes(data.getTotalVotes() + 1); // Increment the total vote count
+
+        int toParty = data.getVotesUntilParty() - 1; // Decrement the amount of votes until party.
+        data.setVotesUntilParty(toParty);
+        if (toParty > 0) {
+            if (toParty % 5 == 0 || toParty <= 10)
+                Core.kineticaMessage("Thanks for voting " + ChatColor.YELLOW + username + ChatColor.WHITE + "! We need "
+                        + ChatColor.YELLOW + toParty + ChatColor.WHITE + " more votes for a party.");
+        } else {
+            doVoteParty();
+        }
+
         QueryTools.getData(username, player ->  {
             player.setPendingVotes(player.getPendingVotes() + 1);
-            giveRewards(player.getPlayer());
+            if (player.isOnline())
+                giveRewards(player.getPlayer());
         });
+    }
+
+    /**
+     * Activate a vote party.
+     */
+    public static void doVoteParty() {
+        Core.kineticaMessage("Wooo! We made it! Parrrty!");
+        Configs.getVoteData().setVotesUntilParty(Configs.getVoteData().getVotesPerParty()); // Reset counter.
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            ItemStack reward = generatePartyReward();
+            Utils.giveItem(player, reward);
+            player.sendMessage(ChatColor.GOLD + "You received " + ChatColor.YELLOW + reward.getAmount() + "x"
+                    + Utils.getItemName(reward) + ChatColor.GOLD + " from the vote party.");
+        }
     }
 
     /**
@@ -71,21 +102,40 @@ public class Voting extends Mechanic {
         player.sendMessage(ChatColor.GOLD + "Receiving " + ChatColor.YELLOW + pending + ChatColor.GOLD
                 + " vote reward" + (pending > 1 ? "s" : "") + ".");
 
-        p.setPendingVotes(0);
         for (int i = 0; i < pending; i++) {
-            ItemStack reward = generateReward();
-            Utils.giveItem(player, reward);
-            player.sendMessage(ChatColor.GOLD + "You received " + ChatColor.YELLOW + reward.getAmount() + "x"
-                    + Utils.getItemName(reward));
+            Configs.getVoteData().getNormal().getValues().forEach(j -> Utils.giveItem(player, j.getItem()));
+            player.setLevel(player.getLevel() + 10); // Add 10 XP Levels
         }
+
+        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1F, 1F);
+
+        // Give achievement rewards
+        for (VoteAchievement va : Configs.getVoteData().getAchievements().getValues()) {
+            if (va.getVotesNeeded() > p.getTotalVotes() && p.getTotalVotes() + pending >= va.getVotesNeeded()) {
+                Utils.giveItem(player, va.getItem());
+                player.sendMessage(ChatColor.GREEN + "You have received a special reward for voting "
+                        + va.getVotesNeeded() + " times.");
+            }
+        }
+
+        p.setPendingVotes(0);
+        p.setMonthlyVotes(p.getMonthlyVotes() + pending);
+        p.setTotalVotes(p.getTotalVotes() + pending);
+
+        calculateTopVoter();
     }
 
     /**
-     * Generate a random vote reward.
-     * @return
+     * Generate a random vote party reward.
+     * @return item
      */
-    public static ItemStack generateReward() {
-        return new ItemStack(Material.DIRT); // TODO
+    public static ItemStack generatePartyReward() {
+        VoteConfig data = Configs.getVoteData();
+        if (data.getParty().isEmpty()) // No vote rewards.
+            return new ItemStack(Material.DIRT);
+
+        PartyReward test = Utils.randElement(data.getParty()); // Get the reward we'll attempt to give them.
+        return Utils.randChance(test.getChance()) ? test.getItem() : generatePartyReward();
     }
 
     /**
@@ -93,6 +143,7 @@ public class Voting extends Mechanic {
      */
     public static void resetVotes() {
         VoteConfig data = Configs.getVoteData();
+        data.setMonth(getMonthName()); // Do this before query so if two votes come in quickly it won't run twice.
 
         QueryTools.queryData(players -> {
             players.forEach(p -> {
@@ -103,10 +154,17 @@ public class Voting extends Mechanic {
             });
 
             data.setTopVoter(null);
-            Core.announce("Votes have reset for the month of "
-                    + Calendar.getInstance().getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.ENGLISH)
+            Core.announce("Votes have reset for the month of " + getMonthName()
                     + "! Better start voting to get top voter! (.vote)");
         });
+    }
+
+    /**
+     * Get the name of the current month.
+     * @return monthName
+     */
+    private static String getMonthName() {
+        return Calendar.getInstance().getDisplayName(Calendar.MONTH, Calendar.LONG, Locale.ENGLISH);
     }
 
     /**
@@ -128,13 +186,50 @@ public class Voting extends Mechanic {
                 Player player = topVoter.getPlayer();
                 player.sendMessage(ChatColor.LIGHT_PURPLE + " * You are now the top voter this month. *");
                 player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1F, 1F);
+                topVoter.updatePlayer();
             }
         });
     }
 
-    @Data
-    public class VoteReward {
+    @AllArgsConstructor @Data
+    public static class VoteAchievement implements Jsonable {
+        private int votesNeeded;
+        private ItemStack item;
+
+        public VoteAchievement(JsonData data) {
+            load(data);
+        }
+
+        @Override
+        public void load(JsonData data) {
+            setVotesNeeded(data.getInt("needed"));
+            setItem(data.getItem("item"));
+        }
+
+        @Override
+        public JsonData save() {
+            return new JsonData().setNum("needed", getVotesNeeded()).setItem("item", getItem());
+        }
+    }
+
+    @AllArgsConstructor @Data
+    public static class PartyReward implements Jsonable {
         private int chance;
         private ItemStack item;
+
+        public PartyReward(JsonData data) {
+            load(data);
+        }
+
+        @Override
+        public void load(JsonData data) {
+            setChance(Math.max(0, data.getInt("chance")));
+            setItem(data.getItem("item"));
+        }
+
+        @Override
+        public JsonData save() {
+            return new JsonData().setNum("chance", getChance()).setItem("item", getItem());
+        }
     }
 }

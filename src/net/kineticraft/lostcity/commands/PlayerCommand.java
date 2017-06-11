@@ -23,7 +23,11 @@ public abstract class PlayerCommand extends Command {
     }
 
     public PlayerCommand(EnumRank minRank, boolean playerOnly, String usage, String help, String... alias) {
-        super(minRank.isAtLeast(EnumRank.HELPER) ? CommandType.STAFF : CommandType.PLAYER, usage, help, alias);
+        this(minRank, minRank.isAtLeast(EnumRank.HELPER) ? CommandType.SLASH : CommandType.CHAT, playerOnly, usage, help, alias);
+    }
+
+    public PlayerCommand(EnumRank minRank, CommandType type, boolean playerOnly, String usage, String help, String... alias) {
+        super(type, usage, help, alias);
         this.playerOnly = playerOnly;
         this.minRank = minRank;
     }

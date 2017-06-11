@@ -11,8 +11,8 @@ import lombok.Getter;
 @AllArgsConstructor @Getter
 public enum CommandType {
 
-    PLAYER("."),
-    STAFF("/"),
+    CHAT("."),
+    SLASH("/"),
     COMMAND_BLOCK("");
 
     private final String prefix;

@@ -5,16 +5,17 @@ import net.kineticraft.lostcity.config.Configs.ConfigType;
 
 /**
  * A Configuration base.
+ * TODO: Maybe use annotations?
  *
  * Created by Kneesnap on 6/3/2017.
  */
 @Getter
 public abstract class Config {
 
-    private ConfigType type;
+    private String fileName;
 
-    public Config(ConfigType type) {
-        this.type = type;
+    public Config(String fileName) {
+        this.fileName = fileName;
         loadFromDisk();
         saveToDisk(); // Fixes any invalid configurations.
     }
@@ -28,12 +29,4 @@ public abstract class Config {
      * Save this config to disk.
      */
     public abstract void saveToDisk();
-
-    /**
-     * Gets the file name.
-     * @return Saved file name.
-     */
-    protected String getFileName() {
-        return getType().name().toLowerCase();
-    }
 }
