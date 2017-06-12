@@ -214,6 +214,15 @@ public class JsonData {
     }
 
     /**
+     * Loads a boolean value.
+     * @param key
+     * @return boolean
+     */
+    public boolean getBoolean(String key) {
+        return has(key) && get(key).getAsBoolean();
+    }
+
+    /**
      * Get a Json Object.
      * @param key
      * @return object
@@ -302,9 +311,20 @@ public class JsonData {
      * Store a number value.
      * @param key
      * @param value
-     * @return data
+     * @return this
      */
     public JsonData setNum(String key, Number value) {
+        getJsonObject().addProperty(key, value);
+        return this;
+    }
+
+    /**
+     * Store a boolean value.
+     * @param key
+     * @param value
+     * @return this
+     */
+    public JsonData setBoolean(String key, boolean value) {
         getJsonObject().addProperty(key, value);
         return this;
     }

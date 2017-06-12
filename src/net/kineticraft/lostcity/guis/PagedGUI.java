@@ -27,14 +27,6 @@ public abstract class PagedGUI extends GUI {
 
     private static int MAX_ROWS = 5; // The max number of rows per page.
 
-    public PagedGUI(Player player, GUIType type) {
-        this(player, type, MAX_ROWS);
-    }
-
-    public PagedGUI(Player player, GUIType type, int rows) {
-        this(player, type.getTitle(), rows);
-    }
-
     public PagedGUI(Player player, String title, int rows) {
         super(player, title, Math.min(MAX_ROWS, rows) + 1);
         this.title = title;

@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.kineticraft.lostcity.Core;
+import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.data.JsonData;
 import net.kineticraft.lostcity.data.lists.JsonList;
 import net.kineticraft.lostcity.data.Jsonable;
@@ -30,6 +31,9 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class Utils {
 
+    public static int CHAT_SIZE = 320;
+    public static int BOOK_SIZE = 120;
+    public static String COLOR_CODE = ChatColor.RESET.toString().substring(0, 1);
 
     /**
      * Gets an enum value from the given class. Returns null if not found.
@@ -280,6 +284,14 @@ public class Utils {
     }
 
     /**
+     * Get a random true/false value.
+     * @return randomBool
+     */
+    public static boolean nextBool() {
+        return randChance(2);
+    }
+
+    /**
      * Gets a random number between 0 and max - 1
      * @param max
      * @return rand
@@ -346,5 +358,91 @@ public class Utils {
         item.setAmount(item.getAmount() - 1);
         if (item.getAmount() <= 0)
             item.setType(Material.AIR);
+    }
+
+    /**
+     * Formats a boolean toggle to be displayed in chat.
+     * @param name
+     * @param value
+     * @return string
+     */
+    public static String formatToggle(String name, boolean value) {
+        return ChatColor.GRAY + name + ": " + (value ? ChatColor.GREEN : ChatColor.RED) + value;
+    }
+
+    /**
+     * Gets the rank of a CommandSender
+     * @param sender
+     * @return rank
+     */
+    public static EnumRank getRank(CommandSender sender) {
+        return sender instanceof Player ? KCPlayer.getWrapper((Player) sender).getRank() : EnumRank.DEV;
+    }
+
+    /**
+     * Center text for displaying in chat.
+     * @param text
+     * @return centered
+     */
+    public static String centerChat(String text) {
+        return centerText(text, CHAT_SIZE);
+    }
+
+    /**
+     * Center text, for displaying in a book.
+     * @param text
+     * @return centered
+     */
+    public static String centerBook(String text) {
+        return centerText(text, BOOK_SIZE);
+    }
+
+    /**
+     * Center text, for displaying on a given line size.
+     * @param text
+     * @param lineSize
+     * @return centered
+     */
+    private static String centerText(String text, int lineSize) {
+        if (text == null || text.length() == 0)
+            return "";
+
+        // Perform calculations.
+        int centerPixel = (lineSize / 2) - 6;
+        int pixelSize = getPixelWidth(text);
+        int blankPixels = centerPixel - (pixelSize / 2);
+        int addedPixels = 0;
+
+        // Add spaces
+        while(addedPixels < blankPixels) {
+            text = " " + text;
+            addedPixels += MinecraftFont.SPACE.getCharWidth();
+        }
+
+        return text;
+    }
+
+    /**
+     * Get the amount of pixels a message will take up in the client's display.
+     * Only works if the client has the default width settings.
+     *
+     * @param text
+     * @return width
+     */
+    public static int getPixelWidth(String text) {
+        int pixelSize = 0;
+        boolean bold = false;
+
+        // Determine the pixel width of the string.
+        for (int i = 0; i < text.length(); i++) {
+            String c = text.substring(i, 1);
+            if (c.equals(COLOR_CODE)) {
+                bold = text.substring(i + 1, 1).equalsIgnoreCase("l");
+            } else {
+                pixelSize += MinecraftFont.getWidth(c, bold);
+            }
+        }
+
+        return pixelSize;
     }
 }

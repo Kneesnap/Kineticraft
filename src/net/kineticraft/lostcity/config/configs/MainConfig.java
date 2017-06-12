@@ -16,6 +16,7 @@ import net.kineticraft.lostcity.data.maps.JsonStringMap;
 public class MainConfig extends JsonConfig {
 
     private String voteURL;
+    private int afkLimit;
     private JsonStringMap filter = new JsonStringMap();
 
     public MainConfig() {
@@ -26,11 +27,12 @@ public class MainConfig extends JsonConfig {
     public void load(JsonData data) {
         setVoteURL(data.getString("voteURL", "http://google.com/"));
         setFilter(data.getStringMap("filter"));
+        setAfkLimit(data.getInt("afkLimit", 30));
     }
 
     @Override
     public JsonData save() {
-        return new JsonData().setString("voteURL", getVoteURL()).setElement("filter", getFilter());
+        return new JsonData().setString("voteURL", getVoteURL()).setElement("filter", getFilter()).setNum("afkLimit", getAfkLimit());
     }
 
 }

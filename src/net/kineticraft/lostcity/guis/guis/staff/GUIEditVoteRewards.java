@@ -25,7 +25,7 @@ import java.util.function.Consumer;
 public class GUIEditVoteRewards extends GUI {
 
     public GUIEditVoteRewards(Player player) {
-        super(player, GUIType.VOTE_EDITOR, 2
+        super(player, "Vote Rewards", 2
                 + fitSize(Configs.getVoteData().getParty().size() + 1)
                 + fitSize(Configs.getVoteData().getAchievements().size() + 1)
                 + fitSize(Configs.getVoteData().getNormal().size() + 1));
@@ -41,8 +41,7 @@ public class GUIEditVoteRewards extends GUI {
                 Callbacks.listenForNumber(getPlayer(), 0, 100, n -> {
                     vr.setChance(n);
                     getPlayer().sendMessage(ChatColor.GREEN + "Updated chance.");
-                    open();
-                }, this::open);
+                });
             }).leftClick(e ->
                 new GUIItemEditor(getPlayer(), vr.getItem(), i -> vr.setItem(i.generateItem()))
             ).rightClick(e -> {
@@ -76,8 +75,7 @@ public class GUIEditVoteRewards extends GUI {
                     Callbacks.listenForNumber(getPlayer(), 0, 500, n -> {
                         a.setVotesNeeded(n);
                         getPlayer().sendMessage(ChatColor.GREEN + "Updated.");
-                        open();
-                    }, this::open);
+                    });
                 })
                 .rightClick(e -> {
                     data.getAchievements().remove(a);

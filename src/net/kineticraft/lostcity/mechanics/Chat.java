@@ -31,6 +31,7 @@ public class Chat extends Mechanic {
         replace.put("☭", "☹");
     }
 
+    @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.LOWEST)
     public void onCommand(PlayerCommandPreprocessEvent evt) {
         evt.setMessage(filterMessage(evt.getMessage()));
@@ -42,7 +43,7 @@ public class Chat extends Mechanic {
         System.out.println(System.currentTimeMillis() - t);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST) // Filter should happen before commands.
     public void onChat(AsyncPlayerChatEvent evt) {
         evt.setMessage(filterMessage(evt.getMessage()));
         evt.setFormat(KCPlayer.getWrapper(evt.getPlayer()).getDisplayPrefix() + " %s: " + ChatColor.WHITE + "%s");

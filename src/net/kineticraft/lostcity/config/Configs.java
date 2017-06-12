@@ -80,7 +80,9 @@ public class Configs extends Mechanic {
         RULES(RawConfig.class, "rules"),
         DONATE(RawConfig.class, "donate"),
         ANNOUNCER(RawConfig.class, "announcer"),
-        RANKS(RawConfig.class, "ranks");
+        DISCORD(RawConfig.class, "discord"),
+        RANKS(RawConfig.class, "ranks"),
+        INFO(RawConfig.class, "info");
 
         private final Class<? extends Config> configClass;
         private final Object[] args;

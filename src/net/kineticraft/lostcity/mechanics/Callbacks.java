@@ -2,6 +2,7 @@ package net.kineticraft.lostcity.mechanics;
 
 import lombok.AllArgsConstructor;
 import net.kineticraft.lostcity.Core;
+import net.kineticraft.lostcity.guis.GUI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
@@ -99,11 +100,23 @@ public class Callbacks extends Mechanic {
      * @param fail
      */
     public static void listenForChat(Player player, Consumer<String> cb, Runnable fail) {
-        if (GUIManager.getGUI(player) != null) // Don't allow the previous GUI to open, since we're giving input.
-            GUIManager.getGUI(player).setParent(true);
+        GUI gui = GUIManager.getGUI(player);
+        if (gui != null) // Don't allow the previous GUI to open, since we're giving input.
+            gui.setParent(true);
+
         player.closeInventory(); // Close the player's open inventory, if any.
-        Consumer<String> deAsync = chat -> Bukkit.getScheduler().runTask(Core.getInstance(), () -> cb.accept(chat));
-        listen(player, ListenerType.CHAT, deAsync, fail);
+
+        Consumer<String> deAsync = chat -> Bukkit.getScheduler().runTask(Core.getInstance(), () -> {
+            cb.accept(chat);
+            if (gui != null) // Automatically re-open the last gui.
+                gui.open();
+        });
+
+        listen(player, ListenerType.CHAT, deAsync, () -> {
+            fail.run();
+            if (gui != null) // Automatically re-open the last gui.
+                gui.open();
+        });
     }
 
     /**

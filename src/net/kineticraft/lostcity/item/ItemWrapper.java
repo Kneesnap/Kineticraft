@@ -1,6 +1,7 @@
 package net.kineticraft.lostcity.item;
 
 import lombok.Getter;
+import net.kineticraft.lostcity.mechanics.enchants.CustomEnchant;
 import net.kineticraft.lostcity.utils.Utils;
 import net.minecraft.server.v1_11_R1.NBTTagCompound;
 import org.bukkit.ChatColor;
@@ -168,6 +169,18 @@ public abstract class ItemWrapper {
         remove(key);
         if (val != 0)
             getTag().setInt(key, val);
+    }
+
+    /**
+     * Give or remove the 'enchant glow' to this item.
+     * @param glowing
+     * @return this
+     */
+    public ItemWrapper setGlowing(boolean glowing) {
+        getItem().removeEnchantment(CustomEnchant.GLOWING.getEnchant());
+        if (glowing)
+            getItem().addUnsafeEnchantment(CustomEnchant.GLOWING.getEnchant(), 1);
+        return this;
     }
 
     /**

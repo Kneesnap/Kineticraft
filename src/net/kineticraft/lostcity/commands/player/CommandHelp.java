@@ -1,5 +1,6 @@
 package net.kineticraft.lostcity.commands.player;
 
+import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.Command;
 import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
@@ -17,34 +18,38 @@ import org.bukkit.entity.Player;
 public class CommandHelp extends PlayerCommand {
 
     public CommandHelp() {
-        super("[command]", "Display command usage.", "help", "?", "info");
+        super(EnumRank.MU, false, "[command]", "Display command usage.", "help", "?");
     }
 
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
-        KCPlayer player = KCPlayer.getWrapper((Player) sender);
+        EnumRank pRank = sender instanceof Player ? KCPlayer.getWrapper((Player) sender).getRank() : EnumRank.DEV;
         String bar = ChatColor.DARK_GREEN.toString() + ChatColor.UNDERLINE + "-----";
 
         if (args.length == 0) {
             sender.sendMessage(bar + ChatColor.GRAY + " Command Help " + bar);
             Commands.getCommands().stream().filter(c -> c instanceof PlayerCommand).forEach(command -> {
                 PlayerCommand playerCommand = (PlayerCommand) command;
-                if (player.getRank().isAtLeast(playerCommand.getMinRank()))
+                if (pRank.isAtLeast(playerCommand.getMinRank()))
                     sender.sendMessage(ChatColor.GRAY + playerCommand.getCommandPrefix() + playerCommand.getName()
                             + ": " + ChatColor.WHITE + playerCommand.getHelp());
             });
         } else {
+
             Command cmd = Commands.getCommand(null, args[0]);
 
-            if (cmd == null) {
+            // If the command isn't found or it isn't a command a player needs to see.
+            if (cmd == null || (!(cmd instanceof PlayerCommand) && sender instanceof Player)) {
                 sender.sendMessage(ChatColor.RED + "Cannot find help for '" + args[0] + "'.");
                 return;
             }
 
-            sender.sendMessage(bar + "Command Help (" + cmd.getName() + ") " + bar);
+            sender.sendMessage(bar + " Information for " + cmd.getName() + " " + bar);
             sender.sendMessage("Description: " + cmd.getHelp());
             sender.sendMessage(cmd.getUsage());
             sender.sendMessage("Alias: " + String.join(" ", cmd.getAlias()));
+            if (cmd instanceof PlayerCommand)
+                sender.sendMessage("Minimum Rank: " + ((PlayerCommand) cmd).getMinRank().getName());
         }
     }
 }

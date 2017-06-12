@@ -41,37 +41,40 @@ public class Commands extends Mechanic {
     private static void registerCommands() {
 
         // Player Commands
-        addCommand(new CommandDelHome());
-        addCommand(new CommandDungeon());
-        addCommand(new CommandHelp());
-        addCommand(new CommandInfo(Configs.ConfigType.DONATE, "How to donate / donor perks.", "donate", "shop"));
-        addCommand(new CommandHome());
-        addCommand(new CommandIgnore());
-        addCommand(new CommandMessage());
-        addCommand(new CommandMail());
-        addCommand(new CommandReply());
-        addCommand(new CommandRanks());
-        addCommand(new CommandRankup());
-        addCommand(new CommandRTP());
-        addCommand(new CommandInfo(Configs.ConfigType.RULES, "Server rules.", "rules", "info"));
-        addCommand(new CommandSetHome());
-        addCommand(new CommandSpawn());
-        addCommand(new CommandUnignore());
-        addCommand(new CommandVote());
-        addCommand(new CommandVotes());
-
-        // Staff Commands
         addCommand(new CommandAnnounce());
         addCommand(new CommandBright());
         addCommand(new CommandConfig());
         addCommand(new CommandDeathTeleport());
+        addCommand(new CommandDelHome());
+        addCommand(new CommandInfo(Configs.ConfigType.DISCORD, "List discord information", "discord"));
+        addCommand(new CommandDungeon());
+        addCommand(new CommandFly());
+        addCommand(new CommandGUI(EnumRank.THETA, GUIType.DONOR, "Access donor perks.", "donor"));
         addCommand(new CommandGUIs());
+        addCommand(new CommandHelp());
+        addCommand(new CommandInfo(Configs.ConfigType.DONATE, "How to donate / donor perks.", "donate", "shop"));
+        addCommand(new CommandHome());
+        addCommand(new CommandInfo(Configs.ConfigType.INFO, "General server information.", "info", "einfo"));
+        addCommand(new CommandIgnore());
+        addCommand(new CommandMessage());
+        addCommand(new CommandMail());
         addCommand(new CommandMined());
         addCommand(new CommandReboot());
+        addCommand(new CommandReply());
+        addCommand(new CommandRanks());
+        addCommand(new CommandRankup());
+        addCommand(new CommandRTP());
         addCommand(new CommandRescue());
+        addCommand(new CommandInfo(Configs.ConfigType.RULES, "Server rules.", "rules", "info"));
+        addCommand(new CommandSetHome());
         addCommand(new CommandSetRank());
+        addCommand(new CommandSpawn());
         addCommand(new CommandSpectator());
+        addCommand(new CommandUnignore());
         addCommand(new CommandTestVote());
+        addCommand(new CommandVanish());
+        addCommand(new CommandVote());
+        addCommand(new CommandVotes());
     }
 
     private static void addCommand(Command command) {
@@ -122,6 +125,7 @@ public class Commands extends Mechanic {
         if (!input.startsWith(type.getPrefix()))
             return false; // Not this command type.
 
+        input = Chat.filterMessage(input); // Apply filter.
         List<String> split = new ArrayList<>(Arrays.asList(input.split(" "))); // remove() won't work with just asList
         String cmd = getLabel(type, input);
         Command command = getCommand(type, cmd);
@@ -149,7 +153,7 @@ public class Commands extends Mechanic {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOW) // Commands are top priority.
+    @EventHandler(ignoreCancelled = true)
     public void onChat(AsyncPlayerChatEvent evt) {
         handleCommand(evt.getPlayer(), CommandType.CHAT, evt.getMessage());
     }

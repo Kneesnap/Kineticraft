@@ -26,7 +26,7 @@ public enum EnumRank {
     OMEGA("Ω", ChatColor.DARK_RED, 2, 30, 480, 80),
     THETA("Θ", ChatColor.DARK_PURPLE, ChatColor.LIGHT_PURPLE),
     VOTER("VOTR", ChatColor.LIGHT_PURPLE, ChatColor.LIGHT_PURPLE), // We don't actually set players to this rank.
-    HIDDEN("Θ", ChatColor.DARK_PURPLE, ChatColor.LIGHT_PURPLE),
+    MEDIA("∈", ChatColor.DARK_PURPLE, ChatColor.LIGHT_PURPLE),
     HELPER("HLPR", ChatColor.DARK_GRAY, ChatColor.DARK_GRAY),
     BUILDER("BLD", ChatColor.GOLD, ChatColor.YELLOW),
     MOD("MOD", ChatColor.DARK_GREEN, ChatColor.GREEN),

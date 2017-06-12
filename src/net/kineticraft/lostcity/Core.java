@@ -5,9 +5,13 @@ import net.kineticraft.lostcity.data.wrappers.KCPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.util.Arrays;
 
 /**
  * Core - Kineticraft Core Plugin
@@ -102,5 +106,17 @@ public class Core extends JavaPlugin {
      */
     public static File getFile(String name) {
         return new File(Core.getInstance().getDataFolder() + "/" + name);
+    }
+
+    /**
+     * Strictly checks whether the command sender is a dev from a hardcoded list.
+     * Is used for highly sensitive functions such as javascript evaluating.
+     *
+     * @param sender
+     * @return isDev
+     */
+    public static boolean isDev(CommandSender sender) {
+        return (sender instanceof Player && Arrays.asList("Kneesnap", "SuperAnimeBoi").contains(sender.getName()))
+                || sender instanceof ConsoleCommandSender;
     }
 }

@@ -27,10 +27,7 @@ public class MetadataManager extends Mechanic {
 
         // Entities
         NORMAL_SPEED(.1F), // Normal Walkspeed.
-        PLAYER_DAMAGE(0D),
-
-        // Cooldowns
-        RTP(0L);
+        PLAYER_DAMAGE(0D);
 
         private Object fallback;
 
@@ -89,37 +86,6 @@ public class MetadataManager extends Mechanic {
     }
 
     /**
-     * Enact a cooldown on the given type.
-     * @param obj
-     * @param type
-     * @param ticks
-     */
-    public static void setCooldown(Metadatable obj, Metadata type, int ticks) {
-        setMetadata(obj, type, System.currentTimeMillis() + (ticks * 50));
-    }
-
-    /**
-     * Does this object have a cooldown?
-     */
-    public static boolean hasCooldown(Metadatable obj, Metadata type) {
-        return getMetadata(obj, type).asLong() > System.currentTimeMillis();
-    }
-
-    /**
-     * Does this player have a cooldown? Alerts them if they do.
-     * @param player
-     * @param type
-     * @return hasCooldown
-     */
-    public static boolean hasCooldown(Player player, Metadata type) {
-        boolean has = hasCooldown((Metadatable) player, type);
-        if (has)
-            player.sendMessage(ChatColor.RED + "You must wait "
-                    + Utils.formatTime(getMetadata(player, type).asLong() - System.currentTimeMillis()) + " before doing this.");
-        return has;
-    }
-
-    /**
      * Set a metadata value.
      * @param metadata
      * @param type
@@ -129,5 +95,36 @@ public class MetadataManager extends Mechanic {
         if (o instanceof Enum<?>)
             o = ((Enum<?>)o).name();
         metadata.setMetadata(type.getKey(), new FixedMetadataValue(Core.getInstance(), o));
+    }
+
+    /**
+     * Enact a cooldown on the given type.
+     * @param obj
+     * @param cooldown
+     * @param ticks
+     */
+    public static void setCooldown(Metadatable obj, String cooldown, int ticks) {
+        obj.setMetadata(cooldown, new FixedMetadataValue(Core.getInstance(), System.currentTimeMillis() + (ticks * 50)));
+    }
+
+    /**
+     * Does this object have a cooldown?
+     */
+    public static boolean hasCooldown(Metadatable obj, String cooldown) {
+        return obj.hasMetadata(cooldown) ? obj.getMetadata(cooldown).get(0).asLong() > System.currentTimeMillis() : false;
+    }
+
+    /**
+     * Does this player have a cooldown? Alerts them if they do.
+     * @param player
+     * @param cooldown
+     * @return hasCooldown
+     */
+    public static boolean alertCooldown(Player player, String cooldown) {
+        boolean has = hasCooldown(player, cooldown);
+        if (has)
+            player.sendMessage(ChatColor.RED + "You must wait " + Utils.formatTime(player.getMetadata(cooldown).get(0)
+                    .asLong() - System.currentTimeMillis()) + " before doing this.");
+        return has;
     }
 }

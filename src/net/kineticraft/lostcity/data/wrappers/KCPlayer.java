@@ -10,10 +10,9 @@ import net.kineticraft.lostcity.data.lists.StringList;
 import net.kineticraft.lostcity.data.maps.JsonMap;
 import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.mechanics.Voting;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.Sound;
+import net.kineticraft.lostcity.utils.Utils;
+import org.bukkit.*;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.*;
@@ -43,12 +42,33 @@ public class KCPlayer implements Jsonable {
     private int totalVotes;
     private int pendingVotes;
     private int secondsPlayed;
+    private Particle effect;
+    private boolean vanished;
 
     private int selectedDeath;
 
     public KCPlayer(UUID uuid, JsonData data) {
         this.setUuid(uuid);
         load(data);
+    }
+
+    /**
+     * Is this player invisible (for commands) to this CommandSender?
+     * @param sender
+     * @return vanished.
+     */
+    public boolean isVanished(CommandSender sender) {
+        return isVanished() && !Utils.getRank(sender).isAtLeast(EnumRank.MEDIA);
+    }
+
+    /**
+     * Is this player invisible to other players?
+     * Either by being vanished or in gm3.
+     *
+     * @return hidden
+     */
+    public boolean isHidden() {
+        return isVanished() || getPlayer().getGameMode() == GameMode.SPECTATOR;
     }
 
     /**
@@ -152,7 +172,8 @@ public class KCPlayer implements Jsonable {
      * @return displayPrefix
      */
     public String getDisplayPrefix() {
-        return getTemporaryRank().getChatPrefix();
+        return getIcon() != null ? getTemporaryRank().getColor() + getIcon() + getTemporaryRank().getNameColor() + " "
+                : getTemporaryRank().getChatPrefix();
     }
 
     /**
@@ -231,6 +252,8 @@ public class KCPlayer implements Jsonable {
         setMail(data.getList("mail", StringList.class));
         setIgnored(data.getList("ignored", StringList.class));
         setSecondsPlayed(data.getInt("secondsPlayed"));
+        setEffect(data.getEnum("effect", Particle.class));
+        setVanished(data.getBoolean("vanish"));
     }
 
     @Override
@@ -250,6 +273,8 @@ public class KCPlayer implements Jsonable {
         data.setList("mail", getMail());
         data.setList("ignored", getIgnored());
         data.setNum("secondsPlayed", getSecondsPlayed());
+        data.setEnum("effect", getEffect());
+        data.setBoolean("vanish", isVanished());
         return data;
     }
 }

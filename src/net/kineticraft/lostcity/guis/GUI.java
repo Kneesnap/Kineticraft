@@ -4,6 +4,7 @@ import com.sun.activation.registries.MailcapParseException;
 import lombok.Getter;
 import lombok.Setter;
 import net.kineticraft.lostcity.Core;
+import net.kineticraft.lostcity.data.wrappers.KCPlayer;
 import net.kineticraft.lostcity.item.ItemManager;
 import net.kineticraft.lostcity.item.ItemWrapper;
 import net.kineticraft.lostcity.item.guis.GUIItem;
@@ -44,10 +45,6 @@ public abstract class GUI {
     private static int ROW_SIZE = 9;
     private static final List<InventoryAction> IGNORE = Arrays.asList(InventoryAction.COLLECT_TO_CURSOR,
             InventoryAction.DROP_ONE_SLOT, InventoryAction.DROP_ALL_SLOT, InventoryAction.NOTHING, InventoryAction.UNKNOWN);
-
-    public GUI(Player player, GUIType type, int rows) {
-        this(player, type.getTitle(), rows);
-    }
 
     public GUI(Player player, String title, int rows) {
         this.player = player;
@@ -380,6 +377,14 @@ public abstract class GUI {
     protected void markSub() {
         if (getPrevious() != null)
             getPrevious().setParent(true);
+    }
+
+    /**
+     * Gets the viewer's wrapper.
+     * @return wrapper
+     */
+    protected KCPlayer getWrapper() {
+        return KCPlayer.getWrapper(getPlayer());
     }
 
     protected static int fitSize(Object[] arr) {

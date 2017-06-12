@@ -6,11 +6,9 @@ import net.kineticraft.lostcity.data.wrappers.KCPlayer;
 import net.kineticraft.lostcity.utils.TextUtils;
 import net.kineticraft.lostcity.utils.Utils;
 import net.minecraft.server.v1_11_R1.EntityEnderDragon;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -36,6 +34,15 @@ public class GeneralMechanics extends Mechanic {
         Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), () ->
             Bukkit.getOnlinePlayers().stream().map(KCPlayer::getWrapper)
                     .forEach(p -> p.setSecondsPlayed(p.getSecondsPlayed() + 1)), 0L, 20L);
+
+        // Display donor particles.
+        Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), () -> {
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                KCPlayer w = KCPlayer.getWrapper(p);
+                if (!w.isHidden() && w.getEffect() != null)
+                    p.getWorld().spawnParticle(w.getEffect(), p.getLocation(), 10);
+            }
+        }, 0L, 20L);
     }
 
     @EventHandler

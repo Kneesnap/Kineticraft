@@ -2,7 +2,9 @@ package net.kineticraft.lostcity;
 
 import lombok.Getter;
 import net.kineticraft.lostcity.config.Configs;
+import net.kineticraft.lostcity.item.Items;
 import net.kineticraft.lostcity.mechanics.*;
+import net.kineticraft.lostcity.mechanics.enchants.Enchants;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -36,18 +38,21 @@ public class MechanicManager implements Listener {
         registerMechanic(new DataHandler());
         registerMechanic(new Callbacks());
         registerMechanic(new Commands());
-        registerMechanic(new Books());
+        registerMechanic(new Vanish());
         registerMechanic(new GUIManager());
         registerMechanic(new GeneralMechanics());
         registerMechanic(new SleepMechanics());
         registerMechanic(new SlimeFinder());
         registerMechanic(new Restrictions());
+        registerMechanic(new Items());
         registerMechanic(new Chat());
         registerMechanic(new CompassMechanics());
         registerMechanic(new FarmLimiter());
         registerMechanic(new Leashes());
+        registerMechanic(new Enchants());
         registerMechanic(new Voting());
         registerMechanic(new Water());
+        registerMechanic(new AFK());
         registerMechanic(new MetadataManager());
         Core.logInfo("Mechanics Registered.");
     }

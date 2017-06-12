@@ -27,11 +27,12 @@ public class GUIItemPicker extends PagedGUI {
     @Override
     public void addItems() {
         for (ItemStack i : items)
-            addItem(i).anyClick(e -> {
-                if (onPick != null)
-                    onPick.accept(i);
-                openPrevious();
-            }).addLore("Click here to choose this item.");
+            if (i != null)
+                addItem(i).anyClick(e -> {
+                    if (onPick != null)
+                        onPick.accept(i);
+                 openPrevious();
+              }).addLore("Click here to choose this item.");
 
         super.addItems();
     }

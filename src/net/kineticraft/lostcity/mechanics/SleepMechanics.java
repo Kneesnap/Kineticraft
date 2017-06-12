@@ -40,7 +40,7 @@ public class SleepMechanics extends Mechanic {
      * Get the number of players needed to sleep.
      * @return
      */
-    private static int getNeededPlayers() { //TODO: Don't count AFK Players.
+    private static int getNeededPlayers() {
         return (int) (Bukkit.getOnlinePlayers().size() * PERCENT_NEEDED);
     }
 

@@ -42,7 +42,7 @@ public class GUIItemEditor extends GUI {
     }
 
     public GUIItemEditor(Player player, ItemStack item,  Consumer<ItemWrapper> onFinish) {
-        super(player, GUIType.ITEM_EDITOR, 3 + fitSize(item.getEnchantments().size() + 1));
+        super(player, "Item Editor", 3 + fitSize(item.getEnchantments().size() + 1));
         this.original = item != null && item.getType() != Material.AIR ? item : new ItemStack(Material.DIRT);
         this.edit = new DisplayItem(original);
         this.onFinish = onFinish;
@@ -78,7 +78,7 @@ public class GUIItemEditor extends GUI {
                     Callbacks.listenForNumber(getPlayer(), 1, 64, n -> {
                         edit.setAmount(n);
                         update("Stack size updated");
-                    }, this::open);
+                    });
                 }).setAmount(display.getAmount());
 
         nextSlot();
@@ -90,7 +90,7 @@ public class GUIItemEditor extends GUI {
                     Callbacks.listenForNumber(getPlayer(), Short.MIN_VALUE, Short.MAX_VALUE, n -> {
                         edit.setMeta((short) ((int) n)); // We must double cast because Integer wrapper cannot be directly converted to short.
                         update("Meta updated");
-                    }, this::open);
+                    });
                 }).setColor(DyeColor.ORANGE);
 
         // Edit item name
@@ -100,7 +100,7 @@ public class GUIItemEditor extends GUI {
                     Callbacks.listenForChat(getPlayer(), msg -> {
                         edit.setDisplayName(ChatColor.translateAlternateColorCodes('&', msg));
                         update("Named updated");
-                    }, this::open);
+                    });
                 });
 
         nextRow();
@@ -113,7 +113,7 @@ public class GUIItemEditor extends GUI {
                     Callbacks.listenForChat(getPlayer(), m -> {
                         edit.addLore(ChatColor.translateAlternateColorCodes('&', m));
                         update("Lore updated");
-                    }, this::open);
+                    });
                 }).setColor(DyeColor.LIME);
 
         nextSlot();
@@ -141,7 +141,7 @@ public class GUIItemEditor extends GUI {
                         Callbacks.listenForNumber(getPlayer(), newLevel -> {
                             edit.getItem().addUnsafeEnchantment(e, newLevel);
                             update("Enchantment level set");
-                        }, this::open);
+                        });
                     }).rightClick(evt -> {
                         edit.getItem().removeEnchantment(e);
                         update(ChatColor.RED + "Enchant removed");
@@ -167,7 +167,6 @@ public class GUIItemEditor extends GUI {
 
     private void update(String message) {
         getPlayer().sendMessage(ChatColor.GREEN + message + ".");
-        open();
     }
 
     @Override

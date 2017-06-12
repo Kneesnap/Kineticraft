@@ -3,6 +3,7 @@ package net.kineticraft.lostcity.item.guis;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.kineticraft.lostcity.guis.GUI;
+import net.kineticraft.lostcity.guis.GUIType;
 import net.kineticraft.lostcity.mechanics.GUIManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
@@ -78,6 +79,26 @@ public class GUIItem extends DisplayItem {
     }
 
     /**
+     * Opens a specified gui when clicked.
+     * @param type
+     * @return this
+     */
+    public GUIItem opens(GUIType type) {
+        return opens(type, IClickType.ANY);
+    }
+
+    /**
+     * Opens a specified GUI when a certain click occurs
+     * @param type
+     * @param clickType
+     * @return this
+     */
+    public GUIItem opens(GUIType type, IClickType clickType) {
+        onClick(clickType, e -> GUIManager.openGUI(e.getPlayer(), type));
+        return this;
+    }
+
+    /**
      * Calls when this item is clicked.
      * @param evt
      */
@@ -103,7 +124,7 @@ public class GUIItem extends DisplayItem {
     }
 
     @AllArgsConstructor
-    private enum IClickType {
+    public enum IClickType {
         LEFT(ClickType::isLeftClick),
         MIDDLE(t -> t == ClickType.MIDDLE),
         RIGHT(ClickType::isRightClick),

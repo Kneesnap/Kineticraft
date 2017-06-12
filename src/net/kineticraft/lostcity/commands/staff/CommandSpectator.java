@@ -1,5 +1,6 @@
 package net.kineticraft.lostcity.commands.staff;
 
+import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.StaffCommand;
 import org.bukkit.GameMode;
 import org.bukkit.command.CommandSender;
@@ -12,7 +13,7 @@ import org.bukkit.entity.Player;
  */
 public class CommandSpectator extends StaffCommand {
     public CommandSpectator() {
-        super("", "Toggle spectator mode.", "spec", "gm3", "spectator");
+        super(EnumRank.MEDIA, true, "", "Toggle spectator mode.", "spec", "gm3", "spectator");
     }
 
     @Override
