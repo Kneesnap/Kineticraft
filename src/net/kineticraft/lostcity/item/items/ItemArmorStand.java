@@ -4,8 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 import net.kineticraft.lostcity.item.ItemType;
 import net.kineticraft.lostcity.item.ItemWrapper;
-import net.kineticraft.lostcity.item.events.ItemInteractEvent;
-import net.kineticraft.lostcity.item.events.ItemInteractEvent.ItemInteractListener;
+import net.kineticraft.lostcity.item.event.ItemListener;
+import net.kineticraft.lostcity.item.event.ItemUsage;
+import net.kineticraft.lostcity.item.event.events.ItemInteractEvent;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Material;
 import org.bukkit.entity.ArmorStand;
@@ -18,13 +19,12 @@ import org.bukkit.inventory.ItemStack;
 /**
  * Represents an Armor Stand that can
  *
- * TODO: Verify this only works on RIGHT_CLICK_BLOCK
  * TODO: Verify there are no exploitable ways to abuse this.
  *
  * Created by Kneesnap on 6/12/2017.
  */
 @Getter @Setter
-public class ItemArmorStand extends ItemWrapper implements ItemInteractListener, Listener {
+public class ItemArmorStand extends ItemWrapper implements Listener {
 
     private boolean small;
     private boolean arms;
@@ -47,9 +47,10 @@ public class ItemArmorStand extends ItemWrapper implements ItemInteractListener,
         setArms(getTagBoolean("arms"));
     }
 
-    @Override
+    @ItemListener(ItemUsage.RIGHT_CLICK_BLOCK)
     public void onInteract(ItemInteractEvent evt) {
         placing = this;
+        evt.getEvent().setCancelled(false);
     }
 
     @Override

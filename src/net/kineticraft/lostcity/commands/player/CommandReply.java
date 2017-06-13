@@ -27,7 +27,7 @@ public class CommandReply extends PlayerCommand {
         Player player = (Player) sender;
         String lastMessage = MetadataManager.getMetadata(player, Metadata.LAST_WHISPER).asString();
 
-        if (lastMessage != null) {
+        if (lastMessage == null) {
             player.sendMessage(ChatColor.RED + "You have nobody whom you can reply to.");
             return;
         }

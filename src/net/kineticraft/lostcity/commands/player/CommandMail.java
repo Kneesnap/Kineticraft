@@ -19,7 +19,8 @@ import org.bukkit.entity.Player;
 public class CommandMail extends PlayerCommand {
 
     public CommandMail() {
-        super(EnumRank.MU, CommandType.SLASH, false, "[send/clear/read]", "Mail a message to another player.", "mail", "send");
+        super(EnumRank.MU, CommandType.SLASH, false, "<send/clear/read> [message]",
+                "Mail a message to another player.", "mail", "send");
     }
 
     @Override
@@ -35,7 +36,7 @@ public class CommandMail extends PlayerCommand {
             }
 
             String mail = ChatColor.GRAY + "[" + Utils.getSenderName(sender) + ChatColor.GRAY + "]: " + ChatColor.WHITE
-                    + String.join(" ", Utils.shift(Utils.shift(args)));
+                    + String.join(" ", skipArgs(args, 2));
 
             QueryTools.getData(args[1], p -> {
                 if (p.getMail().size() >= 10) {

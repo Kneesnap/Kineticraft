@@ -1,5 +1,6 @@
 package net.kineticraft.lostcity.commands.staff;
 
+import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.StaffCommand;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
@@ -8,6 +9,7 @@ import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
 
 /**
  * Allows media+ to vanish.
@@ -22,9 +24,11 @@ public class CommandVanish extends StaffCommand {
 
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
-        KCPlayer player = KCPlayer.getWrapper((Player) sender);
+        Player p = (Player) sender;
+        KCPlayer player = KCPlayer.getWrapper(p);
         player.setVanished(!player.isVanished());
         sender.sendMessage(Utils.formatToggle("Vanished", player.isVanished()));
-        Vanish.hidePlayers((Player) sender);
+        Vanish.hidePlayers(p);
+        Core.alertStaff(player.getColoredName() + ChatColor.GRAY + " has " + (player.isVanished() ? "" : "un") + "vanished.");
     }
 }

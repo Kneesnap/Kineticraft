@@ -11,6 +11,7 @@ import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
 import net.kineticraft.lostcity.mechanics.MetadataManager;
 import net.kineticraft.lostcity.mechanics.MetadataManager.Metadata;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -30,10 +31,6 @@ import java.util.concurrent.ThreadLocalRandom;
  * Created by Kneesnap on 5/29/2017.
  */
 public class Utils {
-
-    public static int CHAT_SIZE = 320;
-    public static int BOOK_SIZE = 120;
-    public static String COLOR_CODE = ChatColor.RESET.toString().substring(0, 1);
 
     /**
      * Gets an enum value from the given class. Returns null if not found.
@@ -120,7 +117,7 @@ public class Utils {
         int[] tpTime = new int[] {p.getTemporaryRank().getTpTime()};
 
         MetadataManager.setMetadata(player, Metadata.TELEPORTING, true);
-        player.playSound(player.getLocation(), Sound.ENTITY_ELDER_GUARDIAN_CURSE, 1F, 1F);
+        player.playSound(player.getLocation(), Sound.AMBIENT_CAVE, 1F, 1F);
         player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 20 * (tpTime[0] + 4), 2));
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20 * (tpTime[0] + 4), 2));
         player.sendMessage(ChatColor.BOLD + "Teleport: " + ChatColor.WHITE + ChatColor.UNDERLINE + locationDescription);
@@ -280,7 +277,7 @@ public class Utils {
     public static <T> T randElement(Iterable<T> iterable) {
         List<T> list = new ArrayList<>();
         iterable.forEach(list::add);
-        return list.get(nextInt(list.size()));
+        return list.isEmpty() ? null : list.get(nextInt(list.size()));
     }
 
     /**
@@ -353,11 +350,13 @@ public class Utils {
     /**
      * Use an item and decrement its amount.
      * @param item
+     * @return item
      */
-    public static void useItem(ItemStack item) {
+    public static ItemStack useItem(ItemStack item) {
         item.setAmount(item.getAmount() - 1);
         if (item.getAmount() <= 0)
             item.setType(Material.AIR);
+        return item;
     }
 
     /**
@@ -380,69 +379,24 @@ public class Utils {
     }
 
     /**
-     * Center text for displaying in chat.
-     * @param text
-     * @return centered
+     * Does the first array contain any elements from the second array?
+     * @param a
+     * @param b
+     * @param <T>
+     * @return contains
      */
-    public static String centerChat(String text) {
-        return centerText(text, CHAT_SIZE);
+    public static <T> boolean containsAny(T[] a, T[] b) {
+        return containsAny(Arrays.asList(a), Arrays.asList(b));
     }
 
     /**
-     * Center text, for displaying in a book.
-     * @param text
-     * @return centered
+     * Does the first list contain any elements from the second array?
+     * @param a
+     * @param b
+     * @param <T>
+     * @return
      */
-    public static String centerBook(String text) {
-        return centerText(text, BOOK_SIZE);
-    }
-
-    /**
-     * Center text, for displaying on a given line size.
-     * @param text
-     * @param lineSize
-     * @return centered
-     */
-    private static String centerText(String text, int lineSize) {
-        if (text == null || text.length() == 0)
-            return "";
-
-        // Perform calculations.
-        int centerPixel = (lineSize / 2) - 6;
-        int pixelSize = getPixelWidth(text);
-        int blankPixels = centerPixel - (pixelSize / 2);
-        int addedPixels = 0;
-
-        // Add spaces
-        while(addedPixels < blankPixels) {
-            text = " " + text;
-            addedPixels += MinecraftFont.SPACE.getCharWidth();
-        }
-
-        return text;
-    }
-
-    /**
-     * Get the amount of pixels a message will take up in the client's display.
-     * Only works if the client has the default width settings.
-     *
-     * @param text
-     * @return width
-     */
-    public static int getPixelWidth(String text) {
-        int pixelSize = 0;
-        boolean bold = false;
-
-        // Determine the pixel width of the string.
-        for (int i = 0; i < text.length(); i++) {
-            String c = text.substring(i, 1);
-            if (c.equals(COLOR_CODE)) {
-                bold = text.substring(i + 1, 1).equalsIgnoreCase("l");
-            } else {
-                pixelSize += MinecraftFont.getWidth(c, bold);
-            }
-        }
-
-        return pixelSize;
+    public static <T> boolean containsAny(List<T> a, List<T> b) {
+        return b.stream().filter(a::contains).findAny().isPresent();
     }
 }

@@ -24,7 +24,7 @@ public class Vanish extends Mechanic {
         // Tell vanished players they're vanished.
         Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), () ->
             Bukkit.getOnlinePlayers().stream().filter(p -> KCPlayer.getWrapper(p).isVanished())
-                    .forEach(p -> p.sendActionBar(ChatColor.GRAY + "You are vanished.")), 0L, 50L);
+                    .forEach(p -> p.sendActionBar(ChatColor.GRAY + "You are vanished.")), 0L, 40L);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST) // Run after command logic.

@@ -12,7 +12,7 @@ import net.kineticraft.lostcity.data.Jsonable;
 public abstract class JsonConfig extends Config implements Jsonable {
 
     public JsonConfig(String fileName) {
-        super(fileName + ".json");
+        super(fileName);
     }
 
     /**

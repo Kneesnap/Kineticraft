@@ -1,6 +1,5 @@
 package net.kineticraft.lostcity.mechanics;
 
-import com.vexsoftware.votifier.model.Vote;
 import com.vexsoftware.votifier.model.VotifierEvent;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,12 +10,10 @@ import net.kineticraft.lostcity.data.JsonData;
 import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.data.QueryTools;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
+import net.kineticraft.lostcity.utils.TextBuilder;
 import net.kineticraft.lostcity.utils.Utils;
-import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import org.bukkit.Achievement;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -43,15 +40,14 @@ public class Voting extends Mechanic {
      * @param username
      */
     public static void handleVote(String username) {
-        // Announce the vote.
-        ComponentBuilder cb = new ComponentBuilder(username).color(ChatColor.YELLOW)
-                .append(" voted and received a reward! Vote ").color(ChatColor.GRAY).append("HERE").underlined(true)
-                .bold(true).event(new ClickEvent(ClickEvent.Action.OPEN_URL, Configs.getMainConfig().getVoteURL()));
-        Bukkit.broadcast(cb.create());
 
-        if (!Configs.getVoteData().getMonth().equals(getMonthName()))
+        TextBuilder textBuilder = new TextBuilder(username).color(ChatColor.AQUA)
+                .append(" voted and received a reward! Vote ").color(ChatColor.GRAY).append("HERE").underline().bold()
+                .openURL(Configs.getMainConfig().getVoteURL()).color(ChatColor.AQUA);
+        Bukkit.broadcast(textBuilder.create());
+
+        if (!getMonthName().equals(Configs.getVoteData().getMonth()))
             resetVotes(); // A new month! Time to reset the votes.
-
 
         VoteConfig data = Configs.getVoteData();
         data.setTotalVotes(data.getTotalVotes() + 1); // Increment the total vote count

@@ -37,6 +37,12 @@ public class FarmLimiter extends Mechanic {
     }
 
     @EventHandler
+    public void onPigmanDeath(EntityDeathEvent evt) {
+        if (evt.getEntityType() == EntityType.PIG_ZOMBIE)
+            evt.getDrops().clear(); // Disable pig drops.
+    }
+
+    @EventHandler
     public void onEntityDeath(EntityDeathEvent evt) {
         if (!(evt.getEntity() instanceof Player) && evt.getEntity() instanceof LivingEntity // Not an applicable entity.
                 && getPlayerDamage(evt.getEntity()) < getDamageNeeded(evt.getEntity()) // Not enough player damage.

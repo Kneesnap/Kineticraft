@@ -1,13 +1,14 @@
 package net.kineticraft.lostcity.utils;
 
+import io.netty.buffer.Unpooled;
 import net.minecraft.server.v1_11_R1.*;
 import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * General utilities for packets.
  * We'd like to keep our NMS all in the same places, so do NMS packet related stuff here.
- *
  *
  * Created by Kneesnap on 6/9/2017.
  */
@@ -19,7 +20,7 @@ public class PacketUtil {
      * @param player
      * @param packet
      */
-    public static void sendPacket(Player player, Packet<?> packet) {
+    private static void sendPacket(Player player, Packet<?> packet) {
         getPlayer(player).playerConnection.sendPacket(packet);
     }
 
@@ -34,6 +35,27 @@ public class PacketUtil {
         player.updateInventory();
     }
 
+    /**
+     * Force open a book for the given player.
+     * @param player
+     * @param book
+     */
+    public static void openBook(Player player, ItemStack book) {
+        ItemStack saved = player.getEquipment().getItemInMainHand();
+        player.getEquipment().setItemInMainHand(book); // Change hand item to book.
+
+        PacketDataSerializer pds = new PacketDataSerializer(Unpooled.buffer());
+        pds.a(EnumHand.MAIN_HAND);
+        sendPacket(player, new PacketPlayOutCustomPayload("MC|BOpen", pds));
+
+        player.getEquipment().setItemInMainHand(saved); // Restore hand item.
+    }
+
+    /**
+     * Get the NMS player object of a bukkit player.
+     * @param player
+     * @return nmsPlayer
+     */
     public static EntityPlayer getPlayer(Player player) {
         return ((CraftPlayer) player).getHandle();
     }

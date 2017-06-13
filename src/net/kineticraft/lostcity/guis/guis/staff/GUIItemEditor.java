@@ -145,6 +145,7 @@ public class GUIItemEditor extends GUI {
                     }).rightClick(evt -> {
                         edit.getItem().removeEnchantment(e);
                         update(ChatColor.RED + "Enchant removed");
+                        reconstruct();
                     });
         }
 
@@ -152,12 +153,14 @@ public class GUIItemEditor extends GUI {
                 .anyClick(e -> {
                     List<ItemStack> enchants = new ArrayList<>();
                     for (Enchantment ench : Enchantment.values()) {
+                        if (ench.getName() == null)
+                            continue;
+
                         if (!display.containsEnchantment(ench)) {
                             ItemStack i = ItemManager.createItem(Material.ENCHANTED_BOOK,
                                     ChatColor.YELLOW + Utils.capitalize(ench.getName()));
                             i.addUnsafeEnchantment(ench, 1);
                             enchants.add(i);
-
                         }
                     }
 

@@ -4,7 +4,9 @@ import lombok.Getter;
 import net.kineticraft.lostcity.mechanics.enchants.CustomEnchant;
 import net.kineticraft.lostcity.utils.Utils;
 import net.minecraft.server.v1_11_R1.NBTTagCompound;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -14,6 +16,10 @@ import java.util.List;
 
 /**
  * ItemWrapper - Advanced Item Wrapper.
+ *
+ * If this implements Listener, it will automatically be registered, however keep in mind it is only registered once,
+ * and does not fire in an item's specific instance. (IE: Write your listeners the same way you would if they were in another file.)
+ * All bukkit listeners MUST have a no-args constructor.
  *
  * Created by Kneesnap on 6/2/2017.
  */
@@ -28,7 +34,7 @@ public abstract class ItemWrapper {
 
     public ItemWrapper(ItemStack item) {
         this.item = item;
-        this.meta = item.getItemMeta();
+        this.meta = item != null ? item.getItemMeta() : null;
         this.type = getEnum("type", ItemType.class);
     }
 
@@ -42,6 +48,8 @@ public abstract class ItemWrapper {
      */
     public ItemStack generateItem() {
         this.item = getRawStack();
+        if (getMeta() == null)
+            this.meta = getItem().getItemMeta();
         updateItem();
         setEnum("type", getType());
         updateTag();
@@ -55,7 +63,7 @@ public abstract class ItemWrapper {
 
     /**
      * Return this item's NBT tag.
-     * @return
+     * @return tag
      */
     public NBTTagCompound getTag() {
         if (this.tag == null) {
@@ -66,9 +74,17 @@ public abstract class ItemWrapper {
     }
 
     /**
+     * Save this item + nbt tag into an NBT compound.
+     * @return fullTag
+     */
+    public NBTTagCompound getFullTag() {
+        return getNMSCopy().save(new NBTTagCompound());
+    }
+
+    /**
      * Does the NBT tag contain this key?
      * @param key
-     * @return
+     * @return contains
      */
     public boolean hasKey(String key) {
         return getTag().hasKey(key);
@@ -226,7 +242,7 @@ public abstract class ItemWrapper {
      * Invalidates the old ItemStack.
      */
     protected void updateTag() {
-        // Update Item Meta.
+        // Update Item Meta. If for some reason our method does not work, we can try CraftMetaItem#applyItemMeta
         ItemStack withMeta = getItem().clone();
         withMeta.setItemMeta(getMeta());
         net.minecraft.server.v1_11_R1.ItemStack nms = CraftItemStack.asNMSCopy(withMeta);

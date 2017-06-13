@@ -20,7 +20,6 @@ public class Water extends Mechanic {
     public void onWaterTraverse(PlayerMoveEvent evt) {
         Player player = evt.getPlayer();
         if (evt.getTo().getBlock().isLiquid()) {
-            PlayerUtils.setPlayerSpeed(player, .2F);
             if (!player.hasPotionEffect(POTION))
                 player.addPotionEffect(new PotionEffect(POTION, Integer.MAX_VALUE, 2));
         } else if (evt.getFrom().getBlock().isLiquid()) {
@@ -38,7 +37,6 @@ public class Water extends Mechanic {
      * @param player
      */
     public void disableSpeed(Player player) {
-        PlayerUtils.resetSpeed(player); // Reset their playerspeed
         PotionEffect pe = player.getPotionEffect(POTION);
         if (pe != null && pe.getDuration() >= 30 * 60 * 20) // Remove water breathing, only if it's longer than a potion could be.
             player.removePotionEffect(POTION);

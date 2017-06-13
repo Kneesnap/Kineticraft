@@ -40,7 +40,7 @@ public class Mechanic implements Listener {
 
     /**
      * Calls when a player disconnects.
-     * We use this instead of listening for a bukkit event since multiple events can call.
+     * We use this instead of listening for a bukkit event since multiple event can call.
      */
     public void onQuit(Player player) {
 

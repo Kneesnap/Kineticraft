@@ -19,6 +19,6 @@ public class CommandSpawn extends PlayerCommand {
 
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
-        Utils.teleport((Player) sender, "Spawn", new Location(Core.getMainWorld(), 0, 22, 0, -90F, 0F));
+        Utils.teleport((Player) sender, "Spawn", Core.getMainWorld().getSpawnLocation());
     }
 }

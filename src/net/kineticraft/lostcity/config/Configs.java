@@ -71,6 +71,12 @@ public class Configs extends Mechanic {
             configs.put(type, type.createConfig());
     }
 
+    @Override
+    public void onDisable() {
+        for (ConfigType t : ConfigType.values())
+            getConfig(t).saveToDisk();
+    }
+
     @Getter
     public enum ConfigType {
 

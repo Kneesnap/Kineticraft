@@ -17,10 +17,8 @@ public class PlayerUtils {
      * @param speed
      */
     public static void setPlayerSpeed(Player player, float speed) {
-        if (player.getWalkSpeed() == speed)
-            return;
-        MetadataManager.setMetadata(player, Metadata.NORMAL_SPEED, speed);
-        player.setWalkSpeed(speed);
+        if (player.getWalkSpeed() != speed)
+            player.setWalkSpeed(speed);
     }
 
     /**
@@ -28,7 +26,6 @@ public class PlayerUtils {
      * @param player
      */
     public static void resetSpeed(Player player) {
-        if (MetadataManager.hasMetadata(player, Metadata.NORMAL_SPEED))
-            setPlayerSpeed(player, MetadataManager.getMetadata(player, Metadata.NORMAL_SPEED).asFloat());
+        setPlayerSpeed(player, .1F);
     }
 }

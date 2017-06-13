@@ -116,6 +116,19 @@ public abstract class Command {
     }
 
     /**
+     * Remove the first few arguments from an array.
+     * @param args
+     * @param toSkip - Number of args to skip
+     * @return skipped
+     */
+    protected static String[] skipArgs(String[] args, int toSkip) {
+        String[] ret = new String[args.length - toSkip];
+        for (int i = 0; i < ret.length; i++)
+            ret[i] = args[toSkip + i];
+        return ret;
+    }
+
+    /**
      * The code specific to each command.
      * @param sender
      * @param args

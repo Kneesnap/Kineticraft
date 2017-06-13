@@ -99,6 +99,11 @@ public class MetadataManager extends Mechanic {
 
     /**
      * Enact a cooldown on the given type.
+     *
+     * IMPORTANT:
+     * Cooldowns are seperate from the metadata enum because the metadata enum will get removed on logout.
+     * Also, it's stupid to add them to the enum.
+     *
      * @param obj
      * @param cooldown
      * @param ticks

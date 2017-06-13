@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
 public class GlowEnchant extends Enchantment {
 
     public GlowEnchant() {
-        this(70);
+        this(100);
     }
 
     public GlowEnchant(int id) {

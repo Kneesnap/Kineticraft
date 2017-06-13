@@ -24,7 +24,7 @@ public class CommandHelp extends PlayerCommand {
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
         EnumRank pRank = sender instanceof Player ? KCPlayer.getWrapper((Player) sender).getRank() : EnumRank.DEV;
-        String bar = ChatColor.DARK_GREEN.toString() + ChatColor.UNDERLINE + "-----";
+        String bar = ChatColor.DARK_GREEN.toString() + ChatColor.STRIKETHROUGH + "-----";
 
         if (args.length == 0) {
             sender.sendMessage(bar + ChatColor.GRAY + " Command Help " + bar);
@@ -44,7 +44,7 @@ public class CommandHelp extends PlayerCommand {
                 return;
             }
 
-            sender.sendMessage(bar + " Information for " + cmd.getName() + " " + bar);
+            sender.sendMessage(bar + ChatColor.GRAY + " Information for " + cmd.getName() + " " + bar);
             sender.sendMessage("Description: " + cmd.getHelp());
             sender.sendMessage(cmd.getUsage());
             sender.sendMessage("Alias: " + String.join(" ", cmd.getAlias()));

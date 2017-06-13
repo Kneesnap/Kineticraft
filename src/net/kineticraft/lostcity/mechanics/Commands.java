@@ -72,6 +72,7 @@ public class Commands extends Mechanic {
         addCommand(new CommandSpectator());
         addCommand(new CommandUnignore());
         addCommand(new CommandTestVote());
+        addCommand(new CommandTPA());
         addCommand(new CommandVanish());
         addCommand(new CommandVote());
         addCommand(new CommandVotes());
@@ -131,7 +132,8 @@ public class Commands extends Mechanic {
         Command command = getCommand(type, cmd);
         if (command == null) {
             if (type == CommandType.CHAT)
-                sender.sendMessage(ChatColor.RED + "Unknown command. Type '.help' for help.");
+                Bukkit.getScheduler().runTask(Core.getInstance(),
+                        () -> sender.sendMessage(ChatColor.RED + "Unknown command. Type '.help' for help."));
             return false; // Not a command.
         }
 

@@ -31,7 +31,7 @@ public class MechanicManager implements Listener {
      */
     public static void registerMechanics() {
         Core.logInfo("Registering Mechanics...");
-        Bukkit.getPluginManager().registerEvents(new MechanicManager(), Core.getInstance()); // Ready to listen for events.
+        Bukkit.getPluginManager().registerEvents(new MechanicManager(), Core.getInstance()); // Ready to listen for event.
 
         // Register all mechanics here, in order of startup:
         registerMechanic(new Configs());

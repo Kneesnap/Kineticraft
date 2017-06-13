@@ -22,13 +22,15 @@ import org.bukkit.inventory.ItemStack;
  */
 public class GeneralMechanics extends Mechanic {
 
-    @EventHandler
+    @Override
     public void onEnable() {
 
         // Register announcer.
-        Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () ->
-                Bukkit.broadcast(TextUtils.fromMojangson(Utils.randElement(
-                        Configs.getRawConfig(Configs.ConfigType.ANNOUNCER).getLines()))), 0L, 5 * 20 * 60L);
+        Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () -> {
+            String s = Utils.randElement(Configs.getRawConfig(Configs.ConfigType.ANNOUNCER).getLines());
+            if (s != null)
+                Bukkit.broadcast(TextUtils.fromMojangson(s));
+        }, 0L, 5 * 20 * 60L);
 
         // Increment time played.
         Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), () ->
@@ -37,9 +39,9 @@ public class GeneralMechanics extends Mechanic {
 
         // Display donor particles.
         Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), () -> {
-            for (Player p : Bukkit.getOnlinePlayers()) {
+            for (Player p : Core.getOnlinePlayers()) {
                 KCPlayer w = KCPlayer.getWrapper(p);
-                if (!w.isHidden() && w.getEffect() != null)
+                if (w.getEffect() != null)
                     p.getWorld().spawnParticle(w.getEffect(), p.getLocation(), 10);
             }
         }, 0L, 20L);

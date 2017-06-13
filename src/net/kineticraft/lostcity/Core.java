@@ -1,5 +1,6 @@
 package net.kineticraft.lostcity;
 
+import jdk.nashorn.internal.runtime.linker.LinkerCallSite;
 import lombok.Getter;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
 import org.bukkit.Bukkit;
@@ -12,6 +13,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Core - Kineticraft Core Plugin
@@ -51,7 +54,6 @@ public class Core extends JavaPlugin {
      * @param message
      */
     public static void warn(String message) {
-        Bukkit.getLogger().warning(message);
         alertStaff(ChatColor.RED + message);
         //TODO: Broadcast discord
     }
@@ -69,7 +71,7 @@ public class Core extends JavaPlugin {
      * @param message
      */
     public static void alertStaff(String message) {
-        alert(EnumRank.HELPER, message);
+        alert(EnumRank.HELPER, ChatColor.RED + message);
     }
 
     /**
@@ -118,5 +120,13 @@ public class Core extends JavaPlugin {
     public static boolean isDev(CommandSender sender) {
         return (sender instanceof Player && Arrays.asList("Kneesnap", "SuperAnimeBoi").contains(sender.getName()))
                 || sender instanceof ConsoleCommandSender;
+    }
+
+    /**
+     * Gets a list of non-vanished online players.
+     * @return players
+     */
+    public static List<Player> getOnlinePlayers() {
+        return Bukkit.getOnlinePlayers().stream().filter(p -> !KCPlayer.getWrapper(p).isVanished()).collect(Collectors.toList());
     }
 }

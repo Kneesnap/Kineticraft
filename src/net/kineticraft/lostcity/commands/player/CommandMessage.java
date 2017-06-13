@@ -28,16 +28,16 @@ public class CommandMessage extends PlayerCommand {
     protected void onCommand(CommandSender sender, String[] args) {
 
         String sName = Utils.getSenderName(sender);
-        String message = ChatColor.DARK_GRAY + ": " + ChatColor.WHITE + String.join(" ", Utils.shift(args));
+        String message = ChatColor.DARK_GRAY + ": " + ChatColor.WHITE + String.join(" ", skipArgs(args, 1));
 
         CommandSender receiver = args[0].equalsIgnoreCase("CONSOLE")
                 ? Bukkit.getConsoleSender() : Bukkit.getPlayer(args[0]);
-        String rName = Utils.getSenderName(receiver);
 
         if (receiver == null || (receiver instanceof Player && KCPlayer.getWrapper((Player) receiver).isVanished(sender))) {
             sender.sendMessage(ChatColor.RED + "Player is offline.");
             return;
         }
+        String rName = Utils.getSenderName(receiver);
 
         receiver.sendMessage(ChatColor.DARK_GRAY.toString() + ChatColor.BOLD + "FROM " + sName + message);
         sender.sendMessage(ChatColor.DARK_GRAY.toString() + ChatColor.BOLD + "TO " + rName + message);

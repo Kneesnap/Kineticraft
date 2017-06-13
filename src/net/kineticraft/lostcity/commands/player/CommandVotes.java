@@ -22,7 +22,7 @@ public class CommandVotes extends PlayerCommand {
     private static final int ENTRIES = 10;
 
     public CommandVotes() {
-        super("", "Shows how many times you have voted.", "");
+        super("", "Shows how many times you have voted.", "votes");
     }
 
     @Override
@@ -33,14 +33,13 @@ public class CommandVotes extends PlayerCommand {
         QueryTools.queryData(stream -> {
             List<KCPlayer> list = stream.sorted(Comparator.comparing(KCPlayer::getMonthlyVotes)).collect(Collectors.toList());
             KCPlayer p = KCPlayer.getWrapper((Player) sender);
-
+            String bar = ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------";
             int show = Math.min(ENTRIES, list.size());
-            sender.sendMessage(ChatColor.GRAY.toString() + ChatColor.UNDERLINE
-                    + "----------" + ChatColor.AQUA + "Top " + show + " Monthly Voters" + ChatColor.GRAY + ChatColor.UNDERLINE + "----------");
+            sender.sendMessage(bar + ChatColor.AQUA + "Top " + show + " Monthly Voters" + bar);
             for (int i = 0; i < show; i++) {
                 KCPlayer player = list.get(i);
                 sender.sendMessage((player.getUsername().equals(p.getUsername()) ? ChatColor.GREEN : ChatColor.AQUA)
-                        + ChatColor.GRAY.toString() + ": " + player.getMonthlyVotes());
+                        + player.getUsername() + ChatColor.GRAY.toString() + ": " + player.getMonthlyVotes());
             }
 
             sender.sendMessage(ChatColor.GRAY + "Monthly Votes: " + ChatColor.AQUA + p.getMonthlyVotes());

@@ -26,7 +26,8 @@ public class ItemManager {
      */
     public static ItemWrapper constructItem(ItemStack itemStack) {
         ItemType itemType = ItemWrapper.getType(itemStack);
-        return itemType != null ? ReflectionUtil.construct(itemType.getItemClass(), itemStack) : new GenericItem(itemStack);
+        return itemType != null ? ReflectionUtil.construct(itemType.getItemClass(),
+                new Class[] {ItemStack.class}, itemStack) : new GenericItem(itemStack);
     }
 
     /**

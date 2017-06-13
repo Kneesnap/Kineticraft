@@ -1,16 +1,23 @@
 package net.kineticraft.lostcity.item;
 
 import net.kineticraft.lostcity.Core;
+import net.kineticraft.lostcity.item.event.events.ItemEntityInteractEvent;
+import net.kineticraft.lostcity.item.event.events.ItemInteractEvent;
 import net.kineticraft.lostcity.mechanics.Mechanic;
 import net.kineticraft.lostcity.utils.ReflectionUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.*;
 
 import java.util.Arrays;
@@ -30,6 +37,23 @@ public class Items extends Mechanic {
             if (Listener.class.isAssignableFrom(type.getItemClass()))
                 Bukkit.getPluginManager().registerEvents((Listener) ReflectionUtil.construct(type.getItemClass(),
                         new Class[] {ItemStack.class}, new ItemStack(Material.AIR)), Core.getInstance());
+    }
+
+    @EventHandler
+    public void onInteract(PlayerInteractEvent evt) {
+        if (evt.getAction() != Action.PHYSICAL)
+            new ItemInteractEvent(evt).fire();
+    }
+
+    @EventHandler
+    public void onEntityClick(PlayerInteractEntityEvent evt) {
+        new ItemEntityInteractEvent(evt).fire();
+    }
+
+    @EventHandler
+    public void onAttack(EntityDamageByEntityEvent evt) {
+        if (evt.getDamager() instanceof Player)
+            new ItemEntityInteractEvent(evt).fire();
     }
 
     @EventHandler

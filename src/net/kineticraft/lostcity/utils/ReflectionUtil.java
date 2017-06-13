@@ -5,9 +5,9 @@ import org.bukkit.Bukkit;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * Created by Kneesnap on 6/2/2017.
@@ -110,8 +110,14 @@ public class ReflectionUtil {
     }
 
     public static Object getField(Object o, String field) {
+        return getField(o, o.getClass(), field);
+    }
+
+    public static Object getField(Object o, Class clazz, String field) {
         try {
-            return o.getClass().getField(field).get(o);
+            Field f = clazz.getDeclaredField(field);
+            f.setAccessible(true);
+            return f.get(o);
         } catch (Exception e) {
             e.printStackTrace();
             Core.warn("Failed to get field '" + field + "'.");
@@ -131,6 +137,19 @@ public class ReflectionUtil {
      */
     public static Class<?> getCraftBukkit(String clazz) {
         return getClass("org.bukkit.craftbukkit." + getVersion() + '.' + clazz);
+    }
+
+    /**
+     * Get a list of methods that match the given signature.
+     * Does not include private methods.
+     *
+     * @param argTypes
+     * @return methods
+     */
+    public static List<Method> getMethods(Class<?> clazz, Class... argTypes) {
+        List<Class<?>> args = Arrays.asList(argTypes);
+        return Arrays.stream(clazz.getMethods()).filter(m -> Arrays.asList(m.getParameterTypes()).equals(args))
+                .collect(Collectors.toList());
     }
 
     private static Class<?> getClass(String path) {
