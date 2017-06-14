@@ -9,6 +9,9 @@ import net.kineticraft.lostcity.data.JsonData;
 import net.kineticraft.lostcity.data.lists.JsonList;
 import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
+import net.kineticraft.lostcity.item.ItemManager;
+import net.kineticraft.lostcity.item.ItemType;
+import net.kineticraft.lostcity.item.ItemWrapper;
 import net.kineticraft.lostcity.mechanics.MetadataManager;
 import net.kineticraft.lostcity.mechanics.MetadataManager.Metadata;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -25,6 +28,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Utils - Contains basic static utilties.
@@ -398,5 +403,117 @@ public class Utils {
      */
     public static <T> boolean containsAny(List<T> a, List<T> b) {
         return b.stream().filter(a::contains).findAny().isPresent();
+    }
+
+    /**
+     * Remove a potion with infinite duration.
+     * @param player
+     * @param type
+     */
+    public static void removeInfinitePotion(Player player, PotionEffectType type) {
+        PotionEffect pe = player.getPotionEffect(type);
+        if (pe != null && pe.getDuration() >= 30 * 60 * 20)
+            player.removePotionEffect(type);
+    }
+
+    /**
+     * Give a player an infinite potion effect, but only if they do not already have a potion of this type.
+     * @param player
+     * @param type
+     */
+    public static void giveInfinitePotion(Player player, PotionEffectType type) {
+        if (!player.hasPotionEffect(type))
+            player.addPotionEffect(new PotionEffect(type, Integer.MAX_VALUE, 2));
+    }
+
+    /**
+     * Gives or removes an infinite potion based on the 'has' parameter.
+     * Respects player brewed potions, if they exist.
+     *
+     * @param player
+     * @param type
+     * @param has
+     */
+    public static void setPotion(Player player, PotionEffectType type, boolean has) {
+        if (has) {
+            giveInfinitePotion(player, type);
+        } else {
+            removeInfinitePotion(player, type);
+        }
+    }
+
+    /**
+     * Gives or removes an infinite potion based on if they do or do not already have this potion.
+     * WARNING: Does not respect player-brewed potions.
+     *
+     * @param player
+     * @param type
+     * @return hasPotion (After this is called)
+     */
+    public static boolean togglePotion(Player player, PotionEffectType type) {
+        boolean newState = !player.hasPotionEffect(type);
+        setPotion(player, type, newState);
+        return newState;
+    }
+
+    /**
+     * Broadcast a message everywhere except to a specified player.
+     * @param message
+     * @param except
+     */
+    public static void broadcastExcept(String message, Player except) {
+        getAllPlayersExcept(except).forEach(p -> p.sendMessage(message));
+        Bukkit.getConsoleSender().sendMessage(message);
+    }
+
+    /**
+     * Returns a list of all players except the given player.
+     * @param player
+     * @return allExcept
+     */
+    public static List<Player> getAllPlayersExcept(Player player) {
+        return Bukkit.getOnlinePlayers().stream().filter(p -> p != player).collect(Collectors.toList());
+    }
+
+    /**
+     * Gets the supplied input from a resulting NFE.
+     * @param nfe
+     * @return input
+     */
+    public static String getInput(NumberFormatException nfe) {
+        return nfe.getLocalizedMessage().split(": ")[1].replaceAll("\"", "");
+    }
+
+    /**
+     * Find the amount of times a
+     * @param search
+     * @param find
+     * @return
+     */
+    public static int getCount(String search, String find) {
+        int found = 0;
+        for (int i = 0; i < search.length() - find.length() + 1; i++)
+            if (search.substring(i, i + find.length()).equals(find))
+                found++;
+        return found;
+    }
+
+    /**
+     * Gives the player an item if they don't already have an item of that type.
+     * Replaces it otherwise.
+     *
+     * @param player
+     * @param item
+     */
+    public static void replaceItem(Player player, ItemWrapper item) {
+        ItemType check = item.getType();
+        for (int i = 0; i < player.getInventory().getSize(); i++ ) {
+            if (check != ItemWrapper.getType(player.getInventory().getItem(i)))
+                continue;
+            player.getInventory().setItem(i, item.generateItem());
+            return;
+        }
+
+        giveItem(player, item.generateItem());
     }
 }

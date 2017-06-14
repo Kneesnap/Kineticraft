@@ -41,7 +41,7 @@ public class CommandRankup extends PlayerCommand {
 
         int accomplishments = 0; //TODO - Get once 1.12 is implemented.
         if (nextRank.getAccomplishmentsNeeded() > accomplishments) {
-            sender.sendMessage(ChatColor.RED + "You need to complete"
+            sender.sendMessage(ChatColor.RED + "You need to complete "
                     + (nextRank.getAccomplishmentsNeeded() - accomplishments) + " more accomplishments.");
             return;
         }

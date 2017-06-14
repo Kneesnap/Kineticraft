@@ -84,7 +84,7 @@ public abstract class SaveableList<T> implements Iterable<T> {
      * @param array
      */
     public void load(JsonArray array) {
-        array.forEach(this::load);
+        array.forEach(val -> getValues().add(load(val)));
     }
 
     /**
@@ -95,6 +95,25 @@ public abstract class SaveableList<T> implements Iterable<T> {
         JsonArray array = new JsonArray();
         getValues().stream().map(this::save).forEach(array::add);
         return array;
+    }
+
+    /**
+     * Does this list contain a value for the given index?
+     * @param index
+     * @return hasIndex
+     */
+    public boolean hasIndex(int index) {
+        return index >= 0 && size() > index;
+    }
+
+    /**
+     * Returns the value at the given index if we have it, otherwise null.
+     *
+     * @param index
+     * @return value
+     */
+    public T getValueSafe(int index) {
+        return hasIndex(index) ? get(index) : null;
     }
 
     /**

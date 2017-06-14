@@ -27,9 +27,11 @@ public class ItemTPABook extends ItemBook {
         setTitle("Teleport Book");
         setAuthor("Kineticraft Staff");
         addText(TextUtils.centerBook("[Teleport Book]"));
+        addLine("");
         for (Player p : Core.getOnlinePlayers()) {
             KCPlayer w = KCPlayer.getWrapper(p);
-            addLine(w.getRank().getNameColor() + "[" + w.getUsername() + "]").runCommand("/trigger tpa set X");
+            String cmd = "/trigger tpa set " + w.getAccountId();
+            addLine(TextUtils.centerBook(w.getRank().getNameColor() + "[" + w.getUsername() + "]")).runCommand(cmd).showText(cmd);
         }
 
         super.updateItem();

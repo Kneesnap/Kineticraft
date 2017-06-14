@@ -18,7 +18,8 @@ public class SleepMechanics extends Mechanic {
 
     private static double PERCENT_NEEDED = .4F; // The percentage of players needed to skip a night.
 
-    private static void skipNight() {
+
+    public static void skipNight() {
         if (getSleepCount() < getNeededPlayers())
             return; // We don't have enough players sleeping.
 
@@ -30,7 +31,7 @@ public class SleepMechanics extends Mechanic {
 
     /**
      * Get the number of sleeping players.
-     * @return
+     * @return sleepingPlayers
      */
     private static int getSleepCount() {
         return (int) Bukkit.getOnlinePlayers().stream().filter(Player::isSleeping).count();
@@ -60,7 +61,7 @@ public class SleepMechanics extends Mechanic {
 
         int needed = getNeededPlayers() - getSleepCount();
         if (needed > 0) {
-            Bukkit.broadcastMessage(ChatColor.GRAY + "[Night Skipper] " + ChatColor.GREEN + needed + ChatColor.GRAY
+            Bukkit.broadcastMessage(ChatColor.GREEN.toString() + needed + ChatColor.GRAY
                     + " players need to enter a bed to skip the night.");
         } else {
             skipNight();

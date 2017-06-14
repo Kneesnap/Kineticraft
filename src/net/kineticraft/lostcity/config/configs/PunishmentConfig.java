@@ -12,10 +12,6 @@ import net.kineticraft.lostcity.data.JsonData;
  */
 public class PunishmentConfig extends JsonConfig {
 
-    public PunishmentConfig() {
-        super("bans");
-    }
-
     @Override
     public void load(JsonData data) {
 

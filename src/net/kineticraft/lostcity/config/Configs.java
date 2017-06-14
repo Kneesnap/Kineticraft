@@ -77,33 +77,31 @@ public class Configs extends Mechanic {
             getConfig(t).saveToDisk();
     }
 
-    @Getter
+    @AllArgsConstructor @Getter
     public enum ConfigType {
 
         MAIN(MainConfig.class),
         VOTES(VoteConfig.class),
         BANS(PunishmentConfig.class),
-        RULES(RawConfig.class, "rules"),
-        DONATE(RawConfig.class, "donate"),
-        ANNOUNCER(RawConfig.class, "announcer"),
-        DISCORD(RawConfig.class, "discord"),
-        RANKS(RawConfig.class, "ranks"),
-        INFO(RawConfig.class, "info");
+        RULES(RawConfig.class),
+        DONATE(RawConfig.class),
+        ANNOUNCER(RawConfig.class),
+        DISCORD(RawConfig.class),
+        RANKS(RawConfig.class),
+        INFO(RawConfig.class);
 
         private final Class<? extends Config> configClass;
-        private final Object[] args;
-
-        ConfigType(Class<? extends Config> clazz, Object... args) {
-            this.configClass = clazz;
-            this.args = args;
-        }
 
         /**
-         * Construct this config.
+         * Create and load this config.
          * @return config
          */
         public Config createConfig() {
-            return ReflectionUtil.construct(getConfigClass(), getArgs());
+            Config c = ReflectionUtil.construct(getConfigClass());
+            c.setType(this); // Sets the type of the config.
+            c.loadFromDisk(); // Loads this config from disk.
+            c.saveToDisk(); // Saving to disk fixes any formatting issues / makes sure everything loaded properly.
+            return c;
         }
     }
 }

@@ -1,6 +1,7 @@
 package net.kineticraft.lostcity.commands.staff;
 
 import net.kineticraft.lostcity.commands.StaffCommand;
+import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -18,13 +19,7 @@ public class CommandBright extends StaffCommand {
 
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
-        Player player = (Player) sender;
-        boolean newState = !player.hasPotionEffect(PotionEffectType.NIGHT_VISION);
-        player.removePotionEffect(PotionEffectType.NIGHT_VISION);
-
-        if (newState)
-            player.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, Integer.MAX_VALUE, 1));
-
-        player.sendMessage("Fullbright " + (newState ? "enabled" : "disabled"));
+        sender.sendMessage(Utils.formatToggle("Fullbright",
+                Utils.togglePotion((Player) sender, PotionEffectType.NIGHT_VISION)));
     }
 }

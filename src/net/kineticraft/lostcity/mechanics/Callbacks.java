@@ -2,7 +2,10 @@ package net.kineticraft.lostcity.mechanics;
 
 import lombok.AllArgsConstructor;
 import net.kineticraft.lostcity.Core;
+import net.kineticraft.lostcity.data.lists.StringList;
 import net.kineticraft.lostcity.guis.GUI;
+import net.kineticraft.lostcity.utils.TextBuilder;
+import net.kineticraft.lostcity.utils.TextUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
@@ -27,6 +30,56 @@ public class Callbacks extends Mechanic {
     private static Map<Player, Map<ListenerType, Listener<?>>> listeners = new HashMap<>();
 
     public static String CANCEL_MESSAGE = ChatColor.RED.toString() + ChatColor.BOLD + "CANCELLED";
+
+    private static final StringList ACCEPT = new StringList("yes", "confirm", "accept");
+    private static final StringList DENY = new StringList("no", "cancel", "deny", "decline");
+
+
+    /**
+     * Prompt the player a yes or no listener with clickable buttons.
+     * @param player
+     * @param accept
+     * @param deny
+     */
+    public static void promptConfirm(Player player, Runnable accept, Runnable deny) {
+        promptConfirm(player, accept, deny, "CONFIRM", "CANCEL");
+    }
+
+    /**
+     * Prompt the player a yes / no listener with clickable buttons.
+     * @param player
+     * @param accept
+     * @param deny
+     * @param yes
+     * @param no
+     */
+    public static void promptConfirm(Player player, Runnable accept, Runnable deny, String yes, String no) {
+        TextBuilder textBuilder = new TextBuilder("          ").append("[" + yes + "]").bold().color(ChatColor.GREEN)
+                .runCommand("confirm").showText(ChatColor.GREEN + "Click here to " + yes.toLowerCase() + ".")
+                .append("      ").append("[" + no + "]").color(ChatColor.RED).bold().runCommand("cancel")
+                .showText(ChatColor.RED + "Click here to " + no.toLowerCase() + ".");
+
+        player.sendMessage(textBuilder.create());
+        listenForConfirmation(player, accept, deny);
+    }
+
+    /**
+     * Listen for the player to reply yes or no.
+     * @param player
+     * @param accept
+     * @param deny
+     */
+    public static void listenForConfirmation(Player player, Runnable accept, Runnable deny) {
+        listenForChat(player, m -> {
+            if (ACCEPT.containsIgnoreCase(m)) {
+                accept.run();
+            } else {
+                if (!DENY.containsIgnoreCase(m))
+                    player.sendMessage(ChatColor.RED + "Unknown response, defaulting to 'cancel'.");
+                deny.run();
+            }
+        }, deny);
+    }
 
     /**
      * Listen for a number.
@@ -165,8 +218,7 @@ public class Callbacks extends Mechanic {
         if (!hasListener(player, type))
             return false;
 
-        getListener(player, type).accept(obj);
-        listeners.get(player).remove(type);
+        ((Listener) listeners.get(player).remove(type)).accept(obj);
         return true;
     }
 
@@ -177,10 +229,20 @@ public class Callbacks extends Mechanic {
      * @param type
      */
     public static void cancel(Player player, ListenerType type) {
-        if (!hasListener(player, type))
-            return;
+        if (hasListener(player, type))
+            listeners.get(player).remove(type).fail();
+    }
 
-        getListener(player, type).fail();
+    /**
+     * Remove the listener of this type for the given player without calling the "fail" callback.
+     * Used in circumstances where that could cause the callback to trigger after we've determined it shouldn't.
+     * Such as: On fail -> kick player for afking, but if they don't respond it will kick them for another message,
+     * but by kicking them it cancels the chat callback listener and will kick them for the wrong reason.
+     *
+     * @param player
+     * @param type
+     */
+    public static void unsafeCancel(Player player, ListenerType type) {
         listeners.get(player).remove(type);
     }
 

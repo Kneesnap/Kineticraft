@@ -20,10 +20,6 @@ public class RawConfig extends Config {
 
     private List<String> lines = new ArrayList<>();
 
-    public RawConfig(String name) {
-        super(name + ".txt");
-    }
-
     @Override
     public void loadFromDisk() {
         try {
@@ -51,5 +47,10 @@ public class RawConfig extends Config {
 
     private File getFile() {
         return Core.getFile(getFileName());
+    }
+
+    @Override
+    public String getFileName() {
+        return "messages/" + super.getFileName() + ".txt";
     }
 }

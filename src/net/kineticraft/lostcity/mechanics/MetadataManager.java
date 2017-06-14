@@ -24,6 +24,7 @@ public class MetadataManager extends Mechanic {
         // Players
         TELEPORTING(false),
         LAST_WHISPER(null),
+        COMPASS_DEATH(0),
 
         // Entities
         NORMAL_SPEED(.1F), // Normal Walkspeed.

@@ -12,6 +12,15 @@ import org.apache.logging.log4j.message.StructuredDataMessage;
  */
 public class StringList extends SaveableList<String> {
 
+    public StringList() {
+
+    }
+
+    public StringList(String... strings) {
+        for (String s : strings)
+            getValues().add(s);
+    }
+
     @Override
     protected String load(JsonElement e) {
         return e.getAsString();

@@ -26,9 +26,8 @@ public class CommandVanish extends StaffCommand {
     protected void onCommand(CommandSender sender, String[] args) {
         Player p = (Player) sender;
         KCPlayer player = KCPlayer.getWrapper(p);
-        player.setVanished(!player.isVanished());
+        player.vanish(!player.isVanished());
         sender.sendMessage(Utils.formatToggle("Vanished", player.isVanished()));
-        Vanish.hidePlayers(p);
         Core.alertStaff(player.getColoredName() + ChatColor.GRAY + " has " + (player.isVanished() ? "" : "un") + "vanished.");
     }
 }

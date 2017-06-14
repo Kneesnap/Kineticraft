@@ -3,11 +3,9 @@ package net.kineticraft.lostcity.item;
 import lombok.Getter;
 import net.kineticraft.lostcity.mechanics.enchants.CustomEnchant;
 import net.kineticraft.lostcity.utils.Utils;
-import net.minecraft.server.v1_11_R1.NBTTagCompound;
-import org.bukkit.Bukkit;
+import net.minecraft.server.v1_12_R1.NBTTagCompound;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -57,7 +55,7 @@ public abstract class ItemWrapper {
         return getItem();
     }
 
-    public net.minecraft.server.v1_11_R1.ItemStack getNMSCopy() {
+    public net.minecraft.server.v1_12_R1.ItemStack getNMSCopy() {
         return CraftItemStack.asNMSCopy(getItem());
     }
 
@@ -67,7 +65,7 @@ public abstract class ItemWrapper {
      */
     public NBTTagCompound getTag() {
         if (this.tag == null) {
-            net.minecraft.server.v1_11_R1.ItemStack nms = getNMSCopy();
+            net.minecraft.server.v1_12_R1.ItemStack nms = getNMSCopy();
             this.tag = nms != null && nms.hasTag() ? nms.getTag() : new NBTTagCompound();
         }
         return this.tag;
@@ -245,7 +243,7 @@ public abstract class ItemWrapper {
         // Update Item Meta. If for some reason our method does not work, we can try CraftMetaItem#applyItemMeta
         ItemStack withMeta = getItem().clone();
         withMeta.setItemMeta(getMeta());
-        net.minecraft.server.v1_11_R1.ItemStack nms = CraftItemStack.asNMSCopy(withMeta);
+        net.minecraft.server.v1_12_R1.ItemStack nms = CraftItemStack.asNMSCopy(withMeta);
 
         if (nms != null && nms.hasTag()) {
             // There's some data we should merge with our NBT tags.
@@ -256,7 +254,7 @@ public abstract class ItemWrapper {
         }
 
         // Update NBT Tags
-        net.minecraft.server.v1_11_R1.ItemStack newItem = CraftItemStack.asNMSCopy(getItem());
+        net.minecraft.server.v1_12_R1.ItemStack newItem = CraftItemStack.asNMSCopy(getItem());
         if (newItem != null)
             newItem.setTag(getTag());
         this.item = CraftItemStack.asBukkitCopy(newItem);
@@ -269,12 +267,12 @@ public abstract class ItemWrapper {
      * @return
      */
     public static boolean isType(ItemStack item, ItemType type) {
-        net.minecraft.server.v1_11_R1.ItemStack nms = CraftItemStack.asNMSCopy(item);
+        net.minecraft.server.v1_12_R1.ItemStack nms = CraftItemStack.asNMSCopy(item);
         return nms.hasTag() && nms.getTag().hasKey("type") && type.name().equals(nms.getTag().getString("type"));
     }
 
     public static ItemType getType(ItemStack item) {
-        net.minecraft.server.v1_11_R1.ItemStack nms = CraftItemStack.asNMSCopy(item);
+        net.minecraft.server.v1_12_R1.ItemStack nms = CraftItemStack.asNMSCopy(item);
         return nms != null && nms.hasTag() && nms.getTag().hasKey("type")
                 ? ItemType.valueOf(nms.getTag().getString("type")) : null;
     }

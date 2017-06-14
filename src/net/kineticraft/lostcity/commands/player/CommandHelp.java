@@ -5,6 +5,7 @@ import net.kineticraft.lostcity.commands.Command;
 import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
 import net.kineticraft.lostcity.mechanics.Commands;
+import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -23,23 +24,19 @@ public class CommandHelp extends PlayerCommand {
 
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
-        EnumRank pRank = sender instanceof Player ? KCPlayer.getWrapper((Player) sender).getRank() : EnumRank.DEV;
         String bar = ChatColor.DARK_GREEN.toString() + ChatColor.STRIKETHROUGH + "-----";
 
         if (args.length == 0) {
             sender.sendMessage(bar + ChatColor.GRAY + " Command Help " + bar);
-            Commands.getCommands().stream().filter(c -> c instanceof PlayerCommand).forEach(command -> {
-                PlayerCommand playerCommand = (PlayerCommand) command;
-                if (pRank.isAtLeast(playerCommand.getMinRank()))
-                    sender.sendMessage(ChatColor.GRAY + playerCommand.getCommandPrefix() + playerCommand.getName()
-                            + ": " + ChatColor.WHITE + playerCommand.getHelp());
-            });
+            Commands.getCommands().stream().filter(c -> c.canUse(sender, false) && c.getHelp() != null)
+                    .forEach(cmd ->  sender.sendMessage(ChatColor.GRAY + cmd.getCommandPrefix()
+                            + cmd.getName() + ": " + ChatColor.WHITE + cmd.getHelp()));
         } else {
 
             Command cmd = Commands.getCommand(null, args[0]);
 
             // If the command isn't found or it isn't a command a player needs to see.
-            if (cmd == null || (!(cmd instanceof PlayerCommand) && sender instanceof Player)) {
+            if (cmd == null || !cmd.canUse(sender, false)) {
                 sender.sendMessage(ChatColor.RED + "Cannot find help for '" + args[0] + "'.");
                 return;
             }

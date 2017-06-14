@@ -16,7 +16,7 @@ import org.bukkit.entity.Player;
 public class CommandUnignore extends PlayerCommand {
 
     public CommandUnignore() {
-        super(EnumRank.MU, CommandType.SLASH, true, "<player>", "Allow messages from a player", "unignore");
+        super("<player>", "Allow messages from a player", "unignore");
     }
 
     @Override
@@ -29,7 +29,7 @@ public class CommandUnignore extends PlayerCommand {
         }
 
         player.getIgnored().removeIgnoreCase(args[0]);
-        sender.sendMessage(ChatColor.GRAY + "You are no longer ignoring" + ChatColor.GREEN + args[0] + ChatColor.GRAY + ".");
+        sender.sendMessage(ChatColor.GRAY + "You are no longer ignoring " + ChatColor.GREEN + args[0] + ChatColor.GRAY + ".");
     }
 
     @Override

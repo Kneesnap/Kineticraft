@@ -19,7 +19,7 @@ import org.bukkit.entity.Player;
 public class CommandMail extends PlayerCommand {
 
     public CommandMail() {
-        super(EnumRank.MU, CommandType.SLASH, false, "<send/clear/read> [message]",
+        super(EnumRank.MU, false, "<send/clear/read> [message]",
                 "Mail a message to another player.", "mail", "send");
     }
 

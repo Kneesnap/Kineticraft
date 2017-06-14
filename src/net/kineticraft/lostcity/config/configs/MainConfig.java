@@ -19,10 +19,6 @@ public class MainConfig extends JsonConfig {
     private int afkLimit;
     private JsonStringMap filter = new JsonStringMap();
 
-    public MainConfig() {
-        super("main");
-    }
-
     @Override
     public void load(JsonData data) {
         setVoteURL(data.getString("voteURL", "http://google.com/"));

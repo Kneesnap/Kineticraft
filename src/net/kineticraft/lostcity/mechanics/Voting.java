@@ -30,6 +30,16 @@ import java.util.stream.Collectors;
  */
 public class Voting extends Mechanic {
 
+    @Override
+    public void onEnable() {
+        Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () -> {
+            Bukkit.getOnlinePlayers().stream().map(KCPlayer::getWrapper)
+                    .filter(k -> System.currentTimeMillis() - k.getLastVote() > 24 * 60 * 60 * 1000)
+                    .forEach(p -> p.getPlayer().sendMessage(ChatColor.AQUA + "You have not voted recently, please support us with "
+                            + ChatColor.YELLOW + "/vote" + ChatColor.AQUA + "."));
+        }, 0L, 5 * 60 * 20L + 1);
+    }
+
     @EventHandler
     public void onVote(VotifierEvent evt) {
         handleVote(evt.getVote().getUsername());
@@ -52,8 +62,7 @@ public class Voting extends Mechanic {
         VoteConfig data = Configs.getVoteData();
         data.setTotalVotes(data.getTotalVotes() + 1); // Increment the total vote count
 
-        int toParty = data.getVotesUntilParty() - 1; // Decrement the amount of votes until party.
-        data.setVotesUntilParty(toParty);
+        int toParty = data.getVotesUntilParty();
         if (toParty > 0) {
             if (toParty % 5 == 0 || toParty <= 10)
                 Core.kineticaMessage("Thanks for voting " + ChatColor.YELLOW + username + ChatColor.WHITE + "! We need "
@@ -63,10 +72,14 @@ public class Voting extends Mechanic {
         }
 
         QueryTools.getData(username, player ->  {
+            player.setMonthlyVotes(player.getMonthlyVotes() + 1);
             player.setPendingVotes(player.getPendingVotes() + 1);
+            player.setLastVote(System.currentTimeMillis());
             if (player.isOnline())
                 giveRewards(player.getPlayer());
         });
+
+        Configs.getVoteData().saveToDisk();
     }
 
     /**
@@ -74,7 +87,6 @@ public class Voting extends Mechanic {
      */
     public static void doVoteParty() {
         Core.kineticaMessage("Wooo! We made it! Parrrty!");
-        Configs.getVoteData().setVotesUntilParty(Configs.getVoteData().getVotesPerParty()); // Reset counter.
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             ItemStack reward = generatePartyReward();
@@ -99,14 +111,14 @@ public class Voting extends Mechanic {
                 + " vote reward" + (pending > 1 ? "s" : "") + ".");
 
         for (int i = 0; i < pending; i++) {
-            Configs.getVoteData().getNormal().getValues().forEach(j -> Utils.giveItem(player, j.getItem()));
+            Configs.getVoteData().getNormal().forEach(j -> Utils.giveItem(player, j.getItem()));
             player.setLevel(player.getLevel() + 10); // Add 10 XP Levels
         }
 
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1F, 1F);
 
         // Give achievement rewards
-        for (VoteAchievement va : Configs.getVoteData().getAchievements().getValues()) {
+        for (VoteAchievement va : Configs.getVoteData().getAchievements()) {
             if (va.getVotesNeeded() > p.getTotalVotes() && p.getTotalVotes() + pending >= va.getVotesNeeded()) {
                 Utils.giveItem(player, va.getItem());
                 player.sendMessage(ChatColor.GREEN + "You have received a special reward for voting "
@@ -114,10 +126,8 @@ public class Voting extends Mechanic {
             }
         }
 
-        p.setPendingVotes(0);
-        p.setMonthlyVotes(p.getMonthlyVotes() + pending);
         p.setTotalVotes(p.getTotalVotes() + pending);
-
+        p.setPendingVotes(0);
         calculateTopVoter();
     }
 
@@ -150,8 +160,8 @@ public class Voting extends Mechanic {
             });
 
             data.setTopVoter(null);
-            Core.announce("Votes have reset for the month of " + getMonthName()
-                    + "! Better start voting to get top voter! (.vote)");
+            Core.announce("Votes have reset for the month of " + getMonthName() + "! Better start voting to get top voter! (.vote)");
+            data.saveToDisk();
         });
     }
 
@@ -170,13 +180,15 @@ public class Voting extends Mechanic {
         VoteConfig data = Configs.getVoteData();
 
         QueryTools.queryData(players -> {
-            KCPlayer topVoter = players.sorted(Comparator.comparing(KCPlayer::getMonthlyVotes)).collect(Collectors.toList()).get(0);
-            if (topVoter.getUuid().equals(data.getTopVoter()))
+            KCPlayer topVoter = players.sorted(Comparator.comparingInt(KCPlayer::getMonthlyVotes).reversed())
+                    .collect(Collectors.toList()).get(0);
+
+            if (topVoter == null || topVoter.getUuid().equals(data.getTopVoter()))
                 return; // The top voter hasn't changed.
 
             data.setTopVoter(topVoter.getUuid());
             Core.announce(ChatColor.YELLOW + topVoter.getUsername() + ChatColor.RED
-                    + " is the new top voter! Votes: " + ChatColor.YELLOW + topVoter.getMonthlyVotes());
+                    + " is the new top voter! Monthly Votes: " + ChatColor.YELLOW + topVoter.getMonthlyVotes());
 
             if (topVoter.isOnline()) {
                 Player player = topVoter.getPlayer();
@@ -184,6 +196,8 @@ public class Voting extends Mechanic {
                 player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1F, 1F);
                 topVoter.updatePlayer();
             }
+
+            data.saveToDisk();
         });
     }
 

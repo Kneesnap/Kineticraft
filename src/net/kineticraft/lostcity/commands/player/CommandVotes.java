@@ -7,7 +7,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import javax.persistence.Query;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,14 +30,17 @@ public class CommandVotes extends PlayerCommand {
             return;
 
         QueryTools.queryData(stream -> {
-            List<KCPlayer> list = stream.sorted(Comparator.comparing(KCPlayer::getMonthlyVotes)).collect(Collectors.toList());
+            List<KCPlayer> list = stream.sorted(Comparator.comparing(KCPlayer::getMonthlyVotes).reversed())
+                    .collect(Collectors.toList());
             KCPlayer p = KCPlayer.getWrapper((Player) sender);
             String bar = ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------";
             int show = Math.min(ENTRIES, list.size());
+
             sender.sendMessage(bar + ChatColor.AQUA + "Top " + show + " Monthly Voters" + bar);
             for (int i = 0; i < show; i++) {
                 KCPlayer player = list.get(i);
-                sender.sendMessage((player.getUsername().equals(p.getUsername()) ? ChatColor.GREEN : ChatColor.AQUA)
+                sender.sendMessage(ChatColor.YELLOW.toString() + (i + 1) + ") "
+                        + (player.getUsername().equals(p.getUsername()) ? ChatColor.GREEN : ChatColor.AQUA)
                         + player.getUsername() + ChatColor.GRAY.toString() + ": " + player.getMonthlyVotes());
             }
 

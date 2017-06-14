@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import net.kineticraft.lostcity.item.ItemType;
 import net.kineticraft.lostcity.item.ItemWrapper;
-import net.kineticraft.lostcity.item.event.ItemEvent;
 import net.kineticraft.lostcity.item.event.ItemListener;
 import net.kineticraft.lostcity.item.event.ItemUsage;
 import net.kineticraft.lostcity.item.event.events.ItemInteractEvent;
@@ -14,7 +13,7 @@ import net.kineticraft.lostcity.utils.TextUtils;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_11_R1.inventory.CraftMetaBook;
+import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftMetaBook;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
@@ -261,10 +260,12 @@ public class ItemBook extends ItemWrapper {
     @Override
     public void updateItem() {
 
-        getMeta().setPages(Arrays.asList(""));
-        if (isWriteLines()) // Save the book pages to the item.
+        getMeta().setPages(Arrays.asList());
+        if (isWriteLines()) {// Save the book pages to the item.
+            addText(""); // Makes it so the last element we wrote gets applied.
             getMeta().pages.addAll(getPages().stream().map(TextBuilder::getComponents)
                     .map(TextUtils::toNMSComponent).collect(Collectors.toList()));
+        }
 
         getMeta().setGeneration(BookMeta.Generation.TATTERED);
         this.page = 0; // Reset writer.
@@ -280,7 +281,6 @@ public class ItemBook extends ItemWrapper {
      * @param player
      */
     public void open(Player player) {
-        player.sendMessage("hi.");
         getPages().stream().map(ComponentBuilder::create).forEach(player::sendMessage);
         PacketUtil.openBook(player, generateFullBook());
     }

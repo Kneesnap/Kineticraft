@@ -3,6 +3,7 @@ package net.kineticraft.lostcity.commands;
 import lombok.Getter;
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
+import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -23,7 +24,7 @@ public abstract class PlayerCommand extends Command {
     }
 
     public PlayerCommand(EnumRank minRank, boolean playerOnly, String usage, String help, String... alias) {
-        this(minRank, minRank.isAtLeast(EnumRank.MEDIA) ? CommandType.SLASH : CommandType.CHAT, playerOnly, usage, help, alias);
+        this(minRank, CommandType.SLASH, playerOnly, usage, help, alias);
     }
 
     public PlayerCommand(EnumRank minRank, CommandType type, boolean playerOnly, String usage, String help, String... alias) {
@@ -33,17 +34,15 @@ public abstract class PlayerCommand extends Command {
     }
 
     @Override
-    public void handle(CommandSender sender,  String label, String[] args) {
-        boolean isPlayer = sender instanceof Player;
-
-        if (isPlayerOnly() && !isPlayer) {
+    public boolean canUse(CommandSender sender, boolean showMessage) {
+        boolean passPlayer = !isPlayerOnly() || sender instanceof Player;
+        if (!passPlayer && showMessage)
             sender.sendMessage(ChatColor.RED + "You must be a player to use this command.");
-            return;
-        }
 
-        if (isPlayer && !KCPlayer.getWrapper((Player) sender).isRank(getMinRank()))
-            return;
+        boolean passRank = Utils.getRank(sender).isAtLeast(getMinRank());
+        if (!passRank && showMessage)
+            sender.sendMessage(ChatColor.RED + "You must be at least rank " + getMinRank().getName() + " to use this command.");
 
-        super.handle(sender, label, args);
+        return passPlayer && passRank;
     }
 }

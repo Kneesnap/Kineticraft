@@ -70,7 +70,7 @@ public enum EnumRank {
      * @return
      */
     public String getChatPrefix() {
-        return getColor() + (isAtLeast(HELPER) ? ChatColor.BOLD.toString() : "") + getRankSymbol() + getNameColor();
+        return getColor() + (getRankSymbol().length() > 1 ? ChatColor.BOLD.toString() : "") + getRankSymbol() + getNameColor();
     }
 
     /**

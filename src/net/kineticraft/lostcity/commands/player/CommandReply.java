@@ -18,8 +18,7 @@ import org.bukkit.entity.Player;
 public class CommandReply extends PlayerCommand {
 
     public CommandReply() {
-        super(EnumRank.MU, CommandType.SLASH, true, "<message>",
-                "Reply to your last private message.", "r", "reply");
+        super("<message>", "Reply to your last private message.", "r", "reply");
     }
 
     @Override

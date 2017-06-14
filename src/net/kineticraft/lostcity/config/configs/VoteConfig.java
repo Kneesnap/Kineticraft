@@ -18,7 +18,6 @@ import java.util.UUID;
 public class VoteConfig extends JsonConfig {
 
     private int votesPerParty;
-    private int votesUntilParty;
     private int totalVotes;
     private UUID topVoter;
     private JsonList<PartyReward> party = new JsonList<>();
@@ -26,14 +25,18 @@ public class VoteConfig extends JsonConfig {
     private JsonList<VoteAchievement> achievements = new JsonList<>();
     private String month; // The mount the votes are currently stored for.
 
-    public VoteConfig() {
-        super("votes");
+    /**
+     * Get the number of votes needed until the next party.
+     * @return votesNeeded
+     */
+    public int getVotesUntilParty() {
+        int toParty = getVotesPerParty() - (getTotalVotes() % getVotesPerParty());
+        return toParty != getVotesPerParty() ? toParty : 0;
     }
 
     @Override
     public void load(JsonData data) {
         setVotesPerParty(data.getInt("votesPerParty", 50));
-        setVotesUntilParty(data.getInt("votesToParty", getVotesPerParty()));
         setTotalVotes(data.getInt("totalVotes"));
         setTopVoter(data.getUUID("topVoter"));
         setParty(data.getJsonList("party", PartyReward.class));
@@ -46,7 +49,6 @@ public class VoteConfig extends JsonConfig {
     public JsonData save() {
         JsonData data = new JsonData();
         data.setNum("votesPerParty", getVotesPerParty());
-        data.setNum("votesToParty", getVotesUntilParty());
         data.setNum("totalVotes", getTotalVotes());
         data.setUUID("topVoter", getTopVoter());
         data.setList("party", getParty());

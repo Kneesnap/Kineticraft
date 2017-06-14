@@ -2,17 +2,14 @@ package net.kineticraft.lostcity.mechanics;
 
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.data.QueryTools;
-import net.kineticraft.lostcity.utils.Utils;
-import net.kineticraft.lostcity.data.wrappers.JsonLocation;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,8 +24,6 @@ public class DataHandler extends Mechanic {
 
     @Override
     public void onEnable() {
-        Core.makeFolder("players");
-
         // Every 5 minutes, save all playerdata
         Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), () -> saveAllPlayers(), 0, 5 * 60 * 20);
     }
@@ -54,21 +49,26 @@ public class DataHandler extends Mechanic {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST) // Run last.
-    public void onJoinResult(AsyncPlayerPreLoginEvent evt) {
+    public void onJoinResult(PlayerLoginEvent evt) {
         String ip = evt.getAddress().toString().split("/")[1].split(":")[0];
-        if (evt.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED) {
-            KCPlayer.getPlayerMap().remove(evt.getUniqueId()); // Remove their data if they weren't let on.
-            Core.alertStaff(ChatColor.RED + evt.getName() + " (" + ChatColor.YELLOW + evt.getAddress().toString()
+
+        if (evt.getResult() != PlayerLoginEvent.Result.ALLOWED) {
+            KCPlayer.getPlayerMap().remove(evt.getPlayer().getUniqueId()); // Remove their data if they weren't let on.
+            Core.alertStaff(ChatColor.RED + evt.getPlayer().getName() + " (" + ChatColor.YELLOW + evt.getAddress().toString()
                     + ChatColor.RED + ") attempted login.");
             return;
         }
 
         QueryTools.queryData(d -> {
-            List<KCPlayer> maybe = d.filter(k -> k.getLastIP().equals(ip)).collect(Collectors.toList());
+            List<KCPlayer> maybe = d.filter(k -> k.getLastIP().equals(ip))
+                    .filter(k -> !k.getUsername().equals(evt.getPlayer().getName())).collect(Collectors.toList());
+            if (maybe.isEmpty())
+                return; // Nobody found.
+
             boolean banned = maybe.stream().filter(kcPlayer -> false).count() > 0; //TODO Grab real
-            Core.alertStaff(evt.getName() + " shares the same IP as " + maybe.stream().map(KCPlayer::getUsername)
-                    .collect(Collectors.joining(", ")));
-            //TODO: Punish if found.
+            Core.alertStaff(evt.getPlayer().getName() + " shares the same IP as " + maybe.stream()
+                    .map(KCPlayer::getUsername).collect(Collectors.joining(", ")));
+            //TODO: Punish if found banned.
         });
     }
 

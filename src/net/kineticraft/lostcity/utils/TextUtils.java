@@ -2,10 +2,12 @@ package net.kineticraft.lostcity.utils;
 
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.TranslatableComponent;
 import net.md_5.bungee.chat.ComponentSerializer;
-import net.minecraft.server.v1_11_R1.ChatBaseComponent;
-import net.minecraft.server.v1_11_R1.IChatBaseComponent;
+import net.minecraft.server.v1_12_R1.ChatBaseComponent;
+import net.minecraft.server.v1_12_R1.IChatBaseComponent;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 
 import java.util.Arrays;
 
@@ -135,5 +137,26 @@ public class TextUtils {
     public static int getLinesUsed(String text, int lineSize) {
         return Arrays.stream(text.split("\n")).mapToInt(line ->
                 (getPixelWidth(line) - MinecraftFont.DEFAULT.getCharWidth()) / lineSize).sum();
+    }
+
+    /**
+     * Send a localized message to the given CommandSender
+     * @param sender
+     * @param message
+     */
+    public static void sendLocalized(CommandSender sender, String message, Object... args) {
+        TranslatableComponent tc = new TranslatableComponent(message, args);
+        sender.sendMessage(tc);
+    }
+
+    /**
+     * Send a localized error message to the given CommandSender
+     * @param sender
+     * @param message
+     */
+    public static void sendLocalizedError(CommandSender sender, String message, Object... args) {
+        TranslatableComponent tc = new TranslatableComponent(message, args);
+        tc.setColor(net.md_5.bungee.api.ChatColor.RED);
+        sender.sendMessage(tc);
     }
 }

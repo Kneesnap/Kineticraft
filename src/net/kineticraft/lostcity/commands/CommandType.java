@@ -12,8 +12,9 @@ import lombok.Getter;
 public enum CommandType {
 
     CHAT("."),
-    SLASH("/"),
-    COMMAND_BLOCK("");
+    TRIGGER("/trigger "),
+    SLASH("/");
+    //COMMAND_BLOCK("");
 
     private final String prefix;
 }

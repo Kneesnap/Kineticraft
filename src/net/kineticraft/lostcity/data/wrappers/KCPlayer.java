@@ -2,6 +2,7 @@ package net.kineticraft.lostcity.data.wrappers;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.data.JsonData;
@@ -9,6 +10,9 @@ import net.kineticraft.lostcity.data.lists.JsonList;
 import net.kineticraft.lostcity.data.lists.StringList;
 import net.kineticraft.lostcity.data.maps.JsonMap;
 import net.kineticraft.lostcity.data.Jsonable;
+import net.kineticraft.lostcity.mechanics.MetadataManager;
+import net.kineticraft.lostcity.mechanics.MetadataManager.Metadata;
+import net.kineticraft.lostcity.mechanics.Vanish;
 import net.kineticraft.lostcity.mechanics.Voting;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.*;
@@ -40,12 +44,12 @@ public class KCPlayer implements Jsonable {
     private JsonData loadedData;
     private int monthlyVotes;
     private int totalVotes;
+    private long lastVote;
     private int pendingVotes;
     private int secondsPlayed;
     private Particle effect;
     private boolean vanished;
-
-    private int selectedDeath;
+    private int accountId;
 
     public KCPlayer(UUID uuid, JsonData data) {
         this.setUuid(uuid);
@@ -89,6 +93,14 @@ public class KCPlayer implements Jsonable {
     public boolean isOnline() {
         Player p = getPlayer();
         return p != null && p.isOnline();
+    }
+
+    /**
+     * Gets the death the player has selected.
+     * @return death
+     */
+    public JsonLocation getSelectedDeath() {
+        return getDeaths().getValueSafe(MetadataManager.getMetadata(getPlayer(), Metadata.COMPASS_DEATH).asInt());
     }
 
     /**
@@ -147,16 +159,25 @@ public class KCPlayer implements Jsonable {
      * and sending the "you have mail" message
      */
     public void updatePlayer() {
-        if (!isOnline())
+        Player player = getPlayer();
+        if (player == null)
             return; // This only applies to online players.
 
-        Player player = getPlayer();
         player.setPlayerListName(getDisplayName()); // Update tab name.
         Voting.giveRewards(player); // Give vote rewards, if any.
 
         if (!getMail().isEmpty())
             player.sendMessage(ChatColor.GOLD + "You have " + ChatColor.RED + getMail().size() + ChatColor.GOLD
                     + " unread messages. Use /mail to read them.");
+    }
+
+    /**
+     * Vanish or unvanish this player.
+     * @param vanishState
+     */
+    public void vanish(boolean vanishState) {
+        setVanished(vanishState);
+        Vanish.hidePlayers(getPlayer());
     }
 
     /**
@@ -172,7 +193,7 @@ public class KCPlayer implements Jsonable {
      * @return displayPrefix
      */
     public String getDisplayPrefix() {
-        return getIcon() != null ? getTemporaryRank().getColor() + getIcon() + getTemporaryRank().getNameColor() + " "
+        return getIcon() != null ? getTemporaryRank().getColor() + getIcon() + getTemporaryRank().getNameColor()
                 : getTemporaryRank().getChatPrefix();
     }
 
@@ -234,6 +255,23 @@ public class KCPlayer implements Jsonable {
         return new KCPlayer(uuid, isWrapper(uuid) ? JsonData.fromFile(getPath(uuid)) : new JsonData());
     }
 
+    /**
+     * Get an online user's data by its account id.
+     * @param aId
+     * @return player
+     */
+    public static KCPlayer getById(int aId) {
+        return Bukkit.getOnlinePlayers().stream().map(KCPlayer::getWrapper).filter(kc -> kc.getAccountId() == aId).findAny().orElse(null);
+    }
+
+    /**
+     * Generates a new account id.
+     * @return aId
+     */
+    private static int generateNewId() {
+        return Core.getFile("players/").listFiles().length + 1;
+    }
+
     private static String getPath(UUID uuid) {
         return "players/" + uuid.toString();
     }
@@ -254,6 +292,11 @@ public class KCPlayer implements Jsonable {
         setSecondsPlayed(data.getInt("secondsPlayed"));
         setEffect(data.getEnum("effect", Particle.class));
         setVanished(data.getBoolean("vanish"));
+        setLastVote(data.getLong("lastVote"));
+        setAccountId(data.getInt("accountId", generateNewId()));
+
+        if (getAccountId() == generateNewId())
+            writeData(); // Save immediately if we're a new player, as generateNewId goes off filecount.
     }
 
     @Override
@@ -275,6 +318,8 @@ public class KCPlayer implements Jsonable {
         data.setNum("secondsPlayed", getSecondsPlayed());
         data.setEnum("effect", getEffect());
         data.setBoolean("vanish", isVanished());
+        data.setNum("accountId", getAccountId());
+        data.setNum("lastVote", getLastVote());
         return data;
     }
 }

@@ -3,13 +3,16 @@ package net.kineticraft.lostcity.mechanics;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
+import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.potion.PotionEffectType;
 
 /**
  * Handles vanished players.
@@ -25,6 +28,12 @@ public class Vanish extends Mechanic {
         Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), () ->
             Bukkit.getOnlinePlayers().stream().filter(p -> KCPlayer.getWrapper(p).isVanished())
                     .forEach(p -> p.sendActionBar(ChatColor.GRAY + "You are vanished.")), 0L, 40L);
+    }
+
+    @EventHandler
+    public void onTab(PlayerChatTabCompleteEvent evt) {
+        Bukkit.getOnlinePlayers().stream().map(KCPlayer::getWrapper).filter(KCPlayer::isVanished)
+                .map(KCPlayer::getUsername).forEach(evt.getTabCompletions()::remove);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST) // Run after command logic.
@@ -57,14 +66,13 @@ public class Vanish extends Mechanic {
     public static void hidePlayers(Player player) {
         KCPlayer p = KCPlayer.getWrapper(player);
         boolean vanished = p.isVanished();
+        Utils.setPotion(player, PotionEffectType.INVISIBILITY, vanished);
 
         Bukkit.getOnlinePlayers().stream().filter(pl -> pl != player).forEach(pl -> {
-            if (KCPlayer.getWrapper(player).getRank().isAtLeast(EnumRank.MEDIA))
-                return;
-            if (vanished) {
-                pl.hidePlayer(player);
-            } else {
+            if (!vanished || KCPlayer.getWrapper(pl).getRank().isAtLeast(EnumRank.MEDIA)) {
                 pl.showPlayer(player);
+            } else {
+                pl.hidePlayer(player);
             }
         });
     }

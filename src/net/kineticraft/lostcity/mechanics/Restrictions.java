@@ -1,6 +1,7 @@
 package net.kineticraft.lostcity.mechanics;
 
 import net.kineticraft.lostcity.Core;
+import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -9,6 +10,8 @@ import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 import org.bukkit.event.player.PlayerRegisterChannelEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 /**
  * Restrictions - Contains basic restrictions / alerts about slightly questionable player behaviour.
@@ -43,6 +46,12 @@ public class Restrictions extends Mechanic {
                 && evt.getTo().getY() > evt.getFrom().getY() && evt.getVehicle().getVelocity().length() == 0)
             Core.alertStaff(ChatColor.RED + "[BoatFly] " + ChatColor.GRAY + evt.getVehicle().getPassenger().getName()
                     + " may be using BoatFly!");
+    }
+
+    @Override // Removes all infinite potion effects. (Players aren't supposed to keep them.)
+    public void onQuit(Player player) {
+        player.getActivePotionEffects().stream().map(PotionEffect::getType)
+                .forEach(t -> Utils.removeInfinitePotion(player, t));
     }
 
 

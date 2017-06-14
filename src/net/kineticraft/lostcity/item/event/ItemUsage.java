@@ -21,15 +21,11 @@ public enum ItemUsage {
 
     private final ItemUsage[] usages;
 
-    ItemUsage() {
-        this(null);
-    }
-
     ItemUsage(ItemUsage... usage) {
         this.usages = usage;
     }
 
     public ItemUsage[] getUsages() {
-        return usages != null ? usages : new ItemUsage[] {this};
+        return usages.length > 0 ? usages : new ItemUsage[] {this};
     }
 }

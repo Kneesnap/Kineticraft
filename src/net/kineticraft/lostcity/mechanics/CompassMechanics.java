@@ -56,18 +56,27 @@ public class CompassMechanics extends Mechanic {
             return;
         }
 
-        int newId = p.getSelectedDeath() >= p.getDeaths().size() + 2 ? 0 : p.getSelectedDeath() + 1;
+        int newId = MetadataManager.getMetadata(player, MetadataManager.Metadata.COMPASS_DEATH).asInt();
+        newId = p.getDeaths().hasIndex(newId + 1) ? newId + 1 : 0;
+
         player.sendMessage(ChatColor.GRAY + "Compass pointed at your "
                 + (newId > 0 ? (newId == 1 ? "second" : "third") + " to " : "") + "last death.");
-        p.setSelectedDeath(newId);
+        MetadataManager.setMetadata(player, MetadataManager.Metadata.COMPASS_DEATH, newId);
 
         updateCompass(player);
     }
 
+    /**
+     * Update the location the user's compass points to.
+     * Delays itself by a tick to compensate for cases like switching worlds.
+     *
+     * @param player
+     */
     private static void updateCompass(Player player) {
         Bukkit.getScheduler().runTask(Core.getInstance(), () -> {
-            KCPlayer p = KCPlayer.getWrapper(player);
-            player.setCompassTarget(p.getDeaths().get(p.getSelectedDeath()).getLocation());
+            JsonLocation death = KCPlayer.getWrapper(player).getSelectedDeath();
+            if (death != null)
+                player.setCompassTarget(death.getLocation());
         });
     }
 
@@ -75,5 +84,4 @@ public class CompassMechanics extends Mechanic {
     public void onJoin(Player player) {
         updateCompass(player);
     }
-
 }

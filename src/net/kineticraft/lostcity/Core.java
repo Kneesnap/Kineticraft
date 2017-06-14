@@ -1,6 +1,7 @@
 package net.kineticraft.lostcity;
 
 import jdk.nashorn.internal.runtime.linker.LinkerCallSite;
+import lombok.Cleanup;
 import lombok.Getter;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
 import org.bukkit.Bukkit;
@@ -11,7 +12,10 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.BufferedReader;
+import java.io.CharArrayReader;
 import java.io.File;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,9 +31,12 @@ public class Core extends JavaPlugin {
     @Getter
     private static Core instance;
 
+    private static final String[] FOLDERS = new String[] {"players", "messages"};
+
     @Override
     public void onEnable() {
         instance = this;
+        Arrays.stream(FOLDERS).forEach(Core::makeFolder); // Create all data folders.
         MechanicManager.registerMechanics(); // Initialize all plugin code.
     }
 
@@ -97,7 +104,7 @@ public class Core extends JavaPlugin {
      * Creates a folder if it does not exist.
      * @param folder
      */
-    public static void makeFolder(String folder) {
+    private static void makeFolder(String folder) {
         getFile(folder + "/").mkdirs();
     }
 
@@ -128,5 +135,41 @@ public class Core extends JavaPlugin {
      */
     public static List<Player> getOnlinePlayers() {
         return Bukkit.getOnlinePlayers().stream().filter(p -> !KCPlayer.getWrapper(p).isVanished()).collect(Collectors.toList());
+    }
+
+    /**
+     * Take a backup of the server.
+     */
+    public static void takeBackup() {
+        kineticaMessage("Server is backing up, expect lag!");
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "save-all");
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "save-off");
+
+        Bukkit.getScheduler().runTaskAsynchronously(getInstance(), () -> {
+            try {
+                final ProcessBuilder childBuilder = new ProcessBuilder("./backup.sh");
+                childBuilder.redirectErrorStream(true);
+                childBuilder.directory(getInstance().getDataFolder().getParentFile().getParentFile());
+                final Process child = childBuilder.start();
+
+                Bukkit.getScheduler().runTaskAsynchronously(getInstance(), () -> {
+                    try {
+                        @Cleanup BufferedReader reader = new BufferedReader(new InputStreamReader(child.getInputStream()));
+                        String line;
+                        while ((line = reader.readLine()) != null)
+                            Bukkit.getLogger().info(line);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+                child.waitFor();
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                Bukkit.getScheduler().runTask(getInstance(), () ->
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "save-on"));
+                kineticaMessage("Backup complete.");
+            }
+        });
     }
 }

@@ -24,11 +24,8 @@ public class AFK extends Mechanic {
     public void onEnable() {
         Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () -> {
             Bukkit.getOnlinePlayers().stream().filter(AFK::isAFK).forEach(p -> {
-                BukkitTask kickTask = Bukkit.getScheduler().runTaskLater(Core.getInstance(), () -> {
-                    p.kickPlayer(ChatColor.RED + "You were kicked for idling more than "
-                            + Configs.getMainConfig().getAfkLimit() + " minutes.");
-                    Core.warn(p.getName() + " was kicked for AFKing.");
-                }, 35 * 20L);
+                BukkitTask kickTask = Bukkit.getScheduler().runTaskLater(Core.getInstance(), () ->
+                    Callbacks.cancel(p, Callbacks.ListenerType.CHAT), 35 * 20L);
 
                 int numA = Utils.nextInt(20);
                 int numB = Utils.nextInt(20);
@@ -39,7 +36,12 @@ public class AFK extends Mechanic {
                         + " " + op + " " + numB + " = ?");
 
                 Runnable fail = () -> {
-                    p.kickPlayer(ChatColor.RED + "Incorrect answer to AFK check.");
+                    if (!p.isOnline())
+                        return;
+
+                    p.kickPlayer(ChatColor.RED + "You were kicked for idling more than "
+                            + Configs.getMainConfig().getAfkLimit() + " minutes.");
+                    Core.warn(p.getName() + " was kicked for AFKing.");
                     kickTask.cancel();
                 };
 
@@ -49,11 +51,11 @@ public class AFK extends Mechanic {
                         p.sendMessage(ChatColor.GREEN + "Correct.");
                         markActive(p);
                     } else {
-                        fail.run();
+                        p.kickPlayer(ChatColor.RED + "Incorrect answer.");
                     }
                 }, fail);
             });
-        }, 0L, 60 * 20L);
+        }, 0L, 30 * 20L);
     }
 
     @Override
@@ -77,8 +79,8 @@ public class AFK extends Mechanic {
      * @return isAfk
      */
     public static boolean isAFK(Player player) {
-        return !KCPlayer.getWrapper(player).getRank().isAtLeast(EnumRank.MEDIA) ?
-                MetadataManager.hasCooldown(player, "afk") : false;
+        return KCPlayer.getWrapper(player).getRank().isAtLeast(EnumRank.MEDIA) ? false
+                : !MetadataManager.hasCooldown(player, "active");
     }
 
     /**
@@ -86,6 +88,6 @@ public class AFK extends Mechanic {
      * @param player
      */
     public static void markActive(Player player) {
-        MetadataManager.setCooldown(player, "afk", Configs.getMainConfig().getAfkLimit() * 60 * 10);
+        MetadataManager.setCooldown(player, "active", Configs.getMainConfig().getAfkLimit() * 60 * 20);
     }
 }

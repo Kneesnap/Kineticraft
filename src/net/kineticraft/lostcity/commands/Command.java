@@ -2,6 +2,7 @@ package net.kineticraft.lostcity.commands;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -23,7 +24,7 @@ public abstract class Command {
     private String help;
     private List<String> alias;
 
-    @Setter private String lastAlias; // A hacky method to allow us to thow the player the usage with the alias they used.
+    @Setter private String lastAlias; // A hacky method to allow us to throw the player the usage with the alias they used.
 
     public Command(CommandType type, String usage, String help, String... alias) {
         this.type = type;
@@ -34,7 +35,7 @@ public abstract class Command {
 
     /**
      * Gets the command usage.
-     * @return
+     * @return usage
      */
     public String getUsage() {
         return "Usage: " + getCommandPrefix() + getLastAlias() + " " + getRawUsage();
@@ -42,7 +43,7 @@ public abstract class Command {
 
     /**
      * Get the minimum amount of required arguments for this command.
-     * @return
+     * @return minArgs
      */
     public int getMinArgs() {
         return (int) Arrays.stream(getRawUsage().split(" ")).filter(s -> s.startsWith("<") && s.endsWith(">")).count();
@@ -57,7 +58,7 @@ public abstract class Command {
 
     /**
      * Returns the string prefix that preceeds this command.
-     * @return
+     * @return prefix
      */
     public String getCommandPrefix() {
         return getType().getPrefix();
@@ -88,6 +89,9 @@ public abstract class Command {
     public void handle(CommandSender sender, String label, String[] args) {
         setLastAlias(label); // So this will show the alias last used in any usage messages to the player.
 
+        if (!canUse(sender, true))
+            return;
+
         if (args.length < getMinArgs()) {
             showUsage(sender);
             return;
@@ -97,8 +101,7 @@ public abstract class Command {
             onCommand(sender, args);
         } catch (NumberFormatException nfe) {
             // Couldn't get a number from input, such as from Integer.parseInt
-            String input = nfe.getLocalizedMessage().split(": ")[1];
-            sender.sendMessage(ChatColor.RED + "Invalid number " + input + ".");
+            sender.sendMessage(ChatColor.RED + "Invalid number '" + Utils.getInput(nfe) + "'.");
         } catch (IllegalArgumentException iae) {
             //Couldn't find an enum value, comes from methods such as ChatColor.valueOf
             Matcher mClassPath = Pattern.compile("No enum constant (.+)").matcher(iae.getLocalizedMessage());
@@ -134,4 +137,12 @@ public abstract class Command {
      * @param args
      */
     protected abstract void onCommand(CommandSender sender,  String[] args);
+
+    /**
+     * Can the given sender perform this command?
+     * @param sender
+     * @param showMessage
+     * @return canUse
+     */
+    public abstract boolean canUse(CommandSender sender, boolean showMessage);
 }

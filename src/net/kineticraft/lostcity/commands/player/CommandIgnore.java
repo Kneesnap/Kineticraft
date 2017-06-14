@@ -16,7 +16,7 @@ import org.bukkit.entity.Player;
 public class CommandIgnore extends PlayerCommand {
 
     public CommandIgnore() {
-        super(EnumRank.MU, CommandType.SLASH, true, "<player>", "Block messages from a player", "ignore");
+        super("<player>", "Block messages from a player", "ignore");
     }
 
     @Override
@@ -29,6 +29,6 @@ public class CommandIgnore extends PlayerCommand {
         }
 
         player.getIgnored().add(args[0]);
-        sender.sendMessage(ChatColor.GRAY + "You are now ignoring" + ChatColor.GREEN + args[0] + ChatColor.GRAY + ".");
+        sender.sendMessage(ChatColor.GRAY + "You are now ignoring " + ChatColor.GREEN + args[0] + ChatColor.GRAY + ".");
     }
 }

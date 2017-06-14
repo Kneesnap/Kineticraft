@@ -20,8 +20,8 @@ import org.bukkit.entity.Player;
 public class CommandMessage extends PlayerCommand {
 
     public CommandMessage() {
-        super(EnumRank.MU, CommandType.SLASH, false, "<player> <message>",
-                "Send a private message to a player.", "msg", "w", "tell", "whisper", "t");
+        super(EnumRank.MU, false, "<player> <message>", "Send a private message to a player.",
+                "msg", "w", "tell", "whisper", "t");
     }
 
     @Override

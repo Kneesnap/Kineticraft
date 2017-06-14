@@ -308,6 +308,25 @@ public class JsonData {
     }
 
     /**
+     * Load a long value.
+     * @param key
+     * @return long
+     */
+    public long getLong(String key) {
+        return getLong(key, 0L);
+    }
+
+    /**
+     * Load a long value. Defaults to fallback.
+     * @param key
+     * @param fallback
+     * @return long
+     */
+    public long getLong(String key, long fallback) {
+        return has(key) ? get(key).getAsLong() : fallback;
+    }
+
+    /**
      * Store a number value.
      * @param key
      * @param value

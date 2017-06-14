@@ -143,8 +143,15 @@ public class TextBuilder extends ComponentBuilder {
      * @return count
      */
     public int getLineCount(int lineSize) {
-        return TextUtils.getLinesUsed(getParts().stream().map(bc -> BaseComponent.toLegacyText(bc))
-                .collect(Collectors.joining()), lineSize);
+        return TextUtils.getLinesUsed(toLegacy(), lineSize);
+    }
+
+    /**
+     * Returns this in legacy format.
+     * @return legacy
+     */
+    public String toLegacy() {
+        return getParts().stream().map(bc -> BaseComponent.toLegacyText(bc)).collect(Collectors.joining());
     }
 
     /**

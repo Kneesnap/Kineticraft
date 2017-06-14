@@ -9,16 +9,20 @@ import net.kineticraft.lostcity.commands.misc.CommandGUI;
 import net.kineticraft.lostcity.commands.misc.CommandInfo;
 import net.kineticraft.lostcity.commands.player.*;
 import net.kineticraft.lostcity.commands.staff.*;
+import net.kineticraft.lostcity.commands.trigger.CommandTPATrigger;
 import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.guis.GUIType;
+import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.server.ServerCommandEvent;
+import org.bukkit.event.server.TabCompleteEvent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -42,6 +46,7 @@ public class Commands extends Mechanic {
 
         // Player Commands
         addCommand(new CommandAnnounce());
+        addCommand(new CommandBackup());
         addCommand(new CommandBright());
         addCommand(new CommandConfig());
         addCommand(new CommandDeathTeleport());
@@ -73,6 +78,8 @@ public class Commands extends Mechanic {
         addCommand(new CommandUnignore());
         addCommand(new CommandTestVote());
         addCommand(new CommandTPA());
+        addCommand(new CommandTPBook());
+        addCommand(new CommandTPATrigger());
         addCommand(new CommandVanish());
         addCommand(new CommandVote());
         addCommand(new CommandVotes());
@@ -90,7 +97,7 @@ public class Commands extends Mechanic {
     /**
      * Gets a list of commands by their specified type.
      * @param type
-     * @return
+     * @return commands
      */
     public static List<Command> getCommands(CommandType type) {
         return getCommands().stream().filter(c -> c.getType() == type || type == null).collect(Collectors.toList());
@@ -99,7 +106,7 @@ public class Commands extends Mechanic {
     /**
      * Gets a command by its alias.
      * @param alias
-     * @return
+     * @return cmd
      */
     public static Command getCommand(CommandType type,  String alias) {
         return getCommands(type).stream().filter(c -> c.getAlias().contains(alias.toLowerCase()))
@@ -109,11 +116,10 @@ public class Commands extends Mechanic {
     /**
      * Get a command label from a chat input line.
      * @param input
-     * @return
+     * @return label
      */
     private static String getLabel(CommandType type,  String input) {
-        String f = input.split(" ")[0];
-        return f.length() > type.getPrefix().length() ? f.substring(type.getPrefix().length()) : "";
+        return input.substring(type.getPrefix().length()).split(" ")[0];
     }
 
     /**
@@ -126,21 +132,18 @@ public class Commands extends Mechanic {
         if (!input.startsWith(type.getPrefix()))
             return false; // Not this command type.
 
+        input = input.substring(type.getPrefix().length()); // Remove the prefix.
         input = Chat.filterMessage(input); // Apply filter.
         List<String> split = new ArrayList<>(Arrays.asList(input.split(" "))); // remove() won't work with just asList
-        String cmd = getLabel(type, input);
+        String cmd = split.get(0);
         Command command = getCommand(type, cmd);
-        if (command == null) {
-            if (type == CommandType.CHAT)
-                Bukkit.getScheduler().runTask(Core.getInstance(),
-                        () -> sender.sendMessage(ChatColor.RED + "Unknown command. Type '.help' for help."));
+        if (command == null)
             return false; // Not a command.
-        }
 
         split.remove(0); // Remove the command from args.
         String[] args = split.toArray(new String[split.size()]);
 
-        // Don't run this async.
+        // Don't run this async. Can happen with chat commands.
         Bukkit.getScheduler().runTask(Core.getInstance(), () -> runCommand(command, sender, cmd, args));
         return true;
     }
@@ -155,31 +158,32 @@ public class Commands extends Mechanic {
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onChat(AsyncPlayerChatEvent evt) {
-        handleCommand(evt.getPlayer(), CommandType.CHAT, evt.getMessage());
+    @EventHandler
+    public void onTabComplete(TabCompleteEvent evt) {
+        List<Command> usable = getCommands().stream().filter(c -> c.canUse(evt.getSender(), false))
+                .collect(Collectors.toList());
+
+        for (Command c : usable)
+            c.getAlias().stream().map(a -> c.getCommandPrefix() + a).filter(l -> l.startsWith(evt.getBuffer()))
+                    .filter(l -> Utils.getCount(l, " ") == Utils.getCount(evt.getBuffer(), " "))
+                    .map(l -> l.substring(l.lastIndexOf(" ") + 1)).forEach(evt.getCompletions()::add);
     }
 
     @EventHandler(priority = EventPriority.LOW)
     public void onCommand(PlayerCommandPreprocessEvent evt) {
-        if (handleCommand(evt.getPlayer(), CommandType.SLASH, evt.getMessage()))
+        Player p = evt.getPlayer();
+        String input = evt.getMessage();
+
+        if (handleCommand(p, CommandType.SLASH, input) || handleCommand(p, CommandType.TRIGGER, input))
             evt.setCancelled(true); // Don't show 'unknown command....'
 
-        String label = getLabel(CommandType.CHAT, evt.getMessage());
-        Command cmd = getCommand(CommandType.CHAT, label);
-        if (cmd != null) {
-            evt.setCancelled(true);
-            evt.getPlayer().sendMessage(ChatColor.RED + "We use . commands due to sVanilla rules. (Try ." + label +")");
-        }
-
         if (evt.getMessage().startsWith("/ ")) {
-            Core.alertStaff(ChatColor.RED + "[AC] " + evt.getPlayer().getName() + ": " + ChatColor.GREEN
-                    + evt.getMessage().substring(2));
+            sendStaffChat(p.getName(), input.substring(2));
             evt.setCancelled(true);
             return;
         }
 
-        Core.alertStaff(ChatColor.RED + evt.getPlayer().getName() + ": " + ChatColor.GRAY + evt.getMessage());
+        Core.alertStaff(p.getName() + ": " + ChatColor.GRAY + input);
     }
 
     @EventHandler(priority = EventPriority.LOW)
@@ -188,9 +192,19 @@ public class Commands extends Mechanic {
             evt.setCancelled(true); // Handle console commands.
 
         if (evt.getCommand().startsWith(" ")) {
-            Core.alertStaff(ChatColor.RED + "[AC] Server: " + ChatColor.GREEN + evt.getCommand().substring(1));
+            sendStaffChat("Server", evt.getCommand().substring(1));
             evt.setCancelled(true);
         }
+    }
+
+    /**
+     * Send a message in staff-chat.
+     * @param sender
+     * @param message
+     */
+    private static void sendStaffChat(String sender, String message) {
+        Core.alertStaff("[AC] " + sender + ": " + ChatColor.GREEN + ChatColor.translateAlternateColorCodes(
+                '&', Chat.filterMessage(message)));
     }
 
     //TODO: Command block commands.
