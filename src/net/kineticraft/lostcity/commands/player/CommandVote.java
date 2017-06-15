@@ -21,5 +21,6 @@ public class CommandVote extends PlayerCommand {
                 .append("HERE").color(ChatColor.AQUA).bold(true).underlined(true)
                 .event(new ClickEvent(ClickEvent.Action.OPEN_URL, Configs.getMainConfig().getVoteURL()))
                 .append(" to vote for a reward.").bold(false).underlined(false).color(ChatColor.GRAY);
+        sender.sendMessage(cb.create());
     }
 }

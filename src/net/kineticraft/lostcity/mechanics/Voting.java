@@ -160,7 +160,7 @@ public class Voting extends Mechanic {
             });
 
             data.setTopVoter(null);
-            Core.announce("Votes have reset for the month of " + getMonthName() + "! Better start voting to get top voter! (.vote)");
+            Core.announce("Votes have reset for the month of " + getMonthName() + "! Better start voting to get top voter! (/vote)");
             data.saveToDisk();
         });
     }

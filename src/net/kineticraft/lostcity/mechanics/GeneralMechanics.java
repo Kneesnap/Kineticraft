@@ -61,18 +61,19 @@ public class GeneralMechanics extends Mechanic {
         player.sendMessage("");
 
 
+        // 50 tick difference.
         Bukkit.getScheduler().runTaskLater(Core.getInstance(), () ->
-                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1F, .6929134F), 5L);
+                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1F, .6929134F), 45L);
 
         Bukkit.getScheduler().runTaskLater(Core.getInstance(), () ->
-                player.playSound(player.getLocation(), Sound.ENTITY_HORSE_ARMOR, .85F, 1.480315F), 55L);
+                player.playSound(player.getLocation(), Sound.ENTITY_HORSE_ARMOR, .85F, 1.480315F), 95L);
     }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent evt) {
         if (evt.getPlayer().hasPlayedBefore())
             return;
-        Bukkit.getScheduler().runTask(Core.getInstance(), () -> p.teleport(Core.getMainWorld().getSpawnLocation()));
+        Bukkit.getScheduler().runTask(Core.getInstance(), () -> evt.getPlayer().teleport(Core.getMainWorld().getSpawnLocation()));
         Utils.getAllPlayersExcept(evt.getPlayer()).forEach(p -> p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1, 1.1F));
         Bukkit.broadcastMessage(ChatColor.GRAY + "Welcome " + ChatColor.GREEN + evt.getPlayer().getName()
                 + ChatColor.GRAY + " to " + ChatColor.BOLD + "Kineticraft" + ChatColor.GRAY + "!");

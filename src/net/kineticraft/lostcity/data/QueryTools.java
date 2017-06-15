@@ -86,7 +86,7 @@ public class QueryTools {
 
         // They're offline, load it then made changes.
         queryData(str -> {
-            KCPlayer p = str.filter(kc -> kc.getUsername().equalsIgnoreCase(username)).findAny().orElse(null);
+            KCPlayer p = str.filter(kc -> username.equalsIgnoreCase(kc.getUsername())).findAny().orElse(null);
             if (p == null) {
                 if (fail != null)
                     fail.run(); // Oh no, we couldn't find anyone matching this.

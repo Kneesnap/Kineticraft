@@ -106,6 +106,9 @@ public class MechanicManager implements Listener {
 
     private void announceStatus(Player player, String action) {
         KCPlayer kc = KCPlayer.getWrapper(player);
+        if (kc.isVanished())
+            return;
+
         Utils.broadcastExcept(ChatColor.YELLOW.toString() + ChatColor.BOLD + " > "
                 + (kc.getTemporaryRank().isAtLeast(EnumRank.THETA) ? kc.getTemporaryRank().getNameColor() : ChatColor.YELLOW)
                 + kc.getUsername() + ChatColor.YELLOW + " has " + action + ".", player);

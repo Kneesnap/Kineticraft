@@ -59,8 +59,10 @@ public class DataHandler extends Mechanic {
             return;
         }
 
+        System.out.println(KCPlayer.getWrapper(evt.getPlayer()));
+
         QueryTools.queryData(d -> {
-            List<KCPlayer> maybe = d.filter(k -> k.getLastIP().equals(ip))
+            List<KCPlayer> maybe = d.filter(k -> ip.equals(k.getLastIP()))
                     .filter(k -> !k.getUsername().equals(evt.getPlayer().getName())).collect(Collectors.toList());
             if (maybe.isEmpty())
                 return; // Nobody found.

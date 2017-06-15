@@ -10,6 +10,8 @@ import net.kineticraft.lostcity.commands.misc.CommandInfo;
 import net.kineticraft.lostcity.commands.player.*;
 import net.kineticraft.lostcity.commands.staff.*;
 import net.kineticraft.lostcity.commands.trigger.CommandTPATrigger;
+import net.kineticraft.lostcity.commands.trigger.CommandTriggerAccept;
+import net.kineticraft.lostcity.commands.trigger.CommandTriggerDecline;
 import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.guis.GUIType;
 import net.kineticraft.lostcity.utils.Utils;
@@ -79,10 +81,13 @@ public class Commands extends Mechanic {
         addCommand(new CommandTestVote());
         addCommand(new CommandTPA());
         addCommand(new CommandTPBook());
-        addCommand(new CommandTPATrigger());
         addCommand(new CommandVanish());
         addCommand(new CommandVote());
         addCommand(new CommandVotes());
+
+        addCommand(new CommandTPATrigger());
+        addCommand(new CommandTriggerAccept());
+        addCommand(new CommandTriggerDecline());
     }
 
     private static void addCommand(Command command) {

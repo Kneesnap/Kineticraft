@@ -38,6 +38,7 @@ public class CommandTPATrigger extends TriggerCommand {
                 return;
             }
 
+            receiver.sendMessage(ChatColor.GOLD + "Request accepted.");
             Utils.teleport(player, other.getDisplayName(), receiver.getLocation());
         }, () -> receiver.sendMessage(ChatColor.GOLD + "Request denied."), "Accept", "Decline");
     }

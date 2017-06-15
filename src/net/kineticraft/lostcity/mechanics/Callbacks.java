@@ -55,8 +55,8 @@ public class Callbacks extends Mechanic {
      */
     public static void promptConfirm(Player player, Runnable accept, Runnable deny, String yes, String no) {
         TextBuilder textBuilder = new TextBuilder("          ").append("[" + yes + "]").bold().color(ChatColor.GREEN)
-                .runCommand("confirm").showText(ChatColor.GREEN + "Click here to " + yes.toLowerCase() + ".")
-                .append("      ").append("[" + no + "]").color(ChatColor.RED).bold().runCommand("cancel")
+                .runCommand("/trigger accept set 1").showText(ChatColor.GREEN + "Click here to " + yes.toLowerCase() + ".")
+                .append("      ").append("[" + no + "]").color(ChatColor.RED).bold().runCommand("/trigger decline set 1")
                 .showText(ChatColor.RED + "Click here to " + no.toLowerCase() + ".");
 
         player.sendMessage(textBuilder.create());
