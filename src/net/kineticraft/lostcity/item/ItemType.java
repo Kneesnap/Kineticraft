@@ -2,8 +2,7 @@ package net.kineticraft.lostcity.item;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import net.kineticraft.lostcity.item.*;
-import net.kineticraft.lostcity.item.guis.*;
+import net.kineticraft.lostcity.item.display.*;
 import net.kineticraft.lostcity.item.items.ItemArmorStand;
 import net.kineticraft.lostcity.item.items.books.ItemBook;
 import net.kineticraft.lostcity.item.items.books.ItemTPABook;

@@ -1,4 +1,4 @@
-package net.kineticraft.lostcity.item.guis;
+package net.kineticraft.lostcity.item.display;
 
 import net.kineticraft.lostcity.item.ItemWrapper;
 import org.bukkit.inventory.ItemStack;

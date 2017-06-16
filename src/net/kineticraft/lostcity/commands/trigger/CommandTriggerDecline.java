@@ -6,6 +6,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 /**
+ * Command to decline a trigger prompt.
+ *
  * Created by Kneesnap on 6/14/2017.
  */
 public class CommandTriggerDecline extends TriggerCommand {
@@ -16,8 +18,8 @@ public class CommandTriggerDecline extends TriggerCommand {
 
     @Override
     protected void onCommand(Player sender, int value) {
-        if (Callbacks.hasListener(sender, Callbacks.ListenerType.CHAT)) {
-            sender.chat("cancel");
+        if (Callbacks.hasListener(sender, Callbacks.ListenerType.TRIGGER)) {
+            Callbacks.cancel(sender, Callbacks.ListenerType.TRIGGER);
         } else {
             sender.sendMessage(ChatColor.RED + "You have nothing to decline.");
         }

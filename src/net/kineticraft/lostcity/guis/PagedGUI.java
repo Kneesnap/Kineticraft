@@ -1,6 +1,6 @@
 package net.kineticraft.lostcity.guis;
 
-import net.kineticraft.lostcity.item.guis.GUIItem;
+import net.kineticraft.lostcity.item.display.GUIItem;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;

@@ -88,6 +88,7 @@ public class Configs extends Mechanic {
         ANNOUNCER(RawConfig.class),
         DISCORD(RawConfig.class),
         RANKS(RawConfig.class),
+        HELP(RawConfig.class),
         INFO(RawConfig.class);
 
         private final Class<? extends Config> configClass;

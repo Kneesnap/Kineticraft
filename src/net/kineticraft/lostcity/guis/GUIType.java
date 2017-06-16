@@ -9,7 +9,7 @@ import net.kineticraft.lostcity.utils.ReflectionUtil;
 import org.bukkit.entity.Player;
 
 /**
- * A list of all constructable guis.
+ * A list of all constructable display.
  *
  * Created by Kneesnap on 6/8/2017.
  */

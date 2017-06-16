@@ -1,13 +1,12 @@
 package net.kineticraft.lostcity.guis;
 
-import com.sun.activation.registries.MailcapParseException;
 import lombok.Getter;
 import lombok.Setter;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
 import net.kineticraft.lostcity.item.ItemManager;
 import net.kineticraft.lostcity.item.ItemWrapper;
-import net.kineticraft.lostcity.item.guis.GUIItem;
+import net.kineticraft.lostcity.item.display.GUIItem;
 import net.kineticraft.lostcity.mechanics.GUIManager;
 import net.kineticraft.lostcity.utils.PacketUtil;
 import org.bukkit.Bukkit;
@@ -42,7 +41,7 @@ public abstract class GUI {
     private GUI previous;
     @Setter private boolean parent;
 
-    private static int ROW_SIZE = 9;
+    protected static int ROW_SIZE = 9;
     private static final List<InventoryAction> IGNORE = Arrays.asList(InventoryAction.COLLECT_TO_CURSOR,
             InventoryAction.DROP_ONE_SLOT, InventoryAction.DROP_ALL_SLOT, InventoryAction.NOTHING, InventoryAction.UNKNOWN);
 
@@ -53,6 +52,14 @@ public abstract class GUI {
 
         // Don't allow async openings, and lets the subclass' constructor to finish setup.
         Bukkit.getScheduler().runTask(Core.getInstance(), this::open);
+    }
+
+    /**
+     * Get the amount of rows in this gui.
+     * @return rows
+     */
+    public int getRows() {
+        return getInventory().getSize() / ROW_SIZE;
     }
 
     /**
@@ -125,25 +132,33 @@ public abstract class GUI {
     }
 
     /**
+     * Go to the slot index of the given row.
+     * @param slot
+     */
+    protected void rowSlot(int slot) {
+        setSlotIndex((getSlotIndex() / ROW_SIZE) * ROW_SIZE + (slot - 1));
+    }
+
+    /**
      * Moves the slot counter right a specified number of slots.
      * @param slots
      */
     protected void skipSlots(int slots) {
-        setSlotIndex(getSlotIndex() + slots);
+        this.slotIndex += slots;
     }
 
     /**
      * Skips to the next row in the GUI.
      */
     protected void nextRow() {
-        setSlotIndex((((getSlotIndex() - 1) / 9) + 1) * 9);
+        setSlotIndex((((getSlotIndex() - 1) / ROW_SIZE) + 1) * ROW_SIZE);
     }
 
     /**
      * Skips to the bottom row of the GUI.
      */
     protected void toBottom() {
-        setSlotIndex(getInventory().getSize() - 9);
+        setSlotIndex(getInventory().getSize() - ROW_SIZE);
     }
 
     /**
@@ -185,7 +200,7 @@ public abstract class GUI {
      */
     protected void fillRow(ItemStack itemStack) {
         int startSlot = getSlotIndex();
-        for (int i = 0; i < (((startSlot / 9) + 1) * 9) - startSlot; i++)
+        for (int i = 0; i < (((startSlot / ROW_SIZE) + 1) * ROW_SIZE) - startSlot; i++)
             addItem(itemStack);
     }
 

@@ -250,7 +250,7 @@ public class Utils {
      * @return int
      */
     public static int randInt(int min, int max) {
-        return ThreadLocalRandom.current().nextInt(max - min) + min;
+        return max + min > 0 ? nextInt(max - min) + min : 0;
     }
 
     /**
@@ -299,7 +299,7 @@ public class Utils {
      * @return rand
      */
     public static int nextInt(int max) {
-        return randInt(0, max - 1);
+        return ThreadLocalRandom.current().nextInt(max);
     }
 
     /**
@@ -515,5 +515,19 @@ public class Utils {
         }
 
         giveItem(player, item.generateItem());
+    }
+
+    /**
+     * Is this input an integer?
+     * @param input
+     * @return integer
+     */
+    public static boolean isInteger(String input) {
+        try {
+            Integer.parseInt(input);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 }

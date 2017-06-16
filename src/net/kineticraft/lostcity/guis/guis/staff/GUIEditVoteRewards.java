@@ -17,7 +17,7 @@ import java.util.function.Consumer;
 
 /**
  * Allows staff to edit vote rewards.
- * This is kind of yucky. Please don't use this as a baseline for creating other guis. Use interfaces instead.
+ * This is kind of yucky. Please don't use this as a baseline for creating other display. Use interfaces instead.
  * Created on a time crunch.
  *
  * Created by Kneesnap on 6/8/2017.
@@ -87,7 +87,7 @@ public class GUIEditVoteRewards extends GUI {
 
     private void addReward(Consumer<ItemWrapper> iw) {
         addItem(Material.WOOL, ChatColor.GREEN + "Add Reward", "Click here to add a new vote reward.")
-                .anyClick(e -> new GUIItemEditor(getPlayer(), iw)).setWoolColor(DyeColor.LIME);
+                .anyClick(e -> new GUIItemEditor(getPlayer(), iw)).setColor(DyeColor.LIME);
     }
 
     /**

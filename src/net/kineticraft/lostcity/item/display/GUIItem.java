@@ -1,4 +1,4 @@
-package net.kineticraft.lostcity.item.guis;
+package net.kineticraft.lostcity.item.display;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

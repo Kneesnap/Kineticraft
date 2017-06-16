@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
+import net.kineticraft.lostcity.commands.Command;
 import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.data.JsonData;
 import net.kineticraft.lostcity.data.lists.JsonList;
@@ -16,6 +17,7 @@ import net.kineticraft.lostcity.mechanics.Vanish;
 import net.kineticraft.lostcity.mechanics.Voting;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.*;
+import org.bukkit.advancement.Advancement;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -160,7 +162,7 @@ public class KCPlayer implements Jsonable {
      */
     public void updatePlayer() {
         Player player = getPlayer();
-        if (player == null)
+        if (player == null || !player.isOnline())
             return; // This only applies to online players.
 
         player.setPlayerListName(getDisplayName()); // Update tab name.
@@ -169,6 +171,22 @@ public class KCPlayer implements Jsonable {
         if (!getMail().isEmpty())
             player.sendMessage(ChatColor.GOLD + "You have " + ChatColor.RED + getMail().size() + ChatColor.GOLD
                     + " unread messages. Use /mail to read them.");
+
+        // Give advancements.
+        for (EnumRank rank : EnumRank.values()) {
+            Advancement advancement = Bukkit.getAdvancement(rank.getKey());
+            if (getRank().isAtLeast(rank) && advancement != null)
+                player.getAdvancementProgress(advancement).awardCriteria("rankup");
+        }
+    }
+
+    /**
+     * Are we ignoring the given player?
+     * @param sender
+     * @return ignoring
+     */
+    public boolean isIgnoring(CommandSender sender) {
+        return getIgnored().containsIgnoreCase(sender.getName());
     }
 
     /**

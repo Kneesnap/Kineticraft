@@ -59,12 +59,48 @@ public class TextUtils {
     }
 
     /**
+     * Return a string that will pad text to center it.
+     * @param text
+     * @param lineSize
+     * @param fillWith
+     * @return padding
+     */
+    private static String padCenter(String text, int lineSize, String fillWith) {
+        if (text == null || text.length() == 0)
+            return "";
+
+        // Perform calculations.
+        int centerPixel = (lineSize / 2) - 6;
+        int pixelSize = getPixelWidth(text);
+        int blankPixels = centerPixel - (pixelSize / 2);
+        int spaceSize = getPixelWidth(fillWith);
+
+        String padding = "";
+        for (int i = 0; i < blankPixels; i += spaceSize)
+            padding += fillWith;
+
+        return padding;
+    }
+
+    /**
+     * Center a text component for display to a player.
+     * @param tb
+     * @param lineSize
+     * @param fillWith
+     * @return centered
+     */
+    public static TextBuilder center(TextBuilder tb, int lineSize, String fillWith) {
+        String padding = padCenter(tb.toLegacy(), lineSize, fillWith);
+        return tb.preceed(padding).append(padding);
+    }
+
+    /**
      * Center text for displaying in chat.
      * @param text
      * @return centered
      */
     public static String centerChat(String text) {
-        return centerText(text, CHAT_SIZE);
+        return centerText(text, CHAT_SIZE, " ");
     }
 
     /**
@@ -73,32 +109,21 @@ public class TextUtils {
      * @return centered
      */
     public static String centerBook(String text) {
-        return centerText(text, BOOK_SIZE);
+        return centerText(text, BOOK_SIZE, " ");
     }
 
     /**
      * Center text, for displaying on a given line size.
      * @param text
      * @param lineSize
+     * @param fillWith
      * @return centered
      */
-    private static String centerText(String text, int lineSize) {
+    public static String centerText(String text, int lineSize, String fillWith) {
         if (text == null || text.length() == 0)
             return "";
-
-        // Perform calculations.
-        int centerPixel = (lineSize / 2) - 6;
-        int pixelSize = getPixelWidth(text);
-        int blankPixels = centerPixel - (pixelSize / 2);
-        int addedPixels = 0;
-
-        // Add spaces
-        while(addedPixels < blankPixels) {
-            text = " " + text;
-            addedPixels += MinecraftFont.SPACE.getCharWidth();
-        }
-
-        return text;
+        String padding = padCenter(text, lineSize, fillWith);
+        return padding + text + padding;
     }
 
     /**

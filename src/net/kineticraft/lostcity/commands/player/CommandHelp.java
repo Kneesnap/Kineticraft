@@ -3,20 +3,23 @@ package net.kineticraft.lostcity.commands.player;
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.Command;
 import net.kineticraft.lostcity.commands.PlayerCommand;
-import net.kineticraft.lostcity.data.wrappers.KCPlayer;
+import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.mechanics.Commands;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * CommandHelp - List help for all commands
- * TODO: Seperate pages.
  *
  * Created by Kneesnap on 5/30/2017.
  */
 public class CommandHelp extends PlayerCommand {
+
+    private static int PER_PAGE = 10;
 
     public CommandHelp() {
         super(EnumRank.MU, false, "[command]", "Display command usage.", "help", "?");
@@ -26,11 +29,14 @@ public class CommandHelp extends PlayerCommand {
     protected void onCommand(CommandSender sender, String[] args) {
         String bar = ChatColor.DARK_GREEN.toString() + ChatColor.STRIKETHROUGH + "-----";
 
-        if (args.length == 0) {
-            sender.sendMessage(bar + ChatColor.GRAY + " Command Help " + bar);
-            Commands.getCommands().stream().filter(c -> c.canUse(sender, false) && c.getHelp() != null)
-                    .forEach(cmd ->  sender.sendMessage(ChatColor.GRAY + cmd.getCommandPrefix()
-                            + cmd.getName() + ": " + ChatColor.WHITE + cmd.getHelp()));
+        if (args.length == 0 || Utils.isInteger(args[0])) {
+            List<String> help = getHelp(sender);
+            int page = Math.max(1, args.length > 0 ? Integer.parseInt(args[0]) : 1);
+            int totalPages = (int) Math.ceil(help.size() / (double) page);
+
+            sender.sendMessage(bar + ChatColor.GRAY + " Command Help (" + page + "/" + totalPages + ") " + bar);
+            for (int i = (page - 1) * PER_PAGE; i < Math.min(help.size(), page * PER_PAGE); i++)
+                sender.sendMessage(help.get(i)); // Show help
         } else {
 
             Command cmd = Commands.getCommand(null, args[0]);
@@ -48,5 +54,18 @@ public class CommandHelp extends PlayerCommand {
             if (cmd instanceof PlayerCommand)
                 sender.sendMessage("Minimum Rank: " + ((PlayerCommand) cmd).getMinRank().getName());
         }
+    }
+
+    /**
+     * Return all command help.
+     * @return help
+     */
+    private static List<String> getHelp(CommandSender sender) {
+        List<String> list = Commands.getCommands().stream().filter(c -> c.canUse(sender, false) && c.getHelp() != null)
+                .map(cmd ->  ChatColor.GRAY + cmd.getCommandPrefix() + cmd.getName() + ": " + ChatColor.WHITE + cmd.getHelp())
+                .collect(Collectors.toList());
+        list.addAll(Configs.getRawConfig(Configs.ConfigType.HELP).getLines());
+        //TODO: Alphabetize
+        return list;
     }
 }

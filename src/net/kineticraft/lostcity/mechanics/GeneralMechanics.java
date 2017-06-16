@@ -1,8 +1,10 @@
 package net.kineticraft.lostcity.mechanics;
 
 import net.kineticraft.lostcity.Core;
+import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
+import net.kineticraft.lostcity.guis.guis.staff.GUIMerchantEditor;
 import net.kineticraft.lostcity.utils.TextUtils;
 import net.kineticraft.lostcity.utils.Utils;
 import net.minecraft.server.v1_12_R1.EntityEnderDragon;
@@ -15,7 +17,10 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Merchant;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
 
 /**
  * GeneralMechanics - Small general mechanics.
@@ -23,6 +28,9 @@ import org.bukkit.potion.PotionEffectType;
  * Created by Kneesnap on 5/29/2017.
  */
 public class GeneralMechanics extends Mechanic {
+
+
+    private static Objective idObjective;
 
     @Override
     public void onEnable() {
@@ -47,6 +55,12 @@ public class GeneralMechanics extends Mechanic {
                     p.getWorld().spawnParticle(w.getEffect(), p.getLocation(), 10);
             }
         }, 0L, 20L);
+
+
+        idObjective = Bukkit.getScoreboardManager().getMainScoreboard().getObjective("ids");
+        if (idObjective == null)
+            idObjective = Bukkit.getScoreboardManager().getMainScoreboard().registerNewObjective("id", "dummy");
+        idObjective.setDisplaySlot(DisplaySlot.PLAYER_LIST);
     }
 
     @Override
@@ -67,6 +81,16 @@ public class GeneralMechanics extends Mechanic {
 
         Bukkit.getScheduler().runTaskLater(Core.getInstance(), () ->
                 player.playSound(player.getLocation(), Sound.ENTITY_HORSE_ARMOR, .85F, 1.480315F), 95L);
+
+        //player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+        idObjective.getScore(player.getName()).setScore(KCPlayer.getWrapper(player).getAccountId());
+    }
+
+    @EventHandler
+    public void onVillagerInteract(PlayerInteractEntityEvent evt) {
+        if (evt.getRightClicked() instanceof Merchant && evt.getPlayer().isSneaking()
+                && Utils.getRank(evt.getPlayer()).isAtLeast(EnumRank.MOD))
+            new GUIMerchantEditor(evt.getPlayer(), (Merchant) evt.getRightClicked());
     }
 
     @EventHandler
@@ -109,6 +133,6 @@ public class GeneralMechanics extends Mechanic {
     @EventHandler // Water-vision.
     public void onWaterTraverse(PlayerMoveEvent evt) {
         Utils.setPotion(evt.getPlayer(), PotionEffectType.WATER_BREATHING,
-                evt.getPlayer().getVehicle() == null && evt.getTo().getBlock().isLiquid());
+                evt.getPlayer().getVehicle() == null && evt.getTo().clone().add(0, 1, 0).getBlock().isLiquid());
     }
 }

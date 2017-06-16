@@ -1,6 +1,6 @@
 package net.kineticraft.lostcity.utils;
 
-import net.kineticraft.lostcity.item.guis.GenericItem;
+import net.kineticraft.lostcity.item.display.GenericItem;
 import net.md_5.bungee.api.chat.*;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
@@ -22,6 +22,18 @@ public class TextBuilder extends ComponentBuilder {
 
     public TextBuilder(String text) {
         super(text);
+    }
+
+    /**
+     * Add text to the start of this message.
+     * No method calls after this will effect this message due to how ComponentBuilder works.
+     *
+     * @param text
+     * @return this
+     */
+    public TextBuilder preceed(String text) {
+        getParts().add(0, new TextComponent(text));
+        return this;
     }
 
     @Override // Don't retain any previous formatting.
@@ -151,7 +163,7 @@ public class TextBuilder extends ComponentBuilder {
      * @return legacy
      */
     public String toLegacy() {
-        return getParts().stream().map(bc -> BaseComponent.toLegacyText(bc)).collect(Collectors.joining());
+        return getParts().stream().map(BaseComponent::toLegacyText).collect(Collectors.joining());
     }
 
     /**

@@ -5,6 +5,7 @@ import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.StaffCommand;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
 import net.kineticraft.lostcity.data.QueryTools;
+import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -26,7 +27,7 @@ public class CommandSetRank extends StaffCommand {
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
         EnumRank newRank = EnumRank.getByName(args[1]);
-        EnumRank myRank = sender instanceof Player ? KCPlayer.getWrapper((Player) sender).getRank() : EnumRank.DEV;
+        EnumRank myRank = Utils.getRank(sender);
 
         if (newRank == null) {
             sender.sendMessage(ChatColor.RED + "Unknown rank '" + args[1] + "'.");
@@ -55,8 +56,8 @@ public class CommandSetRank extends StaffCommand {
     @Override
     protected void showUsage(CommandSender sender) {
         super.showUsage(sender);
-        EnumRank myRank = sender instanceof Player ? KCPlayer.getWrapper((Player) sender).getRank() : EnumRank.DEV;
-        sender.sendMessage(ChatColor.RED + "Ranks:" + Arrays.stream(EnumRank.values()).filter(myRank::isAtLeast)
-                .map(EnumRank::getFullName).collect(Collectors.joining(" ", ChatColor.RED + "Ranks: ", "")));
+        EnumRank myRank = Utils.getRank(sender);
+        sender.sendMessage(Arrays.stream(EnumRank.values()).filter(myRank::isAtLeast).map(EnumRank::getFullName)
+                .collect(Collectors.joining(" ", ChatColor.RED + "Ranks: ", "")));
     }
 }

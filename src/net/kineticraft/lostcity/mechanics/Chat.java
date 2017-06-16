@@ -19,11 +19,8 @@ public class Chat extends Mechanic {
         evt.setMessage(filterMessage(evt.getMessage()));
         evt.setFormat(KCPlayer.getWrapper(evt.getPlayer()).getDisplayPrefix() + " %s: " + ChatColor.WHITE + "%s");
 
-        // Prevent ignored players from receiving this message.
-        long t = System.currentTimeMillis();
-        evt.getRecipients().stream().map(KCPlayer::getWrapper).filter(k ->
-                k.getIgnored().containsIgnoreCase(evt.getPlayer().getName())).forEach(evt.getRecipients()::remove);
-        System.out.println(System.currentTimeMillis() - t);
+        evt.getRecipients().stream().filter(p -> KCPlayer.getWrapper(p).getIgnored().containsIgnoreCase(evt.getPlayer()
+                .getName())).forEach(evt.getRecipients()::remove);
     }
 
     /**

@@ -4,8 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.config.configs.MainConfig;
+import net.kineticraft.lostcity.data.lists.StringList;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.ChatColor;
+import org.bukkit.NamespacedKey;
 
 import java.util.Arrays;
 
@@ -80,6 +82,14 @@ public enum EnumRank {
      */
     public boolean isAtLeast(EnumRank other) {
         return ordinal() >= other.ordinal();
+    }
+
+    /**
+     * Return the advancement MC namespace key.
+     * @return key
+     */
+    public NamespacedKey getKey() {
+        return NamespacedKey.minecraft("rank_" + name().toLowerCase());
     }
 
     /**

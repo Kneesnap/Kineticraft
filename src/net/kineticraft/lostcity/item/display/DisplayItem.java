@@ -1,11 +1,15 @@
-package net.kineticraft.lostcity.item.guis;
+package net.kineticraft.lostcity.item.display;
 
 import lombok.Getter;
 import net.kineticraft.lostcity.item.ItemWrapper;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Represents an Item that only needs editting for display purposes, likely to show up in a GUI.
@@ -16,6 +20,9 @@ import org.bukkit.inventory.meta.SkullMeta;
 public class DisplayItem extends ItemWrapper {
 
     private ItemWrapper baseItem;
+
+    private static final List<Material> WOOL_DATA = Arrays.asList(Material.WOOL, Material.STAINED_GLASS, Material.STAINED_GLASS_PANE,
+            Material.STAINED_CLAY);
 
     public DisplayItem(ItemStack item) {
         this(new GenericItem(item), item);
@@ -67,18 +74,7 @@ public class DisplayItem extends ItemWrapper {
      */
     @SuppressWarnings("deprecation")
     public DisplayItem setColor(DyeColor color) {
-        setMeta(color.getDyeData());
-        return this;
-    }
-
-    /**
-     * Set the DyeColor of this item.
-     * @param color
-     * @return this
-     */
-    @SuppressWarnings("deprecation")
-    public DisplayItem setWoolColor(DyeColor color) {
-        setMeta(color.getWoolData());
+        setMeta(WOOL_DATA.contains(getItem().getType()) ? color.getWoolData() : color.getDyeData());
         return this;
     }
 

@@ -47,6 +47,9 @@ public class CommandMail extends PlayerCommand {
                 sender.sendMessage(ChatColor.GOLD + "Mail sent: ");
                 sender.sendMessage(mail);
 
+                if (p.isIgnoring(sender))
+                    return;
+
                 p.getMail().add(mail);
                 p.updatePlayer();
             }, () -> sender.sendMessage(ChatColor.RED + "Player not found."));

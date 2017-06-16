@@ -4,9 +4,15 @@ import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
 import net.kineticraft.lostcity.utils.Utils;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.advancement.Advancement;
+import org.bukkit.advancement.AdvancementProgress;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Rankup to the next rank, if possible.
@@ -26,7 +32,7 @@ public class CommandRankup extends PlayerCommand {
         if (player.getRank().isAtLeast(EnumRank.OMEGA)) {
             sender.sendMessage(ChatColor.RED + "You cannot rankup further.");
             if (player.getRank() == EnumRank.OMEGA)
-                sender.sendMessage(ChatColor.RED + "You can rankup to rank Theta by donating with /donate.");
+                sender.sendMessage(ChatColor.RED + "However, you may rankup to rank Theta by donating with /donate.");
             return;
         }
 
@@ -39,7 +45,7 @@ public class CommandRankup extends PlayerCommand {
             return;
         }
 
-        int accomplishments = 0; //TODO - Get once 1.12 is implemented.
+        int accomplishments = getAdvancements((Player) sender);
         if (nextRank.getAccomplishmentsNeeded() > accomplishments) {
             sender.sendMessage(ChatColor.RED + "You need to complete "
                     + (nextRank.getAccomplishmentsNeeded() - accomplishments) + " more accomplishments.");
@@ -47,5 +53,16 @@ public class CommandRankup extends PlayerCommand {
         }
 
         player.setRank(nextRank);
+    }
+
+    /**
+     * Return the number of advancements the player has completed.
+     * @param player
+     * @return count
+     */
+    private static int getAdvancements(Player player) {
+        List<Advancement> advancements = new ArrayList<>();
+        Bukkit.advancementIterator().forEachRemaining(advancements::add);
+        return (int) advancements.stream().map(player::getAdvancementProgress).filter(AdvancementProgress::isDone).count();
     }
 }

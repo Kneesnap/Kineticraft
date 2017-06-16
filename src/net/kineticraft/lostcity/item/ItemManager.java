@@ -1,9 +1,7 @@
 package net.kineticraft.lostcity.item;
 
-import com.google.common.reflect.Reflection;
-import net.kineticraft.lostcity.item.guis.GenericItem;
+import net.kineticraft.lostcity.item.display.GenericItem;
 import net.kineticraft.lostcity.utils.ReflectionUtil;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;

@@ -26,10 +26,7 @@ public class CommandMessage extends PlayerCommand {
 
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
-
-        String sName = Utils.getSenderName(sender);
         String message = ChatColor.DARK_GRAY + ": " + ChatColor.WHITE + String.join(" ", skipArgs(args, 1));
-
         CommandSender receiver = args[0].equalsIgnoreCase("CONSOLE")
                 ? Bukkit.getConsoleSender() : Bukkit.getPlayer(args[0]);
 
@@ -37,18 +34,23 @@ public class CommandMessage extends PlayerCommand {
             sender.sendMessage(ChatColor.RED + "Player is offline.");
             return;
         }
+
+        // Send display to sender
         String rName = Utils.getSenderName(receiver);
-
-        receiver.sendMessage(ChatColor.DARK_GRAY.toString() + ChatColor.BOLD + "FROM " + sName + message);
         sender.sendMessage(ChatColor.DARK_GRAY.toString() + ChatColor.BOLD + "TO " + rName + message);
+        if (sender instanceof Player)
+            MetadataManager.setMetadata((Player) sender, MetadataManager.Metadata.LAST_WHISPER, receiver.getName());
 
+        // Send display to receiver.
         if (receiver instanceof Player) {
             Player p = (Player) receiver;
+            if (KCPlayer.getWrapper(p).isIgnoring(sender))
+                return;
+
             p.playSound(p.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1, .75F);
             MetadataManager.setMetadata(p, MetadataManager.Metadata.LAST_WHISPER, sender.getName());
         }
 
-        if (sender instanceof Player)
-            MetadataManager.setMetadata((Player) sender, MetadataManager.Metadata.LAST_WHISPER, receiver.getName());
+        receiver.sendMessage(ChatColor.DARK_GRAY.toString() + ChatColor.BOLD + "FROM " + Utils.getSenderName(sender) + message);
     }
 }

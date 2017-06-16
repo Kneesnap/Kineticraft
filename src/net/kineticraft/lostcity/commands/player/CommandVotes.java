@@ -40,7 +40,7 @@ public class CommandVotes extends PlayerCommand {
             for (int i = 0; i < show; i++) {
                 KCPlayer player = list.get(i);
                 sender.sendMessage(ChatColor.YELLOW.toString() + (i + 1) + ") "
-                        + (player.getUsername().equals(p.getUsername()) ? ChatColor.GREEN : ChatColor.AQUA)
+                        + (p.getUsername().equals(player.getUsername()) ? ChatColor.GREEN : ChatColor.AQUA)
                         + player.getUsername() + ChatColor.GRAY.toString() + ": " + player.getMonthlyVotes());
             }
 

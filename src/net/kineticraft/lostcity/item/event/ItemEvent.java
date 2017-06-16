@@ -5,7 +5,7 @@ import lombok.Setter;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.item.ItemManager;
 import net.kineticraft.lostcity.item.ItemWrapper;
-import net.kineticraft.lostcity.item.guis.GenericItem;
+import net.kineticraft.lostcity.item.display.GenericItem;
 import net.kineticraft.lostcity.utils.ReflectionUtil;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.ChatColor;

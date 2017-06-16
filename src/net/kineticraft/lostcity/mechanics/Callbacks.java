@@ -31,9 +31,6 @@ public class Callbacks extends Mechanic {
 
     public static String CANCEL_MESSAGE = ChatColor.RED.toString() + ChatColor.BOLD + "CANCELLED";
 
-    private static final StringList ACCEPT = new StringList("yes", "confirm", "accept");
-    private static final StringList DENY = new StringList("no", "cancel", "deny", "decline");
-
 
     /**
      * Prompt the player a yes or no listener with clickable buttons.
@@ -60,24 +57,9 @@ public class Callbacks extends Mechanic {
                 .showText(ChatColor.RED + "Click here to " + no.toLowerCase() + ".");
 
         player.sendMessage(textBuilder.create());
-        listenForConfirmation(player, accept, deny);
-    }
-
-    /**
-     * Listen for the player to reply yes or no.
-     * @param player
-     * @param accept
-     * @param deny
-     */
-    public static void listenForConfirmation(Player player, Runnable accept, Runnable deny) {
-        listenForChat(player, m -> {
-            if (ACCEPT.containsIgnoreCase(m)) {
+        listen(player, ListenerType.TRIGGER, x -> {
+            if (accept != null)
                 accept.run();
-            } else {
-                if (!DENY.containsIgnoreCase(m))
-                    player.sendMessage(ChatColor.RED + "Unknown response, defaulting to 'cancel'.");
-                deny.run();
-            }
         }, deny);
     }
 
@@ -134,7 +116,7 @@ public class Callbacks extends Mechanic {
                 player.sendMessage(ChatColor.RED + "'" + m + "' is not a valid number.");
                 fail.run();
             }
-        }, fail::run);
+        }, fail);
     }
 
     /**
@@ -214,7 +196,7 @@ public class Callbacks extends Mechanic {
      * @param type
      * @param obj
      */
-    private static boolean accept(Player player, ListenerType type, Object obj) {
+    public static boolean accept(Player player, ListenerType type, Object obj) {
         if (!hasListener(player, type))
             return false;
 
@@ -267,8 +249,9 @@ public class Callbacks extends Mechanic {
     }
 
     public enum ListenerType {
-        CHAT,
-        ENTITY;
+        TRIGGER, // Happens from /trigger accept or /trigger decline.
+        CHAT, // From a chat message
+        ENTITY; // From clicking on an entity.
     }
 
     @AllArgsConstructor

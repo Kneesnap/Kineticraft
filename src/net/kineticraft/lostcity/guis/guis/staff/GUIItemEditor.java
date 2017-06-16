@@ -1,12 +1,9 @@
 package net.kineticraft.lostcity.guis.guis.staff;
 
 import net.kineticraft.lostcity.guis.GUI;
-import net.kineticraft.lostcity.guis.GUIType;
 import net.kineticraft.lostcity.item.ItemManager;
 import net.kineticraft.lostcity.item.ItemWrapper;
-import net.kineticraft.lostcity.item.guis.DisplayItem;
-import net.kineticraft.lostcity.item.guis.GUIItem;
-import net.kineticraft.lostcity.item.guis.ItemToggle;
+import net.kineticraft.lostcity.item.display.DisplayItem;
 import net.kineticraft.lostcity.mechanics.Callbacks;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.ChatColor;
@@ -17,10 +14,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 /**
  * Allows staff to edit items.
@@ -57,7 +52,7 @@ public class GUIItemEditor extends GUI {
 
         toRight(1);
         addItem(Material.WOOL, ChatColor.GREEN + "Done", "Click here when you're done making changes.")
-                .anyClick(e -> close()).setWoolColor(DyeColor.LIME);
+                .anyClick(e -> close()).setColor(DyeColor.LIME);
 
         nextRow();
         nextRow();
@@ -165,7 +160,7 @@ public class GUIItemEditor extends GUI {
                     }
 
                     new GUIItemPicker(getPlayer(), enchants, i -> edit.getItem().addUnsafeEnchantments(i.getEnchantments()));
-                }).setWoolColor(DyeColor.YELLOW);
+                }).setColor(DyeColor.YELLOW);
     }
 
     private void update(String message) {

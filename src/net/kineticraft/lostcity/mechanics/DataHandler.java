@@ -25,7 +25,7 @@ public class DataHandler extends Mechanic {
     @Override
     public void onEnable() {
         // Every 5 minutes, save all playerdata
-        Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), () -> saveAllPlayers(), 0, 5 * 60 * 20);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), DataHandler::saveAllPlayers, 0, 5 * 60 * 20);
     }
 
     /**
@@ -38,8 +38,7 @@ public class DataHandler extends Mechanic {
     @EventHandler(priority = EventPriority.LOWEST) // Run first, so other things like ban checker have data.
     public void onAttemptJoin(AsyncPlayerPreLoginEvent evt) {
         try {
-            if (evt.getLoginResult() == AsyncPlayerPreLoginEvent.Result.ALLOWED)
-                KCPlayer.getPlayerMap().put(evt.getUniqueId(), KCPlayer.getWrapper(evt.getUniqueId())); // Load player.
+            KCPlayer.getPlayerMap().put(evt.getUniqueId(), KCPlayer.getWrapper(evt.getUniqueId())); // Load player.
         } catch (Exception e) {
             e.printStackTrace();
             Core.warn("Failed to load " + evt.getName() + "'s player data!");
@@ -58,8 +57,6 @@ public class DataHandler extends Mechanic {
                     + ChatColor.RED + ") attempted login.");
             return;
         }
-
-        System.out.println(KCPlayer.getWrapper(evt.getPlayer()));
 
         QueryTools.queryData(d -> {
             List<KCPlayer> maybe = d.filter(k -> ip.equals(k.getLastIP()))
@@ -83,7 +80,7 @@ public class DataHandler extends Mechanic {
     public void onQuit(Player p) {
         // Don't use KCPlayer#getWrapper, since we don't want to load the data if it's not there.
         KCPlayer player = KCPlayer.getPlayerMap().get(p.getUniqueId());
-        if (player != null)
+        if (player != null && player.getLastIP() != null) // Only save if data exists and the player has been online at least once.
             player.writeData(); // Save the player's data to disk.
         KCPlayer.getPlayerMap().remove(p.getUniqueId()); // Unload their data from memory.
     }

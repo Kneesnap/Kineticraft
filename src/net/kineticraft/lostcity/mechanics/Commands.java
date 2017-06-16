@@ -66,6 +66,7 @@ public class Commands extends Mechanic {
         addCommand(new CommandMessage());
         addCommand(new CommandMail());
         addCommand(new CommandMined());
+        addCommand(new CommandNick());
         addCommand(new CommandReboot());
         addCommand(new CommandReply());
         addCommand(new CommandRanks());
@@ -75,6 +76,7 @@ public class Commands extends Mechanic {
         addCommand(new CommandInfo(Configs.ConfigType.RULES, "Server rules.", "rules", "info"));
         addCommand(new CommandSetHome());
         addCommand(new CommandSetRank());
+        addCommand(new CommandSkull());
         addCommand(new CommandSpawn());
         addCommand(new CommandSpectator());
         addCommand(new CommandUnignore());
