@@ -5,6 +5,7 @@ import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
 import net.kineticraft.lostcity.guis.guis.staff.GUIMerchantEditor;
+import net.kineticraft.lostcity.item.ItemManager;
 import net.kineticraft.lostcity.utils.TextUtils;
 import net.kineticraft.lostcity.utils.Utils;
 import net.minecraft.server.v1_12_R1.EntityEnderDragon;
@@ -57,7 +58,7 @@ public class GeneralMechanics extends Mechanic {
         }, 0L, 20L);
 
 
-        idObjective = Bukkit.getScoreboardManager().getMainScoreboard().getObjective("ids");
+        idObjective = Bukkit.getScoreboardManager().getMainScoreboard().getObjective("id");
         if (idObjective == null)
             idObjective = Bukkit.getScoreboardManager().getMainScoreboard().registerNewObjective("id", "dummy");
         idObjective.setDisplaySlot(DisplaySlot.PLAYER_LIST);
@@ -97,6 +98,7 @@ public class GeneralMechanics extends Mechanic {
     public void onPlayerJoin(PlayerJoinEvent evt) {
         if (evt.getPlayer().hasPlayedBefore())
             return;
+        Utils.giveItem(evt.getPlayer(), ItemManager.makeClaimShovel());
         Bukkit.getScheduler().runTask(Core.getInstance(), () -> evt.getPlayer().teleport(Core.getMainWorld().getSpawnLocation()));
         Utils.getAllPlayersExcept(evt.getPlayer()).forEach(p -> p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1, 1.1F));
         Bukkit.broadcastMessage(ChatColor.GRAY + "Welcome " + ChatColor.GREEN + evt.getPlayer().getName()

@@ -6,6 +6,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +21,7 @@ public class ItemManager {
     /**
      * Load an item object from an ItemStack.
      * @param itemStack
-     * @return
+     * @return item
      */
     public static ItemWrapper constructItem(ItemStack itemStack) {
         ItemType itemType = ItemWrapper.getType(itemStack);
@@ -33,7 +34,7 @@ public class ItemManager {
      * @param material
      * @param name
      * @param lore
-     * @return
+     * @return item
      */
     public static ItemStack createItem(Material material,  String name, String... lore) {
         return createItem(material, (short) 0, name, lore);
@@ -45,7 +46,7 @@ public class ItemManager {
      * @param data
      * @param name
      * @param lore
-     * @return
+     * @return item
      */
     public static ItemStack createItem(Material material, short data, String name, String... lore) {
         ItemStack itemStack = new ItemStack(material, 1, data);
@@ -57,5 +58,26 @@ public class ItemManager {
         meta.setLore(loreList);
         itemStack.setItemMeta(meta);
         return itemStack;
+    }
+
+    /**
+     * Create a claim shovel.
+     * @return shovel
+     */
+    public static ItemStack makeClaimShovel() {
+        return createItem(Material.GOLD_SPADE, ChatColor.YELLOW + "Claim Shovel", "Use this to claim land as your own.");
+    }
+
+    /**
+     * Creates a skull with a given owner.
+     * @param username
+     * @return skull
+     */
+    public static ItemStack makeSkull(String username) {
+        ItemStack skull = createItem(Material.SKULL, (short) 3, username + "'s skull.");
+        ItemMeta meta = skull.getItemMeta();
+        ((SkullMeta) meta).setOwner(username);
+        skull.setItemMeta(meta);
+        return skull;
     }
 }

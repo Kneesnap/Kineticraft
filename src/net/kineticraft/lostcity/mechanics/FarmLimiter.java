@@ -53,7 +53,8 @@ public class FarmLimiter extends Mechanic {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityDamage(EntityDamageByEntityEvent evt) {
         Entity e = evt.getEntity();
-        if (e instanceof Player || (e instanceof Projectile && ((Projectile) e).getShooter() instanceof Player))
+        Entity a = evt.getDamager();
+        if (a instanceof Player || (a instanceof Projectile && ((Projectile) a).getShooter() instanceof Player))
             addPlayerDamage(e, evt.getDamage()); // Count all damage delt by players.
     }
 
@@ -74,6 +75,8 @@ public class FarmLimiter extends Mechanic {
      */
     private static void addPlayerDamage(Entity entity, double damage) {
         MetadataManager.setMetadata(entity, MetadataManager.Metadata.PLAYER_DAMAGE, getPlayerDamage(entity) + damage);
+        System.out.println("Human damage: " + getPlayerDamage(entity));
+        System.out.println("Needed: " + getDamageNeeded((LivingEntity) entity));
     }
 
 

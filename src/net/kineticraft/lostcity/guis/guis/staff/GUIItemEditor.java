@@ -47,6 +47,14 @@ public class GUIItemEditor extends GUI {
     public void addItems() {
         ItemStack display = edit.generateItem();
 
+        addItem(Material.BUCKET, ChatColor.AQUA + "Load Item", "Drop an item onto here to edit it.").anyClick(e -> {
+            if (e.getEvent().getCursor() == null || e.getEvent().getCursor().getType() == Material.AIR)
+                return;
+
+            this.edit = new DisplayItem(e.getEvent().getCursor());
+            reconstruct();
+        });
+
         center(1);
         addItem(display).anyClick(e -> Utils.giveItem(getPlayer(), edit.generateItem()));
 

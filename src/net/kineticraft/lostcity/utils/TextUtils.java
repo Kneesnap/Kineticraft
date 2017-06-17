@@ -54,7 +54,7 @@ public class TextUtils {
      * @param components
      * @return mojangson
      */
-    public static String toString(BaseComponent[] components) {
+    public static String toString(BaseComponent... components) {
         return ComponentSerializer.toString(components);
     }
 
@@ -62,13 +62,13 @@ public class TextUtils {
      * Return a string that will pad text to center it.
      * @param text
      * @param lineSize
-     * @param fillWith
      * @return padding
      */
-    private static String padCenter(String text, int lineSize, String fillWith) {
+    private static String padCenter(String text, int lineSize) {
         if (text == null || text.length() == 0)
             return "";
 
+        String fillWith = " ";
         // Perform calculations.
         int centerPixel = (lineSize / 2) - 6;
         int pixelSize = getPixelWidth(text);
@@ -86,12 +86,10 @@ public class TextUtils {
      * Center a text component for display to a player.
      * @param tb
      * @param lineSize
-     * @param fillWith
      * @return centered
      */
-    public static TextBuilder center(TextBuilder tb, int lineSize, String fillWith) {
-        String padding = padCenter(tb.toLegacy(), lineSize, fillWith);
-        return tb.preceed(padding).append(padding);
+    public static TextBuilder center(TextBuilder tb, int lineSize) {
+        return tb.preceed(padCenter(tb.toLegacy(), lineSize));
     }
 
     /**
@@ -100,7 +98,7 @@ public class TextUtils {
      * @return centered
      */
     public static String centerChat(String text) {
-        return centerText(text, CHAT_SIZE, " ");
+        return centerText(text, CHAT_SIZE);
     }
 
     /**
@@ -109,21 +107,17 @@ public class TextUtils {
      * @return centered
      */
     public static String centerBook(String text) {
-        return centerText(text, BOOK_SIZE, " ");
+        return centerText(text, BOOK_SIZE);
     }
 
     /**
      * Center text, for displaying on a given line size.
      * @param text
      * @param lineSize
-     * @param fillWith
      * @return centered
      */
-    public static String centerText(String text, int lineSize, String fillWith) {
-        if (text == null || text.length() == 0)
-            return "";
-        String padding = padCenter(text, lineSize, fillWith);
-        return padding + text + padding;
+    public static String centerText(String text, int lineSize) {
+        return text != null || text.length() > 0 ? padCenter(text, lineSize) + text : "";
     }
 
     /**

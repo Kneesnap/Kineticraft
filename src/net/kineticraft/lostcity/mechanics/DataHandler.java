@@ -58,6 +58,8 @@ public class DataHandler extends Mechanic {
             return;
         }
 
+        KCPlayer.getWrapper(evt.getPlayer()).writeData(); // Save data.
+
         QueryTools.queryData(d -> {
             List<KCPlayer> maybe = d.filter(k -> ip.equals(k.getLastIP()))
                     .filter(k -> !k.getUsername().equals(evt.getPlayer().getName())).collect(Collectors.toList());

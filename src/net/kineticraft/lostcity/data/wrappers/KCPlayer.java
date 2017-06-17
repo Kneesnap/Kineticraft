@@ -51,6 +51,7 @@ public class KCPlayer implements Jsonable {
     private int secondsPlayed;
     private Particle effect;
     private boolean vanished;
+    private String nickname;
     private int accountId;
 
     public KCPlayer(UUID uuid, JsonData data) {
@@ -145,6 +146,8 @@ public class KCPlayer implements Jsonable {
             Bukkit.broadcastMessage(ChatColor.GREEN + " * " + ChatColor.YELLOW + getUsername() + ChatColor.GREEN
                     + " has ranked up to " + newRank.getColor() + newRank.getName() + ChatColor.GREEN + ". * ");
 
+        this.rank = newRank;
+
         if (isOnline()) {
             // Tell the player they've been promoted.
             Player player = getPlayer();
@@ -152,8 +155,6 @@ public class KCPlayer implements Jsonable {
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1F, 1F);
             updatePlayer();
         }
-
-        this.rank = newRank;
     }
 
     /**
@@ -178,6 +179,8 @@ public class KCPlayer implements Jsonable {
             if (getRank().isAtLeast(rank) && advancement != null)
                 player.getAdvancementProgress(advancement).awardCriteria("rankup");
         }
+
+        player.setDisplayName(getNickname() != null ? getNickname() : player.getName());
     }
 
     /**
@@ -220,7 +223,7 @@ public class KCPlayer implements Jsonable {
      * @return displayName
      */
     public String getDisplayName() {
-        return getDisplayPrefix() + " " + getUsername();
+        return getDisplayPrefix() + " " + (getNickname() != null ? getNickname() : getUsername());
     }
 
     /**
@@ -236,7 +239,7 @@ public class KCPlayer implements Jsonable {
      * @return coloredName
      */
     public String getColoredName() {
-        return getTemporaryRank().getNameColor() + getUsername();
+        return getTemporaryRank().getNameColor() + (getNickname() != null ? getNickname() : getUsername());
     }
 
     /**
@@ -312,9 +315,7 @@ public class KCPlayer implements Jsonable {
         setVanished(data.getBoolean("vanish"));
         setLastVote(data.getLong("lastVote"));
         setAccountId(data.getInt("accountId", generateNewId()));
-
-        if (getAccountId() == generateNewId())
-            writeData(); // Save immediately if we're a new player, as generateNewId goes off filecount.
+        setNickname(data.getString("nickname"));
     }
 
     @Override
@@ -338,6 +339,7 @@ public class KCPlayer implements Jsonable {
         data.setBoolean("vanish", isVanished());
         data.setNum("accountId", getAccountId());
         data.setNum("lastVote", getLastVote());
+        data.setString("nickname", getNickname());
         return data;
     }
 }

@@ -1,6 +1,7 @@
 package net.kineticraft.lostcity.utils;
 
 import net.kineticraft.lostcity.Core;
+import net.minecraft.server.v1_12_R1.ExceptionEntityNotFound;
 import org.bukkit.Bukkit;
 
 import java.lang.reflect.Field;
@@ -107,6 +108,16 @@ public class ReflectionUtil {
             classes[i] = REPLACE.containsKey(cls) ? REPLACE.get(cls) : cls; // Primitives need to be replaced.
         }
         return classes;
+    }
+
+
+    public static void setField(Object o, String varName, Object val) {
+        try {
+            o.getClass().getDeclaredField(varName).set(o, val);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Core.warn("Failed to set field '" + varName + "'.");
+        }
     }
 
     public static Object getField(Object o, String field) {

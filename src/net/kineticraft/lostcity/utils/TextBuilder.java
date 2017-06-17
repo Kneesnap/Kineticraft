@@ -163,7 +163,7 @@ public class TextBuilder extends ComponentBuilder {
      * @return legacy
      */
     public String toLegacy() {
-        return getParts().stream().map(BaseComponent::toLegacyText).collect(Collectors.joining());
+        return getParts().stream().map(TextUtils::toString).collect(Collectors.joining());
     }
 
     /**

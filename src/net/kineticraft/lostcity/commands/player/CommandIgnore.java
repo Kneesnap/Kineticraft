@@ -28,6 +28,11 @@ public class CommandIgnore extends PlayerCommand {
             return;
         }
 
+        if (sender.getName().equalsIgnoreCase(args[0])) {
+            sender.sendMessage(ChatColor.RED + "You cannot ignore yourself.");
+            return;
+        }
+
         player.getIgnored().add(args[0]);
         sender.sendMessage(ChatColor.GRAY + "You are now ignoring " + ChatColor.GREEN + args[0] + ChatColor.GRAY + ".");
     }

@@ -3,6 +3,7 @@ package net.kineticraft.lostcity.config;
 import lombok.Getter;
 import net.kineticraft.lostcity.Core;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -28,7 +29,10 @@ public class RawConfig extends Config {
             if (!file.exists())
                 file.createNewFile();
 
-            this.lines = new ArrayList<>(Files.readAllLines(file.toPath(), StandardCharsets.UTF_8));
+            this.lines = new ArrayList<>();
+            for (String s : Files.readAllLines(file.toPath(), StandardCharsets.UTF_8))
+                this.lines.add(ChatColor.translateAlternateColorCodes('&', s));
+
         } catch (Exception e) {
             e.printStackTrace();
             Bukkit.getLogger().warning("Failed to load " + getFileName());

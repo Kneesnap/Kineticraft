@@ -9,6 +9,7 @@ import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,7 +33,7 @@ public class CommandHelp extends PlayerCommand {
         if (args.length == 0 || Utils.isInteger(args[0])) {
             List<String> help = getHelp(sender);
             int page = Math.max(1, args.length > 0 ? Integer.parseInt(args[0]) : 1);
-            int totalPages = (int) Math.ceil(help.size() / (double) page);
+            int totalPages = help.size() / PER_PAGE + Math.min(1, help.size() % PER_PAGE);
 
             sender.sendMessage(bar + ChatColor.GRAY + " Command Help (" + page + "/" + totalPages + ") " + bar);
             for (int i = (page - 1) * PER_PAGE; i < Math.min(help.size(), page * PER_PAGE); i++)
@@ -65,7 +66,6 @@ public class CommandHelp extends PlayerCommand {
                 .map(cmd ->  ChatColor.GRAY + cmd.getCommandPrefix() + cmd.getName() + ": " + ChatColor.WHITE + cmd.getHelp())
                 .collect(Collectors.toList());
         list.addAll(Configs.getRawConfig(Configs.ConfigType.HELP).getLines());
-        //TODO: Alphabetize
-        return list;
+        return list.stream().sorted(Comparator.comparing(String::toString)).collect(Collectors.toList());
     }
 }
