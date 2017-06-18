@@ -59,6 +59,15 @@ public class TextUtils {
     }
 
     /**
+     * Convert base components to legacy text.
+     * @param bc
+     * @return
+     */
+    public static String toLegacy(BaseComponent... bc) {
+        return BaseComponent.toLegacyText(bc);
+    }
+
+    /**
      * Return a string that will pad text to center it.
      * @param text
      * @param lineSize

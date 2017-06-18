@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.kineticraft.lostcity.guis.GUI;
 import net.kineticraft.lostcity.guis.GUIType;
-import net.kineticraft.lostcity.mechanics.GUIManager;
+import net.kineticraft.lostcity.guis.GUIManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;

@@ -145,7 +145,8 @@ public class Utils {
                 if (tpTime[0] > 0) {
                     player.sendMessage(ChatColor.WHITE + "Teleporting... " + ChatColor.UNDERLINE + tpTime[0] + "s");
                 } else {
-                    player.teleport(location.add(0, 2, 0));
+                    player.setNoDamageTicks(100);
+                    player.teleport(location.clone().add(0, 2, 0));
                     player.playSound(player.getLocation(), Sound.BLOCK_LAVA_POP, 1F, 1.333F);
                 }
 
@@ -160,9 +161,12 @@ public class Utils {
     /**
      * Turn milliseconds into a user friendly string.
      * @param time
-     * @return
+     * @return formatted
      */
     public static String formatTime(long time) {
+        if (time == -1)
+            return "never";
+
         time /= 1000;
         String formatted = "";
         for (int i = 0; i < TimeInterval.values().length; i++) {
@@ -174,7 +178,34 @@ public class Utils {
                 time -= temp;
             }
         }
-        return formatted.equals("") ? "" : formatted.substring(1);
+        return formatted.length() > 0 ? formatted.substring(1) : "now";
+    }
+
+    /**
+     * Formats milliseconds into a user friendly display.
+     * Different from formatTime because this does not use abbreviations.
+     *
+     * @param time
+     * @return formatted
+     */
+    public static String formatTimeFull(long time) {
+        if (time == -1)
+            return "Never";
+
+        time /= 1000;
+        String formatted = "";
+
+        for (int i = 0; i < TimeInterval.values().length; i++) {
+            TimeInterval iv = TimeInterval.values()[TimeInterval.values().length - i - 1];
+            if (time >= iv.getInterval()) {
+                int temp = (int) (time - (time % iv.getInterval()));
+                int add = temp / iv.getInterval();
+                formatted += " " + add + " " + capitalize(iv.name() + "s");
+                time -= temp;
+            }
+        }
+
+        return formatted.length() > 0 ? formatted.substring(1) : "Now";
     }
 
     @AllArgsConstructor @Getter

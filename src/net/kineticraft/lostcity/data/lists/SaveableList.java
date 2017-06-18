@@ -80,6 +80,14 @@ public abstract class SaveableList<T> implements Iterable<T> {
     }
 
     /**
+     * Return the last element of this list, if possible.
+     * @return lastElement
+     */
+    public T last() {
+        return getValueSafe(size() - 1);
+    }
+
+    /**
      * Load this array from json.
      * @param array
      */

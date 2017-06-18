@@ -3,9 +3,11 @@ package net.kineticraft.lostcity.mechanics;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 import org.bukkit.event.player.PlayerRegisterChannelEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -52,6 +54,13 @@ public class Restrictions extends Mechanic {
     public void onQuit(Player player) {
         player.getActivePotionEffects().stream().map(PotionEffect::getType)
                 .forEach(t -> Utils.removeInfinitePotion(player, t));
+    }
+
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent evt) {
+        if (evt.getBlock().getType() == Material.DIAMOND_ORE)
+            Core.alertStaff(ChatColor.BLUE + evt.getPlayer().getName() + " mined some "
+                    + ChatColor.AQUA + "diamond ore" + ChatColor.BLUE + ".");
     }
 
 

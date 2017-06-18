@@ -74,7 +74,7 @@ public class ItemManager {
      * @return skull
      */
     public static ItemStack makeSkull(String username) {
-        ItemStack skull = createItem(Material.SKULL, (short) 3, username + "'s skull.");
+        ItemStack skull = createItem(Material.SKULL_ITEM, (short) 3, username + "'s skull.");
         ItemMeta meta = skull.getItemMeta();
         ((SkullMeta) meta).setOwner(username);
         skull.setItemMeta(meta);

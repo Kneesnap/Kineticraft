@@ -47,6 +47,12 @@ public class DataHandler extends Mechanic {
         }
     }
 
+    @EventHandler(priority = EventPriority.HIGHEST) // Run first, so other things like ban checker have data.
+    public void onJoinFail(AsyncPlayerPreLoginEvent evt) {
+        if (evt.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED)
+            KCPlayer.getPlayerMap().remove(evt.getUniqueId());
+    }
+
     @EventHandler(priority = EventPriority.HIGHEST) // Run last.
     public void onJoinResult(PlayerLoginEvent evt) {
         String ip = evt.getAddress().toString().split("/")[1].split(":")[0];

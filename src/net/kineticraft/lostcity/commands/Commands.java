@@ -1,4 +1,4 @@
-package net.kineticraft.lostcity.mechanics;
+package net.kineticraft.lostcity.commands;
 
 import lombok.Getter;
 import net.kineticraft.lostcity.Core;
@@ -12,6 +12,8 @@ import net.kineticraft.lostcity.commands.staff.*;
 import net.kineticraft.lostcity.commands.trigger.*;
 import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.guis.GUIType;
+import net.kineticraft.lostcity.mechanics.Chat;
+import net.kineticraft.lostcity.mechanics.Mechanic;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -47,6 +49,7 @@ public class Commands extends Mechanic {
         addCommand(new CommandAnnounce());
         addCommand(new CommandBackup());
         addCommand(new CommandBright());
+        addCommand(new CommandInfo(Configs.ConfigType.COLORS, "List minecraft colors", "color", "colors", "colour", "colours"));
         addCommand(new CommandCondense());
         addCommand(new CommandConfig());
         addCommand(new CommandDeathTeleport());
@@ -67,6 +70,7 @@ public class Commands extends Mechanic {
         addCommand(new CommandMined());
         addCommand(new CommandNick());
         addCommand(new CommandPTime());
+        addCommand(new CommandPunish());
         addCommand(new CommandReboot());
         addCommand(new CommandReply());
         addCommand(new CommandRanks());
@@ -74,6 +78,7 @@ public class Commands extends Mechanic {
         addCommand(new CommandRTP());
         addCommand(new CommandRescue());
         addCommand(new CommandInfo(Configs.ConfigType.RULES, "Server rules.", "rules", "info"));
+        addCommand(new CommandSeen());
         addCommand(new CommandSetHome());
         addCommand(new CommandSetRank());
         addCommand(new CommandShovel());

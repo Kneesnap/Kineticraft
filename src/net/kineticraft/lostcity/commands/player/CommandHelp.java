@@ -4,7 +4,7 @@ import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.Command;
 import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.config.Configs;
-import net.kineticraft.lostcity.mechanics.Commands;
+import net.kineticraft.lostcity.commands.Commands;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;

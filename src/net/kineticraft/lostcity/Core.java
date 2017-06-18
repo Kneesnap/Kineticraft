@@ -4,6 +4,7 @@ import jdk.nashorn.internal.runtime.linker.LinkerCallSite;
 import lombok.Cleanup;
 import lombok.Getter;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
+import net.kineticraft.lostcity.utils.Dog;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -38,15 +39,6 @@ public class Core extends JavaPlugin {
         instance = this;
         Arrays.stream(FOLDERS).forEach(Core::makeFolder); // Create all data folders.
         MechanicManager.registerMechanics(); // Initialize all plugin code.
-    }
-
-    /**
-     * Broadcasts a message sent by Kinetica.
-     * @param message
-     */
-    public static void kineticaMessage(String message) {
-        Bukkit.broadcastMessage(ChatColor.DARK_RED.toString() + ChatColor.BOLD + "DOG" + ChatColor.GREEN + " Kinetica"
-                + ChatColor.GRAY + ": " + ChatColor.WHITE + message);
     }
 
     /**
@@ -141,7 +133,7 @@ public class Core extends JavaPlugin {
      * Take a backup of the server.
      */
     public static void takeBackup() {
-        kineticaMessage("Server is backing up, expect lag!");
+        Dog.KINETICA.say("Server is backing up, expect lag!");
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "save-all");
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "save-off");
 
@@ -168,7 +160,7 @@ public class Core extends JavaPlugin {
             } finally {
                 Bukkit.getScheduler().runTask(getInstance(), () ->
                         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "save-on"));
-                kineticaMessage("Backup complete.");
+                Dog.KINETICA.say("Backup complete.");
             }
         });
     }

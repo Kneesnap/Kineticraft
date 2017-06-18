@@ -1,4 +1,4 @@
-package net.kineticraft.lostcity.guis.guis.staff;
+package net.kineticraft.lostcity.guis.staff;
 
 import net.kineticraft.lostcity.guis.PagedGUI;
 import net.kineticraft.lostcity.item.ItemType;

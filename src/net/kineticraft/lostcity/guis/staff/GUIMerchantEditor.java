@@ -1,7 +1,6 @@
-package net.kineticraft.lostcity.guis.guis.staff;
+package net.kineticraft.lostcity.guis.staff;
 
 import net.kineticraft.lostcity.guis.GUI;
-import net.kineticraft.lostcity.item.ItemWrapper;
 import net.kineticraft.lostcity.utils.ReflectionUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
@@ -9,8 +8,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Merchant;
-
-import java.util.function.Consumer;
 
 /**
  * Allows editting of Merchants.

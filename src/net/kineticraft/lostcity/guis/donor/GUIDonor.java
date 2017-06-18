@@ -1,17 +1,13 @@
-package net.kineticraft.lostcity.guis.guis.donor;
+package net.kineticraft.lostcity.guis.donor;
 
-import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
 import net.kineticraft.lostcity.guis.GUI;
 import net.kineticraft.lostcity.guis.GUIType;
 import net.kineticraft.lostcity.mechanics.Callbacks;
-import net.kineticraft.lostcity.mechanics.Chat;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-
-import java.util.Arrays;
 
 /**
  * GUI that lets donors control their effects.
@@ -28,7 +24,7 @@ public class GUIDonor extends GUI {
     public void addItems() {
         addItem(Material.EMPTY_MAP, ChatColor.GOLD + "Donor Perks", "Other perks:",
                 "",
-                " - .kittycannon");
+                " - /kittycannon");
         KCPlayer player = getWrapper();
 
         nextSlot();
@@ -39,7 +35,7 @@ public class GUIDonor extends GUI {
                 "Left-Click: " + ChatColor.WHITE + "Change Icon",
                 "Right-Click: " + ChatColor.WHITE + "Reset Icon")
                 .leftClick(e -> {
-                    getPlayer().sendMessage(ChatColor.GREEN + "Please enter your new icon. Rank icons are not allowed.");
+                    getPlayer().sendMessage(ChatColor.GREEN + "Please enter your new icon.");
                     getPlayer().sendMessage(ChatColor.GREEN + "Visit http://www.thegenxmom.com/hippies/index_files/textsy.html for examples.");
                     Callbacks.listenForChat(getPlayer(), msg -> {
                         String icon = ChatColor.translateAlternateColorCodes('&', msg);
@@ -63,6 +59,7 @@ public class GUIDonor extends GUI {
                     if (player.getIcon() == null)
                         return;
                     player.setIcon(null);
+                    player.updatePlayer();
                     getPlayer().sendMessage(ChatColor.GREEN + "Icon removed.");
                     reconstruct();
                 });
@@ -71,8 +68,8 @@ public class GUIDonor extends GUI {
         addItem(Material.STICK, ChatColor.GREEN + "Particles", "Click here to show particles.").opens(GUIType.PARTICLES);
     }
 
+    //!Arrays.stream(EnumRank.values()).filter(r -> r.getRankSymbol().equals(icon)).findAny().isPresent()
     private boolean isAllowed(String icon) {
-        return !Arrays.stream(EnumRank.values()).filter(r -> r.getRankSymbol().equals(icon)).findAny().isPresent()
-                && !Configs.getMainConfig().getFilter().keySet().contains(icon);
+        return !Configs.getMainConfig().getFilter().keySet().contains(icon);
     }
 }

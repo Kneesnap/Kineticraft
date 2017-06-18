@@ -1,10 +1,9 @@
-package net.kineticraft.lostcity.guis.guis.staff;
+package net.kineticraft.lostcity.guis.staff;
 
 import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.config.configs.VoteConfig;
 import net.kineticraft.lostcity.data.wrappers.JsonItem;
 import net.kineticraft.lostcity.guis.GUI;
-import net.kineticraft.lostcity.guis.GUIType;
 import net.kineticraft.lostcity.item.ItemWrapper;
 import net.kineticraft.lostcity.mechanics.Callbacks;
 import net.kineticraft.lostcity.mechanics.Voting;

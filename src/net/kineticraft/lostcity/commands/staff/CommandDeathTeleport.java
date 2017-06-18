@@ -24,13 +24,13 @@ public class CommandDeathTeleport extends StaffCommand {
         int deathId = args.length > 1 ? Integer.parseInt(args[1]) : 1;
 
         QueryTools.getData(args[0], kcPlayer -> {
-            if (deathId <= 0 || deathId > kcPlayer.getDeaths().size()) {
+            if (kcPlayer.getDeaths().hasIndex(deathId - 1)) {
                 sender.sendMessage(ChatColor.RED + "Death " + deathId + " not found.");
                 return;
             }
 
             Location tp = kcPlayer.getDeaths().getValues().get(deathId - 1).getLocation();
-            Bukkit.getScheduler().runTask(Core.getInstance(), () -> ((Player) sender).teleport(tp));
+            ((Player) sender).teleport(tp);
         }, () -> sender.sendMessage(ChatColor.RED + "Player not found."));
     }
 

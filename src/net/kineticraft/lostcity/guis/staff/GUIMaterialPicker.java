@@ -1,4 +1,4 @@
-package net.kineticraft.lostcity.guis.guis.staff;
+package net.kineticraft.lostcity.guis.staff;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

@@ -15,7 +15,7 @@ import org.bukkit.entity.Player;
 public class CommandRanks extends CommandInfo {
 
     public CommandRanks() {
-        super(Configs.ConfigType.RANKS, "List all ranks.", "ranks", "listranks");
+        super(Configs.ConfigType.RANKS, "List all ranks.", "ranks", "rank", "listranks");
     }
 
     @Override

@@ -1,8 +1,11 @@
 package net.kineticraft.lostcity;
 
 import lombok.Getter;
+import net.kineticraft.lostcity.commands.Commands;
 import net.kineticraft.lostcity.config.Configs;
+import net.kineticraft.lostcity.crake.Crake;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
+import net.kineticraft.lostcity.guis.GUIManager;
 import net.kineticraft.lostcity.item.Items;
 import net.kineticraft.lostcity.mechanics.*;
 import net.kineticraft.lostcity.mechanics.enchants.Enchants;
@@ -40,8 +43,10 @@ public class MechanicManager implements Listener {
         // Register all mechanics here, in order of startup:
         registerMechanic(new Configs());
         registerMechanic(new DataHandler());
+        registerMechanic(new Punishments());
         registerMechanic(new Callbacks());
         registerMechanic(new Commands());
+        registerMechanic(new Crake());
         registerMechanic(new Restrictions());
         registerMechanic(new GeneralMechanics());
         registerMechanic(new Vanish());

@@ -1,7 +1,8 @@
-package net.kineticraft.lostcity.mechanics;
+package net.kineticraft.lostcity.guis;
 
 import net.kineticraft.lostcity.guis.GUI;
 import net.kineticraft.lostcity.guis.GUIType;
+import net.kineticraft.lostcity.mechanics.Mechanic;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -81,6 +82,6 @@ public class GUIManager extends Mechanic {
 
     @Override // Closes all GUIs.
     public void onDisable() {
-
+        guiMap.keySet().stream().forEach(HumanEntity::closeInventory);
     }
 }

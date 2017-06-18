@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.Setter;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
-import net.kineticraft.lostcity.commands.Command;
 import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.data.JsonData;
 import net.kineticraft.lostcity.data.lists.JsonList;
@@ -13,8 +12,10 @@ import net.kineticraft.lostcity.data.maps.JsonMap;
 import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.mechanics.MetadataManager;
 import net.kineticraft.lostcity.mechanics.MetadataManager.Metadata;
+import net.kineticraft.lostcity.mechanics.Punishments.*;
 import net.kineticraft.lostcity.mechanics.Vanish;
 import net.kineticraft.lostcity.mechanics.Voting;
+import net.kineticraft.lostcity.utils.Dog;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.*;
 import org.bukkit.advancement.Advancement;
@@ -22,6 +23,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * PlayerData - Allows for loading and saving of player data.
@@ -52,6 +54,7 @@ public class KCPlayer implements Jsonable {
     private Particle effect;
     private boolean vanished;
     private String nickname;
+    private JsonList<Punishment> punishments = new JsonList<>();
     private int accountId;
 
     public KCPlayer(UUID uuid, JsonData data) {
@@ -76,6 +79,70 @@ public class KCPlayer implements Jsonable {
      */
     public boolean isHidden() {
         return isVanished() || getPlayer().getGameMode() == GameMode.SPECTATOR;
+    }
+
+    /**
+     * Punish this user.
+     * If run a-sync it will run next tick.
+     *
+     * @param type
+     */
+    public void punish(PunishmentType type, CommandSender punisher) {
+        if (!Bukkit.isPrimaryThread()) {
+            Bukkit.getScheduler().runTask(Core.getInstance(), () -> punish(type, punisher));
+            return;
+        }
+
+        Dog.PUPPER_PATROL.say(ChatColor.RED + getUsername() + ChatColor.WHITE + " has been punished by " + ChatColor.AQUA
+                + punisher.getName() + ChatColor.WHITE + " for " + ChatColor.YELLOW + Utils.capitalize(type.name())
+                + ChatColor.WHITE + ".");
+
+        getPunishments().add(new Punishment(type, punisher.getName()));
+        Dog.OFFICER_BORKLEY.say("Arf Arf! Punishment: " + ChatColor.YELLOW + Utils.formatTimeFull(getPunishExpiry())
+                + ChatColor.WHITE + ".");
+
+        if (isOnline())
+            getPlayer().kickPlayer(ChatColor.RED + "Oh no! You've been punished for " + ChatColor.YELLOW
+                    + type.getDisplay() + ChatColor.RED + "...");
+    }
+
+    /**
+     * Does this user have a pending punishment?
+     * @return banned
+     */
+    public boolean isBanned() {
+        long punishTime = getPunishExpiry();
+        return punishTime == -1 || punishTime > 0;
+    }
+
+    /**
+     * Gets the time in milliseconds when this player's punishments will expire.
+     * 0 = not punished
+     * -1 = Never
+     *
+     * @return expiry
+     */
+    public long getPunishExpiry() {
+        int hours = 0;
+        List<Punishment> p = getPunishments().stream().filter(Punishment::isValid).collect(Collectors.toList());
+        Punishment punishment = p.isEmpty() ? null : p.get(p.size() - 1);
+
+        switch (p.size()) {
+            case 0:
+                return 0;
+            case 1:
+                hours = 8;
+                break;
+            case 2:
+                hours = punishment.getType().getPunishLength() * 24;
+                break;
+            case 3:
+                hours = ((punishment.getType().getPunishLength() * 2) + 1) * 24;
+                break;
+            default:
+                return -1;
+        }
+        return punishment.getTimestamp() + (hours * 60 * 60 * 1000) - System.currentTimeMillis();
     }
 
     /**
@@ -223,7 +290,7 @@ public class KCPlayer implements Jsonable {
      * @return displayName
      */
     public String getDisplayName() {
-        return getDisplayPrefix() + " " + (getNickname() != null ? getNickname() : getUsername());
+        return getDisplayPrefix() + " " + getUsername();
     }
 
     /**
@@ -316,6 +383,7 @@ public class KCPlayer implements Jsonable {
         setLastVote(data.getLong("lastVote"));
         setAccountId(data.getInt("accountId", generateNewId()));
         setNickname(data.getString("nickname"));
+        setPunishments(data.getJsonList("punishments", Punishment.class));
     }
 
     @Override
@@ -340,6 +408,7 @@ public class KCPlayer implements Jsonable {
         data.setNum("accountId", getAccountId());
         data.setNum("lastVote", getLastVote());
         data.setString("nickname", getNickname());
+        data.setList("punishments", getPunishments());
         return data;
     }
 }

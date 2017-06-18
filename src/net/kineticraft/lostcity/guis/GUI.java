@@ -7,7 +7,6 @@ import net.kineticraft.lostcity.data.wrappers.KCPlayer;
 import net.kineticraft.lostcity.item.ItemManager;
 import net.kineticraft.lostcity.item.ItemWrapper;
 import net.kineticraft.lostcity.item.display.GUIItem;
-import net.kineticraft.lostcity.mechanics.GUIManager;
 import net.kineticraft.lostcity.utils.PacketUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

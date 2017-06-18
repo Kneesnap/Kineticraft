@@ -3,7 +3,7 @@ package net.kineticraft.lostcity.commands.misc;
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.guis.GUIType;
-import net.kineticraft.lostcity.mechanics.GUIManager;
+import net.kineticraft.lostcity.guis.GUIManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 

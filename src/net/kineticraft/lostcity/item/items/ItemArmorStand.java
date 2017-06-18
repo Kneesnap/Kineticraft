@@ -19,8 +19,6 @@ import org.bukkit.inventory.ItemStack;
 /**
  * Represents an Armor Stand that can
  *
- * TODO: Verify there are no exploitable ways to abuse this.
- *
  * Created by Kneesnap on 6/12/2017.
  */
 @Getter @Setter

@@ -2,6 +2,7 @@ package net.kineticraft.lostcity.commands.player;
 
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.PlayerCommand;
+import net.kineticraft.lostcity.data.QueryTools;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -15,14 +16,15 @@ import org.bukkit.entity.Player;
 public class CommandNick extends PlayerCommand {
 
     public CommandNick() {
-        super(EnumRank.OMEGA, true, "<nick|off>", "Change your nickname.", "nick");
+        super(EnumRank.OMEGA, true, "<nick|off>", "Change your nickname.", "nick", "nickname");
     }
 
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
         KCPlayer p = KCPlayer.getWrapper((Player) sender);
+        String newNick = ChatColor.translateAlternateColorCodes('&', args[0]);
 
-        if (args[0].length() > 12) {
+        if (ChatColor.stripColor(newNick).length() > 12) {
             sender.sendMessage(ChatColor.RED + "Nickname too long.");
             return;
         }
@@ -30,17 +32,21 @@ public class CommandNick extends PlayerCommand {
         if (args[0].equalsIgnoreCase("off")) {
             p.setNickname(null);
             sender.sendMessage(ChatColor.GOLD + "Nickname removed.");
+            p.updatePlayer();
         } else {
 
-            if (args[0].length() < 4) {
+            if (ChatColor.stripColor(newNick).length() < 4) {
                 sender.sendMessage(ChatColor.RED + "Nickname too short.");
                 return;
             }
 
-            p.setNickname(ChatColor.translateAlternateColorCodes('&', args[0]));
-            sender.sendMessage(ChatColor.GOLD + "Nickname set.");
+            QueryTools.getData(args[0], d -> {
+                sender.sendMessage(ChatColor.RED + "You cannot use the name of another player.");
+            }, () -> {
+                p.setNickname(newNick);
+                sender.sendMessage(ChatColor.GOLD + "Nickname set.");
+                p.updatePlayer();
+            });
         }
-
-        p.updatePlayer();
     }
 }

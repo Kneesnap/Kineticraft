@@ -2,10 +2,9 @@ package net.kineticraft.lostcity.mechanics;
 
 import lombok.AllArgsConstructor;
 import net.kineticraft.lostcity.Core;
-import net.kineticraft.lostcity.data.lists.StringList;
 import net.kineticraft.lostcity.guis.GUI;
+import net.kineticraft.lostcity.guis.GUIManager;
 import net.kineticraft.lostcity.utils.TextBuilder;
-import net.kineticraft.lostcity.utils.TextUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
@@ -135,23 +134,8 @@ public class Callbacks extends Mechanic {
      * @param fail
      */
     public static void listenForChat(Player player, Consumer<String> cb, Runnable fail) {
-        GUI gui = GUIManager.getGUI(player);
-        if (gui != null) // Don't allow the previous GUI to open, since we're giving input.
-            gui.setParent(true);
-
-        player.closeInventory(); // Close the player's open inventory, if any.
-
-        Consumer<String> deAsync = chat -> Bukkit.getScheduler().runTask(Core.getInstance(), () -> {
-            cb.accept(chat);
-            if (gui != null) // Automatically re-open the last gui.
-                gui.open();
-        });
-
-        listen(player, ListenerType.CHAT, deAsync, () -> {
-            fail.run();
-            if (gui != null) // Automatically re-open the last gui.
-                gui.open();
-        });
+        listen(player, ListenerType.CHAT, chat ->
+                Bukkit.getScheduler().runTask(Core.getInstance(), () -> cb.accept((String) chat)), fail);
     }
 
     /**
@@ -180,12 +164,29 @@ public class Callbacks extends Mechanic {
      * @param callback
      * @param failCallback
      */
+    @SuppressWarnings("unchecked")
     private static <T> void listen(Player player, ListenerType type,  Consumer<T> callback, Runnable failCallback) {
         if (hasListener(player, type)) // Fail any existing listeners of this type.
             getListener(player, type).fail();
 
+        GUI gui = GUIManager.getGUI(player);
+        if (gui != null) // Don't allow the previous GUI to open, since we're giving input.
+            gui.setParent(true);
+
+        player.closeInventory(); // Close the player's open inventory, if any.
+
         listeners.putIfAbsent(player, new HashMap<>());
-        listeners.get(player).put(type, new Listener(callback, failCallback));
+        listeners.get(player).put(type, new Listener(o -> {
+            if (callback != null)
+                callback.accept((T) o);
+            if (gui != null)
+                gui.open();
+        }, () -> {
+            if (failCallback != null)
+                failCallback.run();
+            if (gui != null)
+                gui.open();
+        }));
     }
 
     /**
@@ -263,16 +264,14 @@ public class Callbacks extends Mechanic {
          * Calls on callback success
          */
         public void accept(T value) {
-            if (success != null)
-                success.accept(value);
+            success.accept(value);
         }
 
         /**
          * Calls on callback failure.
          */
         public void fail() {
-            if (fail != null)
-                fail.run();
+            fail.run();
         }
     }
 

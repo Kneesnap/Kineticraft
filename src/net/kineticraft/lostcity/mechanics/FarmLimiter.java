@@ -27,7 +27,7 @@ public class FarmLimiter extends Mechanic {
 
     private static final int MAX_CRAMMING = 32;
     private static final int RADIUS = 8;
-    private static List<EntityType> IGNORE = Arrays.asList(EntityType.GUARDIAN, EntityType.ELDER_GUARDIAN);
+    private static List<EntityType> IGNORE = Arrays.asList(EntityType.GUARDIAN, EntityType.ELDER_GUARDIAN, EntityType.ARMOR_STAND);
 
     @EventHandler
     public void onChickenSpawn(CreatureSpawnEvent evt) {
@@ -75,8 +75,6 @@ public class FarmLimiter extends Mechanic {
      */
     private static void addPlayerDamage(Entity entity, double damage) {
         MetadataManager.setMetadata(entity, MetadataManager.Metadata.PLAYER_DAMAGE, getPlayerDamage(entity) + damage);
-        System.out.println("Human damage: " + getPlayerDamage(entity));
-        System.out.println("Needed: " + getDamageNeeded((LivingEntity) entity));
     }
 
 

@@ -86,15 +86,17 @@ public class QueryTools {
 
         // They're offline, load it then made changes.
         queryData(str -> {
-            KCPlayer p = str.filter(kc -> username.equalsIgnoreCase(kc.getUsername())).findAny().orElse(null);
-            if (p == null) {
-                if (fail != null)
-                    fail.run(); // Oh no, we couldn't find anyone matching this.
-                return;
-            }
+            Bukkit.getScheduler().runTask(Core.getInstance(), () -> {
+                KCPlayer p = str.filter(kc -> username.equalsIgnoreCase(kc.getUsername())).findAny().orElse(null);
+                if (p == null) {
+                    if (fail != null)
+                        fail.run(); // Oh no, we couldn't find anyone matching this.
+                    return;
+                }
 
-            callback.accept(p);
-            p.writeData(); // Save back to disk.
+                callback.accept(p);
+                p.writeData(); // Save back to disk.
+            });
         });
     }
 

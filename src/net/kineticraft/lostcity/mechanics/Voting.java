@@ -4,12 +4,14 @@ import com.vexsoftware.votifier.model.VotifierEvent;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import net.kineticraft.lostcity.Core;
+import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.config.configs.VoteConfig;
 import net.kineticraft.lostcity.data.JsonData;
 import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.data.QueryTools;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
+import net.kineticraft.lostcity.utils.Dog;
 import net.kineticraft.lostcity.utils.TextBuilder;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
@@ -65,7 +67,7 @@ public class Voting extends Mechanic {
         int toParty = data.getVotesUntilParty();
         if (toParty > 0) {
             if (toParty % 5 == 0 || toParty <= 10)
-                Core.kineticaMessage("Thanks for voting " + ChatColor.YELLOW + username + ChatColor.WHITE + "! We need "
+                Dog.KINETICA.say("Thanks for voting " + ChatColor.YELLOW + username + ChatColor.WHITE + "! We need "
                         + ChatColor.YELLOW + toParty + ChatColor.WHITE + " more votes for a party.");
         } else {
             doVoteParty();
@@ -86,7 +88,7 @@ public class Voting extends Mechanic {
      * Activate a vote party.
      */
     public static void doVoteParty() {
-        Core.kineticaMessage("Wooo! We made it! Parrrty!");
+        Dog.KINETICA.say("Wooo! We made it! Parrrty!");
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             ItemStack reward = generatePartyReward();
@@ -180,22 +182,30 @@ public class Voting extends Mechanic {
         VoteConfig data = Configs.getVoteData();
 
         QueryTools.queryData(players -> {
-            KCPlayer topVoter = players.sorted(Comparator.comparingInt(KCPlayer::getMonthlyVotes).reversed())
+            KCPlayer topVoter = players.filter(k -> !k.getRank().isAtLeast(EnumRank.MEDIA))
+                    .sorted(Comparator.comparingInt(KCPlayer::getMonthlyVotes).reversed())
                     .collect(Collectors.toList()).get(0);
 
             if (topVoter == null || topVoter.getUuid().equals(data.getTopVoter()))
                 return; // The top voter hasn't changed.
 
+            Player oldTop = Bukkit.getPlayer(data.getTopVoter());
+
             data.setTopVoter(topVoter.getUuid());
             Core.announce(ChatColor.YELLOW + topVoter.getUsername() + ChatColor.RED
                     + " is the new top voter! Monthly Votes: " + ChatColor.YELLOW + topVoter.getMonthlyVotes());
 
+            // Tell new player.
             if (topVoter.isOnline()) {
                 Player player = topVoter.getPlayer();
                 player.sendMessage(ChatColor.LIGHT_PURPLE + " * You are now the top voter this month. *");
                 player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1F, 1F);
                 topVoter.updatePlayer();
             }
+
+            // Fix old top voter's playertab.
+            if (oldTop != null)
+                KCPlayer.getWrapper(oldTop).updatePlayer();
 
             data.saveToDisk();
         });

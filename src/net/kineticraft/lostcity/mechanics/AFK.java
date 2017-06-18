@@ -85,9 +85,11 @@ public class AFK extends Mechanic {
 
     /**
      * Mark this player as active.
+     *
      * @param player
      */
     public static void markActive(Player player) {
-        MetadataManager.setCooldown(player, "active", Configs.getMainConfig().getAfkLimit() * 60 * 20);
+        int base = Configs.getMainConfig().getAfkLimit();
+        MetadataManager.setCooldown(player, "active", Utils.randInt(base - 3, base + 3) * 60 * 20);
     }
 }
