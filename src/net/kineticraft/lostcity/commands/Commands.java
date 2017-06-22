@@ -92,6 +92,7 @@ public class Commands extends Mechanic {
         addCommand(new CommandVanish());
         addCommand(new CommandVote());
         addCommand(new CommandVotes());
+        addCommand(new CommandJS());
 
         addCommand(new CommandTPATrigger());
         addCommand(new CommandTriggerAccept());

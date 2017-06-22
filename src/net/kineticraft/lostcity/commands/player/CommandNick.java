@@ -41,12 +41,20 @@ public class CommandNick extends PlayerCommand {
             }
 
             QueryTools.getData(args[0], d -> {
-                sender.sendMessage(ChatColor.RED + "You cannot use the name of another player.");
+                if (p.getUuid() == d.getUuid()) {
+                    setNick(p, newNick);
+                } else {
+                    sender.sendMessage(ChatColor.RED + "You cannot use the name of another player.");
+                }
             }, () -> {
-                p.setNickname(newNick);
-                sender.sendMessage(ChatColor.GOLD + "Nickname set.");
-                p.updatePlayer();
+                setNick(p, newNick);
             });
         }
+    }
+
+    private static void setNick(KCPlayer player, String newNick) {
+        player.setNickname(newNick);
+        player.getPlayer().sendMessage(ChatColor.GOLD + "Nickname set.");
+        player.updatePlayer();
     }
 }

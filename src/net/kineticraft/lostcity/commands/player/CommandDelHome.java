@@ -19,7 +19,12 @@ public class CommandDelHome extends PlayerCommand {
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
         Player player = (Player) sender;
-        KCPlayer kcPlayer = KCPlayer.getWrapper((Player) sender);
+        KCPlayer kcPlayer = KCPlayer.getWrapper(player);
+
+        if (args[0].equalsIgnoreCase("bed")) {
+            player.sendMessage(ChatColor.RED + "You can't remove this home.");
+            return;
+        }
 
         if (!kcPlayer.getHomes().containsKey(args[0])) {
             player.sendMessage(ChatColor.RED + "You do not have a home set with this name.");

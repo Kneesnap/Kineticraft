@@ -61,8 +61,8 @@ public class SleepMechanics extends Mechanic {
 
         int needed = getNeededPlayers() - getSleepCount();
         if (needed > 0) {
-            Bukkit.broadcastMessage(ChatColor.GREEN.toString() + needed + ChatColor.GRAY
-                    + " players need to enter a bed to skip the night.");
+//            Bukkit.broadcastMessage(ChatColor.GREEN.toString() + needed + ChatColor.GRAY
+//                    + " players need to enter a bed to skip the night.");
         } else {
             skipNight();
         }

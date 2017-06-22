@@ -1,5 +1,6 @@
 package net.kineticraft.lostcity.commands.player;
 
+import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.data.wrappers.JsonLocation;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
@@ -20,26 +21,30 @@ public class CommandSetHome extends PlayerCommand {
 
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
-        Player p = (Player) sender;
-        KCPlayer player = KCPlayer.getWrapper(p);
+        Player player = (Player) sender;
+        KCPlayer kcPlayer = KCPlayer.getWrapper(player);
 
-        if (p.getWorld().getEnvironment() != World.Environment.NORMAL) {
-            p.sendMessage(ChatColor.RED + "You may only set homes in the overworld.");
+        if (player.getWorld().getEnvironment() != World.Environment.NORMAL) {
+            player.sendMessage(ChatColor.RED + "You may only set homes in the overworld.");
             return;
         }
 
-        int maxHomes = player.getRank().getHomes();
-        if (player.getHomes().size() >= maxHomes) {
-            p.sendMessage(ChatColor.RED + "You have reached the max number of homes for your rank.");
+        if (args[0].equalsIgnoreCase("bed")) {
+            player.sendMessage(ChatColor.RED + "This home name is reserved.");
             return;
         }
 
-        if (player.getHomes().containsKey(args[0])) {
-            p.sendMessage(ChatColor.RED + "This home already exists. Use .delhome to remove it.");
+        if (kcPlayer.getHomes().size() >= kcPlayer.getRank().getHomes()) {
+            player.sendMessage(ChatColor.RED + "You have reached the max number of homes for your rank.");
             return;
         }
 
-        player.getHomes().put(args[0], new JsonLocation(p.getLocation()));
-        p.sendMessage(ChatColor.GRAY + "Created home '" + ChatColor.GREEN + args[0] + ChatColor.GRAY + "'.");
+        if (kcPlayer.getHomes().containsKey(args[0])) {
+            player.sendMessage(ChatColor.RED + "This home already exists. Use .delhome to remove it.");
+            return;
+        }
+
+        kcPlayer.getHomes().put(args[0], new JsonLocation(player.getLocation()));
+        player.sendMessage(ChatColor.GRAY + "Created home '" + ChatColor.GREEN + args[0] + ChatColor.GRAY + "'.");
     }
 }

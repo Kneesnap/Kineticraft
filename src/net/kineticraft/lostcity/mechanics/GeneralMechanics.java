@@ -134,7 +134,9 @@ public class GeneralMechanics extends Mechanic {
 
     @EventHandler // Water-vision.
     public void onWaterTraverse(PlayerMoveEvent evt) {
+        Location loc = evt.getPlayer().getLocation();
+        boolean atSpawn = loc.getX() >= -200 && loc.getZ() >= -200 && loc.getX() <= 200 && loc.getZ() <= 306; // TODO: Read constants from config file or dynamically load from WorldGuard API.
         Utils.setPotion(evt.getPlayer(), PotionEffectType.WATER_BREATHING,
-                evt.getPlayer().getVehicle() == null && evt.getTo().clone().add(0, 1, 0).getBlock().isLiquid());
+                atSpawn && evt.getPlayer().getVehicle() == null && evt.getTo().clone().add(0, 1, 0).getBlock().isLiquid());
     }
 }
