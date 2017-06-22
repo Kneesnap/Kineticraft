@@ -26,14 +26,16 @@ public enum EnumRank {
     BETA("β", ChatColor.YELLOW, 3, 20, 96, 40),
     ALPHA("α", ChatColor.RED, 3, 25, 240, 50),
     OMEGA("Ω", ChatColor.DARK_RED, 2, 30, 480, 80),
-    THETA("Θ", ChatColor.DARK_PURPLE, ChatColor.LIGHT_PURPLE),
-    VOTER("VOTR", ChatColor.LIGHT_PURPLE, ChatColor.LIGHT_PURPLE), // We don't actually set players to this rank.
-    MEDIA("∈", ChatColor.DARK_PURPLE, ChatColor.LIGHT_PURPLE),
-    HELPER("HLPR", ChatColor.DARK_GRAY, ChatColor.DARK_GRAY),
-    BUILDER("BLD", ChatColor.GOLD, ChatColor.YELLOW),
-    MOD("MOD", ChatColor.DARK_GREEN, ChatColor.GREEN),
-    ADMIN("ADMN", ChatColor.DARK_RED,  ChatColor.RED),
-    DEV("DEV", ChatColor.DARK_AQUA, ChatColor.AQUA);
+
+    THETA("Θ", ChatColor.DARK_PURPLE, ChatColor.LIGHT_PURPLE, false),
+    VOTER("VOTR", ChatColor.LIGHT_PURPLE, ChatColor.LIGHT_PURPLE, false), // We don't actually set players to this rank.
+    MEDIA("∈", ChatColor.DARK_PURPLE, ChatColor.LIGHT_PURPLE, false),
+
+    HELPER("HLPR", ChatColor.DARK_GRAY, ChatColor.DARK_GRAY, true),
+    BUILDER("BLD", ChatColor.GOLD, ChatColor.YELLOW, true),
+    MOD("MOD", ChatColor.DARK_GREEN, ChatColor.GREEN, true),
+    ADMIN("ADMN", ChatColor.DARK_RED,  ChatColor.RED, true),
+    DEV("DEV", ChatColor.DARK_AQUA, ChatColor.AQUA, true);
 
     private String rankSymbol;
     private final ChatColor color;
@@ -43,8 +45,8 @@ public enum EnumRank {
     private final int hoursNeeded;
     private final int accomplishmentsNeeded;
 
-    EnumRank(String rankSymbol, ChatColor color, ChatColor nameColor) {
-        this(rankSymbol, color, nameColor, 0, 50, -1, -1);
+    EnumRank(String rankSymbol, ChatColor color, ChatColor nameColor, boolean instantTP) {
+        this(rankSymbol, color, nameColor, instantTP ? 0 : 2, 50, -1, -1);
     }
 
     EnumRank(String rankSymbol, ChatColor color, int tpTime, int homes, int hours, int acc) {
