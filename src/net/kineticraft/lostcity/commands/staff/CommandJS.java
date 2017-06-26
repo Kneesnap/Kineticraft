@@ -1,5 +1,6 @@
 package net.kineticraft.lostcity.commands.staff;
 
+import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.Command;
 import net.kineticraft.lostcity.commands.StaffCommand;
@@ -21,13 +22,13 @@ public class CommandJS extends StaffCommand {
     private ScriptEngine engine;
 
     public CommandJS() {
-        super("", "Run a JavaScript expression.", "js");
+        super(EnumRank.DEV, false, "[expression]", "Run a JavaScript expression.", "js");
         engine = new ScriptEngineManager().getEngineByName("nashorn");
     }
 
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
-        if (KCPlayer.getWrapper((Player) sender).getRank().isAtLeast(EnumRank.DEV)) {
+        if (Core.isDev(sender)) {
             Object result;
             try {
                 result = engine.eval(String.join(" ", args));
@@ -35,9 +36,6 @@ public class CommandJS extends StaffCommand {
             } catch (ScriptException e) {
                 sender.sendMessage(e.getMessage());
             }
-        } else {
-            sender.sendMessage(ChatColor.RED + "Sorry, DEV's only :3");
         }
     }
-
 }

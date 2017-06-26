@@ -1,8 +1,6 @@
 package net.kineticraft.lostcity.commands.player;
 
 import net.kineticraft.lostcity.commands.PlayerCommand;
-import net.kineticraft.lostcity.item.items.books.ItemTPABook;
-import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

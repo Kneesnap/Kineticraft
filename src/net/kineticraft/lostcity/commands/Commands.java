@@ -3,8 +3,6 @@ package net.kineticraft.lostcity.commands;
 import lombok.Getter;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
-import net.kineticraft.lostcity.commands.Command;
-import net.kineticraft.lostcity.commands.CommandType;
 import net.kineticraft.lostcity.commands.misc.CommandGUI;
 import net.kineticraft.lostcity.commands.misc.CommandInfo;
 import net.kineticraft.lostcity.commands.player.*;
@@ -93,6 +91,8 @@ public class Commands extends Mechanic {
         addCommand(new CommandVote());
         addCommand(new CommandVotes());
         addCommand(new CommandJS());
+        addCommand(new CommandSee());
+        addCommand(new CommandRealName());
 
         addCommand(new CommandTPATrigger());
         addCommand(new CommandTriggerAccept());
@@ -191,9 +191,13 @@ public class Commands extends Mechanic {
         if (handleCommand(p, CommandType.SLASH, input) || handleCommand(p, CommandType.TRIGGER, input))
             evt.setCancelled(true); // Don't show 'unknown command....'
 
-        if (evt.getMessage().startsWith("/ ")) {
+        if (input.startsWith("/ ")) {
             sendStaffChat(p.getName(), input.substring(2));
             evt.setCancelled(true);
+            return;
+        }
+
+        if (input.startsWith("/trigger")) {
             return;
         }
 

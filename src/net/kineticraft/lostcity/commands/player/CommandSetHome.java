@@ -1,6 +1,5 @@
 package net.kineticraft.lostcity.commands.player;
 
-import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.data.wrappers.JsonLocation;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;

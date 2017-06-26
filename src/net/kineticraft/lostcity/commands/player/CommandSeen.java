@@ -3,7 +3,6 @@ package net.kineticraft.lostcity.commands.player;
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.data.QueryTools;
-import net.kineticraft.lostcity.mechanics.Chat;
 import net.kineticraft.lostcity.mechanics.Punishments;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
@@ -32,10 +31,14 @@ public class CommandSeen extends PlayerCommand {
             sender.sendMessage(ChatColor.GRAY + "Showing report of " + ChatColor.GRAY + p.getUsername() + ChatColor.GRAY + ":");
             sender.sendMessage(" - " + ChatColor.GRAY + "Last Seen: " + ChatColor.WHITE + Utils.formatTime(seenTime));
 
-            if (!p.getPunishments().isEmpty()) {
-                sender.sendMessage(" - "  + Utils.formatToggle("Banned", p.isBanned()));
-                sender.sendMessage(ChatColor.GRAY + "Punishments:");
-                p.getPunishments().stream().map(Punishments.Punishment::toString).forEach(sender::sendMessage);
+            if (Utils.getRank(sender).isAtLeast(EnumRank.HELPER)) {
+                sender.sendMessage(" - " + ChatColor.GRAY + "IP Address: " + ChatColor.WHITE + p.getLastIP());
+
+                if (!p.getPunishments().isEmpty()) {
+                    sender.sendMessage(" - "  + Utils.formatToggle("Banned", p.isBanned()));
+                    sender.sendMessage(ChatColor.GRAY + "Punishments:");
+                    p.getPunishments().stream().map(Punishments.Punishment::toString).forEach(sender::sendMessage);
+                }
             }
         }, () -> sender.sendMessage(ChatColor.RED + "Player not found."));
     }

@@ -1,7 +1,6 @@
 package net.kineticraft.lostcity.commands.player;
 
 import net.kineticraft.lostcity.EnumRank;
-import net.kineticraft.lostcity.commands.CommandType;
 import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
 import net.kineticraft.lostcity.mechanics.MetadataManager;
@@ -21,12 +20,14 @@ public class CommandMessage extends PlayerCommand {
 
     public CommandMessage() {
         super(EnumRank.MU, false, "<player> <message>", "Send a private message to a player.",
-                "msg", "w", "tell", "whisper", "t");
+                "msg", "m", "w", "tell", "whisper", "t");
     }
 
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
-        String message = ChatColor.DARK_GRAY + ": " + ChatColor.WHITE + String.join(" ", skipArgs(args, 1));
+        String joinedArgs = String.join(" ", skipArgs(args, 1));
+        String colored = Utils.getRank(sender).isAtLeast(EnumRank.OMEGA) ? ChatColor.translateAlternateColorCodes('&', joinedArgs) : joinedArgs;
+        String message = ChatColor.DARK_GRAY + ": " + ChatColor.WHITE + colored;
         CommandSender receiver = args[0].equalsIgnoreCase("CONSOLE")
                 ? Bukkit.getConsoleSender() : Bukkit.getPlayer(args[0]);
 
@@ -37,7 +38,7 @@ public class CommandMessage extends PlayerCommand {
 
         // Send display to sender
         String rName = Utils.getSenderName(receiver);
-        sender.sendMessage(ChatColor.DARK_GRAY.toString() + ChatColor.BOLD + "TO " + rName + message);
+        sender.sendMessage(ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "TO " + rName + message);
         if (sender instanceof Player)
             MetadataManager.setMetadata((Player) sender, MetadataManager.Metadata.LAST_WHISPER, receiver.getName());
 
@@ -51,6 +52,6 @@ public class CommandMessage extends PlayerCommand {
             MetadataManager.setMetadata(p, MetadataManager.Metadata.LAST_WHISPER, sender.getName());
         }
 
-        receiver.sendMessage(ChatColor.DARK_GRAY.toString() + ChatColor.BOLD + "FROM " + Utils.getSenderName(sender) + message);
+        receiver.sendMessage(ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "FROM " + Utils.getSenderName(sender) + message);
     }
 }

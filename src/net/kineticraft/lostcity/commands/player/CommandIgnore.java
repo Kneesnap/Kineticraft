@@ -1,7 +1,5 @@
 package net.kineticraft.lostcity.commands.player;
 
-import net.kineticraft.lostcity.EnumRank;
-import net.kineticraft.lostcity.commands.CommandType;
 import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
 import org.bukkit.ChatColor;
