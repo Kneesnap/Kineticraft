@@ -205,6 +205,7 @@ public class TextUtils {
         String append = "";
 
         for (int i = 0; i < queue.length; i++) {
+            int temp = i;
             String c = queue[i];
 
             if (c.equals("[")) {
@@ -215,7 +216,15 @@ public class TextUtils {
                     tagId += queue[i];
                 i++; // Skip close bracket.
 
-                TextTag tag = TextTag.valueOf(tagId.split("=")[0].toUpperCase());
+                TextTag tag;
+                try {
+                    tag = TextTag.valueOf(tagId.split("=")[0].toUpperCase());
+                } catch (Exception e) {
+                    // If it isn't a bbcode tag, treat it as text.
+                    i = temp + 1;
+                    append += "[";
+                    continue;
+                }
 
                 // Read the text in between the tags, [url]Click here![/url]
                 String text = "";

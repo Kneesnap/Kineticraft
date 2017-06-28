@@ -45,12 +45,9 @@ public class QueryTools {
 
         currentQueries++;
         task[0] = Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), () -> {
-            for (int i = 0; i < FILES_PER_TICK; i++) {
-                if (check.isEmpty())
-                    break; // We've finished loading :)
-                loaded.add(KCPlayer.getWrapper(check.get(0)));
-                check.remove(0);
-            }
+            for (int i = 0; i < FILES_PER_TICK; i++)
+                if (!check.isEmpty())
+                    loaded.add(KCPlayer.getWrapper(check.remove(0)));
 
             if (check.isEmpty()) {
                 // Done searching, time to perform operations.
