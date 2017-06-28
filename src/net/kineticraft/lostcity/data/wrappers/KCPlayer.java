@@ -395,7 +395,7 @@ public class KCPlayer implements Jsonable {
         setVanished(data.getBoolean("vanish"));
         setLastVote(data.getLong("lastVote"));
         setAccountId(data.getInt("accountId", generateNewId()));
-        setNickname(data.getString("nickname"));
+        this.nickname = data.getString("nickname");
         setPunishments(data.getJsonList("punishments", Punishment.class));
     }
 
