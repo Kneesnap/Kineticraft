@@ -28,7 +28,7 @@ public class QueryTools {
     @Getter
     private static int currentQueries;
 
-    private static int FILES_PER_TICK = 20;
+    private static int FILES_PER_TICK = 75;
     private static int MAX_PLAYER_QUERIES = 2;
 
     /**
@@ -85,8 +85,7 @@ public class QueryTools {
         }
 
         // They're offline, load it then made changes.
-        queryData(str -> {
-            Bukkit.getScheduler().runTask(Core.getInstance(), () -> {
+        queryData(str -> Bukkit.getScheduler().runTask(Core.getInstance(), () -> {
                 KCPlayer p = str.filter(kc -> username.equalsIgnoreCase(kc.getUsername())).findAny().orElse(null);
                 if (p == null) {
                     if (fail != null)
@@ -96,8 +95,7 @@ public class QueryTools {
 
                 callback.accept(p);
                 p.writeData(); // Save back to disk.
-            });
-        });
+            }));
     }
 
     /**

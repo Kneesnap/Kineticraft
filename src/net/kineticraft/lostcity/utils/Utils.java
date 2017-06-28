@@ -9,12 +9,10 @@ import net.kineticraft.lostcity.data.JsonData;
 import net.kineticraft.lostcity.data.lists.JsonList;
 import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
-import net.kineticraft.lostcity.item.ItemManager;
 import net.kineticraft.lostcity.item.ItemType;
 import net.kineticraft.lostcity.item.ItemWrapper;
 import net.kineticraft.lostcity.mechanics.MetadataManager;
 import net.kineticraft.lostcity.mechanics.MetadataManager.Metadata;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -28,7 +26,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -51,10 +48,12 @@ public class Utils {
      * @param value
      * @param defaultValue
      */
+    @SuppressWarnings("unchecked")
     public static <T extends Enum<T>> T getEnum(String value, T defaultValue) {
         return getEnum(value, (Class<T>) defaultValue.getClass(), defaultValue);
     }
 
+    @SuppressWarnings("unchecked")
     public static <T extends Enum<T>> T getEnum(String value, Class<T> clazz, T defaultValue) {
         try {
             return (T) clazz.getMethod("valueOf", String.class).invoke(null, value);
@@ -83,7 +82,7 @@ public class Utils {
      * @param display
      * @return
      */
-    public static <T> String join(String join, T[] values, Displayer<T> display) {
+    public static <T> String join(String join, T[] values, AdvancedSupplier<String, T> display) {
         return join(join, Arrays.asList(values), display);
     }
 
@@ -95,10 +94,10 @@ public class Utils {
      * @param <T>
      * @return
      */
-    public static <T> String join(String join, Iterable<T> values, Displayer<T> displayer) {
+    public static <T> String join(String join, Iterable<T> values, AdvancedSupplier<String, T> displayer) {
         String res = "";
         for (T val : values)
-            res += (res.length() > 0 ? join : "") + displayer.getDisplay(val);
+            res += (res.length() > 0 ? join : "") + displayer.accept(val);
         return res;
     }
 
@@ -119,7 +118,7 @@ public class Utils {
         final Location startLocation = player.getLocation().clone();
         final BukkitTask[] tpTask = new BukkitTask[1]; // Have to use an array here to store a value, as otherwise it can't be final.
         // Must be final to work in the bukkit scheduler.
-        int[] tpTime = new int[] {p.getTemporaryRank().getTpTime()};
+        int[] tpTime = new int[] {p.getRank().isAtLeast(EnumRank.HELPER) ? 0 : p.getTemporaryRank().getTpTime()};
 
         MetadataManager.setMetadata(player, Metadata.TELEPORTING, true);
         player.playSound(player.getLocation(), Sound.AMBIENT_CAVE, 1F, 1F);
@@ -152,10 +151,6 @@ public class Utils {
 
                 tpTime[0]--;
         }, 0L, 20L);
-    }
-
-    public interface Displayer<T> {
-        public String getDisplay(T val);
     }
 
     /**
@@ -361,15 +356,26 @@ public class Utils {
     }
 
     /**
-     * Shave the first element of an array
+     * Shave the first element of any array.
      * @param array
      * @param <T>
      * @return shavedArray
      */
     public static <T> T[] shift(T[] array) {
-        T[] ret = (T[]) new Object[array.length - 1];
-        for (int i = 0; i < ret.length; i++)
-            ret[i] = array[i + 1];
+        return shift(array, 1);
+    }
+
+    /**
+     * Shave a given number of elements from an array.
+     * @param array
+     * @param shave
+     * @param <T>
+     * @return shavedArray
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T[] shift(T[] array, int shave) {
+        T[] ret = (T[]) new Object[array.length - shave];
+        System.arraycopy(array, shave, ret, 0, ret.length);
         return ret;
     }
 
@@ -433,7 +439,7 @@ public class Utils {
      * @return
      */
     public static <T> boolean containsAny(List<T> a, List<T> b) {
-        return b.stream().filter(a::contains).findAny().isPresent();
+        return b.stream().anyMatch(a::contains);
     }
 
     /**
@@ -553,6 +559,7 @@ public class Utils {
      * @param input
      * @return integer
      */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     public static boolean isInteger(String input) {
         try {
             Integer.parseInt(input);

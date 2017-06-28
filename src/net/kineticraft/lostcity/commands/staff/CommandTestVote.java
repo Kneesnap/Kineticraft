@@ -13,7 +13,7 @@ import org.bukkit.command.CommandSender;
 public class CommandTestVote extends StaffCommand {
 
     public CommandTestVote() {
-        super(EnumRank.MOD, false, "<player>", "Simulate a vote.", "testvote", "fakevote");
+        super(EnumRank.MOD, "<player>", "Simulate a vote.", "testvote", "fakevote");
     }
 
     @Override

@@ -29,25 +29,24 @@ public class GUIPunish extends GUI {
     @Override
     public void addItems() {
 
-        Arrays.stream(Punishments.PunishmentType.values()).forEach(pt -> {
+        Arrays.stream(Punishments.PunishmentType.values()).forEach(pt ->
             addItem(pt.getIcon(), ChatColor.YELLOW + Utils.capitalize(pt.name()),
                     "Click here to punish this", "player for " + ChatColor.YELLOW + pt.getDisplay() + ChatColor.GRAY + ".").anyClick(e -> {
                         target.punish(pt, getPlayer());
                         close();
-            });
-        });
+                        target.writeData();
+            }));
 
         if (!target.getPunishments().isEmpty()) {
             nextRow();
             fillGlass(DyeColor.LIME);
-            target.getPunishments().forEach(p -> {
-                addItem(p.getItem()).anyClick(e -> {
+            target.getPunishments().forEach(p ->
+                addItem(p.getItem()).anyClick(e ->
                     Callbacks.promptConfirm(getPlayer(), () -> {
                         p.setValid(!p.isValid());
                         getPlayer().sendMessage(ChatColor.GRAY + "Punishment toggled.");
-                    }, null);
-                });
-            });
+                        target.writeData();
+                    }, null)));
         }
     }
 }

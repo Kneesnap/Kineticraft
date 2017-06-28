@@ -123,7 +123,7 @@ public class KCPlayer implements Jsonable {
      * @return expiry
      */
     public long getPunishExpiry() {
-        int hours = 0;
+        int hours;
         List<Punishment> p = getPunishments().stream().filter(Punishment::isValid).collect(Collectors.toList());
         Punishment punishment = p.isEmpty() ? null : p.get(p.size() - 1);
 
@@ -222,6 +222,17 @@ public class KCPlayer implements Jsonable {
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1F, 1F);
             updatePlayer();
         }
+    }
+
+    /**
+     * Set the new nickname of this player.
+     * @param newNick
+     */
+    public void setNickname(String newNick) {
+        this.nickname = newNick;
+        if (isOnline())
+            getPlayer().sendMessage(ChatColor.GOLD + "Nickname updated.");
+        updatePlayer();
     }
 
     /**

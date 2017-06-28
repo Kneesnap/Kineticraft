@@ -17,7 +17,7 @@ import org.bukkit.entity.Player;
 public class CommandPunish extends StaffCommand {
 
     public CommandPunish() {
-        super(EnumRank.HELPER, false, "<player> [offense]", "Punish a player.", "punish");
+        super("<player> [offense]", "Punish a player.", "punish");
     }
 
     @Override

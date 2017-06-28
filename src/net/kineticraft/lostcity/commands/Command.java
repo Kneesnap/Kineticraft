@@ -6,6 +6,7 @@ import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -25,6 +26,8 @@ public abstract class Command {
     private List<String> alias;
 
     @Setter private String lastAlias; // A hacky method to allow us to throw the player the usage with the alias they used.
+
+    private static final List<String> SENDERS = Arrays.asList("CommandSender", "Player", "CommandBlock", "ConsoleCommandSender");
 
     public Command(CommandType type, String usage, String help, String... alias) {
         this.type = type;
@@ -103,7 +106,7 @@ public abstract class Command {
             // Couldn't get a number from input, such as from Integer.parseInt
             sender.sendMessage(ChatColor.RED + "Invalid number '" + Utils.getInput(nfe) + "'.");
         } catch (IllegalArgumentException iae) {
-            //Couldn't find an enum value, comes from methods such as ChatColor.valueOf
+            // Couldn't find an enum value, comes from methods such as ChatColor.valueOf
             Matcher mClassPath = Pattern.compile("No enum constant (.+)").matcher(iae.getLocalizedMessage());
             mClassPath.find();
             String classPath = mClassPath.group(1);
@@ -115,6 +118,20 @@ public abstract class Command {
                     input = s; //Many enums use toUpperCase(), we'd rather display the input the user put in.
 
             sender.sendMessage(ChatColor.RED + input + " is not a valid " + split[split.length - 2] + ".");
+        } catch (ClassCastException cce) {
+            // This is not an eligible command sender.
+            //Ljava.lang.Object; cannot be cast to [Ljava.lang.CharSequence
+            Matcher mCast = Pattern.compile("L(.+); cannot be cast to \\[L(.+)").matcher(cce.getLocalizedMessage());
+            mCast.find();
+            String castFrom = mCast.group(1);
+            String castTo = mCast.group(2);
+            castTo = castTo.substring(castTo.lastIndexOf(".")); // Remove the path.
+
+            if (SENDERS.stream().anyMatch(castFrom::endsWith)) { // Only handle if the class casted was the command executor.
+                sender.sendMessage(ChatColor.RED + "You must be a " + castTo.toLowerCase() + " to run this command.");
+            } else {
+                throw cce;
+            }
         }
     }
 
@@ -125,10 +142,7 @@ public abstract class Command {
      * @return skipped
      */
     protected static String[] skipArgs(String[] args, int toSkip) {
-        String[] ret = new String[args.length - toSkip];
-        for (int i = 0; i < ret.length; i++)
-            ret[i] = args[toSkip + i];
-        return ret;
+        return Utils.shift(args, toSkip);
     }
 
     /**

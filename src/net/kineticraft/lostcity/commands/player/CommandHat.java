@@ -15,7 +15,7 @@ import org.bukkit.inventory.ItemStack;
  */
 public class CommandHat extends PlayerCommand {
     public CommandHat() {
-        super(EnumRank.SIGMA, true, "", "Wear your held item as a hat.", "hat");
+        super(EnumRank.SIGMA, "", "Wear your held item as a hat.", "hat");
     }
 
     @Override

@@ -16,11 +16,14 @@ import org.bukkit.entity.Player;
 public class CommandNick extends PlayerCommand {
 
     public CommandNick() {
-        super(EnumRank.OMEGA, true, "<nick|off>", "Change your nickname.", "nick", "nickname");
+        super(EnumRank.OMEGA, "<nick|off>", "Change your nickname.", "nick", "nickname");
     }
 
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
+        if (QueryTools.isBusy(sender))
+            return;
+
         KCPlayer p = KCPlayer.getWrapper((Player) sender);
         String newNick = ChatColor.translateAlternateColorCodes('&', args[0]);
 
@@ -33,28 +36,21 @@ public class CommandNick extends PlayerCommand {
             p.setNickname(null);
             sender.sendMessage(ChatColor.GOLD + "Nickname removed.");
             p.updatePlayer();
-        } else {
+            return;
+        }
 
-            if (ChatColor.stripColor(newNick).length() < 4) {
-                sender.sendMessage(ChatColor.RED + "Nickname too short.");
+        if (ChatColor.stripColor(newNick).length() < 4) {
+            sender.sendMessage(ChatColor.RED + "Nickname too short.");
+            return;
+        }
+
+        QueryTools.getData(args[0], d -> {
+            if (!p.getUuid().equals(d.getUuid())) {
+                sender.sendMessage(ChatColor.RED + "You cannot use the name of another player.");
                 return;
             }
 
-            QueryTools.getData(args[0], d -> {
-                if (p.getUuid() == d.getUuid()) {
-                    setNick(p, newNick);
-                } else {
-                    sender.sendMessage(ChatColor.RED + "You cannot use the name of another player.");
-                }
-            }, () -> {
-                setNick(p, newNick);
-            });
-        }
-    }
-
-    private static void setNick(KCPlayer player, String newNick) {
-        player.setNickname(newNick);
-        player.getPlayer().sendMessage(ChatColor.GOLD + "Nickname set.");
-        player.updatePlayer();
+            p.setNickname(newNick);
+        }, () -> p.setNickname(newNick));
     }
 }

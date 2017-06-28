@@ -10,6 +10,10 @@ package net.kineticraft.lostcity.mechanics;
  * //TODO Ingame editor:
  * //TODO: FOV changes can be done by changing walk speed
  *
+ * TODO
+ * For quests:
+ * Create a particle exclamation mark for quest NPCs.
+ *
  * Created by Kneesnap on 6/1/2017.
  */
 public class Cutscenes extends Mechanic {

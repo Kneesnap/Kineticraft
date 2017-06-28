@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 public class CommandSetRank extends StaffCommand {
 
     public CommandSetRank() {
-        super(EnumRank.MOD, false, "<player> <rank>", "Set a player's rank.", "setrank");
+        super(EnumRank.MOD, "<player> <rank>", "Set a player's rank.", "setrank");
     }
 
     @Override

@@ -16,6 +16,7 @@ import java.util.stream.IntStream;
 
 /**
  * CommandHome - Teleport to your home.
+ * TODO: Remove the admin code from this once the manager gui is added.
  *
  * Created by Kneesnap on 6/1/2017.
  */
@@ -49,9 +50,7 @@ public class CommandHome extends PlayerCommand {
                         sender.sendMessage(ChatColor.RED + k.getUsername() + " doesn't have a home named \"" + homeName + "\"");
                     }
                 }
-            }, () -> {
-                sender.sendMessage(ChatColor.RED + "Player not found.");
-            });
+            }, () -> sender.sendMessage(ChatColor.RED + "Player not found."));
             return;
         }
 
@@ -81,12 +80,12 @@ public class CommandHome extends PlayerCommand {
 
     @Override
     protected void showUsage(CommandSender sender) {
+        super.showUsage(sender);
+
         Player player = (Player) sender;
         KCPlayer kcPlayer = KCPlayer.getWrapper(player);
-        super.showUsage(sender);
         listHomes(sender, kcPlayer);
-        if (player.getBedSpawnLocation() != null) {
+        if (player.getBedSpawnLocation() != null)
             sender.sendMessage(ChatColor.GRAY + "You can access your bed with " + ChatColor.DARK_PURPLE + "/home bed");
-        }
     }
 }

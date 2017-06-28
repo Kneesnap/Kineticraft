@@ -39,7 +39,7 @@ public class CommandSetHome extends PlayerCommand {
         }
 
         if (kcPlayer.getHomes().containsKey(args[0])) {
-            player.sendMessage(ChatColor.RED + "This home already exists. Use .delhome to remove it.");
+            player.sendMessage(ChatColor.RED + "This home already exists. Use /delhome to remove it.");
             return;
         }
 

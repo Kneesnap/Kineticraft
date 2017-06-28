@@ -7,7 +7,6 @@ import net.kineticraft.lostcity.config.Configs.ConfigType;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import java.security.cert.CollectionCertStoreParameters;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -19,7 +18,7 @@ import java.util.stream.Collectors;
 public class CommandConfig extends StaffCommand {
 
     public CommandConfig() {
-        super(EnumRank.ADMIN, false,"<config/all>", "Reload a config.", "config");
+        super(EnumRank.ADMIN,"<config|all>", "Reload a config.", "config");
     }
 
     @Override

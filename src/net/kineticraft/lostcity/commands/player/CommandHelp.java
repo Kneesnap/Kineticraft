@@ -23,7 +23,7 @@ public class CommandHelp extends PlayerCommand {
     private static int PER_PAGE = 10;
 
     public CommandHelp() {
-        super(EnumRank.MU, false, "[command]", "Display command usage.", "help", "?");
+        super("[command]", "Display command usage.", "help", "?");
     }
 
     @Override

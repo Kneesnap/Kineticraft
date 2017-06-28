@@ -15,7 +15,7 @@ import org.bukkit.command.CommandSender;
 public class CommandAnnounce extends StaffCommand {
 
     public CommandAnnounce() {
-        super(EnumRank.ADMIN, false, "<message>", "Add a server announcement", "announce");
+        super(EnumRank.ADMIN, "<message>", "Add a server announcement", "announce");
     }
 
     @Override

@@ -114,10 +114,13 @@ public class MetadataManager extends Mechanic {
     }
 
     /**
-     * Does this object have a cooldown?
+     * Does this object have an active cooldown?
+     * @param obj
+     * @param cooldown
+     * @return hasCooldown - Only will be true if the cooldown has not expired as well.
      */
     public static boolean hasCooldown(Metadatable obj, String cooldown) {
-        return obj.hasMetadata(cooldown) ? obj.getMetadata(cooldown).get(0).asLong() > System.currentTimeMillis() : false;
+        return obj.hasMetadata(cooldown) && obj.getMetadata(cooldown).get(0).asLong() > System.currentTimeMillis();
     }
 
     /**
@@ -131,6 +134,22 @@ public class MetadataManager extends Mechanic {
         if (has)
             player.sendMessage(ChatColor.RED + "You must wait " + Utils.formatTime(player.getMetadata(cooldown).get(0)
                     .asLong() - System.currentTimeMillis()) + " before doing this.");
+        return has;
+    }
+
+    /**
+     * Checks if this player has the given cooldown, and if they don't, give it to them after telling them they have it.
+     * Returns whether or not the player had the cooldown before this was called.
+     *
+     * @param player
+     * @param cooldown
+     * @param ticks
+     * @return hasCooldown
+     */
+    public static boolean updateCooldown(Player player, String cooldown, int ticks) {
+        boolean has = alertCooldown(player, cooldown);
+        if (!has)
+            setCooldown(player, cooldown, ticks);
         return has;
     }
 }

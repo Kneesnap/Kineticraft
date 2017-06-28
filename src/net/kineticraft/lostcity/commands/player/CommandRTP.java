@@ -22,7 +22,7 @@ public class CommandRTP extends PlayerCommand {
     protected void onCommand(CommandSender sender, String[] args) {
         Player player = (Player) sender;
 
-        if (MetadataManager.alertCooldown(player, "rtp"))
+        if (MetadataManager.updateCooldown(player, "rtp", 20 * 60 * 10)) // 10 Minutes
             return;
 
         if (player.getWorld().getEnvironment() != World.Environment.NORMAL) {
@@ -30,7 +30,6 @@ public class CommandRTP extends PlayerCommand {
             return;
         }
 
-        MetadataManager.setCooldown(player, "rtp", 20 * 60 * 10); // 10 minute cooldown
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "spreadplayers 0 0 0 15000 false " + player.getName());
     }
 }

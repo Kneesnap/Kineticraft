@@ -13,16 +13,16 @@ import org.bukkit.entity.Player;
 public class CommandTPA extends PlayerCommand {
 
     public CommandTPA() {
-        super("[id]", "Teleport to another player.", "tpa");
+        super("<id>", "Teleport to another player.", "tpa");
     }
 
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
-        if (args.length > 0) {
-            ((Player) sender).chat("/trigger tpa set " + args[0]);
-            return;
-        }
+        ((Player) sender).chat("/trigger tpa set " + args[0]);
+    }
 
+    @Override
+    protected void showUsage(CommandSender sender) {
         sender.sendMessage(ChatColor.BLUE + "To " + ChatColor.RED + "tpa" + ChatColor.BLUE + ", use "
                 + ChatColor.RED + "/trigger tpa set <ID> " + ChatColor.BLUE + " or " + ChatColor.RED + "/tpa <ID>"
                 + ChatColor.BLUE + ".");

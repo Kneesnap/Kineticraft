@@ -11,11 +11,11 @@ import org.bukkit.command.CommandSender;
  */
 public class CommandCondense extends PlayerCommand {
     public CommandCondense() {
-        super(EnumRank.ALPHA, true, "", "Condense all items in your inventory.", "stack", "condense");
+        super(EnumRank.ALPHA, "", "Condense all items in your inventory.", "stack", "condense");
     }
 
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
-
+        //TODO
     }
 }

@@ -21,7 +21,7 @@ public class CommandGUI extends PlayerCommand {
     }
 
     public CommandGUI(EnumRank rank, GUIType guiType, String help, String... alias) {
-        super(rank, true, "", help, alias);
+        super(rank, "", help, alias);
         this.type = guiType;
     }
 

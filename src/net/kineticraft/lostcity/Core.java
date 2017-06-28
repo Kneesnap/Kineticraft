@@ -1,10 +1,7 @@
 package net.kineticraft.lostcity;
 
-import jdk.nashorn.internal.runtime.linker.LinkerCallSite;
-import lombok.Cleanup;
 import lombok.Getter;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
-import net.kineticraft.lostcity.utils.Dog;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -13,10 +10,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.io.BufferedReader;
-import java.io.CharArrayReader;
 import java.io.File;
-import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,6 +27,8 @@ public class Core extends JavaPlugin {
     private static Core instance;
 
     private static final String[] FOLDERS = new String[] {"players", "messages"};
+    private static final List<String> DEVS = Arrays.asList("a1adbca1-6fc5-42eb-97c7-87259634ecc3",
+            "8228fe1c-c02e-4c25-b24f-a005f08f8595");
 
     @Override
     public void onEnable() {
@@ -117,7 +113,7 @@ public class Core extends JavaPlugin {
      * @return isDev
      */
     public static boolean isDev(CommandSender sender) {
-        return (sender instanceof Player && Arrays.asList("Kneesnap", "SuperAnimeBoi").contains(sender.getName()))
+        return (sender instanceof Player && DEVS.contains(((Player) sender).getUniqueId().toString()))
                 || sender instanceof ConsoleCommandSender;
     }
 
@@ -127,41 +123,5 @@ public class Core extends JavaPlugin {
      */
     public static List<Player> getOnlinePlayers() {
         return Bukkit.getOnlinePlayers().stream().filter(p -> !KCPlayer.getWrapper(p).isVanished()).collect(Collectors.toList());
-    }
-
-    /**
-     * Take a backup of the server.
-     */
-    public static void takeBackup() {
-        Dog.KINETICA.say("Server is backing up, expect lag!");
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "save-all");
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "save-off");
-
-        Bukkit.getScheduler().runTaskAsynchronously(getInstance(), () -> {
-            try {
-                final ProcessBuilder childBuilder = new ProcessBuilder("./backup.sh");
-                childBuilder.redirectErrorStream(true);
-                childBuilder.directory(getInstance().getDataFolder().getParentFile().getParentFile());
-                final Process child = childBuilder.start();
-
-                Bukkit.getScheduler().runTaskAsynchronously(getInstance(), () -> {
-                    try {
-                        @Cleanup BufferedReader reader = new BufferedReader(new InputStreamReader(child.getInputStream()));
-                        String line;
-                        while ((line = reader.readLine()) != null)
-                            Bukkit.getLogger().info(line);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                });
-                child.waitFor();
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                Bukkit.getScheduler().runTask(getInstance(), () ->
-                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "save-on"));
-                Dog.KINETICA.say("Backup complete.");
-            }
-        });
     }
 }

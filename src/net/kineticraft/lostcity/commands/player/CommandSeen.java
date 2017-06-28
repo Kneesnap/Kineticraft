@@ -17,7 +17,7 @@ import org.bukkit.command.CommandSender;
 public class CommandSeen extends PlayerCommand {
 
     public CommandSeen() {
-        super(EnumRank.MU, false, "<player>", "Check when a player was last seen.", "seen");
+        super("<player>", "Check when a player was last seen.", "seen");
     }
 
     @Override
@@ -31,15 +31,18 @@ public class CommandSeen extends PlayerCommand {
             sender.sendMessage(ChatColor.GRAY + "Showing report of " + ChatColor.GRAY + p.getUsername() + ChatColor.GRAY + ":");
             sender.sendMessage(" - " + ChatColor.GRAY + "Last Seen: " + ChatColor.WHITE + Utils.formatTime(seenTime));
 
-            if (Utils.getRank(sender).isAtLeast(EnumRank.HELPER)) {
+            // Show extra data to helpers.
+            if (Utils.getRank(sender).isAtLeast(EnumRank.HELPER))
                 sender.sendMessage(" - " + ChatColor.GRAY + "IP Address: " + ChatColor.WHITE + p.getLastIP());
 
-                if (!p.getPunishments().isEmpty()) {
-                    sender.sendMessage(" - "  + Utils.formatToggle("Banned", p.isBanned()));
-                    sender.sendMessage(ChatColor.GRAY + "Punishments:");
-                    p.getPunishments().stream().map(Punishments.Punishment::toString).forEach(sender::sendMessage);
-                }
+
+            // Show punishments.
+            if (!p.getPunishments().isEmpty()) {
+                sender.sendMessage(" - " + Utils.formatToggle("Banned", p.isBanned()));
+                sender.sendMessage(ChatColor.GRAY + "Punishments:");
+                p.getPunishments().stream().map(Punishments.Punishment::toString).forEach(sender::sendMessage);
             }
+
         }, () -> sender.sendMessage(ChatColor.RED + "Player not found."));
     }
 }

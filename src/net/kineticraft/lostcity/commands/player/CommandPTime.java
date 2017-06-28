@@ -7,12 +7,14 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
+ * Allow players to change their local time.
+ *
  * Created by Kneesnap on 6/16/2017.
  */
 public class CommandPTime extends PlayerCommand {
 
     public CommandPTime() {
-        super(EnumRank.GAMMA, true, "<time|reset>", "Set your local time.", "ptime");
+        super(EnumRank.GAMMA, "<time|reset>", "Set your local time.", "ptime");
     }
 
     @Override

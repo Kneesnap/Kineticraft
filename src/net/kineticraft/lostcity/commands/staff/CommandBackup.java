@@ -1,8 +1,8 @@
 package net.kineticraft.lostcity.commands.staff;
 
-import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.StaffCommand;
+import net.kineticraft.lostcity.utils.ServerUtils;
 import org.bukkit.command.CommandSender;
 
 /**
@@ -12,11 +12,11 @@ import org.bukkit.command.CommandSender;
  */
 public class CommandBackup extends StaffCommand {
     public CommandBackup() {
-        super(EnumRank.ADMIN, false, "", "Take a backup of the server.", "backup");
+        super(EnumRank.ADMIN, "", "Take a backup of the server.", "backup");
     }
 
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
-        Core.takeBackup();
+        ServerUtils.takeBackup();
     }
 }

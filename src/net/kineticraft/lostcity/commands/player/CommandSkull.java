@@ -8,12 +8,14 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
+ * Allow players to spawn in skulls of a certain player.
+ *
  * Created by Kneesnap on 6/16/2017.
  */
 public class CommandSkull extends PlayerCommand {
 
     public CommandSkull() {
-        super(EnumRank.GAMMA, true, "<name>", "Spawn a skull-item.", "skull");
+        super(EnumRank.GAMMA, "<name>", "Spawn a skull-item.", "skull");
     }
 
     @Override

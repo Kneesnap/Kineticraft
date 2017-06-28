@@ -197,11 +197,8 @@ public class Commands extends Mechanic {
             return;
         }
 
-        if (input.startsWith("/trigger")) {
-            return;
-        }
-
-        Core.alertStaff(p.getName() + ": " + ChatColor.GRAY + input);
+        if (!input.startsWith("/trigger ")) // Alert staff of commands used, if the command isn't /trigger.
+            Core.alertStaff(p.getName() + ": " + ChatColor.GRAY + input);
     }
 
     @EventHandler(priority = EventPriority.LOW)
