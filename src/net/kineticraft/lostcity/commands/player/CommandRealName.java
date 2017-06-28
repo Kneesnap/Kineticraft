@@ -8,6 +8,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -22,17 +23,16 @@ public class CommandRealName extends PlayerCommand {
 
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
-        Set<Player> matchSet = Bukkit.getOnlinePlayers().stream().filter(player -> {
-            KCPlayer kcPlayer = KCPlayer.getWrapper(player);
+
+        List<String> matches = Bukkit.getOnlinePlayers().stream().map(KCPlayer::getWrapper).filter(kcPlayer -> {
             String nickname = kcPlayer.getNickname();
-            return nickname.replaceAll("§(?:\\d|[a-f]|[k-o]|r)", "").toLowerCase().contains(args[0].toLowerCase());
-        }).collect(Collectors.toSet());
-        if (matchSet.isEmpty()) {
+            return nickname != null && ChatColor.stripColor(nickname).toLowerCase().contains(args[0].toLowerCase());
+        }).map(KCPlayer::getUsername).collect(Collectors.toList());
+        if (matches.isEmpty()) {
             sender.sendMessage(ChatColor.RED + "Not matches have been found.");
         } else {
-            String matchString = Utils.join(ChatColor.GRAY + ", ", matchSet, m -> ChatColor.GREEN + m.getName());
+            String matchString = Utils.join(ChatColor.GRAY + ", ", matches, m -> ChatColor.GREEN + m);
             sender.sendMessage(ChatColor.GRAY + "Matches: " + matchString);
         }
     }
-
 }
