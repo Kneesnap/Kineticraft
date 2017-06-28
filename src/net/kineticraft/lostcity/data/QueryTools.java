@@ -28,7 +28,7 @@ public class QueryTools {
     @Getter
     private static int currentQueries;
 
-    private static int FILES_PER_TICK = 75;
+    private static int FILES_PER_TICK = 45;
     private static int MAX_PLAYER_QUERIES = 2;
 
     /**

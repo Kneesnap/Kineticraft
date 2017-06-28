@@ -221,7 +221,7 @@ public class TextUtils {
                     tag = TextTag.valueOf(tagId.split("=")[0].toUpperCase());
                 } catch (Exception e) {
                     // If it isn't a bbcode tag, treat it as text.
-                    i = temp + 1;
+                    i = temp;
                     append += "[";
                     continue;
                 }
