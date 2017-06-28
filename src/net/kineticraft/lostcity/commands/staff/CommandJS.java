@@ -46,7 +46,10 @@ public class CommandJS extends StaffCommand {
         SELF_ALIAS.forEach(a -> engine.put(a, sender));
 
         try {
-            sender.sendMessage(engine.eval(String.join(" ", args)).toString());
+            Object result = engine.eval(String.join(" ", args));
+            if (result != null) {
+                sender.sendMessage(result.toString());
+            }
         } catch (ScriptException e) {
             sender.sendMessage(e.getMessage());
         }
