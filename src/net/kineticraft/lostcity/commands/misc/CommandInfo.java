@@ -2,7 +2,7 @@ package net.kineticraft.lostcity.commands.misc;
 
 import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.config.Configs;
-import org.bukkit.ChatColor;
+import net.kineticraft.lostcity.utils.TextBuilder;
 import org.bukkit.command.CommandSender;
 
 /**
@@ -21,15 +21,6 @@ public class CommandInfo extends PlayerCommand {
 
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
-        for (String s : Configs.getRawConfig(this.type).getLines()) {
-            s = ChatColor.translateAlternateColorCodes('&', s);
-            if (s.startsWith("{") || s.startsWith("[")) {
-                // It's some mojangson.
-                sender.sendMessage();
-            } else {
-                // It's a raw text line.
-                sender.sendMessage(s);
-            }
-        }
+        Configs.getTextConfig(this.type).getComponents().stream().map(TextBuilder::create).forEach(sender::sendMessage);
     }
 }

@@ -54,6 +54,15 @@ public class Configs extends Mechanic {
         return (RawConfig) getConfig(type);
     }
 
+    /**
+     * Get a text message config.
+     * @param type
+     * @return textConfig
+     */
+    public static TextConfig getTextConfig(ConfigType type) {
+        return (TextConfig) getConfig(type);
+    }
+
     @Override
     public void onEnable() {
         // Loads configs on startup.
@@ -79,12 +88,14 @@ public class Configs extends Mechanic {
         RANKS,
         HELP,
         INFO,
-        COLORS;
+        COLORS,
+        DUNGEON,
+        VOTE;
 
         private final Class<? extends Config> configClass;
 
         ConfigType() {
-            this(RawConfig.class);
+            this(TextConfig.class);
         }
 
         /**

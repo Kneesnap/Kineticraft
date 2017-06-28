@@ -1,8 +1,9 @@
 package net.kineticraft.lostcity.config;
 
-import net.kineticraft.lostcity.config.Configs.ConfigType;
 import net.kineticraft.lostcity.data.JsonData;
 import net.kineticraft.lostcity.data.Jsonable;
+
+import java.util.List;
 
 /**
  * A Json Configuration base.
@@ -25,5 +26,10 @@ public abstract class JsonConfig extends Config implements Jsonable {
     @Override
     public void saveToDisk() {
         save().toFile(getFileName());
+    }
+
+    @Override
+    protected void load(List<String> lines) {
+        // Does not call since we override loadFromDisk.
     }
 }

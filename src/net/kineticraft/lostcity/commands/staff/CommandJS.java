@@ -2,17 +2,13 @@ package net.kineticraft.lostcity.commands.staff;
 
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
-import net.kineticraft.lostcity.commands.Command;
 import net.kineticraft.lostcity.commands.StaffCommand;
-import net.kineticraft.lostcity.data.wrappers.KCPlayer;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 
@@ -47,10 +43,9 @@ public class CommandJS extends StaffCommand {
 
         try {
             Object result = engine.eval(String.join(" ", args));
-            if (result != null) {
+            if (result != null)
                 sender.sendMessage(result.toString());
-            }
-        } catch (ScriptException e) {
+        } catch (Exception e) {
             sender.sendMessage(e.getMessage());
         }
     }
@@ -62,29 +57,7 @@ public class CommandJS extends StaffCommand {
         try {
             // Make the 'eval' command behave exactly as the eval used here does.
             engine.put("engine", engine);
-            engine.eval("var eval = function(code) {return engine.eval(code);}");
-
-            // Setup basic global server shortcuts.
-            engine.eval("var Kineticraft = Packages.net.kineticraft.lostcity");
-            engine.eval("var plugin = Kineticraft.Core.instance");
-            engine.eval("var Core = plugin");
-            engine.eval("var server = Packages.org.bukkit.Bukkit.server"); // Setup 'server' keyword
-            engine.eval("var Bukkit = server"); // Setup 'Bukkit' keyword.
-
-            // Basic IO.
-            engine.eval("var console = server.logger");
-            engine.eval("console.log = console.info");
-            engine.eval("var print = function(msg) {server.logger.info(msg); return msg;}"); // Create print()
-
-            engine.eval("var ChatColor = org.bukkit.ChatColor"); // Setup ChatColor keyword.
-            engine.eval("var Sound = org.bukkit.Sound");
-
-            // Setup schedulers
-            engine.eval("var toTicks = function (millis) { return Math.ceil(millis / 50); }");
-            engine.eval("var setTimeout = function (callback, delayMS) {"
-                    + "return server.scheduler.runTaskLater(plugin, callback, toTicks(delayMS)); }");
-            engine.eval("var setInterval = function (callback, intervalMS) {"
-                    + "return server.scheduler.runTaskTimer(plugin, callback, toTicks(intervalMS), toTicks(intervalMS)); }");
+            engine.eval(new InputStreamReader(Core.getInstance().getResource("boot.js")));
         } catch (ScriptException ex) {
             ex.printStackTrace();
             Core.warn("Failed to initialize JS shortcuts.");

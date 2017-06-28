@@ -9,6 +9,7 @@ import net.kineticraft.lostcity.commands.player.*;
 import net.kineticraft.lostcity.commands.staff.*;
 import net.kineticraft.lostcity.commands.trigger.*;
 import net.kineticraft.lostcity.config.Configs;
+import net.kineticraft.lostcity.config.Configs.ConfigType;
 import net.kineticraft.lostcity.guis.GUIType;
 import net.kineticraft.lostcity.mechanics.Chat;
 import net.kineticraft.lostcity.mechanics.Mechanic;
@@ -44,24 +45,24 @@ public class Commands extends Mechanic {
     private static void registerCommands() {
 
         // Player Commands
-        addCommand(new CommandAnnounce());
         addCommand(new CommandBackup());
         addCommand(new CommandBright());
+        addCommand(new CommandBroadcast());
         addCommand(new CommandInfo(Configs.ConfigType.COLORS, "List chat color codes", "color", "colors", "colour", "colours"));
         addCommand(new CommandCondense());
         addCommand(new CommandConfig());
         addCommand(new CommandDeathTeleport());
         addCommand(new CommandDelHome());
-        addCommand(new CommandInfo(Configs.ConfigType.DISCORD, "List discord information", "discord"));
-        addCommand(new CommandDungeon());
+        addCommand(new CommandInfo(ConfigType.DISCORD, "List discord information", "discord"));
+        addCommand(new CommandInfo(ConfigType.DUNGEON, "List dungeon information", "dungeon", "dungeons"));
         addCommand(new CommandFly());
         addCommand(new CommandGUI(EnumRank.THETA, GUIType.DONOR, "Access donor perks.", "donor"));
         addCommand(new CommandGUIs());
         addCommand(new CommandHelp());
-        addCommand(new CommandInfo(Configs.ConfigType.DONATE, "How to donate / donor perks.", "donate", "shop"));
+        addCommand(new CommandInfo(ConfigType.DONATE, "How to donate / donor perks.", "donate", "shop"));
         addCommand(new CommandHat());
         addCommand(new CommandHome());
-        addCommand(new CommandInfo(Configs.ConfigType.INFO, "General server information.", "info", "einfo"));
+        addCommand(new CommandInfo(ConfigType.INFO, "General server information.", "info", "einfo"));
         addCommand(new CommandIgnore());
         addCommand(new CommandMessage());
         addCommand(new CommandMail());
@@ -76,7 +77,7 @@ public class Commands extends Mechanic {
         addCommand(new CommandRankup());
         addCommand(new CommandRTP());
         addCommand(new CommandRescue());
-        addCommand(new CommandInfo(Configs.ConfigType.RULES, "Server rules.", "rules", "info"));
+        addCommand(new CommandInfo(ConfigType.RULES, "Server rules.", "rules", "info"));
         addCommand(new CommandSeen());
         addCommand(new CommandSetHome());
         addCommand(new CommandSetRank());
@@ -89,7 +90,7 @@ public class Commands extends Mechanic {
         addCommand(new CommandTPA());
         addCommand(new CommandTPBook());
         addCommand(new CommandVanish());
-        addCommand(new CommandVote());
+        addCommand(new CommandInfo(ConfigType.VOTE, "Information on voting", "vote"));
         addCommand(new CommandVotes());
         addCommand(new CommandJS());
         addCommand(new CommandSee());

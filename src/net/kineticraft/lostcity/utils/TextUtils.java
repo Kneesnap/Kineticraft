@@ -1,15 +1,17 @@
 package net.kineticraft.lostcity.utils;
 
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.TranslatableComponent;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import net.md_5.bungee.api.chat.*;
 import net.md_5.bungee.chat.ComponentSerializer;
 import net.minecraft.server.v1_12_R1.ChatBaseComponent;
 import net.minecraft.server.v1_12_R1.IChatBaseComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 import java.util.Arrays;
+import java.util.function.BiConsumer;
 
 /**
  * Contains basic utils and aliases to methods that are not easy to find / documented.
@@ -185,5 +187,92 @@ public class TextUtils {
         TranslatableComponent tc = new TranslatableComponent(message, args);
         tc.setColor(net.md_5.bungee.api.ChatColor.RED);
         sender.sendMessage(tc);
+    }
+
+    /**
+     * Converts a string of text formatted in a readable way into a ComponentBuilder.
+     * This text is in a similar format to bbcode.
+     *
+     * @param input
+     * @return textBuilder
+     */
+    public static TextBuilder fromMarkup(String input) {
+        input = ChatColor.translateAlternateColorCodes('&', input);
+        String[] queue = input.split("");
+        TextBuilder tb = new TextBuilder();
+
+        boolean lastColor = false;
+        String append = "";
+
+        for (int i = 0; i < queue.length; i++) {
+            String c = queue[i];
+
+            if (c.equals("[")) {
+
+                // Read tag identifier, ex: [url]
+                String tagId = "";
+                while (!queue[++i].equals("]"))
+                    tagId += queue[i];
+                i++; // Skip close bracket.
+
+                TextTag tag = TextTag.valueOf(tagId.split("=")[0].toUpperCase());
+
+                // Read the text in between the tags, [url]Click here![/url]
+                String text = "";
+                String endTag = "[/" + tag.name().toLowerCase() + "]";
+                while (!input.substring(i).toLowerCase().startsWith(endTag))
+                    text += queue[i++];
+                i += endTag.length() - 1; // Continue reading after this tag ends.
+
+                // Get the extra parameter in the tag. Defaults to the text if not preset. [url=http://google.com]
+                String param = tagId.contains("=") ? tagId.substring(tagId.lastIndexOf("=") + 1) : null;
+
+                // Apply the text.
+                if (append.length() > 0) {
+                    tb.append(append); // Apply the text queued.
+                    append = "";
+                }
+
+                tag.apply(tb, text, param);
+            } else if (c.equals(ChatColor.COLOR_CHAR)) {
+                // We've encountered a color code.
+
+                // Append new text, but only if the last element was not also a color code.
+                if (!lastColor) {
+                    tb.append(append);
+                    append = "";
+                }
+
+                tb.format(ChatColor.getByChar(queue[++i])); // Add color code.
+                lastColor = true;
+            } else {
+                // This is normal text.
+                append += c;
+                lastColor = false;
+            }
+        }
+        tb.append(append); // Add the last bit of text.
+
+        return tb;
+    }
+
+    @AllArgsConstructor @Getter
+    public enum TextTag {
+        URL(TextBuilder::openURL, ClickEvent.Action.OPEN_URL),
+        HOVER(TextBuilder::showText, HoverEvent.Action.SHOW_TEXT),
+        COMMAND(TextBuilder::runCommand, ClickEvent.Action.RUN_COMMAND);
+
+        private final BiConsumer<TextBuilder, String> tagApply;
+        private final Object action;
+
+        public void apply(TextBuilder tb, String text, String param) {
+            applyText(tb, this == HOVER ? param : text);
+            getTagApply().accept(tb, this == HOVER ? text : param);
+        }
+
+        private void applyText(TextBuilder textBuilder, String text) {
+            if (text != null && text.length() > 0)
+                textBuilder.append(text); // Apply the text to the builder.
+        }
     }
 }

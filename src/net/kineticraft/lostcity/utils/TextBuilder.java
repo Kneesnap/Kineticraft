@@ -5,6 +5,8 @@ import net.md_5.bungee.api.chat.*;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,6 +41,39 @@ public class TextBuilder extends ComponentBuilder {
     @Override // Don't retain any previous formatting.
     public TextBuilder append(String text) {
         append(text, FormatRetention.NONE);
+        return this;
+    }
+
+    /**
+     * Accept any chatcolor thrown in. Accepts color and special formatters like bold.
+     *
+     * @param color
+     * @return this
+     */
+    public TextBuilder format(ChatColor color) {
+        switch (color) {
+            case BOLD:
+                bold();
+                break;
+            case MAGIC:
+                obfuscate();
+                break;
+            case UNDERLINE:
+                underline();
+                break;
+            case STRIKETHROUGH:
+                strikethrough();
+                break;
+            case ITALIC:
+                italicize();
+                break;
+            case WHITE:
+                color(ChatColor.RESET); // ComponentBuilder adds WHITE at each new component, but that makes the format incredibly messy. We automatically clear them instead, meaning we cannot use them here.
+                break;
+            default:
+                color(color);
+                break;
+        }
         return this;
     }
 
@@ -167,13 +202,51 @@ public class TextBuilder extends ComponentBuilder {
     }
 
     /**
+     * Convert this text to our custom markup format.
+     * @return markup
+     */
+    public String toMarkup() {
+        String res = "";
+
+        append(""); // Make it so the current component gets included in the save.
+        for (BaseComponent bc : getParts()) {
+            String text = bc.toLegacyText();
+            String click = tryTag(bc.getClickEvent(), text);
+            String hover = tryTag(bc.getHoverEvent(), click != null && click.length() > 0 ? null : text);
+
+            if (click.length() == 0 && hover.length() == 0) {
+                res += text;
+            } else {
+                res += click + hover;
+            }
+        }
+
+        return res.replaceAll(ChatColor.WHITE.toString(), "");
+    }
+
+    private static String tryTag(Object check, String text) {
+        if (check == null)
+            return "";
+
+        String value = check instanceof ClickEvent ? ((ClickEvent) check).getValue() : text;
+        if (check instanceof HoverEvent)
+            text = TextUtils.toLegacy(((HoverEvent) check).getValue());
+
+        TextUtils.TextTag tag = Arrays.stream(TextUtils.TextTag.values())
+                .filter(t -> t.getAction() == ReflectionUtil.exec(check, "getAction"))
+                .findAny().orElse(null);
+        return tag != null ? "[" + tag.name().toLowerCase() + (value != null ? "=" + value : "") + "]" + text
+                + "[/" + tag.name().toLowerCase() + "]" : "";
+    }
+
+    /**
      * Returns the current text being modified.
      * Uses reflection for current lack of a better method.
      *
      * @return text
      */
     public TextComponent getCurrent() {
-        return (TextComponent) ReflectionUtil.getField(this, "current");
+        return (TextComponent) ReflectionUtil.getField(this, TextComponent.class, "current");
     }
 
     /**

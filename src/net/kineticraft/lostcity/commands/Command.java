@@ -27,7 +27,7 @@ public abstract class Command {
 
     @Setter private String lastAlias; // A hacky method to allow us to throw the player the usage with the alias they used.
 
-    private static final List<String> SENDERS = Arrays.asList("CommandSender", "Player", "CommandBlock", "ConsoleCommandSender");
+    private static final List<String> SENDERS = Arrays.asList("CommandSender", "Player", "ConsoleCommandSender");
 
     public Command(CommandType type, String usage, String help, String... alias) {
         this.type = type;
@@ -121,7 +121,9 @@ public abstract class Command {
         } catch (ClassCastException cce) {
             // This is not an eligible command sender.
             Matcher mCast = Pattern.compile("(.+) cannot be cast to (.+)").matcher(cce.getLocalizedMessage());
-            mCast.find();
+            if (!mCast.find())
+                throw cce;
+
             String castFrom = mCast.group(1).split(";")[0];
             String castTo = mCast.group(2).split(";")[0];
             castTo = castTo.substring(castTo.lastIndexOf(".") + 1); // Remove the path.

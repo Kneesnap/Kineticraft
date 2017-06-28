@@ -3,12 +3,13 @@ package net.kineticraft.lostcity.commands.staff;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.kineticraft.lostcity.commands.StaffCommand;
-import net.kineticraft.lostcity.utils.AdvancedSupplier;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+
+import java.util.function.Function;
 
 /**
  * Allow opening of a player's inventories.
@@ -30,7 +31,7 @@ public class CommandSee extends StaffCommand {
         }
 
         InventoryType type = InventoryType.valueOf(args[0].toUpperCase());
-        ((Player) sender).openInventory(type.getSupplier().accept(target));
+        ((Player) sender).openInventory(type.getSupplier().apply(target));
         sender.sendMessage(ChatColor.GREEN + "Opened " + target.getName() + "'s " + type.getName() + ".");
     }
 
@@ -39,7 +40,7 @@ public class CommandSee extends StaffCommand {
         INV(Player::getInventory, "inventory"),
         END(Player::getEnderChest, "enderchest");
 
-        private final AdvancedSupplier<Inventory, Player> supplier;
+        private final Function<Player, Inventory> supplier;
         private final String name;
     }
 }

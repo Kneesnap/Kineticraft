@@ -25,6 +25,7 @@ import org.bukkit.scheduler.BukkitTask;
 import java.lang.reflect.Array;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -76,27 +77,31 @@ public class Utils {
 
     /**
      * Joins a string together by the given string.
+     * @deprecated Use String#join
+     *
      * @param join
      * @param values
      * @param display
      * @return
      */
-    public static <T> String join(String join, T[] values, AdvancedSupplier<String, T> display) {
+    public static <T> String join(String join, T[] values, Function<T, String> display) {
         return join(join, Arrays.asList(values), display);
     }
 
     /**
      * Joins a string together by the delimeter.
+     * @deprecrated Use String#join
+     *
      * @param join
      * @param values
      * @param displayer
      * @param <T>
-     * @return
+     * @return joined
      */
-    public static <T> String join(String join, Iterable<T> values, AdvancedSupplier<String, T> displayer) {
+    public static <T> String join(String join, Iterable<T> values, Function<T, String> displayer) {
         String res = "";
         for (T val : values)
-            res += (res.length() > 0 ? join : "") + displayer.accept(val);
+            res += (res.length() > 0 ? join : "") + displayer.apply(val);
         return res;
     }
 

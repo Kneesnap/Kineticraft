@@ -1,0 +1,9 @@
+&8Changes&0
+ - Patchnotes System
+ - New Commands:
+  - /realname
+  - /seen
+ - Admin Tools
+
+&8Bugfixes&0
+ - Backend improvements.
