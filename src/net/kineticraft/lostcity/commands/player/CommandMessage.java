@@ -1,8 +1,8 @@
 package net.kineticraft.lostcity.commands.player;
 
-import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
+import net.kineticraft.lostcity.mechanics.Chat;
 import net.kineticraft.lostcity.mechanics.MetadataManager;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
@@ -24,11 +24,8 @@ public class CommandMessage extends PlayerCommand {
 
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
-        String message = String.join(" ", skipArgs(args, 1));
-        if (Utils.getRank(sender).isAtLeast(EnumRank.OMEGA)) // Color the message if the sender is at least Omega.
-            message = ChatColor.translateAlternateColorCodes('&', message);
-        message = ChatColor.DARK_GRAY + ": " + ChatColor.WHITE + message; // Add prefix.
-
+        String message = ChatColor.DARK_GRAY + ": " + ChatColor.WHITE
+                + Chat.applyAllFilters(sender, String.join(" ", skipArgs(args, 1)));
         CommandSender receiver = args[0].equalsIgnoreCase("CONSOLE")
                 ? Bukkit.getConsoleSender() : Bukkit.getPlayer(args[0]);
 

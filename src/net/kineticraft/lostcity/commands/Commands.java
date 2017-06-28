@@ -47,7 +47,7 @@ public class Commands extends Mechanic {
         addCommand(new CommandAnnounce());
         addCommand(new CommandBackup());
         addCommand(new CommandBright());
-        addCommand(new CommandInfo(Configs.ConfigType.COLORS, "List minecraft colors", "color", "colors", "colour", "colours"));
+        addCommand(new CommandInfo(Configs.ConfigType.COLORS, "List chat color codes", "color", "colors", "colour", "colours"));
         addCommand(new CommandCondense());
         addCommand(new CommandConfig());
         addCommand(new CommandDeathTeleport());
@@ -66,6 +66,7 @@ public class Commands extends Mechanic {
         addCommand(new CommandMessage());
         addCommand(new CommandMail());
         addCommand(new CommandMined());
+        addCommand(new CommandNear());
         addCommand(new CommandNick());
         addCommand(new CommandPTime());
         addCommand(new CommandPunish());
@@ -192,7 +193,7 @@ public class Commands extends Mechanic {
             evt.setCancelled(true); // Don't show 'unknown command....'
 
         if (input.startsWith("/ ")) {
-            sendStaffChat(p.getName(), input.substring(2));
+            sendStaffChat(p, input.substring(2));
             evt.setCancelled(true);
             return;
         }
@@ -206,8 +207,8 @@ public class Commands extends Mechanic {
         if (handleCommand(evt.getSender(), CommandType.SLASH, CommandType.SLASH.getPrefix() + evt.getCommand()))
             evt.setCancelled(true); // Handle console commands.
 
-        if (evt.getCommand().startsWith(" ")) {
-            sendStaffChat("Server", evt.getCommand().substring(1));
+        if (evt.getCommand().startsWith("/ ")) {
+            sendStaffChat(evt.getSender(), evt.getCommand().substring(2));
             evt.setCancelled(true);
         }
     }
@@ -217,9 +218,8 @@ public class Commands extends Mechanic {
      * @param sender
      * @param message
      */
-    private static void sendStaffChat(String sender, String message) {
-        Core.alertStaff("[AC] " + sender + ": " + ChatColor.GREEN + ChatColor.translateAlternateColorCodes(
-                '&', Chat.filterMessage(message)));
+    private static void sendStaffChat(CommandSender sender, String message) {
+        Core.alertStaff("[AC] " + sender.getName() + ": " + ChatColor.GREEN + Chat.applyAllFilters(sender, message));
     }
 
     //TODO: Command block commands.

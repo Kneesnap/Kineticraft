@@ -34,7 +34,6 @@ public class GUIPunish extends GUI {
                     "Click here to punish this", "player for " + ChatColor.YELLOW + pt.getDisplay() + ChatColor.GRAY + ".").anyClick(e -> {
                         target.punish(pt, getPlayer());
                         close();
-                        target.writeData();
             }));
 
         if (!target.getPunishments().isEmpty()) {
@@ -46,6 +45,7 @@ public class GUIPunish extends GUI {
                         p.setValid(!p.isValid());
                         getPlayer().sendMessage(ChatColor.GRAY + "Punishment toggled.");
                         target.writeData();
+                        reconstruct();
                     }, null)));
         }
     }

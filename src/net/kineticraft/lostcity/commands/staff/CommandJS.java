@@ -13,6 +13,8 @@ import org.bukkit.entity.Player;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Allows developers to execute javascript code in-game.
@@ -27,8 +29,10 @@ public class CommandJS extends StaffCommand {
 
     private ScriptEngine engine;
 
+    private static final List<String> SELF_ALIAS = Arrays.asList("self", "sender", "player");
+
     public CommandJS() {
-        super(EnumRank.DEV, "[expression]", "Evaluate a JavaScript expression.", "js");
+        super(EnumRank.DEV, "<expression>", "Evaluate a JavaScript expression.", "js");
         engine = new ScriptEngineManager().getEngineByName("nashorn");
         initJS();
     }
@@ -38,7 +42,8 @@ public class CommandJS extends StaffCommand {
         if (!Core.isDev(sender))
             return;
 
-        engine.put("self", sender); // Allow the sender to use the 'self' keyword.
+        // Allow the sender to use the 'self' keyword.
+        SELF_ALIAS.forEach(a -> engine.put(a, sender));
 
         try {
             sender.sendMessage(engine.eval(String.join(" ", args)).toString());
@@ -57,9 +62,10 @@ public class CommandJS extends StaffCommand {
             engine.eval("var eval = function(code) {return engine.eval(code);}");
 
             // Setup basic global server shortcuts.
-            engine.eval("var Kineticraft = net.kineticraft.lostcity");
+            engine.eval("var Kineticraft = Packages.net.kineticraft.lostcity");
             engine.eval("var plugin = Kineticraft.Core.instance");
-            engine.eval("var server = org.bukkit.Bukkit"); // Setup 'server' keyword
+            engine.eval("var Core = plugin");
+            engine.eval("var server = Packages.org.bukkit.Bukkit.server"); // Setup 'server' keyword
             engine.eval("var Bukkit = server"); // Setup 'Bukkit' keyword.
 
             // Basic IO.

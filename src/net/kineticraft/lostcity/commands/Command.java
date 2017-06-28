@@ -2,11 +2,11 @@ package net.kineticraft.lostcity.commands;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -120,12 +120,11 @@ public abstract class Command {
             sender.sendMessage(ChatColor.RED + input + " is not a valid " + split[split.length - 2] + ".");
         } catch (ClassCastException cce) {
             // This is not an eligible command sender.
-            //Ljava.lang.Object; cannot be cast to [Ljava.lang.CharSequence
-            Matcher mCast = Pattern.compile("L(.+); cannot be cast to \\[L(.+)").matcher(cce.getLocalizedMessage());
+            Matcher mCast = Pattern.compile("(.+) cannot be cast to (.+)").matcher(cce.getLocalizedMessage());
             mCast.find();
-            String castFrom = mCast.group(1);
-            String castTo = mCast.group(2);
-            castTo = castTo.substring(castTo.lastIndexOf(".")); // Remove the path.
+            String castFrom = mCast.group(1).split(";")[0];
+            String castTo = mCast.group(2).split(";")[0];
+            castTo = castTo.substring(castTo.lastIndexOf(".") + 1); // Remove the path.
 
             if (SENDERS.stream().anyMatch(castFrom::endsWith)) { // Only handle if the class casted was the command executor.
                 sender.sendMessage(ChatColor.RED + "You must be a " + castTo.toLowerCase() + " to run this command.");

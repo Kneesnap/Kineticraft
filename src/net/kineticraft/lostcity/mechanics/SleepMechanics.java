@@ -16,8 +16,7 @@ import org.bukkit.event.player.PlayerBedLeaveEvent;
  */
 public class SleepMechanics extends Mechanic {
 
-    private static double PERCENT_NEEDED = .4F; // The percentage of players needed to skip a night.
-
+    private static final double PERCENT_NEEDED = .4F; // The percentage of players needed to skip a night.
 
     public static void skipNight() {
         if (getSleepCount() < getNeededPlayers())
@@ -39,7 +38,7 @@ public class SleepMechanics extends Mechanic {
 
     /**
      * Get the number of players needed to sleep.
-     * @return
+     * @return needed
      */
     private static int getNeededPlayers() {
         return (int) (Bukkit.getOnlinePlayers().size() * PERCENT_NEEDED);
@@ -48,6 +47,10 @@ public class SleepMechanics extends Mechanic {
     @EventHandler
     public void onBedEnter(PlayerBedEnterEvent evt) {
         updateBeds();
+
+        if (!MetadataManager.updateCooldownSilently(evt.getPlayer(), "bedSpam", 20 * 60 * 5))
+            Bukkit.broadcastMessage(ChatColor.GREEN.toString() + getLeftPlayers() + ChatColor.GRAY
+                    + " players need to enter a bed to skip the night.");
     }
 
     @EventHandler
@@ -55,16 +58,16 @@ public class SleepMechanics extends Mechanic {
         updateBeds();
     }
 
-    private static void updateBeds() {
-        if (Core.getMainWorld().getTime() <= 10L)
-            return; // Don't handle if it just became dawn.
+    /**
+     * Get the amount of players needed to skip the night, considering the people who are already in a bed.
+     * @return needed
+     */
+    private static int getLeftPlayers() {
+        return getNeededPlayers() - getSleepCount();
+    }
 
-        int needed = getNeededPlayers() - getSleepCount();
-        if (needed > 0) {
-//            Bukkit.broadcastMessage(ChatColor.GREEN.toString() + needed + ChatColor.GRAY
-//                    + " players need to enter a bed to skip the night.");
-        } else {
+    private static void updateBeds() {
+        if (Core.getMainWorld().getTime() > 10L || getLeftPlayers() <= 0)
             skipNight();
-        }
     }
 }

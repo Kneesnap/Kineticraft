@@ -104,6 +104,8 @@ public class KCPlayer implements Jsonable {
         if (isOnline())
             getPlayer().kickPlayer(ChatColor.RED + "Oh no! You've been punished for " + ChatColor.YELLOW
                     + type.getDisplay() + ChatColor.RED + "...");
+
+        writeData();
     }
 
     /**
@@ -231,7 +233,7 @@ public class KCPlayer implements Jsonable {
     public void setNickname(String newNick) {
         this.nickname = newNick;
         if (isOnline())
-            getPlayer().sendMessage(ChatColor.GOLD + "Nickname updated.");
+            getPlayer().sendMessage(ChatColor.GOLD + "Nickname " + (newNick != null ? "updated" : "removed") + ".");
         updatePlayer();
     }
 

@@ -2,9 +2,7 @@ package net.kineticraft.lostcity.config;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import net.kineticraft.lostcity.config.configs.MainConfig;
-import net.kineticraft.lostcity.config.configs.PunishmentConfig;
-import net.kineticraft.lostcity.config.configs.VoteConfig;
+import net.kineticraft.lostcity.config.configs.*;
 import net.kineticraft.lostcity.mechanics.Mechanic;
 import net.kineticraft.lostcity.utils.ReflectionUtil;
 
@@ -48,14 +46,6 @@ public class Configs extends Mechanic {
     }
 
     /**
-     * Gets the punishment data.
-     * @return punishmentData
-     */
-    public static PunishmentConfig getPunishmentData() {
-        return (PunishmentConfig) getConfig(ConfigType.BANS);
-    }
-
-    /**
      * Get a raw text config of the specified type.
      * @param type
      * @return rawConfig
@@ -82,17 +72,20 @@ public class Configs extends Mechanic {
 
         MAIN(MainConfig.class),
         VOTES(VoteConfig.class),
-        BANS(PunishmentConfig.class),
-        RULES(RawConfig.class),
-        DONATE(RawConfig.class),
-        ANNOUNCER(RawConfig.class),
-        DISCORD(RawConfig.class),
-        RANKS(RawConfig.class),
-        HELP(RawConfig.class),
-        INFO(RawConfig.class),
-        COLORS(RawConfig.class);
+        RULES,
+        DONATE,
+        ANNOUNCER,
+        DISCORD,
+        RANKS,
+        HELP,
+        INFO,
+        COLORS;
 
         private final Class<? extends Config> configClass;
+
+        ConfigType() {
+            this(RawConfig.class);
+        }
 
         /**
          * Create and load this config.

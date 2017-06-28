@@ -30,7 +30,6 @@ import org.bukkit.scoreboard.Objective;
  */
 public class GeneralMechanics extends Mechanic {
 
-
     private static Objective idObjective;
 
     @Override
@@ -83,7 +82,6 @@ public class GeneralMechanics extends Mechanic {
         Bukkit.getScheduler().runTaskLater(Core.getInstance(), () ->
                 player.playSound(player.getLocation(), Sound.ENTITY_HORSE_ARMOR, .85F, 1.480315F), 95L);
 
-        //player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
         idObjective.getScore(player.getName()).setScore(KCPlayer.getWrapper(player).getAccountId());
     }
 
@@ -134,9 +132,7 @@ public class GeneralMechanics extends Mechanic {
 
     @EventHandler // Water-vision.
     public void onWaterTraverse(PlayerMoveEvent evt) {
-        Location loc = evt.getPlayer().getLocation();
-        boolean atSpawn = loc.getX() >= -200 && loc.getZ() >= -200 && loc.getX() <= 200 && loc.getZ() <= 306; // TODO: Read constants from config file or dynamically load from WorldGuard API.
-        Utils.setPotion(evt.getPlayer(), PotionEffectType.WATER_BREATHING,
-                atSpawn && evt.getPlayer().getVehicle() == null && evt.getTo().clone().add(0, 1, 0).getBlock().isLiquid());
+        Utils.setPotion(evt.getPlayer(), PotionEffectType.WATER_BREATHING, evt.getPlayer().getVehicle() == null
+                && Utils.inSpawn(evt.getPlayer().getLocation()) && evt.getTo().clone().add(0, 1, 0).getBlock().isLiquid());
     }
 }

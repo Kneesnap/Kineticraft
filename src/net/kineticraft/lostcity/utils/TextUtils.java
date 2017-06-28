@@ -20,7 +20,6 @@ public class TextUtils {
 
     public static int CHAT_SIZE = 320;
     public static int BOOK_SIZE = 120;
-    public static String COLOR_CODE = ChatColor.RESET.toString().substring(0, 1);
 
     /**
      * Convert base components to an NMS component.
@@ -46,7 +45,7 @@ public class TextUtils {
      * @return components
      */
     public static BaseComponent[] fromLegacy(String legacyText) {
-        return TextComponent.fromLegacyText(legacyText);
+        return TextComponent.fromLegacyText(ChatColor.translateAlternateColorCodes('&', legacyText));
     }
 
     /**
@@ -146,7 +145,7 @@ public class TextUtils {
         // Determine the pixel width of the string.
         for (int i = 0; i < text.length(); i++) {
             String c = text.substring(i, i + 1);
-            if (c.equals(COLOR_CODE)) { // Changing color character.
+            if (c.equals(ChatColor.COLOR_CHAR)) { // Changing color character.
                 bold = text.substring(i + 1, i + 2).equalsIgnoreCase("l");
             } else {
                 pixelSize += MinecraftFont.getWidth(c, bold);

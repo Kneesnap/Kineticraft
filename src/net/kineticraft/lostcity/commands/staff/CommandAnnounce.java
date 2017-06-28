@@ -15,7 +15,7 @@ import org.bukkit.command.CommandSender;
 public class CommandAnnounce extends StaffCommand {
 
     public CommandAnnounce() {
-        super(EnumRank.ADMIN, "<message>", "Add a server announcement", "announce");
+        super(EnumRank.MOD, "<message>", "Add a server announcement", "announce");
     }
 
     @Override
@@ -23,6 +23,6 @@ public class CommandAnnounce extends StaffCommand {
         Configs.getRawConfig(Configs.ConfigType.ANNOUNCER).getLines()
                 .add(TextUtils.toString(TextUtils.fromLegacy(String.join(" ", args))));
         Configs.getRawConfig(Configs.ConfigType.ANNOUNCER).saveToDisk();
-        sender.sendMessage(ChatColor.GREEN + "Announce added.");
+        sender.sendMessage(ChatColor.GREEN + "Announcement added.");
     }
 }

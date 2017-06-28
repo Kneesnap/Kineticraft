@@ -152,4 +152,20 @@ public class MetadataManager extends Mechanic {
             setCooldown(player, cooldown, ticks);
         return has;
     }
+
+    /**
+     * Checks if this player has the given cooldown, and if they don't, give it to them silently.
+     * Returns whether or not the player had the cooldown before this was called.
+     *
+     * @param player
+     * @param cooldown
+     * @param ticks
+     * @return hasCooldown
+     */
+    public static boolean updateCooldownSilently(Player player, String cooldown, int ticks) {
+        boolean has = hasCooldown(player, cooldown);
+        if (!has)
+            setCooldown(player, cooldown, ticks);
+        return has;
+    }
 }

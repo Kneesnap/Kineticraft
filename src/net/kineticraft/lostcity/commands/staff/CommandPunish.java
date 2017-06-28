@@ -1,6 +1,5 @@
 package net.kineticraft.lostcity.commands.staff;
 
-import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.StaffCommand;
 import net.kineticraft.lostcity.data.QueryTools;
 import net.kineticraft.lostcity.guis.staff.GUIPunish;

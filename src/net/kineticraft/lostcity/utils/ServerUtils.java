@@ -77,8 +77,8 @@ public class ServerUtils {
     public static void reboot(int seconds) {
         cancelReboot(); // Cancel existing reboot, if any.
 
-        ServerUtils.announceReboot(seconds);
-        REBOOT_ALERTS.stream().filter(n -> n < seconds).map(n -> seconds - n).forEach(ServerUtils::announceReboot);
+        ServerUtils.announceReboot(seconds, 0); // Broadcast the message at this second.
+        REBOOT_ALERTS.stream().filter(n -> n < seconds).forEach(n -> ServerUtils.announceReboot(n, seconds));
 
         rebootTasks.add(Bukkit.getScheduler().runTaskLater(Core.getInstance(), () -> {
             Core.announce(ChatColor.AQUA + "Server rebooting...");
@@ -89,9 +89,9 @@ public class ServerUtils {
         }, 20 * seconds));
     }
 
-    private static void announceReboot(int seconds) {
+    private static void announceReboot(int seconds, int total) {
         // >> Content Patch deploying in {TIME}.
         rebootTasks.add(Bukkit.getScheduler().runTaskLater(Core.getInstance(), () -> Core.announce(ChatColor.AQUA
-                + "Server rebooting in " + Utils.formatTimeFull(seconds * 1000).toLowerCase() + "."), seconds * 20));
+                + "Server rebooting in " + Utils.formatTimeFull(seconds * 1000).toLowerCase() + "."), (total - seconds) * 20));
     }
 }

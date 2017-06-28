@@ -15,16 +15,15 @@ import net.kineticraft.lostcity.mechanics.MetadataManager;
 import net.kineticraft.lostcity.mechanics.MetadataManager.Metadata;
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.lang.reflect.Array;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
@@ -195,7 +194,7 @@ public class Utils {
             if (time >= iv.getInterval()) {
                 int temp = (int) (time - (time % iv.getInterval()));
                 int add = temp / iv.getInterval();
-                formatted += " " + add + " " + capitalize(iv.name() + "s");
+                formatted += " " + add + " " + capitalize(iv.name()) + (add > 1 ? "s" : "");
                 time -= temp;
             }
         }
@@ -374,9 +373,10 @@ public class Utils {
      */
     @SuppressWarnings("unchecked")
     public static <T> T[] shift(T[] array, int shave) {
-        T[] ret = (T[]) new Object[array.length - shave];
-        System.arraycopy(array, shave, ret, 0, ret.length);
-        return ret;
+        List<T> l = new ArrayList<>(Arrays.asList(array));
+        for (int i = 0; i < shave; i++)
+            l.remove(0);
+        return l.toArray((T[]) Array.newInstance(array[0].getClass(), array.length - shave));
     }
 
     /**
@@ -552,6 +552,83 @@ public class Utils {
         }
 
         giveItem(player, item.generateItem());
+    }
+
+    /**
+     * Get players nearby an entity. Async-Safe.
+     *
+     * @param entity
+     * @param radius
+     * @return players
+     */
+    public static List<Player> getNearbyPlayers(Entity entity, int radius) {
+        return getNearbyPlayers(entity.getLocation(), radius);
+    }
+
+    /**
+     * Get players nearby a location. Async-Safe.
+     *
+     * @param loc
+     * @param radius
+     * @return players
+     */
+    public static List<Player> getNearbyPlayers(Location loc, int radius) {
+        return getNearbyEntities(loc, radius).stream().filter(e -> e instanceof Player).map(e -> (Player) e)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Get entities nearby a location. Async-Safe
+     * TODO: Make this actually async-safe.
+     *
+     * @param loc
+     * @param radius
+     * @return entities
+     */
+    public static Collection<Entity> getNearbyEntities(Location loc, int radius) {
+        return loc.getWorld().getNearbyEntities(loc, radius, radius, radius);
+    }
+
+    /**
+     * Check if a given location is within the given coordinates.
+     * Does not require the Y parameter.
+     *
+     * @param location
+     * @param x1
+     * @param z1
+     * @param x2
+     * @param z2
+     * @return inArea
+     */
+    public static boolean inArea(Location location, int x1, int z1, int x2, int z2) {
+        return inArea(location, x1, 0, z1, x2, 256, z2);
+    }
+
+    /**
+     * Is the given location between the given box coordinates?
+     *
+     * @param l
+     * @param x1
+     * @param y1
+     * @param z1
+     * @param x2
+     * @param y2
+     * @param z2
+     * @return inArea
+     */
+    public static boolean inArea(Location l, int x1, int y1, int z1, int x2, int y2, int z2) {
+        return Math.min(x2, Math.max(x1, l.getX())) == l.getX()
+                && Math.min(y2, Math.max(y1, l.getY())) == l.getY()
+                && Math.min(z2, Math.max(z1, l.getZ())) == l.getZ();
+    }
+
+    /**
+     * Is the provided location within spawn?
+     * @param location
+     * @return spawn
+     */
+    public static boolean inSpawn(Location location) {
+        return inArea(location, -200, -200, 200, 306);
     }
 
     /**

@@ -24,13 +24,13 @@ public class CommandShovel extends PlayerCommand {
     protected void onCommand(CommandSender sender, String[] args) {
         Player player = (Player) sender;
 
-        if (MetadataManager.updateCooldown(player, "shovel", 20 * 60 * 10)) // 10 minute cooldown
-            return;
-
         if (player.getInventory().contains(Material.GOLD_SPADE)) {
             sender.sendMessage(ChatColor.RED + "You already have a shovel.");
             return;
         }
+
+        if (MetadataManager.updateCooldown(player, "shovel", 20 * 60 * 10)) // 10 minute cooldown
+            return;
 
         Utils.giveItem(player, ItemManager.makeClaimShovel());
         sender.sendMessage(ChatColor.GREEN + "Shovel spawned.");

@@ -4,6 +4,7 @@ import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.data.QueryTools;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
+import net.kineticraft.lostcity.mechanics.Chat;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -25,26 +26,27 @@ public class CommandNick extends PlayerCommand {
             return;
 
         KCPlayer p = KCPlayer.getWrapper((Player) sender);
-        String newNick = ChatColor.translateAlternateColorCodes('&', args[0]);
+        String newNick = Chat.applyColor(sender, args[0]);
+        String noColor = ChatColor.stripColor(newNick);
 
-        if (ChatColor.stripColor(newNick).length() > 12) {
+        // Disable nick.
+        if (args[0].equalsIgnoreCase("off")) {
+            p.setNickname(null);
+            return;
+        }
+
+        // Nick size checks.
+        if (noColor.length() > 12) {
             sender.sendMessage(ChatColor.RED + "Nickname too long.");
             return;
         }
 
-        if (args[0].equalsIgnoreCase("off")) {
-            p.setNickname(null);
-            sender.sendMessage(ChatColor.GOLD + "Nickname removed.");
-            p.updatePlayer();
-            return;
-        }
-
-        if (ChatColor.stripColor(newNick).length() < 4) {
+        if (noColor.length() < 4) {
             sender.sendMessage(ChatColor.RED + "Nickname too short.");
             return;
         }
 
-        QueryTools.getData(args[0], d -> {
+        QueryTools.getData(noColor, d -> {
             if (!p.getUuid().equals(d.getUuid())) {
                 sender.sendMessage(ChatColor.RED + "You cannot use the name of another player.");
                 return;
