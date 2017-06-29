@@ -45,23 +45,35 @@ public class ReflectionUtil {
     }
 
     /**
-     * Execute a method of a given class.
+     * Execute a method of a given class and object
+     * @param obj
+     * @param type
+     * @param methodName
+     * @param args
+     * @return result
      */
-    public static Object exec(Object obj, String methodName, Object... args) {
+    public static Object exec(Object obj, Class<?> type, String methodName, Object... args) {
         // Generate a list of the classes used to get the method.
         Class<?>[] argTypes = getClasses(args);
 
         try {
-            if (obj instanceof Class<?>) { // Static.
-                return ((Class<?>) obj).getMethod(methodName, argTypes).invoke(null, args);
-            } else {
-                return obj.getClass().getMethod(methodName, argTypes).invoke(obj, args);
-            }
+            return type.getMethod(methodName, argTypes).invoke(obj, args);
         } catch (Exception e) {
             e.printStackTrace();
             Bukkit.getLogger().warning("Failed to execute reflected method " + methodName + "!");
         }
         return null;
+    }
+
+    /**
+     * Execute a method of a given class.
+     */
+    public static Object exec(Object obj, String methodName, Object... args) {
+        if (obj instanceof Class<?>) { // Static.
+            return exec(null, (Class<?>) obj, methodName, args);
+        } else {
+            return exec(obj, obj.getClass(), methodName, args);
+        }
     }
 
     /**

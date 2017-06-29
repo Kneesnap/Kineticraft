@@ -1,9 +1,12 @@
 &8Changes&0
+ - Implemented Anti-Lag system.
  - Patchnotes System
  - New Commands:
   - /realname
   - /seen
+  - /whylag
  - Admin Tools
 
 &8Bugfixes&0
  - Backend improvements.
+ - Fixed teleporting between dimensions.

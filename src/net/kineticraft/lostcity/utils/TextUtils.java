@@ -7,9 +7,11 @@ import net.md_5.bungee.chat.ComponentSerializer;
 import net.minecraft.server.v1_12_R1.ChatBaseComponent;
 import net.minecraft.server.v1_12_R1.IChatBaseComponent;
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
 import org.bukkit.command.CommandSender;
 import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.function.BiConsumer;
 
@@ -190,6 +192,30 @@ public class TextUtils {
     }
 
     /**
+     * Create a string a certain length from the passed char.
+     * @param c
+     * @param times
+     * @return created
+     */
+    public static String makeString(char c, int times) {
+        char[] str = new char[times];
+        return new String(str).replaceAll("\0", String.valueOf(c));
+    }
+
+    /**
+     * Force a fixed decimal position.
+     * If the decimal ends in 00, it will drop the decimal.
+     *
+     * @param value
+     * @param decimals
+     * @return fixed
+     */
+    public static double toFixed(double value, int decimals) {
+        return (int) value != value ? Double.parseDouble(new DecimalFormat("##." + makeString('#', decimals))
+                .format(value)) : (int) value;
+    }
+
+    /**
      * Converts a string of text formatted in a readable way into a ComponentBuilder.
      * This text is in a similar format to bbcode.
      *
@@ -282,6 +308,81 @@ public class TextUtils {
         private void applyText(TextBuilder textBuilder, String text) {
             if (text != null && text.length() > 0)
                 textBuilder.append(text); // Apply the text to the builder.
+        }
+    }
+
+    /**
+     * Color a value on a numeric scale.
+     *
+     * @param value Value on scale
+     * @param max - Max value on scale.
+     * @return colored
+     */
+    public static String colorValue(double value, double max) {
+        return colorValue(value, max, false);
+    }
+
+    /**
+     * Color a value on a numeric scale.
+     *
+     * @param value Value on scale
+     * @param max - Max value on scale.
+     * @param reverse Should the colors reverse?
+     * @return colored
+     */
+    public static String colorValue(double value, double max, boolean reverse) {
+        String val = String.valueOf(toFixed(value, 2));
+        String[] options = new String[ColorTable.values().length];
+        for (int i = 0; i < options.length; i++)
+            options[i] = val;
+        return colorString(value, max, reverse, options);
+    }
+
+    /**
+     * Colorize a string on a numeric scale.
+     *
+     * @param value - Value on scale
+     * @param max - Max scale value
+     * @param display - Display options
+     * @return colored
+     */
+    public static String colorString(double value, double max, String... display) {
+        return colorString(value, max, false, display);
+    }
+
+    /**
+     * Colorize a string on a numeric scale.
+     *
+     * @param value - Value on scale
+     * @param max - Max scale value
+     * @param reverse - Should the colors reverse?
+     * @param display - Display options
+     * @return colored
+     */
+    public static String colorString(double value, double max, boolean reverse, String... display) {
+        ColorTable ct = ColorTable.getFromPercent((int) (value / max * 100));
+        return (reverse ? ColorTable.values()[ColorTable.values().length - ct.ordinal() - 1] : ct).getColor()
+                + display[Math.min(ct.ordinal(), display.length - 1)];
+    }
+
+    @AllArgsConstructor @Getter
+    private enum ColorTable {
+        VERY_LOW(ChatColor.DARK_RED, 0),
+        LOW(ChatColor.RED, 35),
+        LOW_MID(ChatColor.GOLD, 65),
+        HIGH_MID(ChatColor.YELLOW, 75),
+        HIGH(ChatColor.GREEN, 85),
+        VERY_HIGH(ChatColor.DARK_GREEN, 95);
+
+        private final ChatColor color;
+        private final int percentMin;
+
+        public static ColorTable getFromPercent(int percent) {
+            ColorTable table = values()[0];
+            for (ColorTable ct : values())
+                if (ct.getPercentMin() <= percent)
+                    table = ct;
+            return table;
         }
     }
 }

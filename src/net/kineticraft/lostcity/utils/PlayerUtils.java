@@ -1,7 +1,7 @@
 package net.kineticraft.lostcity.utils;
 
-import net.kineticraft.lostcity.mechanics.MetadataManager;
-import net.kineticraft.lostcity.mechanics.MetadataManager.Metadata;
+import net.minecraft.server.v1_12_R1.EntityPlayer;
+import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 /**
@@ -27,5 +27,23 @@ public class PlayerUtils {
      */
     public static void resetSpeed(Player player) {
         setPlayerSpeed(player, .1F);
+    }
+
+    /**
+     * Get the CraftPlayer object for this player.
+     * @param player
+     * @return craftPlayer
+     */
+    public static CraftPlayer getCraftPlayer(Player player) {
+        return (CraftPlayer) player;
+    }
+
+    /**
+     * Get the NMS player object of a bukkit player.
+     * @param player
+     * @return nmsPlayer
+     */
+    public static EntityPlayer getNMSPlayer(Player player) {
+        return getCraftPlayer(player).getHandle();
     }
 }

@@ -48,6 +48,7 @@ public class MechanicManager implements Listener {
         registerMechanic(new Commands());
         registerMechanic(new Crake());
         registerMechanic(new Restrictions());
+        registerMechanic(new ServerManager());
         registerMechanic(new GeneralMechanics());
         registerMechanic(new Vanish());
         registerMechanic(new GUIManager());

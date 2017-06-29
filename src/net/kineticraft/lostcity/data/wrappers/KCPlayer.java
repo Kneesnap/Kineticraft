@@ -133,7 +133,7 @@ public class KCPlayer implements Jsonable {
             case 0:
                 return 0;
             case 1:
-                hours = 8;
+                hours = punishment.getType().getInitialTime();
                 break;
             case 2:
                 hours = punishment.getType().getPunishLength() * 24;
@@ -144,7 +144,7 @@ public class KCPlayer implements Jsonable {
             default:
                 return -1;
         }
-        return punishment.getTimestamp() + (hours * 60 * 60 * 1000) - System.currentTimeMillis();
+        return hours != -1 ? punishment.getTimestamp() + (hours * 60 * 60 * 1000) - System.currentTimeMillis() : -1;
     }
 
     /**

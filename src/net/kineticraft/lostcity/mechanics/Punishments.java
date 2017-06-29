@@ -98,10 +98,21 @@ public class Punishments extends Mechanic {
         FLYING("Flying", 9, Material.ELYTRA),
         XRAY("Xraying", 9, Material.DIAMOND),
         GRIEF("Griefing (Minor)", 5, Material.FLINT_AND_STEEL),
-        GRIEF_LARGE("Griefing (Major)", 20, Material.TNT);
+        GRIEF_LARGE("Griefing (Major)", 20, Material.TNT),
+        ALT_ACCOUNT("Ban Evasion", -1, Material.SEEDS);
 
         private final String display;
         private final int punishLength;
         private final Material icon;
+
+        /**
+         * Get the initial amount of hours this punishment stands for.
+         * -1 = Forever.
+         *
+         * @return initial
+         */
+        public int getInitialTime() {
+            return getPunishLength() == -1 ? -1 : 8;
+        }
     }
 }

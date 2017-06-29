@@ -1,6 +1,8 @@
 package net.kineticraft.lostcity.utils;
 
+import com.google.common.reflect.Reflection;
 import com.google.gson.JsonObject;
+import javafx.scene.paint.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.kineticraft.lostcity.Core;
@@ -14,6 +16,8 @@ import net.kineticraft.lostcity.item.ItemWrapper;
 import net.kineticraft.lostcity.mechanics.MetadataManager;
 import net.kineticraft.lostcity.mechanics.MetadataManager.Metadata;
 import org.bukkit.*;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -106,6 +110,55 @@ public class Utils {
     }
 
     /**
+     * Is the given location 'safe'?
+     * @param loc
+     * @return safe
+     */
+    private static boolean isSafe(Location loc) {
+        return !isSolid(loc.getBlock()) && !isSolid(loc.clone().add(0, 1, 0).getBlock());
+    }
+
+    /**
+     * Is this block solid? (Meaning players cannot walk through it)
+     * @param bk
+     * @return solid
+     */
+    public static boolean isSolid(Block bk) {
+        return isSolid(bk.getType());
+    }
+
+    /**
+     * Returns whether or not the given material has a collision box.
+     * @param mat
+     * @return solid
+     */
+    public static boolean isSolid(Material mat) {
+        return mat.isSolid() && mat.isOccluding();
+    }
+
+    /**
+     * Find the first available 'safe' teleport location.
+     *
+     *
+     * @param origin
+     * @return safe
+     */
+    public static Location findSafe(Location origin) {
+        int maxHeight = origin.getWorld().getMaxHeight();
+        Location safe = origin.clone();
+        safe.setY(maxHeight); // Default location
+
+        Location temp = origin.clone();
+        temp.setY(0);
+        while(temp.getBlockY() < maxHeight - 1) { // Don't go to the very max height because we check the block above tempY.
+            temp.setY(temp.getBlockY() + 1);
+            if (isSafe(temp) && origin.distanceSquared(safe) > origin.distanceSquared(temp))
+                safe = temp.clone(); // This location is closer than the saved one, and it's safe.
+        }
+        return safe;
+    }
+
+    /**
      * Teleport the player to the specified location with cooldowns applied.
      * @param player
      * @param locationDescription
@@ -130,7 +183,6 @@ public class Utils {
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20 * (tpTime[0] + 4), 2));
         player.sendMessage(ChatColor.BOLD + "Teleport: " + ChatColor.WHITE + ChatColor.UNDERLINE + locationDescription);
 
-        //TODO: Verify destination is safe)
         tpTask[0] = Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () -> {
                 boolean complete = tpTime[0] <= -1 || !player.isOnline();
                 if (complete || player.getLocation().distanceSquared(startLocation) >= 3.5 || player.getLastDamage() < lastDamage) {
@@ -149,7 +201,10 @@ public class Utils {
                     player.sendMessage(ChatColor.WHITE + "Teleporting... " + ChatColor.UNDERLINE + tpTime[0] + "s");
                 } else {
                     player.setNoDamageTicks(100);
-                    player.teleport(location.clone().add(0, 2, 0));
+                    final Location safe = findSafe(location.clone());
+                    if (player.getWorld() != safe.getWorld()) // If teleporting cross-dimensionally we'll need to teleport them again.
+                        Bukkit.getScheduler().runTask(Core.getInstance(), () -> player.teleport(safe));
+                    player.teleport(safe);
                     player.playSound(player.getLocation(), Sound.BLOCK_LAVA_POP, 1F, 1.333F);
                 }
 

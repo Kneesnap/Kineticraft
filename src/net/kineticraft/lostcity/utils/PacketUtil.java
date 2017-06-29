@@ -2,7 +2,6 @@ package net.kineticraft.lostcity.utils;
 
 import io.netty.buffer.Unpooled;
 import net.minecraft.server.v1_12_R1.*;
-import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -21,7 +20,7 @@ public class PacketUtil {
      * @param packet
      */
     private static void sendPacket(Player player, Packet<?> packet) {
-        getPlayer(player).playerConnection.sendPacket(packet);
+        PlayerUtils.getNMSPlayer(player).playerConnection.sendPacket(packet);
     }
 
     /**
@@ -30,8 +29,8 @@ public class PacketUtil {
      * @param title
      */
     public static void updateWindowTitle(Player player, String title, int size) {
-        sendPacket(player, new PacketPlayOutOpenWindow(getPlayer(player).activeContainer.windowId, "minecraft:chest",
-                new ChatMessage(title), size));
+        sendPacket(player, new PacketPlayOutOpenWindow(PlayerUtils.getNMSPlayer(player).activeContainer.windowId,
+                "minecraft:chest", new ChatMessage(title), size));
         player.updateInventory();
     }
 
@@ -49,14 +48,5 @@ public class PacketUtil {
         sendPacket(player, new PacketPlayOutCustomPayload("MC|BOpen", pds));
 
         player.getEquipment().setItemInMainHand(saved); // Restore hand item.
-    }
-
-    /**
-     * Get the NMS player object of a bukkit player.
-     * @param player
-     * @return nmsPlayer
-     */
-    public static EntityPlayer getPlayer(Player player) {
-        return ((CraftPlayer) player).getHandle();
     }
 }

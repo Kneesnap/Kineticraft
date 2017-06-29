@@ -95,6 +95,7 @@ public class Commands extends Mechanic {
         addCommand(new CommandJS());
         addCommand(new CommandSee());
         addCommand(new CommandRealName());
+        addCommand(new CommandWhyLag());
 
         addCommand(new CommandTPATrigger());
         addCommand(new CommandTriggerAccept());

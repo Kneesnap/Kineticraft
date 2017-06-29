@@ -36,13 +36,6 @@ public class GeneralMechanics extends Mechanic {
     @Override
     public void onEnable() {
 
-        // Register announcer.
-        Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () -> {
-            TextBuilder tb = Utils.randElement(Configs.getTextConfig(Configs.ConfigType.ANNOUNCER).getComponents());
-            if (tb != null)
-                Bukkit.broadcast(tb.create());
-        }, 0L, 5 * 20 * 60L);
-
         // Increment time played.
         Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), () ->
             Bukkit.getOnlinePlayers().stream().map(KCPlayer::getWrapper)

@@ -2,6 +2,7 @@ package net.kineticraft.lostcity.commands.player;
 
 import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.mechanics.MetadataManager;
+import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -31,5 +32,6 @@ public class CommandRTP extends PlayerCommand {
         }
 
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "spreadplayers 0 0 0 15000 false " + player.getName());
+        player.teleport(Utils.findSafe(player.getLocation())); // Prevent suffocation.
     }
 }

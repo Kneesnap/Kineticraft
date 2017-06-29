@@ -11,6 +11,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,7 +22,6 @@ import java.util.stream.Collectors;
  */
 public class DataHandler extends Mechanic {
 
-
     @Override
     public void onEnable() {
         // Every 5 minutes, save all playerdata
@@ -30,9 +30,10 @@ public class DataHandler extends Mechanic {
 
     /**
      * Save all loaded player data.
+     * ASync-Safe.
      */
     public static void saveAllPlayers() {
-        KCPlayer.getPlayerMap().values().forEach(KCPlayer::writeData);
+        new ArrayList<>(KCPlayer.getPlayerMap().values()).forEach(KCPlayer::writeData);
     }
 
     @EventHandler(priority = EventPriority.LOWEST) // Run first, so other things like ban checker have data.
@@ -72,10 +73,15 @@ public class DataHandler extends Mechanic {
             if (maybe.isEmpty())
                 return; // Nobody found.
 
-            boolean banned = maybe.stream().filter(kcPlayer -> false).count() > 0; //TODO Grab real
+            long banned = maybe.stream().filter(KCPlayer::isBanned).count();
             Core.alertStaff(evt.getPlayer().getName() + " shares the same IP as " + maybe.stream()
                     .map(KCPlayer::getUsername).collect(Collectors.joining(", ")));
-            //TODO: Punish if found banned.
+
+            if (banned > 0) {
+                Core.alertStaff(evt.getPlayer().getName() + " shares the same IP as " + banned + " banned players.");
+                if (!evt.getPlayer().hasPlayedBefore())
+                    KCPlayer.getWrapper(evt.getPlayer()).punish(Punishments.PunishmentType.ALT_ACCOUNT, Bukkit.getConsoleSender());
+            }
         });
     }
 

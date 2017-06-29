@@ -1,6 +1,7 @@
 package net.kineticraft.lostcity.utils;
 
 import lombok.Cleanup;
+import lombok.Getter;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.mechanics.DataHandler;
 import org.bukkit.Bukkit;
@@ -20,6 +21,8 @@ import java.util.List;
  */
 public class ServerUtils {
 
+    @Getter private static boolean backingUp;
+
     private static final List<BukkitTask> rebootTasks = new ArrayList<>();
     private static final List<Integer> REBOOT_ALERTS = Arrays.asList(10, 30, 60, 300, 600, 1800, 3600);
 
@@ -27,7 +30,10 @@ public class ServerUtils {
      * Take a backup of the server.
      */
     public static void takeBackup() {
+        assert !isBackingUp();
+
         Dog.KINETICA.say("Server is backing up, expect lag!");
+        backingUp = true;
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "save-all");
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "save-off");
 
@@ -55,6 +61,7 @@ public class ServerUtils {
                 Bukkit.getScheduler().runTask(Core.getInstance(), () ->
                         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "save-on"));
                 Dog.KINETICA.say("Backup complete.");
+                backingUp = false;
             }
         });
     }

@@ -3,8 +3,6 @@ package net.kineticraft.lostcity.data.lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import lombok.Getter;
-import net.kineticraft.lostcity.data.JsonData;
-import net.kineticraft.lostcity.data.Jsonable;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -57,7 +55,18 @@ public abstract class SaveableList<T> implements Iterable<T> {
      */
     public void trim(int index) {
         while (size() > index)
-            getValues().remove(0);
+            remove(0);
+    }
+
+    /**
+     * Remove a value from the list by its index.
+     * Returns the removed value, or null.
+     *
+     * @param index
+     * @return removed
+     */
+    public T remove(int index) {
+        return hasIndex(index) ? getValues().remove(index) : null;
     }
 
     /**
