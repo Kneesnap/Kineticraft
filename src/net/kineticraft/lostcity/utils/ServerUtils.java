@@ -2,7 +2,9 @@ package net.kineticraft.lostcity.utils;
 
 import lombok.Cleanup;
 import lombok.Getter;
+import net.kineticraft.lostcity.BuildType;
 import net.kineticraft.lostcity.Core;
+import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.mechanics.DataHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -100,5 +102,21 @@ public class ServerUtils {
         // >> Content Patch deploying in {TIME}.
         rebootTasks.add(Bukkit.getScheduler().runTaskLater(Core.getInstance(), () -> Core.announce(ChatColor.AQUA
                 + "Server rebooting in " + Utils.formatTimeFull(seconds * 1000).toLowerCase() + "."), (total - seconds) * 20));
+    }
+
+    /**
+     * Returns whether or not this is a development server.
+     * @return isDev
+     */
+    public static boolean isDevServer() {
+        return Configs.getMainConfig().getBuildType() == BuildType.DEV;
+    }
+
+    /**
+     * Returns whether or not this is a beta server.
+     * @return isBeta
+     */
+    public static boolean isBetaServer() {
+        return Configs.getMainConfig().getBuildType() == BuildType.BETA;
     }
 }

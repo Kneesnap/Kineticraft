@@ -51,7 +51,7 @@ public class Vanish extends Mechanic {
             return;
 
         evt.setJoinMessage(null);
-        Core.alert(EnumRank.MEDIA, ChatColor.GRAY + evt.getPlayer().getName() + " joined silently.");
+        Core.alert(EnumRank.MEDIA, null, ChatColor.GRAY + evt.getPlayer().getName() + " joined silently.");
     }
 
     @Override

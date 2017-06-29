@@ -35,7 +35,7 @@ public class Restrictions extends Mechanic {
     public void onChannelRegister(PlayerRegisterChannelEvent evt) {
         if (!evt.getChannel().equalsIgnoreCase("WDL|INIT"))
             return;
-        Core.alertStaff(evt.getPlayer().getName() + " was kicked for using World Downloader!");
+        Core.warn(evt.getPlayer().getName() + " was kicked for using World Downloader!");
         evt.getPlayer().kickPlayer(ChatColor.RED + "Please disable World Downloader.");
     }
 

@@ -1,5 +1,6 @@
 package net.kineticraft.lostcity.utils;
 
+import net.kineticraft.lostcity.Core;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
@@ -27,7 +28,7 @@ public enum Dog {
      * @param message
      */
     public void say(String message) {
-        Bukkit.broadcastMessage(ChatColor.DARK_RED.toString() + ChatColor.BOLD + "DOG" + ChatColor.GREEN + " "
+        Core.broadcast(ChatColor.DARK_RED.toString() + ChatColor.BOLD + "DOG" + ChatColor.GREEN + " "
                 + getName() + ChatColor.GRAY + ": " + ChatColor.WHITE + message);
     }
 }

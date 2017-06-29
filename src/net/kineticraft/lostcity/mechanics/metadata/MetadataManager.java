@@ -1,12 +1,11 @@
-package net.kineticraft.lostcity.mechanics;
+package net.kineticraft.lostcity.mechanics.metadata;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.kineticraft.lostcity.Core;
+import net.kineticraft.lostcity.mechanics.Mechanic;
 import net.kineticraft.lostcity.utils.Utils;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
+import org.bukkit.command.CommandSender;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 import org.bukkit.metadata.Metadatable;
@@ -18,44 +17,7 @@ import org.bukkit.metadata.Metadatable;
  */
 public class MetadataManager extends Mechanic {
 
-    @AllArgsConstructor @Getter
-    public enum Metadata {
-
-        // Players
-        TELEPORTING(false),
-        LAST_WHISPER(null),
-        COMPASS_DEATH(0),
-
-        // Entities
-        NORMAL_SPEED(.1F), // Normal Walkspeed.
-        PLAYER_DAMAGE(0D);
-
-        private Object fallback;
-
-        /**
-         * Does this not have a default value by a default enum class?
-         * @return
-         */
-        public boolean isEnumClass() {
-            return getFallback() instanceof Class<?>;
-        }
-
-        /**
-         * Returns the key this metadata will be stored as.
-         */
-        public String getKey() {
-            return name();
-        }
-
-        /**
-         * Gets the default value as a metadata value.
-         * @return
-         */
-        public MetadataValue getDefaultValue() {
-            return new FixedMetadataValue(Core.getInstance(), getFallback());
-        }
-    }
-
+    @Getter private static CustomStoreBase storeBase = new CustomStoreBase();
 
     /**
      * Does this object have the given metadata?
@@ -125,15 +87,16 @@ public class MetadataManager extends Mechanic {
 
     /**
      * Does this player have a cooldown? Alerts them if they do.
-     * @param player
+     * @param meta
      * @param cooldown
      * @return hasCooldown
      */
-    public static boolean alertCooldown(Player player, String cooldown) {
-        boolean has = hasCooldown(player, cooldown);
-        if (has)
-            player.sendMessage(ChatColor.RED + "You must wait " + Utils.formatTime(player.getMetadata(cooldown).get(0)
-                    .asLong() - System.currentTimeMillis()) + " before doing this.");
+    public static boolean alertCooldown(Metadatable meta, String cooldown) {
+        boolean has = hasCooldown(meta, cooldown);
+        if (has && meta instanceof CommandSender)
+            ((CommandSender) meta).sendMessage(ChatColor.RED + "You must wait "
+                    + Utils.formatTime(meta.getMetadata(cooldown).get(0).asLong() - System.currentTimeMillis())
+                    + " before doing this.");
         return has;
     }
 
@@ -141,15 +104,15 @@ public class MetadataManager extends Mechanic {
      * Checks if this player has the given cooldown, and if they don't, give it to them after telling them they have it.
      * Returns whether or not the player had the cooldown before this was called.
      *
-     * @param player
+     * @param meta
      * @param cooldown
      * @param ticks
      * @return hasCooldown
      */
-    public static boolean updateCooldown(Player player, String cooldown, int ticks) {
-        boolean has = alertCooldown(player, cooldown);
+    public static boolean updateCooldown(Metadatable meta, String cooldown, int ticks) {
+        boolean has = alertCooldown(meta, cooldown);
         if (!has)
-            setCooldown(player, cooldown, ticks);
+            setCooldown(meta, cooldown, ticks);
         return has;
     }
 
@@ -157,15 +120,15 @@ public class MetadataManager extends Mechanic {
      * Checks if this player has the given cooldown, and if they don't, give it to them silently.
      * Returns whether or not the player had the cooldown before this was called.
      *
-     * @param player
+     * @param meta
      * @param cooldown
      * @param ticks
      * @return hasCooldown
      */
-    public static boolean updateCooldownSilently(Player player, String cooldown, int ticks) {
-        boolean has = hasCooldown(player, cooldown);
+    public static boolean updateCooldownSilently(Metadatable meta, String cooldown, int ticks) {
+        boolean has = hasCooldown(meta, cooldown);
         if (!has)
-            setCooldown(player, cooldown, ticks);
+            setCooldown(meta, cooldown, ticks);
         return has;
     }
 }

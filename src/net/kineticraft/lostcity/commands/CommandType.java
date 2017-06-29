@@ -11,6 +11,7 @@ import lombok.Getter;
 @AllArgsConstructor @Getter
 public enum CommandType {
 
+    DISCORD("/"),
     CHAT("."),
     TRIGGER("/trigger "),
     SLASH("/");

@@ -2,7 +2,7 @@ package net.kineticraft.lostcity.commands.player;
 
 import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.item.ItemManager;
-import net.kineticraft.lostcity.mechanics.MetadataManager;
+import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

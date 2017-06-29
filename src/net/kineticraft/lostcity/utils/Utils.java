@@ -1,8 +1,6 @@
 package net.kineticraft.lostcity.utils;
 
-import com.google.common.reflect.Reflection;
 import com.google.gson.JsonObject;
-import javafx.scene.paint.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.kineticraft.lostcity.Core;
@@ -11,10 +9,11 @@ import net.kineticraft.lostcity.data.JsonData;
 import net.kineticraft.lostcity.data.lists.JsonList;
 import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
+import net.kineticraft.lostcity.discord.DiscordAPI;
 import net.kineticraft.lostcity.item.ItemType;
 import net.kineticraft.lostcity.item.ItemWrapper;
-import net.kineticraft.lostcity.mechanics.MetadataManager;
-import net.kineticraft.lostcity.mechanics.MetadataManager.Metadata;
+import net.kineticraft.lostcity.mechanics.metadata.Metadata;
+import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
 import org.bukkit.*;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -561,6 +560,7 @@ public class Utils {
     public static void broadcastExcept(String message, Player except) {
         getAllPlayersExcept(except).forEach(p -> p.sendMessage(message));
         Bukkit.getConsoleSender().sendMessage(message);
+        DiscordAPI.sendGame(message);
     }
 
     /**
@@ -704,5 +704,21 @@ public class Utils {
         } catch (NumberFormatException e) {
             return false;
         }
+    }
+
+    /**
+     * Is the given username online and visible to the supplied sender?
+     * If the player is not visible, it tells the player so.
+     *
+     * @param sender
+     * @param username
+     * @return visible
+     */
+    public static boolean isVisible(CommandSender sender, String username) {
+        Player player = Bukkit.getPlayer(username);
+        boolean shown = player != null && !KCPlayer.getWrapper(player).isVanished(sender);
+        if (!shown)
+            sender.sendMessage(ChatColor.RED + "Player is offline.");
+        return shown;
     }
 }

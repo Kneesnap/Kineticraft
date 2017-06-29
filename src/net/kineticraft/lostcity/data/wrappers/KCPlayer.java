@@ -10,8 +10,8 @@ import net.kineticraft.lostcity.data.lists.JsonList;
 import net.kineticraft.lostcity.data.lists.StringList;
 import net.kineticraft.lostcity.data.maps.JsonMap;
 import net.kineticraft.lostcity.data.Jsonable;
-import net.kineticraft.lostcity.mechanics.MetadataManager;
-import net.kineticraft.lostcity.mechanics.MetadataManager.Metadata;
+import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
+import net.kineticraft.lostcity.mechanics.metadata.Metadata;
 import net.kineticraft.lostcity.mechanics.Punishments.*;
 import net.kineticraft.lostcity.mechanics.Vanish;
 import net.kineticraft.lostcity.mechanics.Voting;
@@ -56,6 +56,7 @@ public class KCPlayer implements Jsonable {
     private String nickname;
     private JsonList<Punishment> punishments = new JsonList<>();
     private int accountId;
+    private long discordId;
 
     public KCPlayer(UUID uuid, JsonData data) {
         this.setUuid(uuid);
@@ -212,7 +213,7 @@ public class KCPlayer implements Jsonable {
      */
     public void setRank(EnumRank newRank) {
         if (!getRank().isAtLeast(newRank)) // Broadcast the new rank if it's a promotion.
-            Bukkit.broadcastMessage(ChatColor.GREEN + " * " + ChatColor.YELLOW + getUsername() + ChatColor.GREEN
+            Core.broadcast(ChatColor.GREEN + " * " + ChatColor.YELLOW + getUsername() + ChatColor.GREEN
                     + " has ranked up to " + newRank.getColor() + newRank.getName() + ChatColor.GREEN + ". * ");
 
         this.rank = newRank;
@@ -397,6 +398,7 @@ public class KCPlayer implements Jsonable {
         setAccountId(data.getInt("accountId", generateNewId()));
         this.nickname = data.getString("nickname");
         setPunishments(data.getJsonList("punishments", Punishment.class));
+        setDiscordId(data.getLong("discordId"));
     }
 
     @Override
@@ -422,6 +424,7 @@ public class KCPlayer implements Jsonable {
         data.setNum("lastVote", getLastVote());
         data.setString("nickname", getNickname());
         data.setList("punishments", getPunishments());
+        data.setNum("discordId", getDiscordId());
         return data;
     }
 }

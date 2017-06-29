@@ -23,10 +23,8 @@ public class CommandTPATrigger extends TriggerCommand {
         KCPlayer other = KCPlayer.getById(value);
         KCPlayer sender = KCPlayer.getWrapper(player);
 
-        if (other == null || !other.isOnline() || other.isVanished(player)) {
-            player.sendMessage(ChatColor.RED + "Player not found.");
+        if (!Utils.isVisible(player, other.getUsername()))
             return;
-        }
 
         Player receiver = other.getPlayer();
         player.sendMessage(ChatColor.GOLD + "Request sent!");

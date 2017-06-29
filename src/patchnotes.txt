@@ -1,10 +1,12 @@
 &8Changes&0
+ - Discord Integrations
  - Implemented Anti-Lag system.
  - Patchnotes System
  - New Commands:
   - /realname
   - /seen
   - /whylag
+  - /verify
  - Admin Tools
 
 &8Bugfixes&0

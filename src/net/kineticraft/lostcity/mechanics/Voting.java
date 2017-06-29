@@ -56,7 +56,7 @@ public class Voting extends Mechanic {
         TextBuilder textBuilder = new TextBuilder(username).color(ChatColor.AQUA)
                 .append(" voted and received a reward! Vote ").color(ChatColor.GRAY).append("HERE").underline().bold()
                 .openURL(Configs.getMainConfig().getVoteURL()).color(ChatColor.AQUA);
-        Bukkit.broadcast(textBuilder.create());
+        Core.broadcast(textBuilder.create());
 
         if (!getMonthName().equals(Configs.getVoteData().getMonth()))
             resetVotes(); // A new month! Time to reset the votes.

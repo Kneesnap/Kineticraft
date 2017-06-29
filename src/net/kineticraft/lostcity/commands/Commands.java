@@ -3,6 +3,7 @@ package net.kineticraft.lostcity.commands;
 import lombok.Getter;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
+import net.kineticraft.lostcity.commands.discord.CommandDiscordVerify;
 import net.kineticraft.lostcity.commands.misc.CommandGUI;
 import net.kineticraft.lostcity.commands.misc.CommandInfo;
 import net.kineticraft.lostcity.commands.player.*;
@@ -26,6 +27,7 @@ import org.bukkit.event.server.TabCompleteEvent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,62 +46,76 @@ public class Commands extends Mechanic {
      */
     private static void registerCommands() {
 
-        // Player Commands
-        addCommand(new CommandBackup());
-        addCommand(new CommandBright());
-        addCommand(new CommandBroadcast());
+        // Register GUI commands
+        addCommand(new CommandGUI(EnumRank.THETA, GUIType.DONOR, "Access donor perks.", "donor"));
+
+        // Register config commands
         addCommand(new CommandInfo(Configs.ConfigType.COLORS, "List chat color codes", "color", "colors", "colour", "colours"));
-        addCommand(new CommandCondense());
-        addCommand(new CommandConfig());
-        addCommand(new CommandDeathTeleport());
-        addCommand(new CommandDelHome());
         addCommand(new CommandInfo(ConfigType.DISCORD, "List discord information", "discord"));
         addCommand(new CommandInfo(ConfigType.DUNGEON, "List dungeon information", "dungeon", "dungeons"));
-        addCommand(new CommandFly());
-        addCommand(new CommandGUI(EnumRank.THETA, GUIType.DONOR, "Access donor perks.", "donor"));
-        addCommand(new CommandGUIs());
-        addCommand(new CommandHelp());
         addCommand(new CommandInfo(ConfigType.DONATE, "How to donate / donor perks.", "donate", "shop"));
+        addCommand(new CommandInfo(ConfigType.INFO, "General server information.", "info", "einfo"));
+        addCommand(new CommandInfo(ConfigType.RULES, "Server rules.", "rules", "info"));
+        addCommand(new CommandInfo(ConfigType.VOTE, "Information on voting.", "vote"));
+
+        // Register player commands
+        addCommand(new CommandCondense());
+        addCommand(new CommandDelHome());
+        addCommand(new CommandHelp());
         addCommand(new CommandHat());
         addCommand(new CommandHome());
-        addCommand(new CommandInfo(ConfigType.INFO, "General server information.", "info", "einfo"));
         addCommand(new CommandIgnore());
         addCommand(new CommandMessage());
         addCommand(new CommandMail());
-        addCommand(new CommandMined());
-        addCommand(new CommandNear());
         addCommand(new CommandNick());
         addCommand(new CommandPTime());
-        addCommand(new CommandPunish());
-        addCommand(new CommandReboot());
         addCommand(new CommandReply());
         addCommand(new CommandRanks());
         addCommand(new CommandRankup());
         addCommand(new CommandRTP());
-        addCommand(new CommandRescue());
-        addCommand(new CommandInfo(ConfigType.RULES, "Server rules.", "rules", "info"));
         addCommand(new CommandSeen());
         addCommand(new CommandSetHome());
-        addCommand(new CommandSetRank());
         addCommand(new CommandShovel());
         addCommand(new CommandSkull());
         addCommand(new CommandSpawn());
-        addCommand(new CommandSpectator());
         addCommand(new CommandUnignore());
-        addCommand(new CommandTestVote());
         addCommand(new CommandTPA());
         addCommand(new CommandTPBook());
-        addCommand(new CommandVanish());
-        addCommand(new CommandInfo(ConfigType.VOTE, "Information on voting", "vote"));
         addCommand(new CommandVotes());
-        addCommand(new CommandJS());
-        addCommand(new CommandSee());
         addCommand(new CommandRealName());
         addCommand(new CommandWhyLag());
+        addCommand(new CommandVerify());
 
+        // Register staff commands
+        addCommand(new CommandBackup());
+        addCommand(new CommandBright());
+        addCommand(new CommandBroadcast());
+        addCommand(new CommandConfig());
+        addCommand(new CommandDeathTeleport());
+        addCommand(new CommandFly());
+        addCommand(new CommandGUIs());
+        addCommand(new CommandMined());
+        addCommand(new CommandNear());
+        addCommand(new CommandPunish());
+        addCommand(new CommandReboot());
+        addCommand(new CommandRescue());
+        addCommand(new CommandSetRank());
+        addCommand(new CommandSpectator());
+        addCommand(new CommandTestVote());
+        addCommand(new CommandVanish());
+        addCommand(new CommandJS());
+        addCommand(new CommandSee());
+
+        // Register trigger commands
         addCommand(new CommandTPATrigger());
         addCommand(new CommandTriggerAccept());
         addCommand(new CommandTriggerDecline());
+
+        // Register discord commands
+        addCommand(new CommandDiscordVerify());
+
+        // Sort commands alphabetically:
+        getCommands().sort(Comparator.comparing(Command::getName));
     }
 
     private static void addCommand(Command command) {

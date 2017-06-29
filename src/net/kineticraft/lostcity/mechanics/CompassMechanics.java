@@ -3,6 +3,8 @@ package net.kineticraft.lostcity.mechanics;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.data.wrappers.JsonLocation;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
+import net.kineticraft.lostcity.mechanics.metadata.Metadata;
+import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -56,12 +58,12 @@ public class CompassMechanics extends Mechanic {
             return;
         }
 
-        int newId = MetadataManager.getMetadata(player, MetadataManager.Metadata.COMPASS_DEATH).asInt();
+        int newId = MetadataManager.getMetadata(player, Metadata.COMPASS_DEATH).asInt();
         newId = p.getDeaths().hasIndex(newId + 1) ? newId + 1 : 0;
 
         player.sendMessage(ChatColor.GRAY + "Compass pointed at your "
                 + (newId > 0 ? (newId == 1 ? "second" : "third") + " to " : "") + "last death.");
-        MetadataManager.setMetadata(player, MetadataManager.Metadata.COMPASS_DEATH, newId);
+        MetadataManager.setMetadata(player, Metadata.COMPASS_DEATH, newId);
 
         updateCompass(player);
     }

@@ -2,6 +2,10 @@ package net.kineticraft.lostcity;
 
 import lombok.Getter;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
+import net.kineticraft.lostcity.discord.DiscordAPI;
+import net.kineticraft.lostcity.discord.DiscordChannel;
+import net.kineticraft.lostcity.utils.TextUtils;
+import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -45,12 +49,29 @@ public class Core extends JavaPlugin {
     }
 
     /**
-     * Send a warning to any place that should receive it.
+     * Send a warning to any place that should receive it, including discord.
      * @param message
      */
     public static void warn(String message) {
         alertStaff(ChatColor.RED + message);
-        //TODO: Broadcast discord
+        DiscordAPI.sendMessage(DiscordChannel.ORYX, message);
+    }
+
+    /**
+     * Broadcast a text component to in-game and discord.
+     * @param baseComponents
+     */
+    public static void broadcast(BaseComponent... baseComponents) {
+        Bukkit.broadcast(baseComponents);
+        DiscordAPI.sendGame(TextUtils.toLegacy(baseComponents));
+    }
+
+    /**
+     * Broadcast a message in discord and in-game.
+     * @param message
+     */
+    public static void broadcast(String message) {
+        alert(EnumRank.values()[0], DiscordChannel.INGAME, message);
     }
 
     /**
@@ -58,15 +79,16 @@ public class Core extends JavaPlugin {
      * @param alert
      */
     public static void announce(String alert) {
-        alert(EnumRank.values()[0], ChatColor.RED + "" + ChatColor.BOLD + " >> " + ChatColor.RED + alert);
+        alert(EnumRank.values()[0], DiscordChannel.INGAME,
+                ChatColor.RED + "" + ChatColor.BOLD + " >> " + ChatColor.RED + alert);
     }
 
     /**
-     * Broadcast a message to online staff
+     * Broadcast a message to online staff, and NOT discord.
      * @param message
      */
     public static void alertStaff(String message) {
-        alert(EnumRank.HELPER, ChatColor.RED + message);
+        alert(EnumRank.HELPER, null, ChatColor.RED + message);
     }
 
     /**
@@ -74,10 +96,13 @@ public class Core extends JavaPlugin {
      * @param minRank
      * @param message
      */
-    public static void alert(EnumRank minRank, String message) {
+    public static void alert(EnumRank minRank, DiscordChannel channel, String message) {
         Bukkit.getOnlinePlayers().stream().map(KCPlayer::getWrapper).filter(pw -> pw.getRank().isAtLeast(minRank))
                 .map(KCPlayer::getPlayer).forEach(p -> p.sendMessage(message));
         Bukkit.getConsoleSender().sendMessage(message);
+
+        if (channel != null)
+            DiscordAPI.sendMessage(channel,  message);
     }
 
     /**

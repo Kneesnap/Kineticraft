@@ -62,7 +62,6 @@ public class ServerManager extends Mechanic {
 
         renderDistance = newDistance;
         Bukkit.getOnlinePlayers().forEach(p -> p.setViewDistance(getRenderDistance()));
-        Core.alertStaff("Render Distance: " + getRenderDistance());
     }
 
     /**

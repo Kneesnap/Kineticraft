@@ -93,7 +93,7 @@ public class GeneralMechanics extends Mechanic {
         Utils.giveItem(evt.getPlayer(), ItemManager.makeClaimShovel());
         Bukkit.getScheduler().runTask(Core.getInstance(), () -> evt.getPlayer().teleport(Core.getMainWorld().getSpawnLocation()));
         Utils.getAllPlayersExcept(evt.getPlayer()).forEach(p -> p.playSound(p.getLocation(), Sound.BLOCK_NOTE_PLING, 1, 1.1F));
-        Bukkit.broadcastMessage(ChatColor.GRAY + "Welcome " + ChatColor.GREEN + evt.getPlayer().getName()
+        Core.broadcast(ChatColor.GRAY + "Welcome " + ChatColor.GREEN + evt.getPlayer().getName()
                 + ChatColor.GRAY + " to " + ChatColor.BOLD + "Kineticraft" + ChatColor.GRAY + "!");
     }
 

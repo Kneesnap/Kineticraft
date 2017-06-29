@@ -3,6 +3,7 @@ package net.kineticraft.lostcity.commands.staff;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.StaffCommand;
+import net.kineticraft.lostcity.discord.DiscordAPI;
 import org.bukkit.command.CommandSender;
 
 import javax.script.ScriptEngine;
@@ -57,6 +58,8 @@ public class CommandJS extends StaffCommand {
         try {
             // Make the 'eval' command behave exactly as the eval used here does.
             engine.put("engine", engine);
+            engine.put("Core", Core.class);
+            engine.put("DiscordAPI", DiscordAPI.class);
             engine.eval(new InputStreamReader(Core.getInstance().getResource("boot.js")));
         } catch (ScriptException ex) {
             ex.printStackTrace();

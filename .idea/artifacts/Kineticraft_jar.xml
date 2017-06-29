@@ -3,6 +3,9 @@
     <output-path>$PROJECT_DIR$/out/artifacts/Kineticraft</output-path>
     <root id="archive" name="Kineticraft.jar">
       <element id="module-output" name="Kineticraft" />
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/META-INF/MANIFEST.MF" />
+      </element>
     </root>
   </artifact>
 </component>
