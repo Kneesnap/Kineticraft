@@ -5,25 +5,22 @@ import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.OnlineStatus;
-import net.dv8tion.jda.core.entities.ChannelType;
-import net.dv8tion.jda.core.entities.Game;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionAddEvent;
+import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionRemoveEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.commands.CommandType;
 import net.kineticraft.lostcity.commands.Commands;
 import net.kineticraft.lostcity.commands.DiscordSender;
+import net.kineticraft.lostcity.commands.discord.CommandServerVote;
 import net.kineticraft.lostcity.config.Configs;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
-import javax.management.monitor.StringMonitor;
-import java.util.Arrays;
-import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Basic Discord bot.
@@ -66,7 +63,17 @@ public class DiscordBot extends ListenerAdapter {
      * @param message
      */
     public void sendMessage(DiscordChannel channel, String message) {
-        sendMessage(channel.getChannel(), message);
+        sendMessage(channel.getChannel(), message, null);
+    }
+
+    /**
+     * Send a message to the given channel.
+     * @param channel
+     * @param message
+     * @param callback
+     */
+    public void sendMessage(DiscordChannel channel, String message, Consumer<Message> callback) {
+        sendMessage(channel.getChannel(), message, callback);
     }
 
     /**
@@ -75,8 +82,24 @@ public class DiscordBot extends ListenerAdapter {
      * @param message
      */
     public void sendMessage(MessageChannel channel, String message) {
-        if (channel != null)
-            channel.sendMessage(ChatColor.stripColor(message)).queue();
+        sendMessage(channel, message, null);
+    }
+
+    /**
+     * Send a message to the given channel.
+     * @param channel
+     * @param message
+     * @param callback
+     */
+    public void sendMessage(MessageChannel channel, String message, Consumer<Message> callback) {
+        if (channel == null || !DiscordAPI.isAlive())
+            return;
+
+        message = ChatColor.stripColor(message); // Allows in-game messages to get sent both there and to discord without change.
+        for (Role role : DiscordAPI.getServer().getRoles())
+            message = message.replaceAll("@" + role.getName(), role.getAsMention());
+
+        channel.sendMessage(ChatColor.stripColor(message)).queue(callback);
     }
 
     /**
@@ -90,6 +113,18 @@ public class DiscordBot extends ListenerAdapter {
     @Override
     public void onReady(ReadyEvent evt) {
         DiscordAPI.sendGame("Server has completed startup.");
+    }
+
+    @Override
+    public void onGuildMessageReactionAdd(GuildMessageReactionAddEvent evt) {
+        if(DiscordChannel.getChannel(evt.getChannel()) == DiscordChannel.ORYX && !evt.getUser().isBot())
+            CommandServerVote.scanChannel();
+    }
+
+    @Override
+    public void onGuildMessageReactionRemove(GuildMessageReactionRemoveEvent evt) {
+        if(DiscordChannel.getChannel(evt.getChannel()) == DiscordChannel.ORYX && !evt.getUser().isBot())
+            CommandServerVote.scanChannel();
     }
 
     @Override
@@ -109,21 +144,30 @@ public class DiscordBot extends ListenerAdapter {
             return; // We don't listen for this channel or user.
 
         DiscordChannel channel = DiscordChannel.getChannel(getLastChannel());
-        DiscordSender sender = new DiscordSender(event.getAuthor(), event.getChannel());
+        DiscordSender sender = new DiscordSender(event.getAuthor(), event.getMessage());
         String noColor = ChatColor.stripColor(event.getMessage().getContent());
         final String message = noColor.substring(0, Math.min(128, noColor.length())); // Limit size of message.
 
-        if (Commands.handleCommand(sender, CommandType.DISCORD, event.getMessage().getContent()))
-            return; // A command has been handled.
-
         if (channel == DiscordChannel.INGAME) {
-            // Mirror the message into in-game. For some reason this is gets cast to CommandBlockSender throwing an async exception.
+            // Mirror the message into in-game.
+            // Also will attempt to run the input as a slash command.
+            // For some reason the sender is cast to CommandBlockSender throwing an async exception, so we have to do it sync.
 
-            //TODO: Allow staff to run in-game commands.
-            Bukkit.getScheduler().runTask(Core.getInstance(), () ->  Bukkit.broadcastMessage(
-                    ChatColor.GRAY.toString() + ChatColor.BOLD + "DISCORD" + ChatColor.GRAY + " "
-                            + sender.getName() + ChatColor.GRAY + ": " + ChatColor.WHITE + message));
-            return;
+            if (!DiscordAPI.isVerified(event.getAuthor())) {
+                reply("Please verify with /verify before using this feature.");
+                return;
+            }
+
+            if (!Commands.handleCommand(sender, CommandType.SLASH, message) && !CommandType.DISCORD.matches(message)) {
+                if (message.length() > 0)
+                    Bukkit.getScheduler().runTask(Core.getInstance(), () -> Bukkit.broadcastMessage(
+                            ChatColor.GRAY.toString() + ChatColor.BOLD + "DISCORD" + ChatColor.GRAY + " "
+                                    + sender.getName() + ChatColor.GRAY + ": " + ChatColor.WHITE + message));
+                return;
+            }
         }
+
+        // Handle as a discord command.
+        Commands.handleCommand(sender, CommandType.DISCORD, message);
     }
 }

@@ -6,6 +6,7 @@ import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
 
+import java.security.cert.CertPathBuilderSpi;
 import java.util.Arrays;
 
 /**
@@ -34,7 +35,7 @@ public enum EnumRank {
     ADMIN("ADMN", ChatColor.DARK_RED,  ChatColor.RED),
     DEV("DEV", ChatColor.DARK_AQUA, ChatColor.AQUA);
 
-    private String rankSymbol;
+    private final String rankSymbol;
     private final ChatColor color;
     private final ChatColor nameColor;
     private final int tpTime;
@@ -89,6 +90,22 @@ public enum EnumRank {
      */
     public NamespacedKey getKey() {
         return NamespacedKey.minecraft("rank_" + name().toLowerCase());
+    }
+
+    /**
+     * Return the name of the rank associated with this discord account.
+     * @return rank
+     */
+    public String getDiscordRole() {
+        return Utils.capitalize(name());
+    }
+
+    /**
+     * Is this a staff rank?
+     * @return staff
+     */
+    public boolean isStaff() {
+        return isAtLeast(HELPER);
     }
 
     /**

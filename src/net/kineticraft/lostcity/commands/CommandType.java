@@ -18,4 +18,15 @@ public enum CommandType {
     //COMMAND_BLOCK("");
 
     private final String prefix;
+
+    /**
+     * Is the given command input possibly this command type?
+     * Returns true if the command prefix matches.
+     *
+     * @param input
+     * @return matches
+     */
+    public boolean matches(String input) {
+        return input.startsWith(getPrefix());
+    }
 }

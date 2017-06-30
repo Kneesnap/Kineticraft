@@ -3,9 +3,8 @@ package net.kineticraft.lostcity.commands;
 import lombok.Getter;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
-import net.kineticraft.lostcity.commands.discord.CommandDiscordVerify;
-import net.kineticraft.lostcity.commands.misc.CommandGUI;
-import net.kineticraft.lostcity.commands.misc.CommandInfo;
+import net.kineticraft.lostcity.commands.discord.*;
+import net.kineticraft.lostcity.commands.misc.*;
 import net.kineticraft.lostcity.commands.player.*;
 import net.kineticraft.lostcity.commands.staff.*;
 import net.kineticraft.lostcity.commands.trigger.*;
@@ -113,6 +112,7 @@ public class Commands extends Mechanic {
 
         // Register discord commands
         addCommand(new CommandDiscordVerify());
+        addCommand(new CommandServerVote());
 
         // Sort commands alphabetically:
         getCommands().sort(Comparator.comparing(Command::getName));

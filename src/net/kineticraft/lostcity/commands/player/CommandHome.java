@@ -30,7 +30,7 @@ public class CommandHome extends PlayerCommand {
         Player player = (Player) sender;
         KCPlayer kcPlayer = KCPlayer.getWrapper(player);
 
-        if (args[0].contains(":") && kcPlayer.getRank().isAtLeast(EnumRank.HELPER)) {
+        if (args[0].contains(":") && kcPlayer.getRank().isStaff()) {
             String[] split = args[0].split(":");
             QueryTools.getData(split[0], k -> {
                 if (split.length == 1) {

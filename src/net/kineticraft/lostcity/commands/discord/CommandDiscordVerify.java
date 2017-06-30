@@ -32,12 +32,12 @@ public class CommandDiscordVerify extends DiscordCommand {
         Player verify = Bukkit.getPlayer(args[0]);
         KCPlayer pw = KCPlayer.getWrapper(verify);
 
-        if (pw.getDiscordId() != 0L) {
+        if (pw.isVerified()) {
             discord.sendMessage(verify.getName() + " has already verified.");
             return;
         }
 
-        if (discord.getMember().getRoles().contains(DiscordAPI.getRole("Verified"))) {
+        if (DiscordAPI.isVerified(discord.getUser())) {
             discord.sendMessage("Your discord account is already verified.");
             return;
         }
@@ -51,11 +51,8 @@ public class CommandDiscordVerify extends DiscordCommand {
             verify.sendMessage(ChatColor.GOLD + "You are now verified on discord.");
             discord.sendMessage(discord.getName() + " is now verified as " + verify.getName() + "!");
 
-            if (DiscordAPI.getMember().canInteract(discord.getMember())) {
-                DiscordAPI.getManager().addRolesToMember(discord.getMember(), DiscordAPI.getRole("Verified")).queue();
-                DiscordAPI.getManager().setNickname(discord.getMember(), verify.getName()).queue();
-            }
             pw.setDiscordId(discord.getUser().getIdLong());
+            pw.updateDiscord();
         }, () -> discord.sendMessage("Verification denied by " + verify.getName() + "."), "VERIFY", "CANCEL");
     }
 }

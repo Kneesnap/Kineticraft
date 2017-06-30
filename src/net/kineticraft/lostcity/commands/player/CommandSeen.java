@@ -32,7 +32,7 @@ public class CommandSeen extends PlayerCommand {
             sender.sendMessage(" - " + ChatColor.GRAY + "Last Seen: " + ChatColor.WHITE + Utils.formatTime(seenTime));
 
             // Show extra data to helpers.
-            if (Utils.getRank(sender).isAtLeast(EnumRank.HELPER))
+            if (Utils.getRank(sender).isStaff())
                 sender.sendMessage(" - " + ChatColor.GRAY + "IP Address: " + ChatColor.WHITE + p.getLastIP());
 
 

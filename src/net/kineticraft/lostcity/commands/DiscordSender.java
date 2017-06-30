@@ -3,6 +3,7 @@ package net.kineticraft.lostcity.commands;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
 import net.kineticraft.lostcity.discord.DiscordAPI;
@@ -25,7 +26,15 @@ import java.util.Set;
 public class DiscordSender implements CommandSender, MetadataHolder {
 
     private User user;
-    private MessageChannel channel;
+    private Message message;
+
+    /**
+     * Get the channel the message was sent in.
+     * @return channel
+     */
+    public MessageChannel getChannel() {
+        return getMessage().getChannel();
+    }
 
     @Override
     public void sendMessage(String s) {

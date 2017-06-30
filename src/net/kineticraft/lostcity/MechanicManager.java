@@ -11,6 +11,7 @@ import net.kineticraft.lostcity.item.Items;
 import net.kineticraft.lostcity.mechanics.*;
 import net.kineticraft.lostcity.mechanics.enchants.Enchants;
 import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
+import net.kineticraft.lostcity.utils.ReflectionUtil;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -23,6 +24,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.server.PluginDisableEvent;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -32,8 +34,69 @@ import java.util.List;
  */
 public class MechanicManager implements Listener {
 
+    @Getter private static List<Mechanic> mechanics = new ArrayList<>();
+
     @Getter
-    private static List<Mechanic> mechanics = new ArrayList<>();
+    private enum Mechanics {
+        CONFIGS(Configs.class),
+        PLAYER_DATA(DataHandler.class),
+        PUNISHMENTS(Punishments.class),
+        CALLBACKS(Callbacks.class),
+        COMMANDS(Commands.class),
+        CRAKE(Crake.class),
+        DISCORD(DiscordAPI.class, BuildType.DEV),
+        RESTRICTIONS(Restrictions.class),
+        SERVER_MANAGER(ServerManager.class),
+        GENERAL(GeneralMechanics.class),
+        VANISH(Vanish.class),
+        GUIS(GUIManager.class),
+        SLEEP(SleepMechanics.class),
+        SLIME_FINDER(SlimeFinder.class),
+        CUSTOM_ITEMS(Items.class),
+        CHAT(Chat.class),
+        COMPASS(CompassMechanics.class),
+        FARM_LIMIT(FarmLimiter.class),
+        LEASHES(Leashes.class),
+        ENCHANTS(Enchants.class),
+        VOTING(Voting.class),
+        AFK(AFK.class),
+        METADATA(MetadataManager.class);
+
+        private final Class<? extends Mechanic> mechanicClass;
+        private final List<BuildType> dontRegister;
+        private Mechanic mechanic;
+
+        Mechanics(Class<? extends Mechanic> clazz, BuildType... build) {
+            this.mechanicClass = clazz;
+            this.dontRegister = Arrays.asList(build);
+        }
+
+        /**
+         * Is this mechanic registered and active on the server?
+         * @return registered
+         */
+        public boolean isRegistered() {
+            return getMechanic() != null;
+        }
+
+        /**
+         * Register this mechanic.
+         * Silently fails if it should not be applied on this server-type.
+         */
+        public void register() {
+            if (!CONFIGS.isRegistered() || !getDontRegister().contains(Configs.getMainConfig().getBuildType()))
+                addMechanic(this.mechanic = ReflectionUtil.construct(getMechanicClass()));
+        }
+    }
+
+    /**
+     * Register a custom mechanic.
+     * @param m
+     */
+    public static void addMechanic(Mechanic m) {
+        MechanicManager.getMechanics().add(m);
+        m.onEnable();
+    }
 
     /**
      * Registers all game mechanics.
@@ -43,38 +106,9 @@ public class MechanicManager implements Listener {
         Bukkit.getPluginManager().registerEvents(new MechanicManager(), Core.getInstance()); // Ready to listen for event.
 
         // Register all mechanics here, in order of startup:
-        registerMechanic(new Configs());
-        registerMechanic(new DataHandler());
-        registerMechanic(new Punishments());
-        registerMechanic(new Callbacks());
-        registerMechanic(new Commands());
-        registerMechanic(new Crake());
-        registerMechanic(new DiscordAPI());
-        registerMechanic(new Restrictions());
-        registerMechanic(new ServerManager());
-        registerMechanic(new GeneralMechanics());
-        registerMechanic(new Vanish());
-        registerMechanic(new GUIManager());
-        registerMechanic(new SleepMechanics());
-        registerMechanic(new SlimeFinder());
-        registerMechanic(new Items());
-        registerMechanic(new Chat());
-        registerMechanic(new CompassMechanics());
-        registerMechanic(new FarmLimiter());
-        registerMechanic(new Leashes());
-        registerMechanic(new Enchants());
-        registerMechanic(new Voting());
-        registerMechanic(new AFK());
-        registerMechanic(new MetadataManager());
-        Core.logInfo("Mechanics Registered.");
-    }
+        Arrays.stream(Mechanics.values()).forEach(Mechanics::register);
 
-    /**
-     * Register a single game mechanic.
-     */
-    private static void registerMechanic(Mechanic m) {
-        getMechanics().add(m);
-        m.onEnable();
+        Core.logInfo("Mechanics Registered.");
     }
 
     @EventHandler

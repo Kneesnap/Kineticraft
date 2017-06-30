@@ -174,7 +174,7 @@ public class Utils {
         final Location startLocation = player.getLocation().clone();
         final BukkitTask[] tpTask = new BukkitTask[1]; // Have to use an array here to store a value, as otherwise it can't be final.
         // Must be final to work in the bukkit scheduler.
-        int[] tpTime = new int[] {p.getRank().isAtLeast(EnumRank.HELPER) ? 0 : p.getTemporaryRank().getTpTime()};
+        int[] tpTime = new int[] {p.getRank().isStaff() ? 0 : p.getTemporaryRank().getTpTime()};
 
         MetadataManager.setMetadata(player, Metadata.TELEPORTING, true);
         player.playSound(player.getLocation(), Sound.AMBIENT_CAVE, 1F, 1F);

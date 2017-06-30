@@ -1,16 +1,18 @@
 package net.kineticraft.lostcity.discord;
 
+import com.google.common.base.Predicates;
 import lombok.Getter;
-import net.dv8tion.jda.core.entities.Guild;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Role;
-import net.dv8tion.jda.core.entities.SelfUser;
+import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.managers.GuildController;
+import net.dv8tion.jda.core.requests.RestAction;
 import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.mechanics.Mechanic;
+import net.kineticraft.lostcity.utils.ServerUtils;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+
+import java.util.List;
 
 /**
  * Control the discord bot.
@@ -50,8 +52,7 @@ public class DiscordAPI extends Mechanic {
      * @param message
      */
     public static void sendMessage(DiscordChannel channel, String message) {
-        if (isAlive())
-            getBot().sendMessage(channel, message);
+        getBot().sendMessage(channel, message);
     }
 
     /**
@@ -71,11 +72,12 @@ public class DiscordAPI extends Mechanic {
     }
 
     /**
-     * Return whether or not the bot exists and is connected.
+     * Return whether or not the bot exists and is connected, and enabled.
+     *
      * @return alive
      */
     public static boolean isAlive() {
-        return getBot() != null;
+        return !ServerUtils.isDevServer() && getBot() != null;
     }
 
     /**
@@ -84,7 +86,8 @@ public class DiscordAPI extends Mechanic {
      * @return roll
      */
     public static Role getRole(String rollName) {
-        return DiscordAPI.getServer().getRolesByName(rollName, true).get(0);
+        List<Role> roles = DiscordAPI.getServer().getRolesByName(rollName, true);
+        return roles.isEmpty() ? null : roles.get(0);
     }
 
     /**
@@ -101,5 +104,91 @@ public class DiscordAPI extends Mechanic {
      */
     public static Member getMember() {
         return getServer().getMember(getUser());
+    }
+
+    /**
+     * Does this user have the given role on discord?
+     * @param user
+     * @param role
+     * @return hasRole
+     */
+    public static boolean hasRole(User user, String role) {
+        return isAlive() && getServer().getMember(user).getRoles().contains(getRole(role));
+    }
+
+    /**
+     * Remove a roll from a user on discord.
+     * @param user
+     * @param role
+     */
+    public static void removeRole(User user, String role) {
+        if (canEdit(user) && hasRole(user, role))
+            getManager().removeRolesFromMember(getServer().getMember(user), getRole(role)).queue();
+    }
+
+    /**
+     * Give a user a role on discord.
+     * @param user
+     * @param role
+     */
+    public static void giveRole(User user, String role) {
+        if (role == null || !canEdit(user))
+            return;
+        removeRole(user, role);
+        getManager().addRolesToMember(getServer().getMember(user), getRole(role)).queue();
+    }
+
+    /**
+     * Set if a user has a role on discord.
+     * @param user
+     * @param role
+     * @param has
+     */
+    public static void setRole(User user, String role, boolean has) {
+        if (has) {
+            giveRole(user, role);
+        } else {
+            removeRole(user, role);
+        }
+    }
+
+    /**
+     * Is this user verified on discord?
+     * @param user
+     * @return verified
+     */
+    public static boolean isVerified(User user) {
+        return hasRole(user, "Verified");
+    }
+
+    /**
+     * Does our bot have permissions to edit this user?
+     * @param user
+     * @return perms
+     */
+    public static boolean canEdit(User user) {
+        return isAlive() && getMember().canInteract(getServer().getMember(user));
+    }
+
+    /**
+     * Set the nickname of a discord user.
+     * @param user
+     * @param nick
+     */
+    public static void setNick(User user, String nick) {
+        if (canEdit(user))
+            getManager().setNickname(getServer().getMember(user), nick).queue();
+    }
+
+    /**
+     * Remove all roles from this user.
+     * @param user
+     */
+    @SuppressWarnings("Guava")
+    public static void clearRoles(User user) {
+        if (canEdit(user))
+            getServer().getMember(user).getRoles().stream()
+                    .filter(Predicates.not(Role::isPublicRole)) // Not @everyone
+                    .forEach(r -> removeRole(user, r.getName()));
     }
 }

@@ -2,6 +2,7 @@ package net.kineticraft.lostcity.data.wrappers;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.dv8tion.jda.core.entities.User;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.config.Configs;
@@ -10,6 +11,8 @@ import net.kineticraft.lostcity.data.lists.JsonList;
 import net.kineticraft.lostcity.data.lists.StringList;
 import net.kineticraft.lostcity.data.maps.JsonMap;
 import net.kineticraft.lostcity.data.Jsonable;
+import net.kineticraft.lostcity.discord.DiscordAPI;
+import net.kineticraft.lostcity.discord.DiscordChannel;
 import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
 import net.kineticraft.lostcity.mechanics.metadata.Metadata;
 import net.kineticraft.lostcity.mechanics.Punishments.*;
@@ -105,8 +108,9 @@ public class KCPlayer implements Jsonable {
         if (isOnline())
             getPlayer().kickPlayer(ChatColor.RED + "Oh no! You've been punished for " + ChatColor.YELLOW
                     + type.getDisplay() + ChatColor.RED + "...");
-
         writeData();
+        DiscordAPI.sendMessage(DiscordChannel.ORYX, punisher.getName() + " has punished " + getUsername()
+                + " for " + type.getDisplay() + " (" + Utils.formatTimeFull(getPunishExpiry()) + ")");
     }
 
     /**
@@ -225,6 +229,8 @@ public class KCPlayer implements Jsonable {
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1F, 1F);
             updatePlayer();
         }
+
+        updateDiscord();
     }
 
     /**
@@ -236,6 +242,23 @@ public class KCPlayer implements Jsonable {
         if (isOnline())
             getPlayer().sendMessage(ChatColor.GOLD + "Nickname " + (newNick != null ? "updated" : "removed") + ".");
         updatePlayer();
+    }
+
+    /**
+     * Update this player's account on discord.
+     */
+    public void updateDiscord() {
+        if (!isVerified())
+            return; // There's no linked discord account to update.
+
+        DiscordAPI.setNick(getDiscord(), getUsername());
+
+        // Apply roles.
+        DiscordAPI.clearRoles(getDiscord());
+        DiscordAPI.setRole(getDiscord(), "Donor", getRank() == EnumRank.THETA);
+        DiscordAPI.setRole(getDiscord(), "Staff", getRank().isStaff());
+        DiscordAPI.giveRole(getDiscord(), "Verified");
+        DiscordAPI.giveRole(getDiscord(), getRank().getDiscordRole());
     }
 
     /**
@@ -262,6 +285,7 @@ public class KCPlayer implements Jsonable {
         }
 
         player.setDisplayName(getNickname() != null ? getNickname() : player.getName());
+        player.setOp(getRank().isAtLeast(EnumRank.MOD));
     }
 
     /**
@@ -321,6 +345,24 @@ public class KCPlayer implements Jsonable {
      */
     public String getColoredName() {
         return getTemporaryRank().getNameColor() + (getNickname() != null ? getNickname() : getUsername());
+    }
+
+    /**
+     * Is this user verified on discord?
+     * @return verified
+     */
+    public boolean isVerified() {
+        return getDiscordId() != 0L;
+    }
+
+    /**
+     * Get this player's discord user.
+     * Returns null if not verified.
+     *
+     * @return user
+     */
+    public User getDiscord() {
+        return isVerified() ? DiscordAPI.getBot().getBot().getUserById(getDiscordId()) : null;
     }
 
     /**
