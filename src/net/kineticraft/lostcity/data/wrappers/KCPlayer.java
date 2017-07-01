@@ -39,8 +39,7 @@ import java.util.stream.Collectors;
 @Getter @Setter
 public class KCPlayer implements Jsonable {
 
-    @Getter
-    private static Map<UUID, KCPlayer> playerMap = new HashMap<>();
+    @Getter private static Map<UUID, KCPlayer> playerMap = new HashMap<>();
 
     private UUID uuid;
     private JsonMap<JsonLocation> homes = new JsonMap<>();
@@ -404,7 +403,7 @@ public class KCPlayer implements Jsonable {
      * @return playerWrapper
      */
     public static KCPlayer getWrapper(UUID uuid) {
-        return playerMap.containsKey(uuid) ? playerMap.get(uuid) : loadWrapper(uuid);
+        return playerMap.get(uuid);
     }
 
     /**

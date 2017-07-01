@@ -2,6 +2,7 @@ package net.kineticraft.lostcity.mechanics;
 
 import lombok.Getter;
 import net.kineticraft.lostcity.Core;
+import net.kineticraft.lostcity.data.JsonData;
 import net.kineticraft.lostcity.data.QueryTools;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
 import org.bukkit.Bukkit;
@@ -28,35 +29,33 @@ public class DataHandler extends Mechanic {
     public void onEnable() {
         // Every 5 minutes, save all playerdata
         Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), DataHandler::saveAllPlayers, 0, 5 * 60 * 20);
+        loadCache();
+    }
+
+    private static void loadCache() {
+        List<UUID> check = Arrays.stream(Core.getFile("players/").listFiles())
+                .filter(file -> file.getName().endsWith(".json")).map(f -> f.getName().split("\\.")[0])
+                .map(UUID::fromString).collect(Collectors.toList());
+
+        check.forEach(u -> KCPlayer.getPlayerMap().put(u, KCPlayer.loadWrapper(u)));
+        Bukkit.getLogger().info("Loaded " + KCPlayer.getPlayerMap().size() + " wrappers.");
 
         QueryTools.queryData(players ->
-            players.filter(KCPlayer::isVerified).forEach(p -> discordMap.put(p.getDiscordId(), p.getUuid())));
+                players.filter(KCPlayer::isVerified).forEach(p -> discordMap.put(p.getDiscordId(), p.getUuid())));
     }
 
     /**W
-     * Save all loaded player data.
+     * Save all online player data.
      * ASync-Safe.
      */
     public static void saveAllPlayers() {
-        new ArrayList<>(KCPlayer.getPlayerMap().values()).forEach(KCPlayer::writeData);
+        Bukkit.getOnlinePlayers().stream().map(KCPlayer::getWrapper).forEach(KCPlayer::writeData);
     }
 
     @EventHandler(priority = EventPriority.LOWEST) // Run first, so other things like ban checker have data.
     public void onAttemptJoin(AsyncPlayerPreLoginEvent evt) {
-        try {
-            KCPlayer.getPlayerMap().put(evt.getUniqueId(), KCPlayer.getWrapper(evt.getUniqueId())); // Load player.
-        } catch (Exception e) {
-            e.printStackTrace();
-            Core.warn("Failed to load " + evt.getName() + "'s player data!");
-            evt.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER,
-                    ChatColor.RED + "There was an error loading your playerdata. Staff have been notified.");
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST) // Run first, so other things like ban checker have data.
-    public void onJoinFail(AsyncPlayerPreLoginEvent evt) {
-        if (evt.getLoginResult() != AsyncPlayerPreLoginEvent.Result.ALLOWED)
-            KCPlayer.getPlayerMap().remove(evt.getUniqueId());
+        if (!KCPlayer.getPlayerMap().containsKey(evt.getUniqueId()))
+            KCPlayer.getPlayerMap().put(evt.getUniqueId(), new KCPlayer(evt.getUniqueId(), new JsonData()));
     }
 
     @EventHandler(priority = EventPriority.HIGHEST) // Run last.
@@ -64,7 +63,6 @@ public class DataHandler extends Mechanic {
         String ip = evt.getAddress().toString().split("/")[1].split(":")[0];
 
         if (evt.getResult() != PlayerLoginEvent.Result.ALLOWED) {
-            KCPlayer.getPlayerMap().remove(evt.getPlayer().getUniqueId()); // Remove their data if they weren't let on.
             Core.alertStaff(ChatColor.RED + evt.getPlayer().getName() + " (" + ChatColor.YELLOW + evt.getAddress().toString()
                     + ChatColor.RED + ") attempted login.");
             return;
@@ -101,7 +99,6 @@ public class DataHandler extends Mechanic {
         KCPlayer player = KCPlayer.getPlayerMap().get(p.getUniqueId());
         if (player != null && player.getLastIP() != null) // Only save if data exists and the player has been online at least once.
             player.writeData(); // Save the player's data to disk.
-        KCPlayer.getPlayerMap().remove(p.getUniqueId()); // Unload their data from memory.
     }
 
     @Override

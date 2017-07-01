@@ -3,19 +3,12 @@ package net.kineticraft.lostcity.data;
 import lombok.Getter;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
-import net.kineticraft.lostcity.utils.SchedulerTask;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -35,18 +28,8 @@ public class QueryTools {
      */
     @SuppressWarnings("ConstantConditions")
     public static void queryData(Consumer<Stream<KCPlayer>> callback) {
-
-        List<UUID> check = Arrays.stream(Core.getFile("players/").listFiles())
-                .filter(file -> file.getName().endsWith(".json")).map(f -> f.getName().split("\\.")[0])
-                .map(UUID::fromString).collect(Collectors.toList()); // Get a list of all UUIDs to check.
-        List<KCPlayer> loaded = new CopyOnWriteArrayList<>();
-
-        currentQueries++;
-        new SchedulerTask<>(check, uuid -> loaded.add(KCPlayer.getWrapper(uuid)), () -> {
-            currentQueries--;
-            if (!loaded.isEmpty())
-                Bukkit.getScheduler().runTaskAsynchronously(Core.getInstance(), () -> callback.accept(loaded.stream()));
-        });
+        Bukkit.getScheduler().runTaskAsynchronously(Core.getInstance(),
+                () -> callback.accept(KCPlayer.getPlayerMap().values().stream()));
     }
 
     /**
