@@ -42,7 +42,7 @@ public abstract class ItemWrapper {
 
     /**
      * Generate this item
-     * @return
+     * @return item
      */
     public ItemStack generateItem() {
         this.item = getRawStack();
@@ -55,6 +55,10 @@ public abstract class ItemWrapper {
         return getItem();
     }
 
+    /**
+     * Get a NMS copy of this item.
+     * @return nms
+     */
     public net.minecraft.server.v1_12_R1.ItemStack getNMSCopy() {
         return CraftItemStack.asNMSCopy(getItem());
     }

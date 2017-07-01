@@ -10,6 +10,7 @@ import net.kineticraft.lostcity.item.event.events.ItemInteractEvent;
 import net.kineticraft.lostcity.utils.PacketUtil;
 import net.kineticraft.lostcity.utils.TextBuilder;
 import net.kineticraft.lostcity.utils.TextUtils;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -19,7 +20,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,21 +35,25 @@ public class ItemBook extends ItemWrapper {
     private boolean writeLines; // Whether or not the lines should be stored in the book. (Allows dynamic updating.)
     private List<TextBuilder> pages = new ArrayList<>();
     private int page; // The current page we're writing to.
+    private String author;
+    private String title;
 
     private static final int LINES_PER_PAGE = 15;
 
-    public ItemBook() {
-        this(ItemType.CUSTOM_BOOK);
+    public ItemBook(String title) {
+        this(ItemType.CUSTOM_BOOK, title);
         setWriteLines(true); // Books that don't have their own classes can't be reconstructed, so we must write pages to NBT.
     }
 
-    public ItemBook(ItemType type) {
-        this(type, true);
+    public ItemBook(ItemType type, String title) {
+        this(type, title, true);
     }
 
-    public ItemBook(ItemType type, boolean signed) {
+    public ItemBook(ItemType type, String title, boolean signed) {
         super(type);
         this.signed = signed;
+        setTitle(title);
+        setAuthor("Kineticraft Staff");
     }
 
     public ItemBook(ItemStack item) {
@@ -66,23 +70,13 @@ public class ItemBook extends ItemWrapper {
         setWriteLines(true);
         ItemStack itemStack = generateItem();
         setWriteLines(save);
+
+        if (getTitle() != null)
+            getMeta().setTitle(getTitle());
+        if (getAuthor() != null)
+            getMeta().setAuthor(getAuthor());
+
         return itemStack;
-    }
-
-    /**
-     * Get the title of this book.
-     * @return title
-     */
-    public String getTitle() {
-        return getMeta().getTitle();
-    }
-
-    /**
-     * Get the author of this book.
-     * @return author
-     */
-    public String getAuthor() {
-        return getMeta().getAuthor();
     }
 
     /**
@@ -91,7 +85,7 @@ public class ItemBook extends ItemWrapper {
      * @return this
      */
     public ItemBook setTitle(String title) {
-        getMeta().setTitle(title);
+        this.title = title;
         return this;
     }
 
@@ -101,7 +95,7 @@ public class ItemBook extends ItemWrapper {
      * @return this
      */
     public ItemBook setAuthor(String author) {
-        getMeta().setAuthor(author);
+        this.author = author;
         return this;
     }
 
@@ -112,13 +106,52 @@ public class ItemBook extends ItemWrapper {
     }
 
     /**
+     * Add text of our custom format.
+     * @param markup
+     * @return this
+     */
+    public ItemBook addMarkup(String markup) {
+        return addText(TextUtils.fromMarkup(markup));
+    }
+
+    /**
+     * Append component text to this book.
+     * @param cb
+     * @return this
+     */
+    public ItemBook addText(ComponentBuilder cb) {
+        return addText(cb.create());
+    }
+
+    /**
+     * Add component text to this book.
+     * @param components
+     * @return this
+     */
+    public ItemBook addText(BaseComponent... components) {
+        for (BaseComponent baseComponent : components) {
+            attemptNext();
+            getPage().append(baseComponent);
+        }
+        return this;
+    }
+
+    /**
+     * Append a centered line to the book.
+     * @param text
+     * @return this
+     */
+    public ItemBook addCenteredText(String text) {
+        return addText(TextUtils.centerBook(text) + "\n");
+    }
+
+    /**
      * Append text to the current line.
      * @param text
      * @return this
      */
     public ItemBook addText(String text) {
-        if (getPage().getLineCount(TextUtils.BOOK_SIZE) >= LINES_PER_PAGE)
-            nextPage();
+        attemptNext();
         getPage().append(text);
         return this;
     }
@@ -129,8 +162,7 @@ public class ItemBook extends ItemWrapper {
      * @return this
      */
     public ItemBook addLine(String text) {
-        addText("\n"); // New line
-        return addText(text);
+        return addText(text + "\n");
     }
 
     /**
@@ -247,6 +279,16 @@ public class ItemBook extends ItemWrapper {
         return this;
     }
 
+    /**
+     * Attempt to go to the next page.
+     * @return this
+     */
+    public ItemBook attemptNext() {
+        if (getPage().getLineCount(TextUtils.BOOK_SIZE) >= LINES_PER_PAGE)
+            nextPage();
+        return this;
+    }
+
     @Override
     public CraftMetaBook getMeta() {
         return (CraftMetaBook) super.getMeta();
@@ -260,12 +302,10 @@ public class ItemBook extends ItemWrapper {
     @Override
     public void updateItem() {
 
-        getMeta().setPages(Arrays.asList());
-        if (isWriteLines()) {// Save the book pages to the item.
-            addText(""); // Makes it so the last element we wrote gets applied.
-            getMeta().pages.addAll(getPages().stream().map(TextBuilder::getComponents)
+        getMeta().setPages(new ArrayList<>()); // A book needs its page tag, so we'll default to an empty one.
+        if (isWriteLines())// Save the book pages to the item.
+            getMeta().pages.addAll(getPages().stream().map(TextBuilder::create)
                     .map(TextUtils::toNMSComponent).collect(Collectors.toList()));
-        }
 
         getMeta().setGeneration(BookMeta.Generation.TATTERED);
         this.page = 0; // Reset writer.

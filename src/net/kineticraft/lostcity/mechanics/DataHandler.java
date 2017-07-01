@@ -1,5 +1,6 @@
 package net.kineticraft.lostcity.mechanics;
 
+import lombok.Getter;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.data.QueryTools;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
@@ -11,8 +12,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -22,13 +22,18 @@ import java.util.stream.Collectors;
  */
 public class DataHandler extends Mechanic {
 
+    @Getter private static Map<Long, UUID> discordMap = new HashMap<>();
+
     @Override
     public void onEnable() {
         // Every 5 minutes, save all playerdata
         Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), DataHandler::saveAllPlayers, 0, 5 * 60 * 20);
+
+        QueryTools.queryData(players ->
+            players.filter(KCPlayer::isVerified).forEach(p -> discordMap.put(p.getDiscordId(), p.getUuid())));
     }
 
-    /**
+    /**W
      * Save all loaded player data.
      * ASync-Safe.
      */

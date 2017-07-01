@@ -4,7 +4,6 @@ import com.google.common.base.Predicates;
 import lombok.Getter;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.managers.GuildController;
-import net.dv8tion.jda.core.requests.RestAction;
 import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.mechanics.Mechanic;
 import net.kineticraft.lostcity.utils.ServerUtils;
@@ -52,7 +51,8 @@ public class DiscordAPI extends Mechanic {
      * @param message
      */
     public static void sendMessage(DiscordChannel channel, String message) {
-        getBot().sendMessage(channel, message);
+        if (isAlive())
+            getBot().sendMessage(channel, message);
     }
 
     /**

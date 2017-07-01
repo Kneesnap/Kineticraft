@@ -11,6 +11,7 @@ import net.kineticraft.lostcity.commands.trigger.*;
 import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.config.Configs.ConfigType;
 import net.kineticraft.lostcity.guis.GUIType;
+import net.kineticraft.lostcity.item.ItemType;
 import net.kineticraft.lostcity.mechanics.Chat;
 import net.kineticraft.lostcity.mechanics.Mechanic;
 import net.kineticraft.lostcity.utils.Utils;
@@ -44,6 +45,9 @@ public class Commands extends Mechanic {
      * Register all commands.
      */
     private static void registerCommands() {
+
+        // Register books
+        addCommand(new CommandBook(ItemType.PATCHNOTES_BOOK, "patchnotes", "patch", "build", "changelog"));
 
         // Register GUI commands
         addCommand(new CommandGUI(EnumRank.THETA, GUIType.DONOR, "Access donor perks.", "donor"));
@@ -172,6 +176,9 @@ public class Commands extends Mechanic {
         Command command = getCommand(type, cmd);
         if (command == null)
             return false; // Not a command.
+
+        if (sender instanceof DiscordSender) // Log all discord sent commands.
+            Core.alertStaff(ChatColor.GREEN + sender.getName() + ": " + ChatColor.GRAY + type.getPrefix() + input);
 
         split.remove(0); // Remove the command from args.
         String[] args = split.toArray(new String[split.size()]);

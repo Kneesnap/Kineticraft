@@ -17,6 +17,7 @@ public class CommandVerify extends PlayerCommand {
 
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
-        sender.sendMessage(ChatColor.BLUE + "Type " + ChatColor.RED + "/verify" + ChatColor.BLUE + " in discord to verify yourself.");
+        sender.sendMessage(ChatColor.BLUE + "Type " + ChatColor.RED + "/verify"
+                + ChatColor.BLUE + " in discord to link your accounts for extra perks.");
     }
 }

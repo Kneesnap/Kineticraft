@@ -82,6 +82,9 @@ public enum MinecraftFont {
      * @return width
      */
     public static int getWidth(String character, boolean bold) {
+        if (character.equals("\n"))
+            return 0; // These characters are invisible.
+
         MinecraftFont minecraftFont = getCharacter(character);
         int size = minecraftFont.getCharWidth(character);
         if (bold && minecraftFont != SPACE)

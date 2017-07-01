@@ -88,6 +88,7 @@ public class Punishments extends Mechanic {
     public enum PunishmentType {
 
         SPAM("Spamming", 1, Material.PORK),
+        HARASSMENT("Harassment", 1, Material.LAVA_BUCKET),
         ADVERTISING("Advertising", 1, Material.IRON_DOOR),
         AUTO_RELOG("Auto Relogger", 1, Material.IRON_INGOT),
         SLURS("Slurs", 3, Material.REDSTONE),

@@ -6,6 +6,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionAddEvent;
@@ -17,6 +18,8 @@ import net.kineticraft.lostcity.commands.Commands;
 import net.kineticraft.lostcity.commands.DiscordSender;
 import net.kineticraft.lostcity.commands.discord.CommandServerVote;
 import net.kineticraft.lostcity.config.Configs;
+import net.kineticraft.lostcity.utils.ServerUtils;
+import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
@@ -88,14 +91,24 @@ public class DiscordBot extends ListenerAdapter {
     /**
      * Send a message to the given channel.
      * @param channel
-     * @param message
+     * @param original
      * @param callback
      */
-    public void sendMessage(MessageChannel channel, String message, Consumer<Message> callback) {
-        if (channel == null || !DiscordAPI.isAlive())
+    public void sendMessage(MessageChannel channel, String original, Consumer<Message> callback) {
+        if (ServerUtils.isDevServer())
+            Bukkit.getLogger().info("Sent Discord: " + original);
+
+        if (channel == null)
             return;
 
-        message = ChatColor.stripColor(message); // Allows in-game messages to get sent both there and to discord without change.
+        if (!DiscordAPI.isAlive()) {
+            // We're not connected, queue the message.
+            Bukkit.getScheduler().runTaskLater(Core.getInstance(), () -> sendMessage(channel, original, callback), 20L);
+            return;
+        }
+
+
+        String message = ChatColor.stripColor(original); // Allows in-game messages to get sent both there and to discord without change.
         for (Role role : DiscordAPI.getServer().getRoles())
             message = message.replaceAll("@" + role.getName(), role.getAsMention());
 
@@ -162,7 +175,7 @@ public class DiscordBot extends ListenerAdapter {
                 if (message.length() > 0)
                     Bukkit.getScheduler().runTask(Core.getInstance(), () -> Bukkit.broadcastMessage(
                             ChatColor.GRAY.toString() + ChatColor.BOLD + "DISCORD" + ChatColor.GRAY + " "
-                                    + sender.getName() + ChatColor.GRAY + ": " + ChatColor.WHITE + message));
+                                    + Utils.getSenderName(sender) + ChatColor.GRAY + ": " + ChatColor.WHITE + message));
                 return;
             }
         }

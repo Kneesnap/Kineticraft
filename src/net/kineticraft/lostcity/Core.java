@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -117,6 +118,7 @@ public class Core extends JavaPlugin {
      * Creates a folder if it does not exist.
      * @param folder
      */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     private static void makeFolder(String folder) {
         getFile(folder + "/").mkdirs();
     }
@@ -148,5 +150,14 @@ public class Core extends JavaPlugin {
      */
     public static List<Player> getOnlinePlayers() {
         return Bukkit.getOnlinePlayers().stream().filter(p -> !KCPlayer.getWrapper(p).isVanished()).collect(Collectors.toList());
+    }
+
+    /**
+     * Load a resource from the jar file.
+     * @param fileName
+     * @return resource
+     */
+    public static InputStream loadResource(String fileName) {
+        return getInstance().getResource(fileName);
     }
 }

@@ -3,17 +3,17 @@ package net.kineticraft.lostcity.data;
 import lombok.Getter;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
+import net.kineticraft.lostcity.utils.SchedulerTask;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -25,38 +25,28 @@ import java.util.stream.Stream;
  */
 public class QueryTools {
 
-    @Getter
-    private static int currentQueries;
+    @Getter private static int currentQueries;
 
-    private static int FILES_PER_TICK = 45;
-    private static int MAX_PLAYER_QUERIES = 2;
+    private static final int MAX_PLAYER_QUERIES = 2;
 
     /**
      * Asynchronously loads all playerdata then runs the callback.
      * @param callback
      */
+    @SuppressWarnings("ConstantConditions")
     public static void queryData(Consumer<Stream<KCPlayer>> callback) {
 
-        final BukkitTask[] task = new BukkitTask[1]; // We use int[] because it can be final while allowing us to change the value.
         List<UUID> check = Arrays.stream(Core.getFile("players/").listFiles())
                 .filter(file -> file.getName().endsWith(".json")).map(f -> f.getName().split("\\.")[0])
                 .map(UUID::fromString).collect(Collectors.toList()); // Get a list of all UUIDs to check.
-        List<KCPlayer> loaded = new ArrayList<>();
+        List<KCPlayer> loaded = new CopyOnWriteArrayList<>();
 
         currentQueries++;
-        task[0] = Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), () -> {
-            for (int i = 0; i < FILES_PER_TICK; i++)
-                if (!check.isEmpty())
-                    loaded.add(KCPlayer.getWrapper(check.remove(0)));
-
-            if (check.isEmpty()) {
-                // Done searching, time to perform operations.
-                task[0].cancel(); // Cancel this load task.
-                currentQueries--;
-                if (!loaded.isEmpty())
-                    Bukkit.getScheduler().runTaskAsynchronously(Core.getInstance(), () -> callback.accept(loaded.stream()));
-            }
-        }, 0, 1);
+        new SchedulerTask<>(check, uuid -> loaded.add(KCPlayer.getWrapper(uuid)), () -> {
+            currentQueries--;
+            if (!loaded.isEmpty())
+                Bukkit.getScheduler().runTaskAsynchronously(Core.getInstance(), () -> callback.accept(loaded.stream()));
+        });
     }
 
     /**

@@ -15,7 +15,7 @@ import org.bukkit.inventory.ItemStack;
 public class ItemTPABook extends ItemBook {
 
     public ItemTPABook() {
-        super(ItemType.TPA_BOOK);
+        super(ItemType.TPA_BOOK, "Teleport Book");
     }
 
     public ItemTPABook(ItemStack itemStack) {
@@ -24,9 +24,7 @@ public class ItemTPABook extends ItemBook {
 
     @Override
     public void updateItem() {
-        setTitle("Teleport Book");
-        setAuthor("Kineticraft Staff");
-        addText(TextUtils.centerBook("[Teleport Book]"));
+        addCenteredText("[Teleport Book]");
         addLine("");
         for (Player p : Core.getOnlinePlayers()) {
             KCPlayer w = KCPlayer.getWrapper(p);

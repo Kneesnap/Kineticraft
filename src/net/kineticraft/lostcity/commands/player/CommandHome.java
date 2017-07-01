@@ -1,6 +1,5 @@
 package net.kineticraft.lostcity.commands.player;
 
-import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.data.QueryTools;
 import net.kineticraft.lostcity.utils.Utils;
 import net.kineticraft.lostcity.commands.PlayerCommand;
@@ -10,7 +9,6 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -73,19 +71,17 @@ public class CommandHome extends PlayerCommand {
     }
 
     private static void listHomes(CommandSender sender, KCPlayer target) {
-        Set<String> homes = target.getHomes().keySet();
-        String homeList = Utils.join(ChatColor.GRAY + ", ", homes, h -> ChatColor.GREEN + h);
-        sender.sendMessage(ChatColor.GRAY + "Homes: " + homeList);
+        sender.sendMessage(target.getHomes().keySet().stream().map(s -> ChatColor.GREEN + s)
+                .collect(Collectors.joining(ChatColor.GRAY + ", ", ChatColor.GRAY + "Homes: ", "")));
     }
 
     @Override
     protected void showUsage(CommandSender sender) {
         super.showUsage(sender);
 
-        Player player = (Player) sender;
-        KCPlayer kcPlayer = KCPlayer.getWrapper(player);
+        KCPlayer kcPlayer = KCPlayer.getWrapper(sender);
         listHomes(sender, kcPlayer);
-        if (player.getBedSpawnLocation() != null)
+        if (((Player) sender).getBedSpawnLocation() != null)
             sender.sendMessage(ChatColor.GRAY + "You can access your bed with " + ChatColor.DARK_PURPLE + "/home bed");
     }
 }

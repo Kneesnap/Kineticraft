@@ -62,6 +62,15 @@ public class TextUtils {
     }
 
     /**
+     * Convert a chat component to mojangson.
+     * @param components
+     * @return mojangson
+     */
+    public static String toMojangson(BaseComponent... components) {
+        return toString(components);
+    }
+
+    /**
      * Convert base components to legacy text.
      * @param bc
      * @return
@@ -167,7 +176,7 @@ public class TextUtils {
      */
     public static int getLinesUsed(String text, int lineSize) {
         return Arrays.stream(text.split("\n")).mapToInt(line ->
-                (getPixelWidth(line) - MinecraftFont.DEFAULT.getCharWidth()) / lineSize).sum();
+                ((getPixelWidth(line) - MinecraftFont.DEFAULT.getCharWidth()) / lineSize) + 1).sum();
     }
 
     /**
@@ -280,6 +289,10 @@ public class TextUtils {
 
                 tb.format(ChatColor.getByChar(queue[++i])); // Add color code.
                 lastColor = true;
+            } else if (c.equals("\n")) {
+                //Append as a new component on a new line.
+                tb.append(append + "\n");
+                append = "";
             } else {
                 // This is normal text.
                 append += c;
@@ -309,6 +322,15 @@ public class TextUtils {
             if (text != null && text.length() > 0)
                 textBuilder.append(text); // Apply the text to the builder.
         }
+    }
+
+    /**
+     * Send a message formatted in markup to the given sender.
+     * @param sender
+     * @param markup
+     */
+    public static void sendMarkup(CommandSender sender, String markup, Object... args) {
+        sender.sendMessage(fromMarkup(markup).format(args));
     }
 
     /**

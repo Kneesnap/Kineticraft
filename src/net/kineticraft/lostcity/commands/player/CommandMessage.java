@@ -30,7 +30,7 @@ public class CommandMessage extends PlayerCommand {
         CommandSender receiver = args[0].equalsIgnoreCase("CONSOLE")
                 ? Bukkit.getConsoleSender() : Bukkit.getPlayer(args[0]);
 
-        if (!Utils.isVisible(sender, args[0]))
+        if (!Utils.isVisible(sender, receiver))
             return;
 
         // Send display to sender

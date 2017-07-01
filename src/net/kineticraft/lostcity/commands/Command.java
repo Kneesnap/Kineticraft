@@ -2,7 +2,6 @@ package net.kineticraft.lostcity.commands;
 
 import lombok.Getter;
 import lombok.Setter;
-import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -27,7 +26,8 @@ public abstract class Command {
 
     @Setter private String lastAlias; // A hacky method to allow us to throw the player the usage with the alias they used.
 
-    private static final List<String> SENDERS = Arrays.asList("CommandSender", "Player", "ConsoleCommandSender");
+    private static final List<String> SENDERS = Arrays.asList("CommandSender", "Player", "ConsoleCommandSender",
+            "DiscordSender", "TerminalConsoleCommandSender");
 
     public Command(CommandType type, String usage, String help, String... alias) {
         this.type = type;
@@ -84,31 +84,22 @@ public abstract class Command {
     }
 
     /**
-     * Handles this command logic.
-     * @param sender
-     * @param label
-     * @param args
+     * Handle command-related logic listening for potential errors.
+     * @param runnable
      */
-    public void handle(CommandSender sender, String label, String[] args) {
-        setLastAlias(label); // So this will show the alias last used in any usage messages to the player.
-
-        if (!canUse(sender, true))
-            return;
-
-        if (args.length < getMinArgs()) {
-            showUsage(sender);
-            return;
-        }
-
+    protected void execute(CommandSender sender,  String[] args, Runnable runnable) {
         try {
-            onCommand(sender, args);
+            runnable.run();
         } catch (NumberFormatException nfe) {
             // Couldn't get a number from input, such as from Integer.parseInt
             sender.sendMessage(ChatColor.RED + "Invalid number '" + Utils.getInput(nfe) + "'.");
         } catch (IllegalArgumentException iae) {
             // Couldn't find an enum value, comes from methods such as ChatColor.valueOf
             Matcher mClassPath = Pattern.compile("No enum constant (.+)").matcher(iae.getLocalizedMessage());
-            mClassPath.find();
+
+            if (!mClassPath.find())
+                throw iae; // If we can't find it, print the message.
+
             String classPath = mClassPath.group(1);
             String[] split = classPath.split("\\.");
 
@@ -134,6 +125,26 @@ public abstract class Command {
                 throw cce;
             }
         }
+    }
+
+    /**
+     * Handles this command logic.
+     * @param sender
+     * @param label
+     * @param args
+     */
+    public void handle(CommandSender sender, String label, String[] args) {
+        setLastAlias(label); // So this will show the alias last used in any usage messages to the player.
+
+        if (!canUse(sender, true))
+            return;
+
+        if (args.length < getMinArgs()) {
+            execute(sender, args, () -> showUsage(sender));
+            return;
+        }
+
+        execute(sender, args, () -> onCommand(sender, args));
     }
 
     /**

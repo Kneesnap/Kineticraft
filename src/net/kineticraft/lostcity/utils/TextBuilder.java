@@ -5,7 +5,6 @@ import net.md_5.bungee.api.chat.*;
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,6 +41,48 @@ public class TextBuilder extends ComponentBuilder {
     public TextBuilder append(String text) {
         append(text, FormatRetention.NONE);
         return this;
+    }
+
+    /**
+     * Append a text component.
+     * Supplied component should be a TextComponent.
+     *
+     * @param component
+     * @return this
+     */
+    public TextBuilder append(BaseComponent component) {
+        append(""); // Make the current editted field fresh (Don't delete the current one.)
+        ReflectionUtil.setField(this, ComponentBuilder.class, "current", component); // Set the currently editted field.
+
+        return this;
+    }
+
+    /**
+     * Append base-components to this.
+     * @param components
+     * @return this
+     */
+    public TextBuilder append(BaseComponent... components) {
+        Arrays.stream(components).forEach(this::append);
+        return this;
+    }
+
+    /**
+     * Append a componentbuilder to this.
+     * @param cb
+     * @return this
+     */
+    public TextBuilder append(ComponentBuilder cb) {
+        return append(cb.create());
+    }
+
+    /**
+     * Create and format this text component.
+     * @param args
+     * @return formatted
+     */
+    public BaseComponent[] format(Object... args) {
+        return TextUtils.fromMojangson(String.format(TextUtils.toMojangson(create()), args));
     }
 
     /**
@@ -208,7 +249,6 @@ public class TextBuilder extends ComponentBuilder {
     public String toMarkup() {
         String res = "";
 
-        append(""); // Make it so the current component gets included in the save.
         for (BaseComponent bc : getParts()) {
             String text = bc.toLegacyText();
             String click = tryTag(bc.getClickEvent(), text);
@@ -255,7 +295,9 @@ public class TextBuilder extends ComponentBuilder {
      *
      * @return parts
      */
+    @SuppressWarnings("unchecked")
     public List<BaseComponent> getParts() {
+        append("");
         return (List<BaseComponent>) ReflectionUtil.getField(this, ComponentBuilder.class, "parts");
     }
 

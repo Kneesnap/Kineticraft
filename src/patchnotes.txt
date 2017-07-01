@@ -1,14 +1,17 @@
-&8Changes&0
- - Discord Integrations
- - Implemented Anti-Lag system.
+&8Changes:&0
+ - Discord Bot
+ - Anti-Lag system.
  - Patchnotes System
  - New Commands:
   - /realname
   - /seen
   - /whylag
   - /verify
+  - /patchnotes
  - Admin Tools
 
-&8Bugfixes&0
- - Backend improvements.
- - Fixed teleporting between dimensions.
+&8Bugfixes:&0
+ - Backend fixes.
+ - Fixed teleporting.
+ - Fix dragon egg.
+ - Fixed TPA Book.

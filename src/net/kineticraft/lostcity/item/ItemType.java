@@ -2,10 +2,15 @@ package net.kineticraft.lostcity.item;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.item.display.*;
 import net.kineticraft.lostcity.item.items.ItemArmorStand;
 import net.kineticraft.lostcity.item.items.books.ItemBook;
+import net.kineticraft.lostcity.item.items.books.ItemBookFile;
+import net.kineticraft.lostcity.item.items.books.ItemPatchBook;
 import net.kineticraft.lostcity.item.items.books.ItemTPABook;
+
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * ItemRegistry for automatic constructing of items.
@@ -15,6 +20,8 @@ import net.kineticraft.lostcity.item.items.books.ItemTPABook;
 @AllArgsConstructor @Getter
 public enum ItemType {
 
+    PATCHNOTES_BOOK(ItemPatchBook.class),
+    FILE_BOOK(ItemBookFile.class),
     TPA_BOOK(ItemTPABook.class),
     CUSTOM_BOOK(ItemBook.class),
     ARMOR_STAND(ItemArmorStand.class),
@@ -37,8 +44,13 @@ public enum ItemType {
     public ItemWrapper makeSimple() {
         try {
             return getItemClass().getDeclaredConstructor().newInstance();
-        } catch (Exception e) {
-            return null; //TODO: Only return null if the constructor isn't found, if the error is something else, panic.
+        } catch (InstantiationException | InvocationTargetException e) {
+            e.printStackTrace();
+            Core.warn("Error creating simple " + getItemClass().getSimpleName() + ".");
+        } catch (IllegalAccessException | NoSuchMethodException e) {
+
         }
+
+        return null;
     }
 }

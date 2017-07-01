@@ -122,14 +122,32 @@ public class ReflectionUtil {
         return classes;
     }
 
-
-    public static void setField(Object o, String varName, Object val) {
+    /**
+     * Set a field in an object.
+     * @param o
+     * @param from
+     * @param varName
+     * @param val
+     */
+    public static void setField(Object o, Class<?> from, String varName, Object val) {
         try {
-            o.getClass().getDeclaredField(varName).set(o, val);
+            Field field = from.getDeclaredField(varName);
+            field.setAccessible(true);
+            field.set(o, val);
         } catch (Exception e) {
             e.printStackTrace();
             Core.warn("Failed to set field '" + varName + "'.");
         }
+    }
+
+    /**
+     * Set a field value in an object.
+     * @param o
+     * @param varName
+     * @param val
+     */
+    public static void setField(Object o, String varName, Object val) {
+        setField(o, o.getClass(), varName, val);
     }
 
     public static Object getField(Object o, String field) {

@@ -5,6 +5,7 @@ import lombok.Setter;
 import net.dv8tion.jda.core.entities.User;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
+import net.kineticraft.lostcity.commands.DiscordSender;
 import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.data.JsonData;
 import net.kineticraft.lostcity.data.lists.JsonList;
@@ -13,6 +14,7 @@ import net.kineticraft.lostcity.data.maps.JsonMap;
 import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.discord.DiscordAPI;
 import net.kineticraft.lostcity.discord.DiscordChannel;
+import net.kineticraft.lostcity.mechanics.DataHandler;
 import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
 import net.kineticraft.lostcity.mechanics.metadata.Metadata;
 import net.kineticraft.lostcity.mechanics.Punishments.*;
@@ -60,6 +62,7 @@ public class KCPlayer implements Jsonable {
     private JsonList<Punishment> punishments = new JsonList<>();
     private int accountId;
     private long discordId;
+    private int lastBuild;
 
     public KCPlayer(UUID uuid, JsonData data) {
         this.setUuid(uuid);
@@ -366,12 +369,33 @@ public class KCPlayer implements Jsonable {
     }
 
     /**
+     * Get a CommandSender's wrapper. Accepts Player, DiscordSender.
+     * Will throw a ClassCastException if sender is not one of these types.
+     *
+     * @param sender
+     * @return wrapper
+     */
+    public static KCPlayer getWrapper(CommandSender sender) {
+        return sender instanceof DiscordSender ? getDiscord(((DiscordSender) sender).getUser())
+                : getPlayer((Player) sender);
+    }
+
+    /**
      * Get a player's data. Loads it if it is not present.
      * @param player
      * @return playerData
      */
-    public static KCPlayer getWrapper(OfflinePlayer player) {
+    public static KCPlayer getPlayer(OfflinePlayer player) {
         return player != null ? getWrapper(player.getUniqueId()) : null;
+    }
+
+    /**
+     * Get a player's data from discord user.
+     * @param user
+     * @return player
+     */
+    public static KCPlayer getDiscord(User user) {
+        return user != null ? getWrapper(DataHandler.getDiscordMap().get(user.getIdLong())) : null;
     }
 
     /**
@@ -441,6 +465,7 @@ public class KCPlayer implements Jsonable {
         this.nickname = data.getString("nickname");
         setPunishments(data.getJsonList("punishments", Punishment.class));
         setDiscordId(data.getLong("discordId"));
+        setLastBuild(data.getInt("lastBuild"));
     }
 
     @Override
@@ -467,6 +492,7 @@ public class KCPlayer implements Jsonable {
         data.setString("nickname", getNickname());
         data.setList("punishments", getPunishments());
         data.setNum("discordId", getDiscordId());
+        data.setNum("lastBuild", getLastBuild());
         return data;
     }
 }

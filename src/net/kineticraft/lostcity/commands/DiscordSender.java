@@ -43,8 +43,7 @@ public class DiscordSender implements CommandSender, MetadataHolder {
 
     @Override
     public void sendMessage(String[] strings) {
-        for (String s : strings)
-            sendMessage(s);
+        sendMessage(String.join("\n", strings));
     }
 
     @Override

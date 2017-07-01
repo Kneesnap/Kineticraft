@@ -1,9 +1,8 @@
 package net.kineticraft.lostcity.commands.discord;
 
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.Message;
-import net.dv8tion.jda.core.entities.MessageReaction;
-import net.dv8tion.jda.core.entities.Role;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import net.dv8tion.jda.core.entities.*;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.DiscordSender;
@@ -28,11 +27,8 @@ public class CommandServerVote extends DiscordCommand {
     private static final float STAFF_NEEDED = .5F; // 50% of staff need to vote yes.
     private static final int MAX_VOTE_HOURS = 24;
 
-    private static final String YES = "✅";
-    private static final String NO = "x"; //❌
-
     public CommandServerVote() {
-        super("<bill>", "Initiate a server proposal.", "vote");
+        super(EnumRank.HELPER, "<bill>", "Initiate a server proposal.", "vote");
         setDeleteMessage(true);
         Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(),
                 CommandServerVote::scanChannel, 0L, 20 * 60 * 5L);
@@ -40,13 +36,11 @@ public class CommandServerVote extends DiscordCommand {
 
     @Override
     protected void onCommand(DiscordSender sender, String[] args) {
-        Date end = Date.from(Instant.ofEpochSecond(System.currentTimeMillis() + (MAX_VOTE_HOURS * 60 * 60 * 1000)));
-        DiscordAPI.sendMessage(DiscordChannel.ORYX, sender.getName()
+        Date end = Date.from(Instant.ofEpochSecond((System.currentTimeMillis() / 1000) + (MAX_VOTE_HOURS * 60 * 60)));
+        DiscordAPI.sendMessage(DiscordChannel.ORYX, "@everyone " + sender.getName()
                 + " has issued a proposal: ``" + String.join(" ", args) + "``");
-        DiscordAPI.getBot().sendMessage(DiscordChannel.ORYX, makeVoteInfo(0, 0, end), m -> {
-            m.addReaction(YES).queue();
-            m.addReaction(NO).queue();
-        });
+        DiscordAPI.getBot().sendMessage(DiscordChannel.ORYX, VoteResult.UNDETERMINED.getStatus(new HashMap<>(), end),
+                m -> Arrays.stream(VoteResult.values()).forEach(v -> v.react(m)));
     }
 
     /**
@@ -55,7 +49,7 @@ public class CommandServerVote extends DiscordCommand {
      * @return format
      */
     private static DateFormat getFormat() {
-        return new SimpleDateFormat("(MM/dd) h:mm a", Locale.ENGLISH);
+        return new SimpleDateFormat("(MM/dd) h:mm a", Locale.US);
     }
 
     /**
@@ -84,7 +78,8 @@ public class CommandServerVote extends DiscordCommand {
         if (!DiscordAPI.isAlive())
             return;
 
-        List<Message> messages = new ArrayList<>(DiscordChannel.ORYX.getChannel().getHistory().getRetrievedHistory());
+        List<Message> messages = DiscordChannel.ORYX.getChannel().getHistory().retrievePast(25).complete();
+        Collections.reverse(messages); // Oldest to newest.
 
         String bill = null;
         while (!messages.isEmpty()) {
@@ -92,24 +87,25 @@ public class CommandServerVote extends DiscordCommand {
 
             try {
                 if (temp.getContent().contains(" votes needed by tomorrow")) {
-                    Date expiry = getFormat().parse(temp.getContent().substring(temp.getContent().lastIndexOf(" ") + 1).split(".")[0]);
-                    int yes = updateReaction(temp, YES);
-                    int no = updateReaction(temp, NO);
+                    Date expiry = Date.from(Instant.ofEpochMilli(temp.getCreationTime().toInstant().toEpochMilli()
+                            + (60L * 60 * 1000 * MAX_VOTE_HOURS)));
 
-                    temp.editMessage(makeVoteInfo(yes, no, expiry)).queue();
+                    // Load votes.
+                    Map<VoteResult, Integer> votes = new HashMap<>();
+                    Arrays.stream(VoteResult.values()).forEach(vr -> votes.put(vr, updateReaction(temp, vr)));
 
-                    if (yes >= getStaffNeeded()) {
-                        DiscordAPI.sendMessage(DiscordChannel.ORYX, "\\:" + YES + ": " + bill + " has passed.");
-                    } else if (no >= (getTotalStaff() - getStaffNeeded())) {
-                        DiscordAPI.sendMessage(DiscordChannel.ORYX, "\\:" + NO + ": " + bill + " has failed.");
-                    }
+                    VoteResult result = VoteResult.getResult(votes, expiry);
+
+                    temp.editMessage(result.getStatus(votes, expiry)).queue();
+                    result.announce(bill);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
             bill = temp.getContent();
-            bill = bill.substring(bill.lastIndexOf("has issued a proposal: ") + 1).split("``")[0];
+            if (bill.contains("``"))
+                bill = bill.split("``")[1];
         }
     }
 
@@ -118,33 +114,90 @@ public class CommandServerVote extends DiscordCommand {
      * @param reaction
      * @return
      */
-    private static int updateReaction(Message message, String reaction) {
-        MessageReaction mr = message.getReactions().stream().filter(r -> r.getEmote().getName().equalsIgnoreCase(reaction))
-                .findAny().orElse(null);
-
-        if (mr == null || mr.getCount() == 0) {
-            message.addReaction(reaction).queue();
+    private static int updateReaction(Message message, VoteResult reaction) {
+        if (reaction.getIcon() == null)
             return 0;
-        } else if (mr.getCount() >= 2) {
-            mr.removeReaction(DiscordAPI.getUser()).queue();
+
+        MessageReaction mr = message.getReactions().stream()
+                .filter(r -> r.getEmote().getName().equalsIgnoreCase(reaction.getIcon())).findAny().orElse(null);
+
+        int count = mr != null ? mr.getCount() : 0;
+        if (mr == null || mr.getCount() == 0) {
+            message.addReaction(reaction.getIcon()).queue();
+        } else {
+            List<User> users = mr.getUsers().complete(); // It's ok to run this blocking because this is on an async thread.
+            if (users.contains(DiscordAPI.getUser()) && mr.getCount() > 1) {
+                mr.removeReaction().queue();
+                count--;
+            }
         }
 
-        return mr.getCount();
+        return count;
     }
 
-    /**
-     * Create a user-friendly string describing the current vote status.
-     * @param yesVotes
-     * @param noVotes
-     * @param expiry
-     * @return info
-     */
-    private static String makeVoteInfo(int yesVotes, int noVotes, Date expiry) {
-        if (yesVotes >= getStaffNeeded()) {
-            return "PASSED";
-        } else if (noVotes >= (getTotalStaff() - getStaffNeeded())) {
-            return "FAILED";
+    @AllArgsConstructor @Getter
+    private enum VoteResult {
+        PASS("✅"),
+        FAIL("❌"),
+        UNDETERMINED(null);
+
+        private final String icon;
+
+        /**
+         * Add this as a default reaction, so players can click on it.
+         */
+        public void react(Message m) {
+            if (getIcon() != null)
+                m.addReaction(getIcon()).queue();
         }
-        return (getStaffNeeded() - yesVotes) + " votes needed by tomorrow " + getFormat().format(expiry) + ".";
+
+        /**
+         * Get the friendly display of this result.
+         * @return display
+         */
+        public String getDisplay() {
+            return name().toLowerCase() + "ed";
+        }
+
+        /**
+         * Get the status message of this vote.
+         * @param votes
+         * @param expiry - When will this vote end?
+         * @return status
+         */
+        public String getStatus(Map<VoteResult, Integer> votes, Date expiry) {
+            int yes = votes.getOrDefault(PASS, 0);
+            return this == UNDETERMINED ?
+                    (getStaffNeeded() - yes) + " votes needed by tomorrow " + getFormat().format(expiry) + "."
+                    : getDisplay().toUpperCase() + " (" + yes + "-" + votes.getOrDefault(FAIL, 0) + ")";
+        }
+
+        /**
+         * Announce the result of a bill.
+         */
+        public void announce(String bill) {
+            if (getIcon() != null)
+                DiscordAPI.sendMessage(DiscordChannel.ORYX, getIcon() + " ``" + bill + "`` has " + getDisplay() + ".");
+        }
+
+        /**
+         * Get the result of a vote.
+         * @param votes
+         * @param expiry
+         * @return result
+         */
+        public static VoteResult getResult(Map<VoteResult, Integer> votes, Date expiry) {
+            int yes = votes.getOrDefault(PASS, 0);
+            int no = votes.getOrDefault(FAIL, 0);
+
+            boolean expire = expiry.before(Calendar.getInstance().getTime());
+
+            if (yes >= getStaffNeeded() || (expire && yes >= no))
+                return PASS;
+            if (no >= getTotalStaff() - getStaffNeeded() || expire)
+                return FAIL;
+
+            return UNDETERMINED;
+        }
     }
 }

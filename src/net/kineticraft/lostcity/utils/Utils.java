@@ -2,9 +2,11 @@ package net.kineticraft.lostcity.utils;
 
 import com.google.gson.JsonObject;
 import lombok.AllArgsConstructor;
+import lombok.Cleanup;
 import lombok.Getter;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
+import net.kineticraft.lostcity.commands.DiscordSender;
 import net.kineticraft.lostcity.data.JsonData;
 import net.kineticraft.lostcity.data.lists.JsonList;
 import net.kineticraft.lostcity.data.Jsonable;
@@ -18,6 +20,7 @@ import org.bukkit.*;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -25,7 +28,11 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.Array;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
@@ -444,8 +451,7 @@ public class Utils {
      * @return name
      */
     public static String getSenderName(CommandSender sender) {
-        return sender instanceof Player ? KCPlayer.getWrapper((Player) sender).getColoredName()
-                : ChatColor.YELLOW + sender.getName();
+        return hasWrapper(sender) ? KCPlayer.getWrapper(sender).getColoredName() : ChatColor.YELLOW + sender.getName();
     }
 
     /**
@@ -471,12 +477,22 @@ public class Utils {
     }
 
     /**
+     * Can this CommandSender type have a wrapper?
+     * @param sender
+     * @return canHave
+     */
+    public static boolean hasWrapper(CommandSender sender) {
+        return sender instanceof Player || sender instanceof DiscordSender;
+    }
+
+    /**
      * Gets the rank of a CommandSender
      * @param sender
      * @return rank
      */
     public static EnumRank getRank(CommandSender sender) {
-        return sender instanceof Player ? KCPlayer.getWrapper((Player) sender).getRank() : EnumRank.DEV;
+        return hasWrapper(sender) ? KCPlayer.getWrapper(sender).getRank()
+                : (sender instanceof ConsoleCommandSender ? EnumRank.DEV : EnumRank.MU);
     }
 
     /**
@@ -715,10 +731,40 @@ public class Utils {
      * @return visible
      */
     public static boolean isVisible(CommandSender sender, String username) {
-        Player player = Bukkit.getPlayer(username);
-        boolean shown = player != null && !KCPlayer.getWrapper(player).isVanished(sender);
+        return isVisible(sender, Bukkit.getPlayer(username));
+    }
+
+    /**
+     * Checks if the given CommandSender is online and visible to the supplied sender.
+     * If not visible, it will tell the player so.
+     *
+     * @param sender
+     * @param receiver
+     * @return
+     */
+    public static boolean isVisible(CommandSender sender, CommandSender receiver) {
+        boolean shown = receiver != null && (!(receiver instanceof Player) || !KCPlayer.getWrapper(receiver).isVanished(sender));
         if (!shown)
-            sender.sendMessage(ChatColor.RED + "Player is offline.");
+            sender.sendMessage(ChatColor.RED + "Player not found.");
         return shown;
+    }
+
+    /**
+     * Read all lines from a plugin resource.
+     * @param resource
+     * @return lines
+     */
+    public static List<String> readLines(String resource) {
+        return new BufferedReader(new InputStreamReader(Core.loadResource(resource), StandardCharsets.UTF_8))
+                .lines().collect(Collectors.toList());
+    }
+
+    /**
+     * Get the size of the data in a plugin resource.
+     * @param resource
+     * @return size
+     */
+    public static int readSize(String resource) {
+        return readLines(resource).stream().mapToInt(String::length).sum();
     }
 }

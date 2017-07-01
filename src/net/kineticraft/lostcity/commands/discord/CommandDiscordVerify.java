@@ -4,6 +4,7 @@ import net.kineticraft.lostcity.commands.DiscordSender;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
 import net.kineticraft.lostcity.discord.DiscordAPI;
 import net.kineticraft.lostcity.mechanics.Callbacks;
+import net.kineticraft.lostcity.mechanics.DataHandler;
 import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
@@ -53,6 +54,7 @@ public class CommandDiscordVerify extends DiscordCommand {
 
             pw.setDiscordId(discord.getUser().getIdLong());
             pw.updateDiscord();
+            DataHandler.getDiscordMap().put(discord.getUser().getIdLong(), verify.getUniqueId());
         }, () -> discord.sendMessage("Verification denied by " + verify.getName() + "."), "VERIFY", "CANCEL");
     }
 }

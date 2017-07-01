@@ -4,15 +4,16 @@ import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.data.wrappers.KCPlayer;
+import net.kineticraft.lostcity.discord.DiscordAPI;
+import net.kineticraft.lostcity.discord.DiscordChannel;
 import net.kineticraft.lostcity.guis.staff.GUIMerchantEditor;
 import net.kineticraft.lostcity.item.ItemManager;
-import net.kineticraft.lostcity.utils.TextBuilder;
 import net.kineticraft.lostcity.utils.TextUtils;
 import net.kineticraft.lostcity.utils.Utils;
-import net.minecraft.server.v1_12_R1.EntityEnderDragon;
 import org.bukkit.*;
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
@@ -23,6 +24,8 @@ import org.bukkit.inventory.Merchant;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
+
+import java.util.stream.Collectors;
 
 /**
  * GeneralMechanics - Small general mechanics.
@@ -50,6 +53,17 @@ public class GeneralMechanics extends Mechanic {
             }
         }, 0L, 20L);
 
+        int newSize = Utils.readSize("patchnotes.txt");
+        if (newSize != Configs.getMainConfig().getLastSize()) {
+            int newPatch = Configs.getMainConfig().getBuild() + 1;
+
+            Configs.getMainConfig().setBuild(newPatch);
+            Configs.getMainConfig().setLastSize(newSize);
+            Configs.getMainConfig().saveToDisk();
+
+            DiscordAPI.sendMessage(DiscordChannel.ANNOUNCEMENTS, "@everyone Patch #" + newPatch + " has been deployed.\n\n"
+                    + Utils.readLines("patchnotes.txt").stream().collect(Collectors.joining("\n")));
+        }
 
         idObjective = Bukkit.getScoreboardManager().getMainScoreboard().getObjective("id");
         if (idObjective == null)
@@ -75,6 +89,17 @@ public class GeneralMechanics extends Mechanic {
 
         Bukkit.getScheduler().runTaskLater(Core.getInstance(), () ->
                 player.playSound(player.getLocation(), Sound.ENTITY_HORSE_ARMOR, .85F, 1.480315F), 95L);
+
+        KCPlayer pw = KCPlayer.getWrapper(player);
+        Bukkit.getScheduler().runTaskLater(Core.getInstance(), () -> {
+            int newBuild = Configs.getMainConfig().getBuild();
+            if (pw.isOnline() && pw.getLastBuild() != newBuild) {
+                TextUtils.sendMarkup(player, "&b  ❢  &aBuild #%s &7patch notes now available. "
+                        + "[command=/patchnotes]&e&l&nVIEW[/command][hover]Click here to view the latest changes.[/hover]"
+                        + "  &b❢", newBuild);
+                player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1.0F, 0.5F);
+            }
+        }, 125L);
 
         idObjective.getScore(player.getName()).setScore(KCPlayer.getWrapper(player).getAccountId());
     }
@@ -112,7 +137,7 @@ public class GeneralMechanics extends Mechanic {
 
     @EventHandler
     public void onDragonDeath(EntityDeathEvent evt) {
-        if (!(evt.getEntity() instanceof EntityEnderDragon))
+        if (evt.getEntityType() != EntityType.ENDER_DRAGON)
             return; // If it's not a dragon, ignore it.
         evt.setDroppedExp(4000);
         Block bk = evt.getEntity().getWorld().getBlockAt(0, 63, 0);
