@@ -82,11 +82,11 @@ public class DiscordAPI extends Mechanic {
 
     /**
      * Get a role by the given name.
-     * @param rollName
-     * @return roll
+     * @param roleName
+     * @return role
      */
-    public static Role getRole(String rollName) {
-        List<Role> roles = DiscordAPI.getServer().getRolesByName(rollName, true);
+    public static Role getRole(String roleName) {
+        List<Role> roles = DiscordAPI.getServer().getRolesByName(roleName, true);
         return roles.isEmpty() ? null : roles.get(0);
     }
 
@@ -117,7 +117,7 @@ public class DiscordAPI extends Mechanic {
     }
 
     /**
-     * Remove a roll from a user on discord.
+     * Remove a role from a user on discord.
      * @param user
      * @param role
      */
