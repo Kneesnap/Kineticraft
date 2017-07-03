@@ -7,6 +7,7 @@ import net.dv8tion.jda.core.managers.GuildController;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.mechanics.Mechanic;
+import net.kineticraft.lostcity.utils.ServerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -82,7 +83,7 @@ public class DiscordAPI extends Mechanic {
      * @return alive
      */
     public static boolean isAlive() {
-        return getBot() != null && getBot().isActive();
+        return getBot() != null && !ServerUtils.isDevServer();
     }
 
     /**

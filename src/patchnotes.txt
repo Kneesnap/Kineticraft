@@ -1,17 +1,10 @@
 &8Changes:&0
- - Discord Bot
- - Anti-Lag system.
- - Patchnotes System
- - New Commands:
-  - /realname
-  - /seen
-  - /whylag
-  - /verify
-  - /patchnotes
- - Admin Tools
+ - Many commands support tab-complete.
+ - /nick minimum is now 3 characters.
 
 &8Bugfixes:&0
- - Backend fixes.
- - Fixed teleporting.
- - Fix dragon egg.
- - Fixed TPA Book.
+ - Fixed /verify
+ - Fixed tpa message.
+ - Fixed kick messages.
+ - Dragon egg spawns above portal.
+ - Fixed most discord problems.

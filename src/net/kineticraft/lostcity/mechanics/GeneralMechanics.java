@@ -53,17 +53,19 @@ public class GeneralMechanics extends Mechanic {
             }
         }, 0L, 20L);
 
-        int newSize = Utils.readSize("patchnotes.txt");
-        if (newSize != Configs.getMainConfig().getLastSize()) {
-            int newPatch = Configs.getMainConfig().getBuild() + 1;
+        Bukkit.getScheduler().runTaskLater(Core.getInstance(), () -> {
+                    int newSize = Utils.readSize("patchnotes.txt");
+                    if (newSize != Configs.getMainConfig().getLastSize()) {
+                        int newPatch = Configs.getMainConfig().getBuild() + 1;
 
-            Configs.getMainConfig().setBuild(newPatch);
-            Configs.getMainConfig().setLastSize(newSize);
-            Configs.getMainConfig().saveToDisk();
+                        Configs.getMainConfig().setBuild(newPatch);
+                        Configs.getMainConfig().setLastSize(newSize);
+                        Configs.getMainConfig().saveToDisk();
 
-            DiscordAPI.sendMessage(DiscordChannel.ANNOUNCEMENTS, "@everyone Patch #" + newPatch + " has been deployed.\n\n"
-                    + Utils.readLines("patchnotes.txt").stream().collect(Collectors.joining("\n")));
-        }
+                        DiscordAPI.sendMessage(DiscordChannel.ANNOUNCEMENTS, "@everyone Patch #" + newPatch + " has been deployed.\n\n"
+                                + Utils.readLines("patchnotes.txt").stream().collect(Collectors.joining("\n")));
+                    }
+                }, 100L);
 
         idObjective = Bukkit.getScoreboardManager().getMainScoreboard().getObjective("id");
         if (idObjective == null)

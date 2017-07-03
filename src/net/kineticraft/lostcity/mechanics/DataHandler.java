@@ -42,10 +42,6 @@ public class DataHandler extends Mechanic {
 
         QueryTools.queryData(players ->
                 players.filter(KCPlayer::isVerified).forEach(p -> discordMap.put(p.getDiscordId(), p.getUuid())));
-
-        Bukkit.getScheduler().runTaskLater(Core.getInstance(), () ->
-                QueryTools.queryData(players -> players.filter(KCPlayer::isVerified).forEach(KCPlayer::updateDiscord)), 50L);
-        // Update already verified players on discord. TODO: Remove this.
     }
 
     /**W
