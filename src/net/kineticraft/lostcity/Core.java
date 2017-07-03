@@ -16,6 +16,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -149,7 +150,13 @@ public class Core extends JavaPlugin {
      * @return players
      */
     public static List<Player> getOnlinePlayers() {
-        return Bukkit.getOnlinePlayers().stream().filter(p -> !KCPlayer.getWrapper(p).isVanished()).collect(Collectors.toList());
+        List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
+        players.removeAll(getHiddenPlayers());
+        return players;
+    }
+
+    public static List<Player> getHiddenPlayers() {
+        return Bukkit.getOnlinePlayers().stream().filter(p -> KCPlayer.getWrapper(p).isVanished()).collect(Collectors.toList());
     }
 
     /**

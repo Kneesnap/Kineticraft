@@ -15,6 +15,7 @@ public class CommandPTime extends PlayerCommand {
 
     public CommandPTime() {
         super(EnumRank.GAMMA, "<time|reset>", "Set your local time.", "ptime");
+        autocomplete("time", "reset");
     }
 
     @Override

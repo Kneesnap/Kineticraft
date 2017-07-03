@@ -1,9 +1,7 @@
 package net.kineticraft.lostcity.commands.staff;
 
-import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.commands.StaffCommand;
 import net.kineticraft.lostcity.data.QueryTools;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -17,6 +15,7 @@ import org.bukkit.entity.Player;
 public class CommandDeathTeleport extends StaffCommand {
     public CommandDeathTeleport() {
         super("<player> [death]", "Teleport to a player's death location.", "death", "backtp");
+        autocompleteOnline();
     }
 
     @Override

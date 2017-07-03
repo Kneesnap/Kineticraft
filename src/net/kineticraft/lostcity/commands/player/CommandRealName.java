@@ -7,6 +7,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -18,6 +19,8 @@ public class CommandRealName extends PlayerCommand {
 
     public CommandRealName() {
         super("<nick>", "Displays a player's real name.", "realname", "rn");
+        autocomplete(p -> Bukkit.getOnlinePlayers().stream().map(KCPlayer::getWrapper)
+                .map(KCPlayer::getNickname).filter(Objects::nonNull).collect(Collectors.toList()));
     }
 
     @Override

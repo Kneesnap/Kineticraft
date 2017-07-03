@@ -1,11 +1,13 @@
 package net.kineticraft.lostcity.commands.player;
 
 import lombok.AllArgsConstructor;
+import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.mechanics.ServerManager;
 import net.kineticraft.lostcity.utils.PlayerUtils;
 import net.kineticraft.lostcity.utils.ServerUtils;
 import net.kineticraft.lostcity.utils.TextUtils;
+import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -51,6 +53,9 @@ public class CommandWhyLag extends PlayerCommand {
             sender.sendMessage(ChatColor.GOLD + "Possible Lag Causes: ");
             Arrays.stream(LagCause.values()).filter(LagCause::isPossible).map(LagCause::getMessage).forEach(sender::sendMessage);
         }
+
+        if (Utils.getRank(sender).isAtLeast(EnumRank.DEV))
+            ServerManager.getTpsQueue().stream().map(t -> ChatColor.GRAY + " - " + t).forEach(sender::sendMessage);
     }
 
     /**

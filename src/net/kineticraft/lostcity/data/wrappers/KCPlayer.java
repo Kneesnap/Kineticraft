@@ -348,7 +348,7 @@ public class KCPlayer implements Jsonable {
      * @return verified
      */
     public boolean isVerified() {
-        return getDiscordId() != 0L;
+        return getDiscordId() != 0L && DiscordAPI.isAlive();
     }
 
     /**

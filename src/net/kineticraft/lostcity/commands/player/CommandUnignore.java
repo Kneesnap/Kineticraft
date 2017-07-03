@@ -15,6 +15,7 @@ public class CommandUnignore extends PlayerCommand {
 
     public CommandUnignore() {
         super("<player>", "Allow messages from a player", "unignore");
+        autocompleteOnline();
     }
 
     @Override

@@ -21,6 +21,7 @@ public class CommandMessage extends PlayerCommand {
 
     public CommandMessage() {
         super( "<player> <message>", "Send a private message to a player.", "msg", "m", "w", "tell", "whisper", "t");
+        autocompleteOnline();
     }
 
     @Override

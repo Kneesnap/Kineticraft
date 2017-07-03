@@ -15,6 +15,7 @@ public class CommandIgnore extends PlayerCommand {
 
     public CommandIgnore() {
         super("<player>", "Block messages from a player", "ignore");
+        autocompleteOnline();
     }
 
     @Override

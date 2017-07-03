@@ -36,6 +36,7 @@ public class DiscordBot extends ListenerAdapter {
 
     private JDA bot;
     private MessageChannel lastChannel;
+    private boolean active;
 
     public DiscordBot() {
         setup();
@@ -54,6 +55,7 @@ public class DiscordBot extends ListenerAdapter {
             bot = new JDABuilder(AccountType.BOT).setToken(Configs.getMainConfig().getDiscordToken())
                     .addEventListener(this).setAutoReconnect(true).setGame(Game.of("Kineticraft"))
                     .setStatus(OnlineStatus.ONLINE).buildAsync(); // Setup listener and connect to discord.
+            active = true;
         } catch (Exception e) {
             e.printStackTrace();
             Core.warn("Failed to setup discord bot.");

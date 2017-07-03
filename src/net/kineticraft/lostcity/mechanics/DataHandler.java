@@ -32,7 +32,6 @@ public class DataHandler extends Mechanic {
         loadCache();
     }
 
-    @SuppressWarnings("ConstantConditions")
     private static void loadCache() {
         List<UUID> check = Arrays.stream(Core.getFile("players/").listFiles())
                 .filter(file -> file.getName().endsWith(".json")).map(f -> f.getName().split("\\.")[0])
@@ -43,6 +42,10 @@ public class DataHandler extends Mechanic {
 
         QueryTools.queryData(players ->
                 players.filter(KCPlayer::isVerified).forEach(p -> discordMap.put(p.getDiscordId(), p.getUuid())));
+
+        Bukkit.getScheduler().runTaskLater(Core.getInstance(), () ->
+                QueryTools.queryData(players -> players.filter(KCPlayer::isVerified).forEach(KCPlayer::updateDiscord)), 50L);
+        // Update already verified players on discord. TODO: Remove this.
     }
 
     /**W

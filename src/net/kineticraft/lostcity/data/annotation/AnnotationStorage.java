@@ -16,8 +16,9 @@ public class AnnotationStorage {
     /**
      * Completely load a Jsonable object
      * @param j
+     * @param data
      */
-    public static void load(Jsonable j) {
+    public static void load(Jsonable j, JsonData data) {
 
     }
 
@@ -32,10 +33,11 @@ public class AnnotationStorage {
 
     /**
      * Loads the data from json for the given field
-     * @param f
+     * @param data
+     * @param field
      * @return object
      */
-    private static Object loadObject(JsonData data, Field f) {
+    private static Object loadField(JsonData data, Field field) {
         return null;
     }
 
@@ -44,7 +46,7 @@ public class AnnotationStorage {
      * @param data
      * @param field
      */
-    private static void saveObject(JsonData data,  Field field) {
+    private static void saveField(JsonData data,  Field field) {
 
     }
 }

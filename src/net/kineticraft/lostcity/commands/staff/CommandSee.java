@@ -20,6 +20,7 @@ public class CommandSee extends StaffCommand {
 
     public CommandSee() {
         super("<inv|end> <name>", "See a target's inventory or enderchest.", "see");
+        autocompleteOnline(1);
     }
 
     @Override

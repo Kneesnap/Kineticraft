@@ -1,15 +1,19 @@
 package net.kineticraft.lostcity.commands;
 
+import com.google.common.collect.Lists;
 import lombok.Getter;
 import lombok.Setter;
 import net.kineticraft.lostcity.utils.Utils;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Command - A KC command base.
@@ -23,6 +27,7 @@ public abstract class Command {
     private String rawUsage;
     private String help;
     private List<String> alias;
+    private Map<Integer, Function<CommandSender, Iterable<String>>> autoCompletes = new HashMap<>();
 
     @Setter private String lastAlias; // A hacky method to allow us to throw the player the usage with the alias they used.
 
@@ -148,6 +153,31 @@ public abstract class Command {
     }
 
     /**
+     * Get tab autocompletes specific to this command from input.
+     * @param sender
+     * @param args
+     * @return completions
+     */
+    public List<String> getCompletions(CommandSender sender, String[] args, int argCheck) {
+        List<String> completions = new ArrayList<>();
+
+        execute(sender, args, () -> {
+            if (getAutoCompletes().containsKey(argCheck)) {
+                completions.addAll(Lists.newArrayList(getAutoCompletes().get(argCheck).apply(sender)));
+            } else {
+                String[] rawArgs = getRawUsage().split(" ");
+                if (rawArgs.length > argCheck) {
+                    String options = rawArgs[argCheck];
+                    if (options.contains("|"))
+                        completions.addAll(Arrays.asList(options.substring(1, options.length() - 1).split("\\|")));
+                }
+            }
+        });
+
+        return completions;
+    }
+
+    /**
      * Remove the first few arguments from an array.
      * @param args
      * @param toSkip - Number of args to skip
@@ -171,4 +201,89 @@ public abstract class Command {
      * @return canUse
      */
     public abstract boolean canUse(CommandSender sender, boolean showMessage);
+
+    /**
+     * Set static values to auto-complete from an enum value array.
+     * @param e
+     */
+    protected void autocomplete(Enum<?>[] e) {
+        autocomplete(-1, e);
+    }
+
+    /**
+     * Set static values to auto-complete from an enum value array.
+     * @param arg
+     * @param e
+     */
+    protected void autocomplete(int arg, Enum<?>[] e) {
+        autocomplete(arg, Arrays.stream(e).map(Enum::name).collect(Collectors.toList()));
+    }
+
+    /**
+     * Set static values to add to the tab-complete the next argument.
+     * @param results
+     */
+    protected void autocomplete(String... results) {
+        autocomplete(-1, results);
+    }
+
+    /**
+     * Set static values to add to the tab-complete a certain argument.
+     * @param arg
+     * @param results
+     */
+    protected void autocomplete(int arg, String... results) {
+        autocomplete(arg, Arrays.asList(results));
+    }
+
+    /**
+     * Set static values to add to the tab-complete the next argument.
+     * @param results
+     */
+    protected void autocomplete(List<String> results) {
+        autocomplete(-1, results);
+    }
+
+    /**
+     * Set static values to add to the tab-complete a certain argument.
+     * @param arg
+     * @param results
+     */
+    protected void autocomplete(int arg, List<String> results) {
+        autocomplete(arg, p -> results);
+    }
+
+    /**
+     * Set the next dynamic autocomplete result.
+     * @param options
+     */
+    protected void autocomplete(Function<CommandSender, Iterable<String>> options) {
+        autocomplete(-1, options);
+    }
+
+    /**
+     * Set a dynamic autocomplete result.
+     * @param arg
+     * @param options
+     */
+    protected void autocomplete(int arg, Function<CommandSender, Iterable<String>> options) {
+        // Allow -1 to automatically pick the highest argument
+        arg = arg >= 0 ? arg : getAutoCompletes().keySet().stream().mapToInt(Integer::intValue).max().orElse(-1) + 1;
+        getAutoCompletes().put(arg, options);
+    }
+
+    /**
+     * Add an auto-complete for all online players.
+     */
+    protected void autocompleteOnline() {
+        autocompleteOnline(-1);
+    }
+
+    /**
+     * Set the next auto-complete to be of all online players.
+     * @param arg
+     */
+    protected void autocompleteOnline(int arg) {
+        autocomplete(arg, p -> Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()));
+    }
 }

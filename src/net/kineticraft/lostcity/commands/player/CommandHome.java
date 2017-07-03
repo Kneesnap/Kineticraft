@@ -21,6 +21,7 @@ import java.util.stream.IntStream;
 public class CommandHome extends PlayerCommand {
     public CommandHome() {
         super("<home>", "Teleport home.", "home");
+        autocomplete(p -> KCPlayer.getWrapper(p).getHomes().keySet());
     }
 
     @Override

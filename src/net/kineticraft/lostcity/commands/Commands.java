@@ -142,6 +142,15 @@ public class Commands extends Mechanic {
     }
 
     /**
+     * Get a list of commands the sender is allowed to use.
+     * @param sender
+     * @return
+     */
+    public static List<Command> getUsable(CommandSender sender) {
+        return getCommands().stream().filter(c -> c.canUse(sender, false)).collect(Collectors.toList());
+    }
+
+    /**
      * Gets a command by its alias.
      * @param alias
      * @return cmd
@@ -199,15 +208,41 @@ public class Commands extends Mechanic {
         }
     }
 
-    @EventHandler
+    @EventHandler // Handles populating the command list for all commands.
     public void onTabComplete(TabCompleteEvent evt) {
-        List<Command> usable = getCommands().stream().filter(c -> c.canUse(evt.getSender(), false))
-                .collect(Collectors.toList());
-
-        for (Command c : usable)
+        for (Command c : getUsable(evt.getSender()))
             c.getAlias().stream().map(a -> c.getCommandPrefix() + a).filter(l -> l.startsWith(evt.getBuffer()))
                     .filter(l -> Utils.getCount(l, " ") == Utils.getCount(evt.getBuffer(), " "))
                     .map(l -> l.substring(l.lastIndexOf(" ") + 1)).forEach(evt.getCompletions()::add);
+    }
+
+    @EventHandler // Handles command-specific tab-completes.
+    public void onArgsComplete(TabCompleteEvent evt) {
+        String input = evt.getBuffer();
+        String label = input.split(" ")[0];
+
+        Command cmd = getUsable(evt.getSender()).stream()
+                .filter(c -> !c.getCommandPrefix().contains(" ")) // Don't count /trigger
+                .filter(c -> c.getAlias().contains(label.substring(c.getCommandPrefix().length())))
+                .findAny().orElse(null); // Get the command for the input supplied.
+
+        if (!input.contains(" ") || cmd == null)
+            return; // No command was found.
+
+        String[] args = Utils.shift(input.split(" "));
+        String lastArg = args.length > 0 ? args[args.length - 1] : "";
+        boolean space = input.endsWith(" ");
+
+        List<String> possible = cmd.getCompletions(evt.getSender(), args, args.length + (space ? 1 : 0) - 1);
+        evt.setCompletions(possible.stream().filter(ac -> ac.startsWith(lastArg) || space).collect(Collectors.toList()));
+    }
+
+    // Remove duplicate entries, and remove any vanished players if they should not show.
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onSendTabCompletes(TabCompleteEvent evt) {
+        Utils.removeDuplicates(evt.getCompletions()); // Remove duplicate entries, if any.
+        if (!Utils.getRank(evt.getSender()).isStaff()) // Remove vanished players from non-staff view.
+            Core.getHiddenPlayers().stream().map(Player::getName).forEach(evt.getCompletions()::remove);
     }
 
     @EventHandler(priority = EventPriority.LOW)

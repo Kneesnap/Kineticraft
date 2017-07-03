@@ -15,6 +15,7 @@ import org.bukkit.command.CommandSender;
 public class CommandReloadData extends StaffCommand {
     public CommandReloadData() {
         super(EnumRank.ADMIN, "<player>", "Reload a player's playerdata.", "reload", "data");
+        autocompleteOnline();
     }
 
     @Override

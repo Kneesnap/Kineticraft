@@ -1,6 +1,5 @@
 package net.kineticraft.lostcity.commands.player;
 
-import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.data.QueryTools;
 import net.kineticraft.lostcity.mechanics.Punishments;
@@ -18,6 +17,7 @@ public class CommandSeen extends PlayerCommand {
 
     public CommandSeen() {
         super("<player>", "Check when a player was last seen.", "seen");
+        autocompleteOnline();
     }
 
     @Override

@@ -16,6 +16,7 @@ public class CommandSkull extends PlayerCommand {
 
     public CommandSkull() {
         super(EnumRank.GAMMA, "<name>", "Spawn a skull-item.", "skull");
+        autocompleteOnline();
     }
 
     @Override

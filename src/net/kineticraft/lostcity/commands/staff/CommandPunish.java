@@ -22,6 +22,8 @@ public class CommandPunish extends StaffCommand {
 
     public CommandPunish() {
         super("<player> [offense]", "Punish a player.", "punish");
+        autocompleteOnline();
+        autocomplete(PunishmentType.values());
     }
 
     @Override

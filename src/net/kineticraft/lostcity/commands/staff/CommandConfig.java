@@ -19,6 +19,7 @@ public class CommandConfig extends StaffCommand {
 
     public CommandConfig() {
         super(EnumRank.ADMIN,"<config|all>", "Reload a config.", "config");
+        autocomplete(ConfigType.values());
     }
 
     @Override

@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 public class CommandDelHome extends PlayerCommand {
     public CommandDelHome() {
         super("<home>", "Remove a home.", "delhome");
+        autocomplete(p -> KCPlayer.getWrapper(p).getHomes().keySet());
     }
 
     @Override

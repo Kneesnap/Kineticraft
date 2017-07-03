@@ -14,6 +14,7 @@ public class CommandTestVote extends StaffCommand {
 
     public CommandTestVote() {
         super(EnumRank.MOD, "<player>", "Simulate a vote.", "testvote", "fakevote");
+        autocompleteOnline();
     }
 
     @Override

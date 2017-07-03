@@ -20,6 +20,7 @@ public class CommandGUIs extends StaffCommand {
 
     public CommandGUIs() {
         super(EnumRank.ADMIN, "<gui>", "Open any menu.", "menu", "gui");
+        autocomplete(GUIType.values());
     }
 
     @Override

@@ -22,6 +22,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.server.TabCompleteEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -33,6 +34,7 @@ import java.io.InputStreamReader;
 import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -777,5 +779,18 @@ public class Utils {
      */
     public static int readSize(String resource) {
         return readLines(resource).stream().mapToInt(String::length).sum();
+    }
+
+    /**
+     * Remove duplicate entries from a list.
+     * @param list
+     */
+    public static <T> void removeDuplicates(List<T> list) {
+        for (int i = 0; i < list.size(); i++) {
+            if (list.lastIndexOf(list.get(i)) != i) {
+                list.remove(i);
+                i--;
+            }
+        }
     }
 }

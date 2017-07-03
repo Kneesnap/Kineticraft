@@ -10,6 +10,7 @@ import net.kineticraft.lostcity.guis.GUIManager;
 import net.kineticraft.lostcity.item.Items;
 import net.kineticraft.lostcity.mechanics.*;
 import net.kineticraft.lostcity.mechanics.enchants.Enchants;
+import net.kineticraft.lostcity.mechanics.metadata.Metadata;
 import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
 import net.kineticraft.lostcity.utils.ReflectionUtil;
 import net.kineticraft.lostcity.utils.ServerUtils;
@@ -120,6 +121,7 @@ public class MechanicManager implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent evt) {
+        MetadataManager.removeMetadata(evt.getPlayer(), Metadata.QUIT);
         evt.setJoinMessage(null);
         announceStatus(evt.getPlayer(), "joined");
         getMechanics().forEach(m -> m.onJoin(evt.getPlayer()));
@@ -142,6 +144,10 @@ public class MechanicManager implements Listener {
      * @param player
      */
     private void onLeave(Player player) {
+        if (MetadataManager.hasMetadata(player, Metadata.QUIT))
+            return;
+
+        MetadataManager.setMetadata(player, Metadata.QUIT, true);
         announceStatus(player, "left");
         getMechanics().forEach(m -> m.onQuit(player)); // Tell each mechanic they're leaving.
     }

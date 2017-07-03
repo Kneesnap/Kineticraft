@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 public class CommandMined extends StaffCommand {
     public CommandMined() {
         super("<player>", "See ore mined by a player within a 100 block radius.", "mined");
+        autocompleteOnline();
     }
 
     @Override

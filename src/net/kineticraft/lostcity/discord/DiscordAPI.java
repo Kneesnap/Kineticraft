@@ -82,7 +82,7 @@ public class DiscordAPI extends Mechanic {
      * @return alive
      */
     public static boolean isAlive() {
-        return getBot() != null;
+        return getBot() != null && getBot().isActive();
     }
 
     /**
@@ -155,6 +155,9 @@ public class DiscordAPI extends Mechanic {
      * @param roles
      */
     public static void setRoles(User user, String... roles) {
+        if (!canEdit(user))
+            return;
+
         Set<Role> roleSet = getMember(user).getRoleSet();
         roleSet.clear();
         roleSet.addAll(Arrays.stream(roles).map(DiscordAPI::getRole).filter(Objects::nonNull).collect(Collectors.toList()));

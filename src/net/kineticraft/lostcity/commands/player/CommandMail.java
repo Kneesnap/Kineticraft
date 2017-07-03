@@ -1,6 +1,5 @@
 package net.kineticraft.lostcity.commands.player;
 
-import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.data.QueryTools;
 import net.kineticraft.lostcity.data.lists.StringList;
@@ -19,6 +18,7 @@ public class CommandMail extends PlayerCommand {
 
     public CommandMail() {
         super("<send|clear|read> [player] [message]", "Mail a message to another player.", "mail", "send");
+        autocompleteOnline(1);
     }
 
     @Override

@@ -54,7 +54,7 @@ public abstract class SaveableList<T> implements Iterable<T> {
      * @param index
      */
     public void trim(int index) {
-        while (size() > index)
+        while (size() >= index)
             remove(0);
     }
 
