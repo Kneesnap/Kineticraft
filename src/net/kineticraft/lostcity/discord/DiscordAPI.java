@@ -1,17 +1,19 @@
 package net.kineticraft.lostcity.discord;
 
-import com.google.common.base.Predicates;
 import lombok.Getter;
 import net.dv8tion.jda.core.entities.*;
+import net.dv8tion.jda.core.entities.impl.MemberImpl;
 import net.dv8tion.jda.core.managers.GuildController;
+import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.mechanics.Mechanic;
-import net.kineticraft.lostcity.utils.ServerUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Control the discord bot.
@@ -51,8 +53,11 @@ public class DiscordAPI extends Mechanic {
      * @param message
      */
     public static void sendMessage(DiscordChannel channel, String message) {
-        if (isAlive())
-            getBot().sendMessage(channel, message);
+        if (!isAlive()) {
+            Bukkit.getScheduler().runTaskLater(Core.getInstance(), () -> sendMessage(channel, message), 10L);
+            return;
+        }
+        getBot().sendMessage(channel, message);
     }
 
     /**
@@ -77,7 +82,7 @@ public class DiscordAPI extends Mechanic {
      * @return alive
      */
     public static boolean isAlive() {
-        return !ServerUtils.isDevServer() && getBot() != null;
+        return getBot() != null;
     }
 
     /**
@@ -117,48 +122,12 @@ public class DiscordAPI extends Mechanic {
     }
 
     /**
-     * Remove a roll from a user on discord.
-     * @param user
-     * @param role
-     */
-    public static void removeRole(User user, String role) {
-        if (canEdit(user) && hasRole(user, role))
-            getManager().removeRolesFromMember(getServer().getMember(user), getRole(role)).queue();
-    }
-
-    /**
-     * Give a user a role on discord.
-     * @param user
-     * @param role
-     */
-    public static void giveRole(User user, String role) {
-        if (role == null || !canEdit(user))
-            return;
-        removeRole(user, role);
-        getManager().addRolesToMember(getServer().getMember(user), getRole(role)).queue();
-    }
-
-    /**
-     * Set if a user has a role on discord.
-     * @param user
-     * @param role
-     * @param has
-     */
-    public static void setRole(User user, String role, boolean has) {
-        if (has) {
-            giveRole(user, role);
-        } else {
-            removeRole(user, role);
-        }
-    }
-
-    /**
      * Is this user verified on discord?
      * @param user
      * @return verified
      */
     public static boolean isVerified(User user) {
-        return hasRole(user, "Verified");
+        return hasRole(user, "Verified") || hasRole(user, "Staff");
     }
 
     /**
@@ -181,14 +150,23 @@ public class DiscordAPI extends Mechanic {
     }
 
     /**
-     * Remove all roles from this user.
+     * Set the roles of a given discord user.
      * @param user
+     * @param roles
      */
-    @SuppressWarnings("Guava")
-    public static void clearRoles(User user) {
-        if (canEdit(user))
-            getServer().getMember(user).getRoles().stream()
-                    .filter(Predicates.not(Role::isPublicRole)) // Not @everyone
-                    .forEach(r -> removeRole(user, r.getName()));
+    public static void setRoles(User user, String... roles) {
+        Set<Role> roleSet = getMember(user).getRoleSet();
+        roleSet.clear();
+        roleSet.addAll(Arrays.stream(roles).map(DiscordAPI::getRole).filter(Objects::nonNull).collect(Collectors.toList()));
+        getManager().addRolesToMember(getMember(user)).queue(); // Send the changes.
+    }
+
+    /**
+     * Return the member for a given user.
+     * @param user
+     * @return member
+     */
+    public static MemberImpl getMember(User user) {
+        return (MemberImpl) getServer().getMember(user);
     }
 }

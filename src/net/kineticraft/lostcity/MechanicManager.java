@@ -12,6 +12,7 @@ import net.kineticraft.lostcity.mechanics.*;
 import net.kineticraft.lostcity.mechanics.enchants.Enchants;
 import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
 import net.kineticraft.lostcity.utils.ReflectionUtil;
+import net.kineticraft.lostcity.utils.ServerUtils;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -44,7 +45,7 @@ public class MechanicManager implements Listener {
         CALLBACKS(Callbacks.class),
         COMMANDS(Commands.class),
         CRAKE(Crake.class),
-        DISCORD(DiscordAPI.class, BuildType.DEV),
+        DISCORD(DiscordAPI.class),
         RESTRICTIONS(Restrictions.class),
         SERVER_MANAGER(ServerManager.class),
         GENERAL(GeneralMechanics.class),
@@ -63,12 +64,10 @@ public class MechanicManager implements Listener {
         METADATA(MetadataManager.class);
 
         private final Class<? extends Mechanic> mechanicClass;
-        private final List<BuildType> dontRegister;
         private Mechanic mechanic;
 
-        Mechanics(Class<? extends Mechanic> clazz, BuildType... build) {
+        Mechanics(Class<? extends Mechanic> clazz) {
             this.mechanicClass = clazz;
-            this.dontRegister = Arrays.asList(build);
         }
 
         /**
@@ -84,7 +83,7 @@ public class MechanicManager implements Listener {
          * Silently fails if it should not be applied on this server-type.
          */
         public void register() {
-            if (!CONFIGS.isRegistered() || !getDontRegister().contains(Configs.getMainConfig().getBuildType()))
+            if (ServerUtils.getType() == null || !ServerUtils.getType().getDontRegister().contains(this))
                 addMechanic(this.mechanic = ReflectionUtil.construct(getMechanicClass()));
         }
     }

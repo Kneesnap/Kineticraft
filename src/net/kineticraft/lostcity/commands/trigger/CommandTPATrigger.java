@@ -23,7 +23,7 @@ public class CommandTPATrigger extends TriggerCommand {
         KCPlayer other = KCPlayer.getById(value);
         KCPlayer sender = KCPlayer.getWrapper(player);
 
-        if (!Utils.isVisible(player, other.getUsername()))
+        if (!Utils.isVisible(player, other))
             return;
 
         Player receiver = other.getPlayer();

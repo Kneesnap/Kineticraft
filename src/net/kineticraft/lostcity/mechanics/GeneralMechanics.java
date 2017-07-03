@@ -140,7 +140,7 @@ public class GeneralMechanics extends Mechanic {
         if (evt.getEntityType() != EntityType.ENDER_DRAGON)
             return; // If it's not a dragon, ignore it.
         evt.setDroppedExp(4000);
-        Block bk = evt.getEntity().getWorld().getBlockAt(0, 63, 0);
+        Block bk = evt.getEntity().getWorld().getBlockAt(0, 75, 0);
 
         Bukkit.getScheduler().runTaskLater(Core.getInstance(), () -> {
             bk.setType(Material.DRAGON_EGG);

@@ -95,8 +95,10 @@ public class DiscordBot extends ListenerAdapter {
      * @param callback
      */
     public void sendMessage(MessageChannel channel, String original, Consumer<Message> callback) {
-        if (ServerUtils.isDevServer())
-            Bukkit.getLogger().info("Sent Discord: " + original);
+        if (!ServerUtils.isDevServer()) {
+            Bukkit.getLogger().info("Sent Discord: " + original + " to " + channel);
+            return;
+        }
 
         if (channel == null)
             return;

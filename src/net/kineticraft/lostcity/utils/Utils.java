@@ -2,7 +2,6 @@ package net.kineticraft.lostcity.utils;
 
 import com.google.gson.JsonObject;
 import lombok.AllArgsConstructor;
-import lombok.Cleanup;
 import lombok.Getter;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
@@ -720,6 +719,18 @@ public class Utils {
         } catch (NumberFormatException e) {
             return false;
         }
+    }
+
+    /**
+     * Is the given KCPlayer not null and visible to the sender?
+     * If the player is not visible, it will tell the player so.
+     *
+     * @param sender
+     * @param player
+     * @return
+     */
+    public static boolean isVisible(CommandSender sender, KCPlayer player) {
+        return isVisible(sender, player != null ? player.getPlayer() : null);
     }
 
     /**

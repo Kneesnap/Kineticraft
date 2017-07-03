@@ -53,8 +53,8 @@ public class CommandDiscordVerify extends DiscordCommand {
             discord.sendMessage(discord.getName() + " is now verified as " + verify.getName() + "!");
 
             pw.setDiscordId(discord.getUser().getIdLong());
-            pw.updateDiscord();
             DataHandler.getDiscordMap().put(discord.getUser().getIdLong(), verify.getUniqueId());
+            pw.updateDiscord();
         }, () -> discord.sendMessage("Verification denied by " + verify.getName() + "."), "VERIFY", "CANCEL");
     }
 }

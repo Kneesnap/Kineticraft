@@ -254,13 +254,7 @@ public class KCPlayer implements Jsonable {
             return; // There's no linked discord account to update.
 
         DiscordAPI.setNick(getDiscord(), getUsername());
-
-        // Apply roles.
-        DiscordAPI.clearRoles(getDiscord());
-        DiscordAPI.setRole(getDiscord(), "Donor", getRank() == EnumRank.THETA);
-        DiscordAPI.setRole(getDiscord(), "Staff", getRank().isStaff());
-        DiscordAPI.giveRole(getDiscord(), "Verified");
-        DiscordAPI.giveRole(getDiscord(), getRank().getDiscordRole());
+        DiscordAPI.setRoles(getDiscord(), getRank().isStaff() ? "Staff" : "Verified", getRank().getDiscordRole());
     }
 
     /**
@@ -287,7 +281,7 @@ public class KCPlayer implements Jsonable {
         }
 
         player.setDisplayName(getNickname() != null ? getNickname() : player.getName());
-        player.setOp(getRank().isAtLeast(EnumRank.MOD));
+        player.setOp(getRank().isStaff());
     }
 
     /**
@@ -436,7 +430,7 @@ public class KCPlayer implements Jsonable {
      * @return aId
      */
     private static int generateNewId() {
-        return Core.getFile("players/").listFiles().length + 1;
+        return getPlayerMap().size() + 1;
     }
 
     private static String getPath(UUID uuid) {

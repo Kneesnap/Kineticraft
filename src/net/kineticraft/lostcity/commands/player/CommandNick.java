@@ -41,7 +41,7 @@ public class CommandNick extends PlayerCommand {
             return;
         }
 
-        if (noColor.length() < 4) {
+        if (noColor.length() < 3) {
             sender.sendMessage(ChatColor.RED + "Nickname too short.");
             return;
         }

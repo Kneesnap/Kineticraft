@@ -32,6 +32,7 @@ public class DataHandler extends Mechanic {
         loadCache();
     }
 
+    @SuppressWarnings("ConstantConditions")
     private static void loadCache() {
         List<UUID> check = Arrays.stream(Core.getFile("players/").listFiles())
                 .filter(file -> file.getName().endsWith(".json")).map(f -> f.getName().split("\\.")[0])

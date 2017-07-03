@@ -30,14 +30,13 @@ public class CommandJS extends StaffCommand {
 
     public CommandJS() {
         super(EnumRank.DEV, "<expression>", "Evaluate a JavaScript expression.", "js");
+        setDangerous(true);
         engine = new ScriptEngineManager().getEngineByName("nashorn");
         initJS();
     }
 
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
-        if (!Core.isDev(sender))
-            return;
 
         // Allow the sender to use the 'self' keyword.
         SELF_ALIAS.forEach(a -> engine.put(a, sender));
@@ -55,15 +54,22 @@ public class CommandJS extends StaffCommand {
      * Setup javascript shortcuts such as 'server'.
      */
     private void initJS() {
+
+        // Allow JS to load java classes.
+        Thread currentThread = Thread.currentThread();
+        ClassLoader previousClassLoader = currentThread.getContextClassLoader();
+        currentThread.setContextClassLoader(getClass().getClassLoader());
+
         try {
             // Make the 'eval' command behave exactly as the eval used here does.
             engine.put("engine", engine);
-            engine.put("Core", Core.class);
-            engine.put("DiscordAPI", DiscordAPI.class);
             engine.eval(new InputStreamReader(Core.getInstance().getResource("boot.js")));
         } catch (ScriptException ex) {
             ex.printStackTrace();
             Core.warn("Failed to initialize JS shortcuts.");
+        } finally {
+            // Set back the previous class loader.
+            currentThread.setContextClassLoader(previousClassLoader);
         }
     }
 }

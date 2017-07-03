@@ -105,11 +105,19 @@ public class ServerUtils {
     }
 
     /**
+     * Get the BuildType of this release.
+     * @return type
+     */
+    public static BuildType getType() {
+        return Configs.getMainConfig() != null ? Configs.getMainConfig().getBuildType() : null;
+    }
+
+    /**
      * Returns whether or not this is a development server.
      * @return isDev
      */
     public static boolean isDevServer() {
-        return Configs.getMainConfig().getBuildType() == BuildType.DEV;
+        return getType() == BuildType.DEV;
     }
 
     /**
@@ -117,6 +125,6 @@ public class ServerUtils {
      * @return isBeta
      */
     public static boolean isBetaServer() {
-        return Configs.getMainConfig().getBuildType() == BuildType.BETA;
+        return getType() == BuildType.BETA;
     }
 }
