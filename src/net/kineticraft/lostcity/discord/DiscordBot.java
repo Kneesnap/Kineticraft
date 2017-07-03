@@ -18,7 +18,6 @@ import net.kineticraft.lostcity.commands.Commands;
 import net.kineticraft.lostcity.commands.DiscordSender;
 import net.kineticraft.lostcity.commands.discord.CommandServerVote;
 import net.kineticraft.lostcity.config.Configs;
-import net.kineticraft.lostcity.utils.ServerUtils;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -112,7 +111,7 @@ public class DiscordBot extends ListenerAdapter {
         for (Role role : DiscordAPI.getServer().getRoles())
             message = message.replaceAll("@" + role.getName(), role.getAsMention());
 
-        channel.sendMessage(ChatColor.stripColor(message)).queue(callback);
+        channel.sendMessage(ChatColor.stripColor(ChatColor.translateAlternateColorCodes('&', message))).queue(callback);
     }
 
     /**

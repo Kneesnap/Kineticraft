@@ -230,11 +230,11 @@ public class Commands extends Mechanic {
             return; // No command was found.
 
         String[] args = Utils.shift(input.split(" "));
-        String lastArg = args.length > 0 ? args[args.length - 1] : "";
+        String lastArg = (args.length > 0 ? args[args.length - 1] : "").toLowerCase();
         boolean space = input.endsWith(" ");
 
         List<String> possible = cmd.getCompletions(evt.getSender(), args, args.length + (space ? 1 : 0) - 1);
-        evt.setCompletions(possible.stream().filter(ac -> ac.startsWith(lastArg) || space).collect(Collectors.toList()));
+        evt.setCompletions(possible.stream().filter(ac -> ac.toLowerCase().startsWith(lastArg) || space).collect(Collectors.toList()));
     }
 
     // Remove duplicate entries, and remove any vanished players if they should not show.

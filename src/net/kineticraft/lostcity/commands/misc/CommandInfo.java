@@ -3,7 +3,10 @@ package net.kineticraft.lostcity.commands.misc;
 import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.utils.TextBuilder;
+import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.command.CommandSender;
+
+import java.util.stream.Collectors;
 
 /**
  * Command that will display all lines of a config file.
@@ -21,6 +24,7 @@ public class CommandInfo extends PlayerCommand {
 
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
-        Configs.getTextConfig(this.type).getComponents().stream().map(TextBuilder::create).forEach(sender::sendMessage);
+        sender.sendMessage(Configs.getTextConfig(this.type).getComponents().stream()
+                .map(TextBuilder::create).toArray(BaseComponent[]::new));
     }
 }

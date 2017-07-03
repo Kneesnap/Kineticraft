@@ -62,10 +62,12 @@ public class GeneralMechanics extends Mechanic {
                         Configs.getMainConfig().setLastSize(newSize);
                         Configs.getMainConfig().saveToDisk();
 
-                        DiscordAPI.sendMessage(DiscordChannel.ANNOUNCEMENTS, "@everyone Patch #" + newPatch + " has been deployed.\n\n"
-                                + Utils.readLines("patchnotes.txt").stream().collect(Collectors.joining("\n")));
+                        DiscordAPI.sendMessage(DiscordChannel.ANNOUNCEMENTS,
+                                "@everyone Patch #" + newPatch + " has been deployed.\n\n"
+                                + TextUtils.fromMarkup(Utils.readLines("patchnotes.txt").stream()
+                                .collect(Collectors.joining("\n"))).toLegacy());
                     }
-                }, 100L);
+                }, 50L);
 
         idObjective = Bukkit.getScoreboardManager().getMainScoreboard().getObjective("id");
         if (idObjective == null)

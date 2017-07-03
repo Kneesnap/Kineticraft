@@ -6,9 +6,11 @@ import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.commands.Commands;
 import net.kineticraft.lostcity.utils.Utils;
+import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,8 +38,12 @@ public class CommandHelp extends PlayerCommand {
             int totalPages = help.size() / PER_PAGE + Math.min(1, help.size() % PER_PAGE);
 
             sender.sendMessage(bar + ChatColor.GRAY + " Command Help (" + page + "/" + totalPages + ") " + bar);
+            List<String> block = new ArrayList<>();
+
             for (int i = (page - 1) * PER_PAGE; i < Math.min(help.size(), page * PER_PAGE); i++)
-                sender.sendMessage(help.get(i)); // Show help
+                block.add(help.get(i)); // Show help
+
+            sender.sendMessage(block.toArray(new String[0]));
         } else {
 
             Command cmd = Commands.getCommand(null, args[0]);
