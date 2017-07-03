@@ -109,6 +109,7 @@ public class Commands extends Mechanic {
         addCommand(new CommandJS());
         addCommand(new CommandSee());
         addCommand(new CommandReloadData());
+        addCommand(new CommandCoords());
 
         // Register trigger commands
         addCommand(new CommandTPATrigger());
