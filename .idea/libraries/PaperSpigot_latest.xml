@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="PaperSpigot-latest">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/libs/PaperSpigot-latest.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/libs/PaperSpigot-latest.jar!/" />
+    </SOURCES>
+  </library>
+</component>
