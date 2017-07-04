@@ -1,7 +1,5 @@
 package net.kineticraft.lostcity.data;
 
-import com.google.gson.JsonObject;
-
 /**
  * Represents an object that can be saved or loaded as Json.
  *

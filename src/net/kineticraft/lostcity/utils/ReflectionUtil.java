@@ -6,16 +6,20 @@ import org.bukkit.Bukkit;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
+ * Static utils for using reflection.
  * Created by Kneesnap on 6/2/2017.
  */
 public class ReflectionUtil {
 
-    private static Map<Class<?>, Class<?>> REPLACE = new HashMap<>();
+    private static final Map<Class<?>, Class<?>> REPLACE = new HashMap<>();
+    private static final Map<String, Class<?>> classCacheMap = new HashMap<>();
 
     public static String getVersion() {
         String cls = Bukkit.getServer().getClass().getPackage().getName();
@@ -193,14 +197,50 @@ public class ReflectionUtil {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Get a list of all inherited and non-inherited fields.
+     * @param cls
+     * @return fields
+     */
+    public static List<Field> getAllFields(Class<?> cls) {
+        List<Field> fields = new ArrayList<>();
+        fields.addAll(Arrays.asList(cls.getDeclaredFields()));
+        if (cls.getSuperclass() != null)
+            fields.addAll(getAllFields(cls.getSuperclass()));
+        return fields;
+    }
+
+    /**
+     * Get a class by its path.
+     * @param path
+     * @return class
+     */
     private static Class<?> getClass(String path) {
         try {
-            return Class.forName(path);
+            return classCacheMap.containsKey(path) ? classCacheMap.get(path) : classCacheMap.put(path, Class.forName(path));
         } catch (Exception e) {
             e.printStackTrace();
-            Bukkit.getLogger().warning("Failed to load class: " + path);
+            return null;
         }
-        return null;
+    }
+
+    /**
+     * Get a class by its type.
+     * @param type
+     * @return class
+     * @throws ClassNotFoundException
+     */
+    public static Class<?> getClass(Type type) {
+        return getClass(type.toString().substring("class ".length()));
+    }
+
+    /**
+     * Get the generic type of a field.
+     * @param f
+     * @return
+     */
+    public static Class<?> getGenericType(Field f) {
+        return getClass(((ParameterizedType) f.getGenericType()).getActualTypeArguments()[0]);
     }
 
     static {

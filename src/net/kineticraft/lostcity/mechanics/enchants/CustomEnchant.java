@@ -1,6 +1,5 @@
 package net.kineticraft.lostcity.mechanics.enchants;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.kineticraft.lostcity.utils.ReflectionUtil;
 import org.bukkit.enchantments.Enchantment;

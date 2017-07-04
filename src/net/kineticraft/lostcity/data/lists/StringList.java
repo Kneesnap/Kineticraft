@@ -1,9 +1,7 @@
 package net.kineticraft.lostcity.data.lists;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import org.apache.logging.log4j.message.StructuredDataMessage;
 
 /**
  * Store string arrays in Json.
@@ -37,7 +35,7 @@ public class StringList extends SaveableList<String> {
      * @return hasValue
      */
     public boolean containsIgnoreCase(String value) {
-        return stream().filter(s -> s.equalsIgnoreCase(value)).findAny().isPresent();
+        return stream().anyMatch(s -> s.equalsIgnoreCase(value));
     }
 
     /**
@@ -47,6 +45,6 @@ public class StringList extends SaveableList<String> {
      */
     public boolean removeIgnoreCase(String value) {
         String remove = stream().filter(s ->  s.equalsIgnoreCase(value)).findAny().orElse(null);
-        return remove != null ? remove(remove) : false;
+        return remove != null && remove(remove);
     }
 }

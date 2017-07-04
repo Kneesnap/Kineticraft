@@ -31,7 +31,7 @@ public class CommandWhyLag extends PlayerCommand {
             ChatColor.YELLOW + "Medium", ChatColor.RED + "High", ChatColor.DARK_RED + "Maximum"};
 
     public CommandWhyLag() {
-        super("", "View server lag information.", "lag", "whylag", "gc", "tps");
+        super("", "View server lag information.", "lag", "whylag", "gc", "tps", "ping");
     }
 
     @Override

@@ -100,7 +100,7 @@ public class JsonData {
      * @param type
      * @param subClass
      * @param <T>
-     * @return
+     * @return jsonList
      */
     public <T extends SaveableList> T getList(String key, Class<T> type, Class<?> subClass) {
         T list = ReflectionUtil.construct(type, subClass);
@@ -286,6 +286,24 @@ public class JsonData {
      */
     public int getInt(String key, int fallback) {
         return has(key) ? get(key).getAsInt() : fallback;
+    }
+
+    /**
+     * Load a byte value.
+     * @param key
+     * @return byte
+     */
+    public byte getByte(String key) {
+        return getByte(key, (byte) 0);
+    }
+
+    /**
+     *
+     * @param key
+     * @return
+     */
+    public byte getByte(String key, byte fallback) {
+        return has(key) ? get(key).getAsByte() : fallback;
     }
 
     /**

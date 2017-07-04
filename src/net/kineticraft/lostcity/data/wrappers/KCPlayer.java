@@ -12,6 +12,7 @@ import net.kineticraft.lostcity.data.lists.JsonList;
 import net.kineticraft.lostcity.data.lists.StringList;
 import net.kineticraft.lostcity.data.maps.JsonMap;
 import net.kineticraft.lostcity.data.Jsonable;
+import net.kineticraft.lostcity.data.reflect.NewJsonable;
 import net.kineticraft.lostcity.discord.DiscordAPI;
 import net.kineticraft.lostcity.discord.DiscordChannel;
 import net.kineticraft.lostcity.mechanics.DataHandler;
@@ -37,7 +38,7 @@ import java.util.stream.Collectors;
  * @author Kneesnap
  */
 @Getter @Setter
-public class KCPlayer implements Jsonable {
+public class KCPlayer implements Jsonable, NewJsonable {
 
     @Getter private static Map<UUID, KCPlayer> playerMap = new HashMap<>();
 

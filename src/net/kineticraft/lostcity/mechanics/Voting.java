@@ -158,6 +158,7 @@ public class Voting extends Mechanic {
                 if (p.getMonthlyVotes() <= 0)
                     return;
                 p.setMonthlyVotes(0);
+                p.setPendingVotes(0);
                 p.writeData();
             });
 

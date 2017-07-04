@@ -119,6 +119,9 @@ public class Commands extends Mechanic {
         addCommand(new CommandDiscordVerify());
         addCommand(new CommandServerVote());
 
+        // Dev Cmds
+        addCommand(new CommandDataTest());
+
         // Sort commands alphabetically:
         getCommands().sort(Comparator.comparing(Command::getName));
     }

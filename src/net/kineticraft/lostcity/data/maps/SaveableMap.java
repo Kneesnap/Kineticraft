@@ -103,10 +103,9 @@ public abstract class SaveableMap<K, V> implements Jsonable {
     @Override
     public JsonData save() {
         JsonData data = new JsonData();
-        getMap().entrySet().stream().forEach(e -> save(data, e.getKey(), e.getValue()));
+        getMap().entrySet().forEach(e -> save(data, e.getKey(), e.getValue()));
         return data;
     }
-
 
     /**
      * Save an element

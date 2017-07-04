@@ -26,20 +26,20 @@ public class MainConfig extends JsonConfig {
 
     @Override
     public void load(JsonData data) {
-        setVoteURL(data.getString("voteURL", "http://google.com/"));
-        setFilter(data.getStringMap("filter"));
-        setAfkLimit(data.getInt("afkLimit", 30));
-        setDiscordToken(data.getString("token"));
-        setBuildType(data.getEnum("buildType", BuildType.DEV));
-        setServerId(data.getLong("serverId"));
-        setBuild(data.getInt("build"));
-        setLastSize(data.getInt("lastNotesSize"));
+        this.voteURL = data.getString("voteURL", "http://google.com/");
+        this.filter = data.getStringMap("filter");
+        this.afkLimit = data.getInt("afkLimit", 30);
+        this.discordToken = data.getString("token");
+        this.buildType = data.getEnum("buildType", BuildType.DEV);
+        this.serverId = data.getLong("serverId");
+        this.build = data.getInt("build");
+        this.lastSize = data.getInt("lastNotesSize");
     }
 
     @Override
     public JsonData save() {
-        return new JsonData().setString("voteURL", getVoteURL()).setElement("filter", getFilter())
-                .setNum("afkLimit", getAfkLimit()).setString("token", getDiscordToken()).setEnum("buildType", getBuildType())
-                .setNum("serverId", getServerId()).setNum("lastNotesSize", getLastSize()).setNum("build", getBuild());
+        return new JsonData().setString("voteURL", voteURL).setElement("filter", filter)
+                .setNum("afkLimit", afkLimit).setString("token", discordToken).setEnum("buildType", buildType)
+                .setNum("serverId", serverId).setNum("lastNotesSize", lastSize).setNum("build", build);
     }
 }

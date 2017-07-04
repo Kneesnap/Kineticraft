@@ -5,9 +5,6 @@ import net.kineticraft.lostcity.data.JsonData;
 import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.utils.Utils;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * JsonMap - Used for storing objects by a key value.
  *
@@ -16,8 +13,7 @@ import java.util.Map;
 @Getter
 public class JsonMap<T extends Jsonable> extends SaveableMap<String, T> {
 
-    private Map<String, T> map = new HashMap<>();
-    private Class<T> classType;
+    private transient Class<T> classType;
 
     public JsonMap() { // When creating new data.
 
