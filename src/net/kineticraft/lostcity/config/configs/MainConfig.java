@@ -27,7 +27,7 @@ public class MainConfig extends JsonConfig {
     @Override
     public void load(JsonData data) {
         this.voteURL = data.getString("voteURL", "http://google.com/");
-        this.filter = data.getStringMap("filter");
+        this.filter = data.getMap("filter", JsonStringMap.class);
         this.afkLimit = data.getInt("afkLimit", 30);
         this.discordToken = data.getString("token");
         this.buildType = data.getEnum("buildType", BuildType.DEV);

@@ -19,6 +19,6 @@ public class JsonableStore extends DataStore<Jsonable> {
     @SuppressWarnings("unchecked")
     @Override
     public Jsonable getField(JsonData data, String key, Field field) {
-        return JsonSerializer.load((Class<? extends Jsonable>) field.getType(), data.getObject(key));
+        return JsonSerializer.fromJson((Class<? extends Jsonable>) field.getType(), data.getObject(key));
     }
 }

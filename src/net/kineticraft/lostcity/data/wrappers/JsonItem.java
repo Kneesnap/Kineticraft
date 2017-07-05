@@ -18,8 +18,8 @@ public class JsonItem implements Jsonable {
 
     private ItemStack item;
 
-    public JsonItem(JsonData data) {
-        load(data);
+    public JsonItem() {
+
     }
 
     @Override

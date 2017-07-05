@@ -1,10 +1,5 @@
 &8Changes:&0
- - Many commands support tab-complete.
- - /nick minimum is now 3 characters.
+ - Tab-complete is no longer case-sensitive.
+ - Implemented new data storage system.
 
 &8Bugfixes:&0
- - Fixed /verify
- - Fixed tpa message.
- - Fixed kick messages.
- - Dragon egg spawns above portal.
- - Fixed most discord problems.

@@ -1,7 +1,9 @@
 package net.kineticraft.lostcity.data.reflect.behavior;
 
 import net.kineticraft.lostcity.data.JsonData;
+import net.kineticraft.lostcity.data.lists.JsonList;
 import net.kineticraft.lostcity.data.lists.SaveableList;
+import net.kineticraft.lostcity.utils.ReflectionUtil;
 
 import java.lang.reflect.Field;
 
@@ -17,7 +19,7 @@ public class ListStore extends DataStore<SaveableList> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public SaveableList getField(JsonData data, String key, Field field) {
-        return data.getList(key, (Class<? extends SaveableList<?>>) field.getType());
+    public JsonList getField(JsonData data, String key, Field field) {
+        return data.getList(key, (Class<? extends JsonList>) field.getType(), getArgs(field));
     }
 }

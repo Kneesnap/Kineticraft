@@ -6,8 +6,8 @@ import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.data.lists.JsonList;
 import net.kineticraft.lostcity.data.lists.SaveableList;
 import net.kineticraft.lostcity.data.maps.JsonMap;
-import net.kineticraft.lostcity.data.maps.JsonEnumMap;
-import net.kineticraft.lostcity.data.maps.JsonStringMap;
+import net.kineticraft.lostcity.data.maps.SaveableMap;
+import net.kineticraft.lostcity.data.reflect.JsonSerializer;
 import net.kineticraft.lostcity.utils.NBTWrapper;
 import net.kineticraft.lostcity.utils.ReflectionUtil;
 import net.kineticraft.lostcity.utils.Utils;
@@ -71,39 +71,14 @@ public class JsonData {
     }
 
     /**
-     * Load a json list
-     * @param key
-     * @param type
-     * @param <T>
-     * @return jsonList
-     */
-    public <T extends Jsonable> JsonList<T> getJsonList(String key, Class<T> type) {
-        return getList(key, JsonList.class, type);
-    }
-
-    /**
      * Load a List from json
      * @param key
      * @param type
      * @param <T>
      * @return jsonList
      */
-    public <T extends SaveableList> T getList(String key, Class<T> type) {
+    public <T extends SaveableList> T getList(String key, Class<T> type, Object... args) {
         T list = ReflectionUtil.construct(type);
-        list.load(getArray(key));
-        return list;
-    }
-
-    /**
-     * Load a JsonList with a subclass.
-     * @param key
-     * @param type
-     * @param subClass
-     * @param <T>
-     * @return jsonList
-     */
-    public <T extends SaveableList> T getList(String key, Class<T> type, Class<?> subClass) {
-        T list = ReflectionUtil.construct(type, subClass);
         list.load(getArray(key));
         return list;
     }
@@ -123,31 +98,12 @@ public class JsonData {
     /**
      * Load a Json Map.
      * @param key
-     * @param type
+     * @param args
      * @return map
      */
-    public <T extends Jsonable> JsonMap<T> getMap(String key, Class<T> type) {
-        return new JsonMap<T>(new JsonData(getObject(key)), type);
-    }
-
-    /**
-     * Load a Json Enum Map
-     * @param key
-     * @param enumClass
-     * @param valueClass
-     * @return map
-     */
-    public <E extends Enum<E>, V extends Jsonable> JsonEnumMap<E, V> getMap(String key, Class<E> enumClass, Class<V> valueClass) {
-        return new JsonEnumMap<>(getData(key), enumClass, valueClass);
-    }
-
-    /**
-     * Loads a json string map.
-     * @param key
-     * @return map
-     */
-    public JsonStringMap getStringMap(String key) {
-        return new JsonStringMap(getData(key));
+    @SuppressWarnings("unchecked")
+    public <T extends SaveableMap> T getMap(String key, Class<T> type, Object... args) {
+        return JsonSerializer.fromJson(type, getObject(key), args);
     }
 
     /**

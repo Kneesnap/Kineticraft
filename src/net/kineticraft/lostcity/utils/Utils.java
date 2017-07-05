@@ -793,4 +793,16 @@ public class Utils {
             }
         }
     }
+
+    /**
+     * Append an element to create a new array.
+     * @param arr
+     * @param <T>
+     * @return newArray
+     */
+    public static <T> T[] append(T[] arr, T value) {
+        List<T> add = new ArrayList<>(Arrays.asList(arr));
+        add.add(value);
+        return add.toArray(arr);
+    }
 }

@@ -17,8 +17,8 @@ public class JsonLocation implements Jsonable {
 
     private Location location;
 
-    public JsonLocation(JsonData data) {
-        load(data);
+    public JsonLocation() {
+
     }
 
     public JsonLocation(Location loc) {

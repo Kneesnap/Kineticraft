@@ -39,9 +39,9 @@ public class VoteConfig extends JsonConfig {
         setVotesPerParty(data.getInt("votesPerParty", 50));
         setTotalVotes(data.getInt("totalVotes"));
         setTopVoter(data.getUUID("topVoter"));
-        setParty(data.getJsonList("party", PartyReward.class));
-        setNormal(data.getJsonList("normal", JsonItem.class));
-        setAchievements(data.getJsonList("achievements", VoteAchievement.class));
+        setParty(data.getList("party", JsonList.class, PartyReward.class));
+        setNormal(data.getList("normal", JsonList.class, JsonItem.class));
+        setAchievements(data.getList("achievements", JsonList.class, VoteAchievement.class));
         setMonth(data.getString("month"));
     }
 

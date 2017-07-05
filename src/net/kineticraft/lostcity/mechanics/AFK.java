@@ -42,7 +42,7 @@ public class AFK extends Mechanic {
 
                     p.kickPlayer(ChatColor.RED + "You were kicked for idling more than "
                             + Configs.getMainConfig().getAfkLimit() + " minutes.");
-                    Core.warn(p.getName() + " was kicked for AFKing.");
+                    Core.alertStaff(p.getName() + " was kicked for AFKing.");
                     kickTask.cancel();
                 };
 
@@ -80,8 +80,8 @@ public class AFK extends Mechanic {
      * @return isAfk
      */
     public static boolean isAFK(Player player) {
-        return KCPlayer.getWrapper(player).getRank().isAtLeast(EnumRank.MEDIA) ? false
-                : !MetadataManager.hasCooldown(player, "active");
+        return !KCPlayer.getWrapper(player).getRank().isAtLeast(EnumRank.MEDIA)
+                && !MetadataManager.hasCooldown(player, "active");
     }
 
     /**

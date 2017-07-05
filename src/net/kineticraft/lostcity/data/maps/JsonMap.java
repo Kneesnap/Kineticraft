@@ -3,7 +3,7 @@ package net.kineticraft.lostcity.data.maps;
 import lombok.Getter;
 import net.kineticraft.lostcity.data.JsonData;
 import net.kineticraft.lostcity.data.Jsonable;
-import net.kineticraft.lostcity.utils.Utils;
+import net.kineticraft.lostcity.data.reflect.JsonSerializer;
 
 /**
  * JsonMap - Used for storing objects by a key value.
@@ -13,20 +13,14 @@ import net.kineticraft.lostcity.utils.Utils;
 @Getter
 public class JsonMap<T extends Jsonable> extends SaveableMap<String, T> {
 
-    private transient Class<T> classType;
+    private Class<T> classType;
 
     public JsonMap() { // When creating new data.
 
     }
 
-    public JsonMap(JsonData obj) {
-        this(obj, null); // Null is ok only when we aren't loading data.
-    }
-
-    public JsonMap(JsonData data, Class<T> cls) {
-        super(data);
+    public JsonMap(Class<T> cls) {
         this.classType = cls;
-        load(data);
     }
 
     @Override
@@ -36,7 +30,6 @@ public class JsonMap<T extends Jsonable> extends SaveableMap<String, T> {
 
     @Override
     protected void load(JsonData data, String key) {
-        if (getClassType() != null)
-            getMap().put(key, Utils.fromJson(getClassType(), data.getObject(key)));
+        getMap().put(key, JsonSerializer.fromJson(getClassType(), data.getObject(key)));
     }
 }

@@ -10,6 +10,7 @@ import net.kineticraft.lostcity.discord.DiscordAPI;
 import net.kineticraft.lostcity.discord.DiscordChannel;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -32,6 +33,12 @@ public class CommandServerVote extends DiscordCommand {
         setDeleteMessage(true);
         Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(),
                 CommandServerVote::scanChannel, 0L, 20 * 60 * 5L);
+    }
+
+    @Override
+    protected void showUsage(CommandSender sender) {
+        super.showUsage(sender);
+        sender.sendMessage("Please format your bill in a way that describes the action taken if the bill is passed.");
     }
 
     @Override

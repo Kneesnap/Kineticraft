@@ -17,7 +17,7 @@ import java.util.Set;
 @Getter
 public abstract class SaveableMap<K, V> implements Jsonable {
 
-    private Map<K, V> map = new HashMap<>();
+    private transient Map<K, V> map = new HashMap<>();
 
     public SaveableMap() {
 

@@ -2,13 +2,15 @@ package net.kineticraft.lostcity.data.reflect.behavior;
 
 import lombok.Getter;
 import net.kineticraft.lostcity.data.JsonData;
+import net.kineticraft.lostcity.utils.ReflectionUtil;
+import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 /**
- * A serializer template.
+ * A template serializer for storing and loading values in JSON.
  *
  * @param <T>
  * Created by Kneesnap on 7/3/2017.
@@ -16,38 +18,36 @@ import java.lang.reflect.Method;
 @Getter
 public abstract class DataStore<T> {
 
-    private Class<T> applyTo;
-    private Method saveMethod;
+    private Class<? extends T> applyTo;
+    protected Method saveMethod;
 
     public DataStore(Class<T> apply, String setMethod) {
         this.applyTo = apply;
-        this.saveMethod = getMethod(setMethod, String.class, setMethod.equals("setNum") ? Double.TYPE : applyTo);
+        this.saveMethod = getMethod(setMethod, String.class, getSaveArgument()); ;
     }
 
-    protected static Method getMethod(String methodName, Class... argTypes) {
-        try {
-            return JsonData.class.getDeclaredMethod(methodName, argTypes);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Bukkit.getLogger().warning("Failed to find method " + methodName + ".");
-        }
-        return null;
+    /**
+     * Get the argument to be passed into the setter method.
+     * @return method.
+     */
+    protected Class<?> getSaveArgument() {
+        return getApplyTo();
     }
 
     /**
      * Get the value of a field from serialized json.
-     * @param data
-     * @param key
-     * @param field
+     * @param data - The data we're reading from.
+     * @param key - The key to read from.
+     * @param field - The field to set the data to.
      * @return loaded
      */
     public abstract T getField(JsonData data, String key, Field field);
 
     /**
      * Load a field from json.
-     * @param data
-     * @param to
-     * @param field
+     * @param data - The json data we're reading from.
+     * @param to - The object we're setting the field of.
+     * @param field - The field we're setting the data of.
      */
     public void loadField(JsonData data, Object to, Field field) throws Exception {
         String key = field.getName();
@@ -59,11 +59,34 @@ public abstract class DataStore<T> {
 
     /**
      * Save a field to json.
-     * @param data
-     * @param value
-     * @param key
+     * @param data - The json data to put the value into.
+     * @param value - The value we're storing in json/
+     * @param key - The key to store the value by.
      */
     public void saveField(JsonData data, Object value, String key) throws Exception {
         getSaveMethod().invoke(data, key, value);
+    }
+
+    protected static Method getMethod(String methodName, Class... argTypes) {
+        try {
+            return JsonData.class.getDeclaredMethod(methodName, argTypes);
+        } catch (Exception e) {
+            // Try getting the varargs version before giving up.
+            if (!Object[].class.equals(argTypes[argTypes.length - 1]))
+                return getMethod(methodName, Utils.append(argTypes, Object[].class));
+            e.printStackTrace();
+            Bukkit.getLogger().warning("Failed to find method " + methodName + ".");
+        }
+        return null;
+    }
+
+    /**
+     * Get constructor args from if a field's generic exists.
+     * @param f
+     * @return args
+     */
+    protected Object[] getArgs(Field f) {
+        Class<?> c = ReflectionUtil.getGenericType(f);
+        return c != null ? new Object[] {c} : new Object[0];
     }
 }

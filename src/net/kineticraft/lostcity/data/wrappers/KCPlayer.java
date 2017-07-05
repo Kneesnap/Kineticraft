@@ -12,7 +12,6 @@ import net.kineticraft.lostcity.data.lists.JsonList;
 import net.kineticraft.lostcity.data.lists.StringList;
 import net.kineticraft.lostcity.data.maps.JsonMap;
 import net.kineticraft.lostcity.data.Jsonable;
-import net.kineticraft.lostcity.data.reflect.NewJsonable;
 import net.kineticraft.lostcity.discord.DiscordAPI;
 import net.kineticraft.lostcity.discord.DiscordChannel;
 import net.kineticraft.lostcity.mechanics.DataHandler;
@@ -38,7 +37,7 @@ import java.util.stream.Collectors;
  * @author Kneesnap
  */
 @Getter @Setter
-public class KCPlayer implements Jsonable, NewJsonable {
+public class KCPlayer implements Jsonable {
 
     @Getter private static Map<UUID, KCPlayer> playerMap = new HashMap<>();
 
@@ -50,7 +49,6 @@ public class KCPlayer implements Jsonable, NewJsonable {
     private StringList ignored = new StringList();
     private EnumRank rank;
     private String icon;
-    private JsonData loadedData;
     private int monthlyVotes;
     private int totalVotes;
     private long lastVote;
@@ -64,9 +62,15 @@ public class KCPlayer implements Jsonable, NewJsonable {
     private long discordId;
     private int lastBuild;
 
+    private transient JsonData loadedData;
+
     public KCPlayer(UUID uuid, JsonData data) {
         this.setUuid(uuid);
         load(data);
+    }
+
+    public KCPlayer() {
+
     }
 
     /**
@@ -152,7 +156,7 @@ public class KCPlayer implements Jsonable, NewJsonable {
             default:
                 return -1;
         }
-        return hours != -1 ? punishment.getTimestamp() + (hours * 60 * 60 * 1000) - System.currentTimeMillis() : -1;
+        return hours > -1 ? punishment.getTimestamp() + (hours * 60 * 60 * 1000) - System.currentTimeMillis() : -1;
     }
 
     /**
@@ -441,8 +445,8 @@ public class KCPlayer implements Jsonable, NewJsonable {
     @Override
     public void load(JsonData data) {
         setLoadedData(data);
-        setHomes(data.getMap("homes", JsonLocation.class));
-        setDeaths(data.getJsonList("deaths", JsonLocation.class));
+        setHomes(data.getMap("homes", JsonMap.class, JsonLocation.class));
+        setDeaths(data.getList("deaths", JsonList.class, JsonLocation.class));
         this.rank = data.getEnum("rank", EnumRank.MU); // Don't use setRank() because it runs extra code.
         setIcon(data.getString("icon"));
         setMonthlyVotes(data.getInt("monthlyVotes"));
@@ -457,7 +461,7 @@ public class KCPlayer implements Jsonable, NewJsonable {
         setLastVote(data.getLong("lastVote"));
         setAccountId(data.getInt("accountId", generateNewId()));
         this.nickname = data.getString("nickname");
-        setPunishments(data.getJsonList("punishments", Punishment.class));
+        setPunishments(data.getList("punishments", JsonList.class, Punishment.class));
         setDiscordId(data.getLong("discordId"));
         setLastBuild(data.getInt("lastBuild"));
     }

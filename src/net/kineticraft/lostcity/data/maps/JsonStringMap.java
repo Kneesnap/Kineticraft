@@ -13,10 +13,6 @@ public class JsonStringMap extends SaveableMap<String, String> {
 
     }
 
-    public JsonStringMap(JsonData data) {
-        super(data);
-    }
-
     @Override
     protected void save(JsonData data, String key, String value) {
         data.setString(key, value);
