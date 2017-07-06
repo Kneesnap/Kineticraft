@@ -1,9 +1,11 @@
 package net.kineticraft.lostcity.mechanics;
 
 import lombok.Getter;
+import net.dv8tion.jda.core.entities.Member;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.data.QueryTools;
 import net.kineticraft.lostcity.data.KCPlayer;
+import net.kineticraft.lostcity.discord.DiscordAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -53,7 +55,7 @@ public class DataHandler extends Mechanic {
 
     @EventHandler(priority = EventPriority.LOWEST) // Run first, so other things like ban checker have data.
     public void onAttemptJoin(AsyncPlayerPreLoginEvent evt) {
-        KCPlayer.getPlayerMap().putIfAbsent(evt.getUniqueId(), new KCPlayer(evt.getUniqueId()));
+        KCPlayer.getPlayerMap().putIfAbsent(evt.getUniqueId(), new KCPlayer(evt.getUniqueId(), evt.getName()));
     }
 
     @EventHandler(priority = EventPriority.HIGHEST) // Run last.

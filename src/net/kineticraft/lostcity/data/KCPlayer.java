@@ -68,8 +68,9 @@ public class KCPlayer implements Jsonable {
 
     }
 
-    public KCPlayer(UUID uuid) {
+    public KCPlayer(UUID uuid, String username) {
         setUuid(uuid);
+        setUsername(username);
     }
 
     /**
