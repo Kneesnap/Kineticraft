@@ -24,6 +24,6 @@ public class CommandInfo extends PlayerCommand {
 
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
-        sender.sendMessage(Configs.getTextConfig(this.type).toArray());
+        sender.sendMessage(Configs.getTextConfig(this.type).getText().create());
     }
 }

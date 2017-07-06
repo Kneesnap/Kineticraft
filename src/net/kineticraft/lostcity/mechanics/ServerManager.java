@@ -28,9 +28,9 @@ public class ServerManager extends Mechanic {
     public void onEnable() {
         // Register announcer.
         Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () -> {
-            TextBuilder tb = Utils.randElement(Configs.getTextConfig(Configs.ConfigType.ANNOUNCER).getComponents());
-            if (tb != null)
-                Bukkit.broadcast(tb.create());
+            //TextBuilder tb = Utils.randElement(Configs.getTextConfig(Configs.ConfigType.ANNOUNCER));
+            //if (tb != null)
+            //    Bukkit.broadcast(tb.create()); //TODO: Fix announcer.
         }, 0L, 5 * 20 * 60L);
 
         // Update render distance every minute.

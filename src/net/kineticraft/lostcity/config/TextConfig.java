@@ -18,21 +18,15 @@ import java.util.stream.Collectors;
 @Getter
 public class TextConfig extends RawConfig {
 
-    private List<TextBuilder> components = new ArrayList<>();
+    private TextBuilder text;
 
     @Override
     protected void load(List<String> lines) {
-        components = lines.stream().map(TextUtils::fromMarkup).collect(Collectors.toList());
+        text = TextUtils.fromMarkup(lines.stream().collect(Collectors.joining("\n")));
     }
 
     @Override
     public List<String> getLines() {
-        return getComponents().stream().map(TextBuilder::toMarkup).collect(Collectors.toList());
-    }
-
-    public BaseComponent[] toArray() {
-        List<BaseComponent> all = new ArrayList<>();
-        getComponents().stream().map(TextBuilder::create).map(Arrays::stream).forEach(s -> s.forEach(all::add));
-        return all.toArray(new BaseComponent[0]);
+        return Arrays.asList(text.toMarkup().split("\n"));
     }
 }
