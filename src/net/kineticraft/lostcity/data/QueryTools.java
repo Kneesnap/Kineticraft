@@ -2,7 +2,6 @@ package net.kineticraft.lostcity.data;
 
 import lombok.Getter;
 import net.kineticraft.lostcity.Core;
-import net.kineticraft.lostcity.data.wrappers.KCPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;

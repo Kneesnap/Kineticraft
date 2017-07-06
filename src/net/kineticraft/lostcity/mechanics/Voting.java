@@ -7,10 +7,9 @@ import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.config.configs.VoteConfig;
-import net.kineticraft.lostcity.data.JsonData;
 import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.data.QueryTools;
-import net.kineticraft.lostcity.data.wrappers.KCPlayer;
+import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.utils.Dog;
 import net.kineticraft.lostcity.utils.TextBuilder;
 import net.kineticraft.lostcity.utils.Utils;
@@ -34,12 +33,11 @@ public class Voting extends Mechanic {
 
     @Override
     public void onEnable() {
-        Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () -> {
+        Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () ->
             Bukkit.getOnlinePlayers().stream().map(KCPlayer::getWrapper)
                     .filter(k -> System.currentTimeMillis() - k.getLastVote() > 24 * 60 * 60 * 1000)
                     .forEach(p -> p.getPlayer().sendMessage(ChatColor.AQUA + "You have not voted recently, please support us with "
-                            + ChatColor.YELLOW + "/vote" + ChatColor.AQUA + "."));
-        }, 0L, 5 * 60 * 20L + 1);
+                            + ChatColor.YELLOW + "/vote" + ChatColor.AQUA + ".")), 0L, 5 * 60 * 20L + 1);
     }
 
     @EventHandler
@@ -113,7 +111,7 @@ public class Voting extends Mechanic {
                 + " vote reward" + (pending > 1 ? "s" : "") + ".");
 
         for (int i = 0; i < pending; i++) {
-            Configs.getVoteData().getNormal().forEach(j -> Utils.giveItem(player, j.getItem()));
+            Configs.getVoteData().getNormal().forEach(j -> Utils.giveItem(player, j));
             player.setLevel(player.getLevel() + 10); // Add 10 XP Levels
         }
 
@@ -217,19 +215,8 @@ public class Voting extends Mechanic {
         private int votesNeeded;
         private ItemStack item;
 
-        public VoteAchievement(JsonData data) {
-            load(data);
-        }
+        public VoteAchievement() {
 
-        @Override
-        public void load(JsonData data) {
-            setVotesNeeded(data.getInt("needed"));
-            setItem(data.getItem("item"));
-        }
-
-        @Override
-        public JsonData save() {
-            return new JsonData().setNum("needed", getVotesNeeded()).setItem("item", getItem());
         }
     }
 
@@ -238,19 +225,8 @@ public class Voting extends Mechanic {
         private int chance;
         private ItemStack item;
 
-        public PartyReward(JsonData data) {
-            load(data);
-        }
+        public PartyReward() {
 
-        @Override
-        public void load(JsonData data) {
-            setChance(Math.max(0, data.getInt("chance")));
-            setItem(data.getItem("item"));
-        }
-
-        @Override
-        public JsonData save() {
-            return new JsonData().setNum("chance", getChance()).setItem("item", getItem());
         }
     }
 }

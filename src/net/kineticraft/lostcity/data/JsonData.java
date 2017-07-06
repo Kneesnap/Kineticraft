@@ -3,16 +3,11 @@ package net.kineticraft.lostcity.data;
 import com.google.gson.*;
 import lombok.Getter;
 import net.kineticraft.lostcity.Core;
-import net.kineticraft.lostcity.data.lists.JsonList;
 import net.kineticraft.lostcity.data.lists.SaveableList;
-import net.kineticraft.lostcity.data.maps.JsonMap;
 import net.kineticraft.lostcity.data.maps.SaveableMap;
 import net.kineticraft.lostcity.data.reflect.JsonSerializer;
-import net.kineticraft.lostcity.utils.NBTWrapper;
 import net.kineticraft.lostcity.utils.ReflectionUtil;
 import net.kineticraft.lostcity.utils.Utils;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -74,11 +69,12 @@ public class JsonData {
      * Load a List from json
      * @param key
      * @param type
+     * @param args
      * @param <T>
      * @return jsonList
      */
     public <T extends SaveableList> T getList(String key, Class<T> type, Object... args) {
-        T list = ReflectionUtil.construct(type);
+        T list = ReflectionUtil.construct(type, args);
         list.load(getArray(key));
         return list;
     }
@@ -96,9 +92,10 @@ public class JsonData {
     }
 
     /**
-     * Load a Json Map.
+     * Load a Map from json.
      * @param key
      * @param args
+     * @param <T>
      * @return map
      */
     @SuppressWarnings("unchecked")
@@ -146,27 +143,6 @@ public class JsonData {
             return remove(key);
         getJsonObject().add(key, val);
         return this;
-    }
-
-    /**
-     * Load an ItemStack from Json.
-     * @param key
-     * @return itemStack
-     */
-    public ItemStack getItem(String key) {
-        return has(key) ? new NBTWrapper(getData(key)).getItem() : new ItemStack(Material.AIR);
-    }
-
-    /**
-     * Save an ItemStack as JSON.
-     * @param key
-     * @param itemStack
-     * @return this
-     */
-    public JsonData setItem(String key, ItemStack itemStack) {
-        if (itemStack == null || itemStack.getType() == Material.AIR)
-            return remove(key);
-        return setElement(key, NBTWrapper.toJson(itemStack));
     }
 
     /**

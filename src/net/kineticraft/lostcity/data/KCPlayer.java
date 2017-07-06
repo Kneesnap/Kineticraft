@@ -1,4 +1,4 @@
-package net.kineticraft.lostcity.data.wrappers;
+package net.kineticraft.lostcity.data;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -7,11 +7,10 @@ import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.DiscordSender;
 import net.kineticraft.lostcity.config.Configs;
-import net.kineticraft.lostcity.data.JsonData;
 import net.kineticraft.lostcity.data.lists.JsonList;
 import net.kineticraft.lostcity.data.lists.StringList;
 import net.kineticraft.lostcity.data.maps.JsonMap;
-import net.kineticraft.lostcity.data.Jsonable;
+import net.kineticraft.lostcity.data.reflect.JsonSerializer;
 import net.kineticraft.lostcity.discord.DiscordAPI;
 import net.kineticraft.lostcity.discord.DiscordChannel;
 import net.kineticraft.lostcity.mechanics.DataHandler;
@@ -23,7 +22,6 @@ import net.kineticraft.lostcity.mechanics.Voting;
 import net.kineticraft.lostcity.utils.Dog;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.*;
-import org.bukkit.advancement.Advancement;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -42,35 +40,36 @@ public class KCPlayer implements Jsonable {
     @Getter private static Map<UUID, KCPlayer> playerMap = new HashMap<>();
 
     private UUID uuid;
-    private JsonMap<JsonLocation> homes = new JsonMap<>();
-    private JsonList<JsonLocation> deaths = new JsonList<>();
-    private StringList notes = new StringList();
-    private StringList mail = new StringList();
-    private StringList ignored = new StringList();
-    private EnumRank rank;
+    private int accountId = generateNewId();
+    private long discordId;
+    private String username;
+    private String lastIP;
+    private EnumRank rank = EnumRank.MU;
     private String icon;
+
+    private Particle effect;
+    private boolean vanished;
+    private String nickname;
+    private int secondsPlayed;
+    private int lastBuild;
     private int monthlyVotes;
     private int totalVotes;
     private long lastVote;
     private int pendingVotes;
-    private int secondsPlayed;
-    private Particle effect;
-    private boolean vanished;
-    private String nickname;
+
     private JsonList<Punishment> punishments = new JsonList<>();
-    private int accountId;
-    private long discordId;
-    private int lastBuild;
-
-    private transient JsonData loadedData;
-
-    public KCPlayer(UUID uuid, JsonData data) {
-        this.setUuid(uuid);
-        load(data);
-    }
+    private JsonMap<Location> homes = new JsonMap<>();
+    private JsonList<Location> deaths = new JsonList<>();
+    private StringList notes = new StringList();
+    private StringList mail = new StringList();
+    private StringList ignored = new StringList();
 
     public KCPlayer() {
 
+    }
+
+    public KCPlayer(UUID uuid) {
+        setUuid(uuid);
     }
 
     /**
@@ -162,7 +161,7 @@ public class KCPlayer implements Jsonable {
     /**
      * Is this player at least the given rank? If they're not, it alerts them they don't have permission.
      * @param rank
-     * @return
+     * @return is the user at least the specified rank.
      */
     public boolean isRank(EnumRank rank) {
         boolean hasPerms = getRank().isAtLeast(rank);
@@ -173,17 +172,17 @@ public class KCPlayer implements Jsonable {
 
     /**
      * Is this player currently online?
+     * @return isOnline
      */
     public boolean isOnline() {
-        Player p = getPlayer();
-        return p != null && p.isOnline();
+        return getPlayer() != null;
     }
 
     /**
      * Gets the death the player has selected.
      * @return death
      */
-    public JsonLocation getSelectedDeath() {
+    public Location getSelectedDeath() {
         return getDeaths().getValueSafe(MetadataManager.getMetadata(getPlayer(), Metadata.COMPASS_DEATH).asInt());
     }
 
@@ -197,6 +196,7 @@ public class KCPlayer implements Jsonable {
 
     /**
      * Get the player object associated with this data, if online.
+     * @return player
      */
     public Player getPlayer() {
         return Bukkit.getPlayer(getUuid());
@@ -207,15 +207,6 @@ public class KCPlayer implements Jsonable {
      */
     public void writeData() {
         save().toFile(getPath(getUuid()));
-    }
-
-    /**
-     * Returns this player's last known IP.
-     * @return
-     */
-    public String getLastIP() {
-        return isOnline() ? getPlayer().getAddress().toString().split("/")[1].split(":")[0]
-                : getLoadedData().getString("lastIp");
     }
 
     /**
@@ -267,10 +258,11 @@ public class KCPlayer implements Jsonable {
      * and sending the "you have mail" message
      */
     public void updatePlayer() {
-        Player player = getPlayer();
-        if (player == null || !player.isOnline())
+        if (!isOnline())
             return; // This only applies to online players.
 
+        Player player = getPlayer();
+        player.setDisplayName(getNickname() != null ? getNickname() : player.getName());
         player.setPlayerListName(getDisplayName()); // Update tab name.
         Voting.giveRewards(player); // Give vote rewards, if any.
 
@@ -278,15 +270,11 @@ public class KCPlayer implements Jsonable {
             player.sendMessage(ChatColor.GOLD + "You have " + ChatColor.RED + getMail().size() + ChatColor.GOLD
                     + " unread messages. Use /mail to read them.");
 
-        // Give advancements.
-        for (EnumRank rank : EnumRank.values()) {
-            Advancement advancement = Bukkit.getAdvancement(rank.getKey());
-            if (getRank().isAtLeast(rank) && advancement != null)
-                player.getAdvancementProgress(advancement).awardCriteria("rankup");
-        }
-
-        player.setDisplayName(getNickname() != null ? getNickname() : player.getName());
         player.setOp(getRank().isStaff());
+
+        // Update things.
+        setUsername(player.getName());
+        setLastIP(player.getAddress().toString().split("/")[1].split(":")[0]);
     }
 
     /**
@@ -330,14 +318,6 @@ public class KCPlayer implements Jsonable {
      */
     public String getDisplayName() {
         return getDisplayPrefix() + " " + getUsername();
-    }
-
-    /**
-     * Gets this player's last seen username.
-     * @return username
-     */
-    public String getUsername() {
-        return isOnline() ? getPlayer().getName() : getLoadedData().getString("username");
     }
 
     /**
@@ -418,7 +398,7 @@ public class KCPlayer implements Jsonable {
      * @param uuid
      */
     public static KCPlayer loadWrapper(UUID uuid) {
-        return new KCPlayer(uuid, isWrapper(uuid) ? JsonData.fromFile(getPath(uuid)) : new JsonData());
+        return JsonSerializer.fromJson(KCPlayer.class, JsonData.fromFile(getPath(uuid)).getJsonObject());
     }
 
     /**
@@ -440,57 +420,5 @@ public class KCPlayer implements Jsonable {
 
     private static String getPath(UUID uuid) {
         return "players/" + uuid.toString();
-    }
-
-    @Override
-    public void load(JsonData data) {
-        setLoadedData(data);
-        setHomes(data.getMap("homes", JsonMap.class, JsonLocation.class));
-        setDeaths(data.getList("deaths", JsonList.class, JsonLocation.class));
-        this.rank = data.getEnum("rank", EnumRank.MU); // Don't use setRank() because it runs extra code.
-        setIcon(data.getString("icon"));
-        setMonthlyVotes(data.getInt("monthlyVotes"));
-        setTotalVotes(data.getInt("totalVotes"));
-        setPendingVotes(data.getInt("pendingVotes"));
-        setNotes(data.getList("notes", StringList.class));
-        setMail(data.getList("mail", StringList.class));
-        setIgnored(data.getList("ignored", StringList.class));
-        setSecondsPlayed(data.getInt("secondsPlayed"));
-        setEffect(data.getEnum("effect", Particle.class));
-        setVanished(data.getBoolean("vanish"));
-        setLastVote(data.getLong("lastVote"));
-        setAccountId(data.getInt("accountId", generateNewId()));
-        this.nickname = data.getString("nickname");
-        setPunishments(data.getList("punishments", JsonList.class, Punishment.class));
-        setDiscordId(data.getLong("discordId"));
-        setLastBuild(data.getInt("lastBuild"));
-    }
-
-    @Override
-    public JsonData save() {
-        JsonData data = new JsonData();
-        data.setUUID("uuid", getUuid());
-        data.setString("lastIp", getLastIP());
-        data.setString("username", getUsername());
-        data.setElement("homes", getHomes());
-        data.setList("deaths", getDeaths());
-        data.setEnum("rank", getRank());
-        data.setString("icon", getIcon());
-        data.setNum("monthlyVotes", getMonthlyVotes());
-        data.setNum("totalVotes", getTotalVotes());
-        data.setNum("pendingVotes", getPendingVotes());
-        data.setList("notes", getNotes());
-        data.setList("mail", getMail());
-        data.setList("ignored", getIgnored());
-        data.setNum("secondsPlayed", getSecondsPlayed());
-        data.setEnum("effect", getEffect());
-        data.setBoolean("vanish", isVanished());
-        data.setNum("accountId", getAccountId());
-        data.setNum("lastVote", getLastVote());
-        data.setString("nickname", getNickname());
-        data.setList("punishments", getPunishments());
-        data.setNum("discordId", getDiscordId());
-        data.setNum("lastBuild", getLastBuild());
-        return data;
     }
 }

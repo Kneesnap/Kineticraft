@@ -3,7 +3,7 @@ package net.kineticraft.lostcity.commands.player;
 import net.kineticraft.lostcity.data.QueryTools;
 import net.kineticraft.lostcity.utils.Utils;
 import net.kineticraft.lostcity.commands.PlayerCommand;
-import net.kineticraft.lostcity.data.wrappers.KCPlayer;
+import net.kineticraft.lostcity.data.KCPlayer;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -44,7 +44,7 @@ public class CommandHome extends PlayerCommand {
                             Utils.teleport(player, k.getUsername() + "'s Bed", player.getBedSpawnLocation());
                         }
                     } else if (k.getHomes().containsKey(homeName)) {
-                        Utils.teleport(player, k.getUsername() + "'s home named \"" + homeName + "\"", k.getHomes().get(homeName).getLocation());
+                        Utils.teleport(player, k.getUsername() + "'s home named \"" + homeName + "\"", k.getHomes().get(homeName));
                     } else {
                         sender.sendMessage(ChatColor.RED + k.getUsername() + " doesn't have a home named \"" + homeName + "\"");
                     }
@@ -64,7 +64,7 @@ public class CommandHome extends PlayerCommand {
         }
 
         if (kcPlayer.getHomes().containsKey(args[0])) {
-            Utils.teleport(player, "Home", kcPlayer.getHomes().get(args[0]).getLocation());
+            Utils.teleport(player, "Home", kcPlayer.getHomes().get(args[0]));
             return;
         }
 

@@ -1,6 +1,6 @@
 package net.kineticraft.lostcity.guis.staff;
 
-import net.kineticraft.lostcity.data.wrappers.KCPlayer;
+import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.guis.GUI;
 import net.kineticraft.lostcity.mechanics.Callbacks;
 import net.kineticraft.lostcity.mechanics.Punishments;

@@ -69,7 +69,7 @@ public class Items extends Mechanic {
 
     @EventHandler // Prevents players from selling custom items and crafting with them.
     public void onClick(InventoryClickEvent evt) {
-        if (!(evt.getInventory() instanceof MerchantInventory || evt.getInventory() instanceof CraftingInventory))
+        if (!(evt.getInventory() instanceof MerchantInventory))
             return;
 
         ItemStack item = evt.getClick() == ClickType.NUMBER_KEY ? evt.getWhoClicked().getInventory().getItem(evt.getRawSlot())
@@ -86,7 +86,7 @@ public class Items extends Mechanic {
      */
     private static void removeTrades(Merchant merchant, Material... remove) {
         List<Material> checkFor = Arrays.asList(remove);
-        merchant.getRecipes().stream().filter(mr -> !mr.getIngredients().stream().filter(i ->
-                !checkFor.contains(i.getType())).findAny().isPresent()).forEach(merchant.getRecipes()::remove);
+        merchant.getRecipes().stream().filter(mr -> mr.getIngredients().stream().anyMatch(i ->
+                checkFor.contains(i.getType()))).forEach(merchant.getRecipes()::remove);
     }
 }

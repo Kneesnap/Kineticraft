@@ -1,5 +1,9 @@
 &8Changes:&0
  - Tab-complete is no longer case-sensitive.
- - Implemented new data storage system.
+ - New data storage system.
 
 &8Bugfixes:&0
+ - Server tabcomplete.
+ - Fixed vote-rewards.
+ - Teleport book vanishing.
+ - Players getting more votes than they should.

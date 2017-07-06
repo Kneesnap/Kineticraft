@@ -1,15 +1,11 @@
 package net.kineticraft.lostcity.utils;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import lombok.Getter;
 import net.kineticraft.lostcity.data.JsonData;
 import net.kineticraft.lostcity.data.Jsonable;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
-
-import java.lang.reflect.InvocationTargetException;
 
 /**
  * NBTWrapper - Allows version independent NBT editting.
@@ -19,36 +15,32 @@ import java.lang.reflect.InvocationTargetException;
 @Getter
 public class NBTWrapper implements Jsonable {
 
-    private ItemStack item;
-    private Object tag;
+    private Material type = Material.DIRT;
+    private int amt = 1;
+    private short meta;
+    private String tag = "{}";
 
-    public NBTWrapper(String itemJson) {
-        this(new JsonData(new JsonParser().parse(itemJson).getAsJsonObject()));
-    }
+    public NBTWrapper() {
 
-    public NBTWrapper(JsonData data) {
-        load(data);
     }
 
     public NBTWrapper(ItemStack item) {
-        this.item = item;
-        loadTag();
-    }
-
-    private NBTWrapper(ItemStack item, Object tag) throws Exception {
-        this.item = item;
-        this.tag = tag;
-        applyTag(); // Since the item's NBT tag won't match our NBT tag, we should set it.
+        this.type = item.getType();
+        this.amt = item.getAmount();
+        this.meta = item.getDurability();
+        this.tag = loadTag(item);
     }
 
     /**
      * Returns the entire NMS item nbt data.
      * This includes data like type and count.
      * getTag() will be what is mostly used.
+     *
+     * @return fullTag
      */
     public Object getFullTag() {
         try {
-            return ReflectionUtil.exec(getNMS(), "save", newTagCompound());
+            return ReflectionUtil.exec(getNMS(getItem()), "save", newTagCompound());
         } catch (Exception e) {
             e.printStackTrace();
             Bukkit.getLogger().warning("Failed to generate full NBT Tag.");
@@ -57,104 +49,32 @@ public class NBTWrapper implements Jsonable {
     }
 
     /**
-     * Loads full ItemStack json data.
+     * Get the NBT tag of this item.
+     *
+     * @param item - The item to load the tag of.
+     * @return tag
      */
-    @Override
-    public void load(JsonData data) {
-        try {
-            this.item = new ItemStack(data.getEnum("id", Material.class), data.getInt("amt"), data.getShort("meta"));
-            parseNBT(data.has("tag") ? data.getString("tag") : "{}");
-        } catch (Exception e) {
-            e.printStackTrace();
-            Bukkit.getLogger().warning("Failed to load NBTItem.");
-            this.item = new ItemStack(Material.DIRT);
-        }
-    }
-
-    /**
-     * Saves this entire ItemStack object to Json.
-     */
-    @Override
-    public JsonData save() {
-        JsonData data = new JsonData();
-        data.setEnum("id", getItem().getType());
-        data.setNum("amt", getItem().getAmount());
-        data.setNum("meta", getItem().getDurability());
-        data.setString("tag", getTag().toString());
-        return data;
-    }
-
-    public int getInt(String key) {
-        return get("Int", key, 0);
-    }
-
-    public void setInt(String key, int val) {
-        exec("setInt", key, val);
-    }
-
-    public String getString(String key) {
-        return get("String", key, "");
-    }
-
-    public void setString(String key, String value) {
-        exec("setString", key, value);
-    }
-
-    public Object remove(String key) {
-        return exec("remove", key);
-    }
-
-    public boolean has(String key) {
-        return (boolean) exec("hasKey", key);
-    }
-
-    @SuppressWarnings("unchecked")
-    private <T> T get(String type, String key, T defaultValue) {
-        return has(key) ? (T) exec("get" + type, key) : defaultValue;
-    }
-
-    private void loadTag() {
+    private static String loadTag(ItemStack item) {
         // Load the tag from NMS.
-        try {
-            Object nmsStack = getNMS();
-            this.tag = nmsStack.getClass().getMethod("getTag").invoke(nmsStack);
-            if (this.tag == null)
-                this.tag = newTagCompound();
-        } catch (Exception e) {
-            e.printStackTrace();
-            Bukkit.getLogger().warning("Failed to load NBT tag from item.");
-        }
+        Object tag = ReflectionUtil.exec(getNMS(item), "getTag");
+        return tag != null ? tag.toString() : "{}";
     }
 
-    private Object getNMS() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-        return ReflectionUtil.getCraftBukkit("inventory.CraftItemStack").getMethod("asNMSCopy", ItemStack.class).invoke(null, getItem());
+    public ItemStack getItem() {
+        ItemStack bukkit = new ItemStack(getType(), getAmt(), getMeta());
+        Object nms = getNMS(bukkit);
+        ReflectionUtil.exec(nms, "setTag", parseNBT(getTag()));
+        return (ItemStack) ReflectionUtil.exec(ReflectionUtil.getCraftBukkit("inventory.CraftItemStack"), "asBukkitCopy", nms);
     }
 
     /**
-     * Apply the saved NBT tag to the item.
+     * Get the NMS item object for this item.
+     * @param item
+     * @return nmsCopy
      */
-    private void applyTag() throws Exception {
-        Object nms = getNMS();
-        ReflectionUtil.exec(nms, "setTag", getTag());
-
-        // Reload this item.
-        this.item = (ItemStack) ReflectionUtil.getCraftBukkit("inventory.CraftItemStack")
-                .getMethod("asBukkitCopy", nms.getClass()).invoke(null, nms);
-    }
-
-    private Object exec(String method, Object... args) {
-        try {
-            Object result = ReflectionUtil.exec(getTag(), method, args);
-
-            // Updates the item's tag.
-            applyTag();
-
-            return result;
-        } catch (Exception e) {
-            e.printStackTrace();
-            Bukkit.getLogger().warning("Failed to execute NBT method " + method + "!");
-        }
-        return null;
+    private static Object getNMS(ItemStack item) {
+            return ReflectionUtil.exec(ReflectionUtil.getCraftBukkit("inventory.CraftItemStack"),
+                    "asNMSCopy", new Class[] {ItemStack.class}, item);
     }
 
     public static Object newTagCompound() {
@@ -163,15 +83,19 @@ public class NBTWrapper implements Jsonable {
 
     /**
      * Converts a mojangson string to an NBT tag.
+     * @param nbt
+     * @return tag
      */
-    private static Object parseNBT(String nbt) throws Exception {
-        return ReflectionUtil.getNMS("MojangsonParser").getMethod("parse", String.class).invoke(null, nbt);
+    private static Object parseNBT(String nbt) {
+        return ReflectionUtil.exec(ReflectionUtil.getNMS("MojangsonParser"), "parse", nbt);
     }
 
     /**
      * Converts an ItemStack to Json.
+     * @param item
+     * @return json
      */
     public static JsonData toJson(ItemStack item) {
-        return new NBTWrapper(item).save();
+        return item != null && item.getType() != Material.AIR ? new NBTWrapper(item).save() : null;
     }
 }

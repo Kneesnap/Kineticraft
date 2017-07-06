@@ -28,7 +28,7 @@ public class CommandDeathTeleport extends StaffCommand {
                 return;
             }
 
-            Location tp = kcPlayer.getDeaths().getValues().get(deathId - 1).getLocation();
+            Location tp = kcPlayer.getDeaths().getValues().get(deathId - 1);
             ((Player) sender).teleport(tp);
         }, () -> sender.sendMessage(ChatColor.RED + "Player not found."));
     }

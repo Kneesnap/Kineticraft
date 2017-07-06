@@ -3,7 +3,6 @@ package net.kineticraft.lostcity.data.reflect.behavior;
 import lombok.Getter;
 import net.kineticraft.lostcity.data.JsonData;
 import net.kineticraft.lostcity.utils.ReflectionUtil;
-import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
 
 import java.lang.reflect.Field;
@@ -21,14 +20,18 @@ public abstract class DataStore<T> {
     private Class<? extends T> applyTo;
     protected Method saveMethod;
 
+    public DataStore(Class<T> apply) {
+        this(apply, "setElement");
+    }
+
     public DataStore(Class<T> apply, String setMethod) {
         this.applyTo = apply;
-        this.saveMethod = getMethod(setMethod, String.class, getSaveArgument()); ;
+        this.saveMethod = getMethod(setMethod, String.class, getSaveArgument());
     }
 
     /**
      * Get the argument to be passed into the setter method.
-     * @return method.
+     * @return method
      */
     protected Class<?> getSaveArgument() {
         return getApplyTo();
@@ -58,22 +61,40 @@ public abstract class DataStore<T> {
     }
 
     /**
+     * Load an object from json data.
+     * Does not work with any serializers that use the field parameter in getField yet.
+     *
+     * @param data
+     * @return obj
+     */
+    public T loadObject(JsonData data) {
+        return getField(new JsonData().setElement("temp", data), "temp", null);
+    }
+
+    /**
      * Save a field to json.
      * @param data - The json data to put the value into.
      * @param value - The value we're storing in json/
      * @param key - The key to store the value by.
      */
+    @SuppressWarnings("unchecked")
     public void saveField(JsonData data, Object value, String key) throws Exception {
-        getSaveMethod().invoke(data, key, value);
+        getSaveMethod().invoke(data, key, serialize((T) value));
+    }
+
+    /**
+     * Perform any special serialization on this object.
+     * @param value
+     * @return serialized
+     */
+    public Object serialize(T value) {
+        return value;
     }
 
     protected static Method getMethod(String methodName, Class... argTypes) {
         try {
             return JsonData.class.getDeclaredMethod(methodName, argTypes);
         } catch (Exception e) {
-            // Try getting the varargs version before giving up.
-            if (!Object[].class.equals(argTypes[argTypes.length - 1]))
-                return getMethod(methodName, Utils.append(argTypes, Object[].class));
             e.printStackTrace();
             Bukkit.getLogger().warning("Failed to find method " + methodName + ".");
         }

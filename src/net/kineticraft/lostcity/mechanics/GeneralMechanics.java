@@ -3,7 +3,7 @@ package net.kineticraft.lostcity.mechanics;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.config.Configs;
-import net.kineticraft.lostcity.data.wrappers.KCPlayer;
+import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.discord.DiscordAPI;
 import net.kineticraft.lostcity.discord.DiscordChannel;
 import net.kineticraft.lostcity.guis.staff.GUIMerchantEditor;
@@ -55,11 +55,11 @@ public class GeneralMechanics extends Mechanic {
 
         Bukkit.getScheduler().runTaskLater(Core.getInstance(), () -> {
                     int newSize = Utils.readSize("patchnotes.txt");
-                    if (newSize != Configs.getMainConfig().getLastSize()) {
+                    if (newSize != Configs.getMainConfig().getLastNotesSize()) {
                         int newPatch = Configs.getMainConfig().getBuild() + 1;
 
                         Configs.getMainConfig().setBuild(newPatch);
-                        Configs.getMainConfig().setLastSize(newSize);
+                        Configs.getMainConfig().setLastNotesSize(newSize);
                         Configs.getMainConfig().saveToDisk();
 
                         DiscordAPI.sendMessage(DiscordChannel.ANNOUNCEMENTS,

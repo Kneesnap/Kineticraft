@@ -3,7 +3,7 @@ package net.kineticraft.lostcity.commands.player;
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.data.QueryTools;
-import net.kineticraft.lostcity.data.wrappers.KCPlayer;
+import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.mechanics.Chat;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;

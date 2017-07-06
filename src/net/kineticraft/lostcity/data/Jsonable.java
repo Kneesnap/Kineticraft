@@ -1,5 +1,7 @@
 package net.kineticraft.lostcity.data;
 
+import net.kineticraft.lostcity.data.reflect.JsonSerializer;
+
 /**
  * Represents an object that can be saved or loaded as Json.
  *
@@ -8,13 +10,18 @@ package net.kineticraft.lostcity.data;
 public interface Jsonable {
 
     /**
-     * Load data from a JSON object.
+     * Load this data from a JSON object.
      * @param data
      */
-    void load(JsonData data);
+    default void load(JsonData data) {
+        JsonSerializer.deserialize(this, data);
+    }
 
     /**
-     * Save to a JSON object.
+     * Save this to a JSON object.
+     * @return json
      */
-    JsonData save();
+    default JsonData save() {
+        return JsonSerializer.save(this);
+    }
 }

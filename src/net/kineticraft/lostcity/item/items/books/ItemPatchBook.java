@@ -1,7 +1,7 @@
 package net.kineticraft.lostcity.item.items.books;
 
 import net.kineticraft.lostcity.config.Configs;
-import net.kineticraft.lostcity.data.wrappers.KCPlayer;
+import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.item.ItemType;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;

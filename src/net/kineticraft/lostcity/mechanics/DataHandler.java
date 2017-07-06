@@ -2,9 +2,8 @@ package net.kineticraft.lostcity.mechanics;
 
 import lombok.Getter;
 import net.kineticraft.lostcity.Core;
-import net.kineticraft.lostcity.data.JsonData;
 import net.kineticraft.lostcity.data.QueryTools;
-import net.kineticraft.lostcity.data.wrappers.KCPlayer;
+import net.kineticraft.lostcity.data.KCPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -27,7 +26,7 @@ public class DataHandler extends Mechanic {
 
     @Override
     public void onEnable() {
-        // Every 5 minutes, save all playerdata
+        // Every 5 minutes, save all player data.
         Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), DataHandler::saveAllPlayers, 0, 5 * 60 * 20);
         loadCache();
     }
@@ -54,8 +53,7 @@ public class DataHandler extends Mechanic {
 
     @EventHandler(priority = EventPriority.LOWEST) // Run first, so other things like ban checker have data.
     public void onAttemptJoin(AsyncPlayerPreLoginEvent evt) {
-        if (!KCPlayer.getPlayerMap().containsKey(evt.getUniqueId()))
-            KCPlayer.getPlayerMap().put(evt.getUniqueId(), new KCPlayer(evt.getUniqueId(), new JsonData()));
+        KCPlayer.getPlayerMap().putIfAbsent(evt.getUniqueId(), new KCPlayer(evt.getUniqueId()));
     }
 
     @EventHandler(priority = EventPriority.HIGHEST) // Run last.

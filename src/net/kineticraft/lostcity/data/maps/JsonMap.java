@@ -11,7 +11,7 @@ import net.kineticraft.lostcity.data.reflect.JsonSerializer;
  * Created by Kneesnap on 6/1/2017.
  */
 @Getter
-public class JsonMap<T extends Jsonable> extends SaveableMap<String, T> {
+public class JsonMap<T> extends SaveableMap<String, T> {
 
     private Class<T> classType;
 
@@ -25,11 +25,11 @@ public class JsonMap<T extends Jsonable> extends SaveableMap<String, T> {
 
     @Override
     protected void save(JsonData data, String key, T value) {
-        data.setElement(key, value.save());
+        data.setElement(key, JsonSerializer.save(value));
     }
 
     @Override
     protected void load(JsonData data, String key) {
-        getMap().put(key, JsonSerializer.fromJson(getClassType(), data.getObject(key)));
+        getMap().put(key, JsonSerializer.loadUnsafe(getClassType(), data.getData(key)));
     }
 }

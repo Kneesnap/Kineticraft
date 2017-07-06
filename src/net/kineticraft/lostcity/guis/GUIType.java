@@ -2,7 +2,7 @@ package net.kineticraft.lostcity.guis;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import net.kineticraft.lostcity.data.wrappers.KCPlayer;
+import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.guis.donor.*;
 import net.kineticraft.lostcity.guis.staff.*;
 import net.kineticraft.lostcity.utils.ReflectionUtil;

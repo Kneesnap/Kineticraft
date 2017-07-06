@@ -4,8 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.config.Configs.ConfigType;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import net.kineticraft.lostcity.utils.GeneralException;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -15,14 +14,13 @@ import java.util.List;
 
 /**
  * A Configuration base.
- * TODO: Use annotations
  *
  * Created by Kneesnap on 6/3/2017.
  */
 @Setter @Getter
 public abstract class Config {
 
-    private ConfigType type;
+    private transient ConfigType type;
 
     /**
      * Loads this configuration from disk.
@@ -36,8 +34,7 @@ public abstract class Config {
 
             load(new ArrayList<>(Files.readAllLines(file.toPath(), StandardCharsets.UTF_8)));
         } catch (Exception e) {
-            e.printStackTrace();
-            Bukkit.getLogger().warning("Failed to load " + getFileName());
+            throw new GeneralException("Failed to load config " + type + ".", e);
         }
     }
 

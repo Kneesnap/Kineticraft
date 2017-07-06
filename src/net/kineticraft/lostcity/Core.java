@@ -1,7 +1,7 @@
 package net.kineticraft.lostcity;
 
 import lombok.Getter;
-import net.kineticraft.lostcity.data.wrappers.KCPlayer;
+import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.discord.DiscordAPI;
 import net.kineticraft.lostcity.discord.DiscordChannel;
 import net.kineticraft.lostcity.utils.TextUtils;

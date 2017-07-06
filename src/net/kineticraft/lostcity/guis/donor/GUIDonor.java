@@ -1,7 +1,7 @@
 package net.kineticraft.lostcity.guis.donor;
 
 import net.kineticraft.lostcity.config.Configs;
-import net.kineticraft.lostcity.data.wrappers.KCPlayer;
+import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.guis.GUI;
 import net.kineticraft.lostcity.guis.GUIType;
 import net.kineticraft.lostcity.mechanics.Callbacks;

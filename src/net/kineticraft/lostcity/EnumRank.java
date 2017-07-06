@@ -86,14 +86,6 @@ public enum EnumRank {
     }
 
     /**
-     * Return the advancement MC namespace key.
-     * @return key
-     */
-    public NamespacedKey getKey() {
-        return NamespacedKey.minecraft("rank_" + name().toLowerCase());
-    }
-
-    /**
      * Return the name of the rank associated with this discord account.
      * @return rank
      */

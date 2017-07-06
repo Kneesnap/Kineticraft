@@ -2,7 +2,7 @@ package net.kineticraft.lostcity.commands.player;
 
 import net.kineticraft.lostcity.commands.misc.CommandInfo;
 import net.kineticraft.lostcity.config.Configs;
-import net.kineticraft.lostcity.data.wrappers.KCPlayer;
+import net.kineticraft.lostcity.data.KCPlayer;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;

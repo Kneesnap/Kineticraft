@@ -1,15 +1,13 @@
 package net.kineticraft.lostcity.utils;
 
-import com.google.gson.JsonObject;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.DiscordSender;
-import net.kineticraft.lostcity.data.JsonData;
 import net.kineticraft.lostcity.data.lists.JsonList;
 import net.kineticraft.lostcity.data.Jsonable;
-import net.kineticraft.lostcity.data.wrappers.KCPlayer;
+import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.discord.DiscordAPI;
 import net.kineticraft.lostcity.item.ItemType;
 import net.kineticraft.lostcity.item.ItemWrapper;
@@ -22,19 +20,16 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.server.TabCompleteEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.io.BufferedReader;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -303,16 +298,6 @@ public class Utils {
             player.getWorld().dropItem(player.getLocation(), itemStack);
             player.sendMessage(ChatColor.RED + "Your inventory was full, so you dropped the item.");
         }
-    }
-
-    /**
-     * Construct an object from JSON.
-     * @param type
-     * @param object
-     * @return Constructed object
-     */
-    public static <T extends Jsonable> T fromJson(Class<T> type, JsonObject object) {
-        return ReflectionUtil.construct(type, new JsonData(object));
     }
 
     /**

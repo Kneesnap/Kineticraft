@@ -3,9 +3,8 @@ package net.kineticraft.lostcity.mechanics;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
-import net.kineticraft.lostcity.data.JsonData;
 import net.kineticraft.lostcity.data.Jsonable;
-import net.kineticraft.lostcity.data.wrappers.KCPlayer;
+import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.item.ItemManager;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.ChatColor;
@@ -42,8 +41,8 @@ public class Punishments extends Mechanic {
         private long timestamp;
         private boolean valid;
 
-        public Punishment(JsonData data) {
-            load(data);
+        public Punishment() {
+
         }
 
         public Punishment(PunishmentType type, String source) {
@@ -67,20 +66,6 @@ public class Punishments extends Mechanic {
         @Override
         public String toString() {
             return " - " + getType().getDisplay() + " (" + new Date(getTimestamp()).toString() + ")";
-        }
-
-        @Override
-        public void load(JsonData data) {
-            setType(data.getEnum("type", PunishmentType.class));
-            setSource(data.getString("source"));
-            setTimestamp(data.getLong("timestamp"));
-            setValid(data.getBoolean("valid"));
-        }
-
-        @Override
-        public JsonData save() {
-            return new JsonData().setEnum("type", getType()).setString("source", getSource())
-                    .setNum("timestamp", getTimestamp()).setBoolean("valid", isValid());
         }
     }
 

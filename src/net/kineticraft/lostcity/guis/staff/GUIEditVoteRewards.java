@@ -2,7 +2,6 @@ package net.kineticraft.lostcity.guis.staff;
 
 import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.config.configs.VoteConfig;
-import net.kineticraft.lostcity.data.wrappers.JsonItem;
 import net.kineticraft.lostcity.guis.GUI;
 import net.kineticraft.lostcity.item.ItemWrapper;
 import net.kineticraft.lostcity.mechanics.Callbacks;
@@ -57,14 +56,14 @@ public class GUIEditVoteRewards extends GUI {
         addReward(iw -> data.getParty().add(new Voting.PartyReward(10, iw.generateItem())));
 
         addDivider(DyeColor.LIME,"Normal");
-        data.getNormal().getValues().forEach(n -> addItem(n.getItem())
-                .leftClick(e -> new GUIItemEditor(getPlayer(), iw -> n.setItem(iw.generateItem())))
+        data.getNormal().forEach(n -> addItem(n)
+                .leftClick(e -> new GUIItemEditor(getPlayer(), iw -> data.getNormal().replace(n, iw.generateItem())))
                 .rightClick(e -> {
                     data.getNormal().remove(n);
                     getPlayer().sendMessage(ChatColor.GREEN + "Removed.");
                     reconstruct();
                 }).addLore("", "Left-Click: " + ChatColor.WHITE + "Edit Reward", "Right-Click: " + ChatColor.WHITE + "Remove"));
-        addReward(iw -> data.getNormal().add(new JsonItem(iw.generateItem())));
+        addReward(iw -> data.getNormal().add(iw.generateItem()));
 
         addDivider(DyeColor.PURPLE, "Achievement");
         data.getAchievements().getValues().forEach(a -> addItem(a.getItem())

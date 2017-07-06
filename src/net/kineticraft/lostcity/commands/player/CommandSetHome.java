@@ -1,8 +1,7 @@
 package net.kineticraft.lostcity.commands.player;
 
 import net.kineticraft.lostcity.commands.PlayerCommand;
-import net.kineticraft.lostcity.data.wrappers.JsonLocation;
-import net.kineticraft.lostcity.data.wrappers.KCPlayer;
+import net.kineticraft.lostcity.data.KCPlayer;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -43,7 +42,7 @@ public class CommandSetHome extends PlayerCommand {
             return;
         }
 
-        kcPlayer.getHomes().put(args[0], new JsonLocation(player.getLocation()));
+        kcPlayer.getHomes().put(args[0], player.getLocation());
         sender.sendMessage(ChatColor.GRAY + "Created home '" + ChatColor.GREEN + args[0] + ChatColor.GRAY + "'.");
     }
 }

@@ -18,6 +18,7 @@ import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -119,9 +120,6 @@ public class Commands extends Mechanic {
         addCommand(new CommandDiscordVerify());
         addCommand(new CommandServerVote());
 
-        // Dev Cmds
-        addCommand(new CommandDataTest());
-
         // Sort commands alphabetically:
         getCommands().sort(Comparator.comparing(Command::getName));
     }
@@ -213,8 +211,9 @@ public class Commands extends Mechanic {
 
     @EventHandler // Handles populating the command list for all commands.
     public void onTabComplete(TabCompleteEvent evt) {
+        boolean console = evt.getSender() instanceof ConsoleCommandSender;
         for (Command c : getUsable(evt.getSender()))
-            c.getAlias().stream().map(a -> c.getCommandPrefix() + a).filter(l -> l.startsWith(evt.getBuffer()))
+            c.getAlias().stream().map(a -> (console ? "" : c.getCommandPrefix()) + a).filter(l -> l.startsWith(evt.getBuffer()))
                     .filter(l -> Utils.getCount(l, " ") == Utils.getCount(evt.getBuffer(), " "))
                     .map(l -> l.substring(l.lastIndexOf(" ") + 1)).forEach(evt.getCompletions()::add);
     }
@@ -223,10 +222,11 @@ public class Commands extends Mechanic {
     public void onArgsComplete(TabCompleteEvent evt) {
         String input = evt.getBuffer();
         String label = input.split(" ")[0];
+        boolean console = evt.getSender() instanceof ConsoleCommandSender;
 
         Command cmd = getUsable(evt.getSender()).stream()
                 .filter(c -> !c.getCommandPrefix().contains(" ")) // Don't count /trigger
-                .filter(c -> c.getAlias().contains(label.substring(c.getCommandPrefix().length())))
+                .filter(c -> c.getAlias().contains(console ? label : label.substring(c.getCommandPrefix().length())))
                 .findAny().orElse(null); // Get the command for the input supplied.
 
         if (!input.contains(" ") || cmd == null)

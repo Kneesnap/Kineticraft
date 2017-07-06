@@ -49,6 +49,24 @@ public class ReflectionUtil {
     }
 
     /**
+     * Execute a method of a given class.
+     * @param clazz
+     * @param methodName
+     * @param argTypes
+     * @param args
+     * @return
+     */
+    public static Object exec(Class<?> clazz, String methodName, Class[] argTypes, Object... args) {
+        try {
+            return clazz.getMethod(methodName, argTypes).invoke(null, args);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Bukkit.getLogger().warning("Failed to execute reflected method " + methodName + "!");
+        }
+        return null;
+    }
+
+    /**
      * Execute a method of a given class and object
      * @param obj
      * @param type
@@ -88,6 +106,8 @@ public class ReflectionUtil {
      * @throws Exception
      */
     public static <T> T construct(Class<T> clazz, Object... args) {
+        if (clazz == null)
+            throw new GeneralException("Tried to construct null class.");
         return construct(clazz, getClasses(args), args);
     }
 
@@ -217,7 +237,9 @@ public class ReflectionUtil {
      */
     private static Class<?> getClass(String path) {
         try {
-            return classCacheMap.containsKey(path) ? classCacheMap.get(path) : classCacheMap.put(path, Class.forName(path));
+            if (!classCacheMap.containsKey(path))
+                classCacheMap.put(path, Class.forName(path));
+            return classCacheMap.get(path);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -236,11 +258,14 @@ public class ReflectionUtil {
 
     /**
      * Get the generic type of a field.
+     * If there is no generic type, it will return null.
+     *
      * @param f
-     * @return
+     * @return generic
      */
     public static Class<?> getGenericType(Field f) {
-        return getClass(((ParameterizedType) f.getGenericType()).getActualTypeArguments()[0]);
+        return f.getGenericType() instanceof ParameterizedType ?
+                getClass(((ParameterizedType) f.getGenericType()).getActualTypeArguments()[0]) : null;
     }
 
     static {

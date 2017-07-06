@@ -1,7 +1,7 @@
 package net.kineticraft.lostcity.item.items.books;
 
 import net.kineticraft.lostcity.Core;
-import net.kineticraft.lostcity.data.wrappers.KCPlayer;
+import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.item.ItemType;
 import net.kineticraft.lostcity.utils.TextUtils;
 import org.bukkit.entity.Player;

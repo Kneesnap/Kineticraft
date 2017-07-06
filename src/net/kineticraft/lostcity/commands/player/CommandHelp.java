@@ -30,7 +30,7 @@ public class CommandHelp extends PlayerCommand {
 
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
-        String bar = ChatColor.DARK_GREEN.toString() + ChatColor.STRIKETHROUGH + "-----";
+        String bar = ChatColor.DARK_GREEN.toString() + ChatColor.STRIKETHROUGH + "------";
 
         if (args.length == 0 || Utils.isInteger(args[0])) {
             List<String> help = getHelp(sender);

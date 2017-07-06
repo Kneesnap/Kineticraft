@@ -8,9 +8,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 
-import java.util.List;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 /**
  * SlimeFinder
@@ -40,7 +38,7 @@ public class SlimeFinder extends Mechanic {
     /**
      * Is the supplied chunk a slime chunk? Since there is no bukkit API for this, we have to use the formula ourselves.
      * @param chunk
-     * @return
+     * @return Is the specified chunk a slime chunk?
      */
     private static boolean isSlimeChunk(Chunk chunk) {
         int x = chunk.getX();

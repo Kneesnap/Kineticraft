@@ -3,12 +3,10 @@ package net.kineticraft.lostcity.commands.staff;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.StaffCommand;
-import net.kineticraft.lostcity.data.wrappers.KCPlayer;
 import net.kineticraft.lostcity.data.QueryTools;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;

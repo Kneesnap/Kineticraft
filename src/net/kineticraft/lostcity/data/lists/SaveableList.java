@@ -25,6 +25,53 @@ public abstract class SaveableList<T> implements Iterable<T> {
     }
 
     /**
+     * Attempts to replace an old value with a new value.
+     * @param oldValue
+     * @param newValue
+     * @return replacedValue
+     */
+    public T replace(T oldValue, T newValue) {
+        return replace(oldValue, newValue, false);
+    }
+
+    /**
+     * Replace an old value with a new value.
+     * @param oldValue The value to replace.
+     * @param newValue - The value to replace it with.
+     * @param add - Add if not found
+     * @return replacedValue
+     */
+    public T replace(T oldValue, T newValue, boolean add) {
+        int oldIndex = indexOf(oldValue);
+        if (oldIndex != -1)
+            return set(oldIndex, newValue);
+        if (add)
+            add(newValue);
+        return null;
+    }
+
+    /**
+     * Set a value at the given index.
+     * Index must be in range of list.
+     * @param index - Index to set the value at.
+     * @param value - Value to set.
+     * @return replaced - Old Value.
+     */
+    public T set(int index, T value) {
+        return getValues().set(index, value);
+    }
+
+    /**
+     * Get the index of a given value.
+     * Returns -1 if not found.
+     * @param val
+     * @return index
+     */
+    public int indexOf(T val) {
+        return getValues().indexOf(val);
+    }
+
+    /**
      * Add a value to the list.
      * @param val
      */

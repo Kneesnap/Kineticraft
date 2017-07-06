@@ -71,11 +71,6 @@ public class ItemBook extends ItemWrapper {
         ItemStack itemStack = generateItem();
         setWriteLines(save);
 
-        if (getTitle() != null)
-            getMeta().setTitle(getTitle());
-        if (getAuthor() != null)
-            getMeta().setAuthor(getAuthor());
-
         return itemStack;
     }
 
@@ -301,6 +296,11 @@ public class ItemBook extends ItemWrapper {
 
     @Override
     public void updateItem() {
+
+        if (getTitle() != null)
+            getMeta().setTitle(getTitle());
+        if (getAuthor() != null)
+            getMeta().setAuthor(getAuthor());
 
         getMeta().setPages(new ArrayList<>()); // A book needs its page tag, so we'll default to an empty one.
         if (isWriteLines())// Save the book pages to the item.

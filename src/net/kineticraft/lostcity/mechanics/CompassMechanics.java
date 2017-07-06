@@ -1,8 +1,7 @@
 package net.kineticraft.lostcity.mechanics;
 
 import net.kineticraft.lostcity.Core;
-import net.kineticraft.lostcity.data.wrappers.JsonLocation;
-import net.kineticraft.lostcity.data.wrappers.KCPlayer;
+import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.mechanics.metadata.Metadata;
 import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
 import net.kineticraft.lostcity.utils.Utils;
@@ -35,7 +34,7 @@ public class CompassMechanics extends Mechanic {
         Location location = evt.getEntity().getLocation();
         Bukkit.getLogger().info(evt.getEntity().getName() + " died at " + Utils.toString(location));
         KCPlayer player = KCPlayer.getWrapper(evt.getEntity());
-        player.getDeaths().add(new JsonLocation(location));
+        player.getDeaths().add(location);
         player.getDeaths().trim(3); // Only store 3 deaths
         //TODO: PowerNBT save data.
     }
@@ -76,10 +75,10 @@ public class CompassMechanics extends Mechanic {
      */
     private static void updateCompass(Player player) {
         Bukkit.getScheduler().runTask(Core.getInstance(), () -> {
-            JsonLocation death = KCPlayer.getWrapper(player).getSelectedDeath();
-            if (death != null)
-                player.setCompassTarget(death.getLocation());
-        });
+                Location loc = KCPlayer.getWrapper(player).getSelectedDeath();
+                if (loc != null)
+                    player.setCompassTarget(loc);
+            });
     }
 
     @Override

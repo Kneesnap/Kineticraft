@@ -4,9 +4,9 @@ import com.google.gson.JsonObject;
 import net.kineticraft.lostcity.data.JsonData;
 import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.data.reflect.behavior.*;
+import net.kineticraft.lostcity.data.reflect.behavior.bukkit.*;
 import net.kineticraft.lostcity.utils.GeneralException;
 import net.kineticraft.lostcity.utils.ReflectionUtil;
-import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -36,12 +36,13 @@ public class JsonSerializer {
         add(new MethodStore<>(String.class, "String"));
         add(new MethodStore<>(UUID.class, "UUID"));
         add(new MethodStore<>(JsonData.class, "setElement", "getData"));
-        add(new MethodStore<>(ItemStack.class, "Item"));
 
         add(new MapStore());
         add(new EnumStore());
         add(new ListStore());
         add(new JsonableStore());
+        add(new LocationStore());
+        add(new ItemStackStore());
     }
 
     private static void add(DataStore<?> store) {
@@ -50,16 +51,37 @@ public class JsonSerializer {
 
     /**
      * Deserialize an object from stored json.
+     * May fail if the object passed does not have a deserializer.
+     *
+     * @param load - The class to load.
+     * @param data - The data to load from.
+     * @param <T>
+     * @return newObject
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T loadUnsafe(Class<T> load, JsonData data) {
+        if (Jsonable.class.isAssignableFrom(load))
+            return (T) fromJson((Class<Jsonable>) load, data);
+
+        try {
+            return ((DataStore<T>) getHandler(load, "unsafe object")).loadObject(data);
+        } catch (Exception e) {
+            throw new GeneralException("Could not load " + load.getClass().getSimpleName() + " from JSON.", e);
+        }
+    }
+
+    /**
+     * Deserialize an object from stored json.
      * @param load - The class of the object to load
-     * @param json - The json data to load from
+     * @param data - The json data to load from
      * @param args - Any additional arguments passed to the constructor.
      * @param <T>
-     * @return
+     * @return newObject - The object created.
      */
-    public static <T extends Jsonable> T fromJson(Class<T> load, JsonObject json, Object... args) {
+    public static <T extends Jsonable> T fromJson(Class<T> load, JsonData data, Object... args) {
         try {
             T val = ReflectionUtil.construct(load, args);
-            val.load(new JsonData(json));
+            val.load(data);
             return val;
         } catch (Exception e) {
             throw new GeneralException("Could not load " + load.getClass().getSimpleName() + " from JSON.", e);
@@ -67,30 +89,24 @@ public class JsonSerializer {
     }
 
     /**
-     * TODO: This is for testing purposes and should be deleted later.
-     * @param load
-     * @param json
+     * Deserialize an object from stored json.
+     * @param load - The class of the object to load
+     * @param json - The json data to load from
+     * @param args - Any additional arguments passed to the constructor.
      * @param <T>
-     * @return
+     * @return newObject - The object created.
      */
-    public static <T extends Jsonable> T loadNew(Class<T> load, JsonObject json) {
-        try {
-            T val = load.getDeclaredConstructor().newInstance();
-            deserialize(val, json);
-            return val;
-        } catch (Exception e) {
-            throw new GeneralException("Could not load " + load.getClass().getSimpleName() + " from JSON.", e);
-        }
+    public static <T extends Jsonable> T fromJson(Class<T> load, JsonObject json, Object... args) {
+        return fromJson(load, new JsonData(json), args);
     }
 
     /**
      * Load fields of a class from serialized json.
      *
      * @param refresh - The object we'd like to refresh the variables of.
-     * @param obj - The json data to load from.
+     * @param data - The json data to load from.
      */
-    public static void deserialize(Object refresh, JsonObject obj) {
-        JsonData data = new JsonData(obj);
+    public static void deserialize(Object refresh, JsonData data) {
         getFields(refresh).forEach(f -> {
             try {
                 getHandler(f).loadField(data, refresh, f);
@@ -105,16 +121,23 @@ public class JsonSerializer {
      * @param obj - The object to convert to json.
      * @return saved - The saved json.
      */
+    @SuppressWarnings("unchecked")
     public static JsonData save(Object obj) {
         JsonData data = new JsonData();
-        getFields(obj).forEach(f -> {
-            try {
-                getHandler(f).saveField(data, f.get(obj), f.getName());
-            } catch (Exception e) {
-                throw new GeneralException("Failed to save " + obj.getClass().getName() + " as JSON.", e);
-            }
-        });
-        return data;
+
+        if (obj instanceof Jsonable) {
+            getFields(obj).forEach(f -> {
+                try {
+                    getHandler(f).saveField(data, f.get(obj), f.getName());
+                } catch (Exception e) {
+                    throw new GeneralException("Failed to save " + obj.getClass().getName() + " as JSON.", e);
+                }
+            });
+            return data;
+        }
+
+        return (JsonData) getHandler(obj.getClass(), "object").serialize(obj);
+
     }
 
     /**
@@ -125,11 +148,22 @@ public class JsonSerializer {
      * @return handler
      */
     private static DataStore getHandler(Field field) {
-        Class<?> clazz = field.getType();
+        return getHandler(field.getType(), field.getName());
+    }
+
+    /**
+     * Get the serializer for a given class.
+     * Alerts staff and returns null if not found.
+     *
+     * @param clazz
+     * @param objName
+     * @return handler
+     */
+    private static DataStore getHandler(Class<?> clazz, String objName) {
         DataStore app = serializers.stream().filter(d -> d.getApplyTo().isAssignableFrom(clazz)).findFirst().orElse(null);
 
         if (app == null)
-            throw new GeneralException("Don't know how to handle " + field.getName() + " as a " + clazz.getSimpleName() + ".");
+            throw new GeneralException("Don't know how to handle " + objName + " as a " + clazz.getSimpleName() + ".");
         return app;
     }
 

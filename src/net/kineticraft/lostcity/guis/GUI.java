@@ -3,7 +3,7 @@ package net.kineticraft.lostcity.guis;
 import lombok.Getter;
 import lombok.Setter;
 import net.kineticraft.lostcity.Core;
-import net.kineticraft.lostcity.data.wrappers.KCPlayer;
+import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.item.ItemManager;
 import net.kineticraft.lostcity.item.ItemWrapper;
 import net.kineticraft.lostcity.item.display.GUIItem;

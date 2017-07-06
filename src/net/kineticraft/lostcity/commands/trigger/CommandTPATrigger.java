@@ -1,7 +1,7 @@
 package net.kineticraft.lostcity.commands.trigger;
 
 import net.kineticraft.lostcity.commands.TriggerCommand;
-import net.kineticraft.lostcity.data.wrappers.KCPlayer;
+import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.mechanics.Callbacks;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.ChatColor;
