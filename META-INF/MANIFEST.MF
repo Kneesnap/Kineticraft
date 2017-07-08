@@ -6,5 +6,7 @@ Class-Path: ./lib/JDA.jar ./lib/commons-codec-1.6.jar ./lib/commons-co
  e-4.3.6.jar ./lib/jlayer-1.0.1-1.jar ./lib/junit-3.8.2.jar ./lib/trit
  onus-share-0.3.7-2.jar ./lib/commons-logging-1.1.3.jar ./lib/httpcore
  -4.4.6.jar ./lib/jna-4.2.1.jar ./lib/mp3spi-1.9.5-1.jar ./lib/unirest
- -java-1.4.7.jar
-
+ -java-1.4.7.jar ./lib/kotlin-reflect.jar ./lib/kotlin-stdlib-jre7-sou
+ rces.jar ./lib/kotlin-stdlib-jre7.jar ./lib/kotlin-stdlib-jre8-source
+ s.jar ./lib/kotlin-stdlib-jre8.jar ./lib/kotlin-stdlib-sources.jar ./
+ lib/kotlin-stdlib.jar ./lib/kotlin-test.jar
