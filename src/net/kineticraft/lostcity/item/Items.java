@@ -8,14 +8,12 @@ import net.kineticraft.lostcity.utils.ReflectionUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.*;
@@ -57,7 +55,7 @@ public class Items extends Mechanic {
             new ItemEntityInteractEvent(evt).fire();
     }
 
-    @EventHandler
+    /*@EventHandler // Disabled for now.
     public void onVillagerOpen(InventoryOpenEvent evt) {
         if (!(evt.getInventory() instanceof MerchantInventory))
             return;
@@ -66,7 +64,7 @@ public class Items extends Mechanic {
         // Remove specified villager trades:
         removeTrades(merchant, Material.BOOK, Material.WRITTEN_BOOK);
         removeTrades(merchant, Material.PAPER);
-    }
+    }*/
 
     @EventHandler // Prevents players from selling custom items and crafting with them.
     public void onClick(InventoryClickEvent evt) {
