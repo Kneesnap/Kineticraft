@@ -34,6 +34,11 @@ public class ServerUtils {
     public static void takeBackup() {
         assert !isBackingUp();
 
+        if (!Bukkit.isPrimaryThread()) {
+            Bukkit.getScheduler().runTask(Core.getInstance(), ServerUtils::takeBackup);
+            return;
+        }
+
         Dog.KINETICA.say("Server is backing up, expect lag!");
         backingUp = true;
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "save-all");

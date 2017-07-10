@@ -182,7 +182,7 @@ public class DiscordBot extends ListenerAdapter {
 
         if (DiscordAPI.isVerified(event.getAuthor())) {
             KCPlayer p = KCPlayer.getWrapper(sender);
-            if (p.isMuted()) {
+            if (p != null && p.isMuted()) {
                 event.getMessage().delete().queue();
                 DiscordAPI.sendPrivate(sender.getUser(),
                         "You are muted. Please wait " + p.getMute().untilExpiry() + " before talking.");
