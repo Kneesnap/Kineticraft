@@ -39,7 +39,8 @@ public class CommandWhyLag extends PlayerCommand {
         double tps = ServerManager.getTPS();
         double tpsLag = TextUtils.toFixed((20 - tps) * 5, 2);
         sender.sendMessage(ChatColor.GOLD + "Server TPS: " + TextUtils.colorValue(tps, 20) + " (" + tpsLag + " % lag)");
-        sender.sendMessage(ChatColor.GOLD + "Anti-Lag Setting: " + LAG_SETTING[ServerManager.getLagSetting()]);
+        sender.sendMessage(ChatColor.GOLD + "Anti-Lag Setting: " + LAG_SETTING[ServerManager.getLagSetting()]
+                + " (" + ServerManager.getRenderDistance() + ")");
 
         if (sender instanceof Player) {
             int ping = PlayerUtils.getCraftPlayer((Player) sender).spigot().getPing();

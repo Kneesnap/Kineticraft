@@ -131,7 +131,7 @@ public class JsonSerializer {
                 try {
                     getHandler(f).saveField(data, f.get(obj), f.getName());
                 } catch (Exception e) {
-                    throw new GeneralException("Failed to save " + obj.getClass().getName() + " as JSON.", e);
+                    throw new GeneralException("Failed to save '" + f.getName() + "' (" + obj.getClass().getName() + ")", e);
                 }
             });
             return data.getJsonObject();
