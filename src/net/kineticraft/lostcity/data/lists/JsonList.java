@@ -30,6 +30,6 @@ public class JsonList<T> extends SaveableList<T> {
 
     @Override
     protected JsonElement save(T val) {
-        return JsonSerializer.save(val).getJsonObject();
+        return JsonSerializer.save(val);
     }
 }

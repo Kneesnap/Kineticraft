@@ -33,6 +33,25 @@ public class Punishments extends Mechanic {
                         + ChatColor.RED + "Appeal on discord: http://kineticraft.net");
     }
 
+    @AllArgsConstructor @Data
+    public static class Mute implements Jsonable {
+        private long expiry;
+        private String reason = "No reason specified.";
+        private String source;
+
+        public Mute() {
+
+        }
+
+        public String untilExpiry() {
+            return Utils.formatTime(getExpiry() - System.currentTimeMillis());
+        }
+
+        public boolean isExpired() {
+            return getExpiry() < System.currentTimeMillis();
+        }
+    }
+
     @Data
     public static class Punishment implements Jsonable {
 

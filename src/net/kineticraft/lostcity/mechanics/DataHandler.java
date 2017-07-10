@@ -1,11 +1,11 @@
 package net.kineticraft.lostcity.mechanics;
 
 import lombok.Getter;
-import net.dv8tion.jda.core.entities.Member;
 import net.kineticraft.lostcity.Core;
+import net.kineticraft.lostcity.EnumRank;
+import net.kineticraft.lostcity.commands.player.CommandRankup;
 import net.kineticraft.lostcity.data.QueryTools;
 import net.kineticraft.lostcity.data.KCPlayer;
-import net.kineticraft.lostcity.discord.DiscordAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -30,9 +30,12 @@ public class DataHandler extends Mechanic {
     public void onEnable() {
         // Every 5 minutes, save all player data.
         Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), DataHandler::saveAllPlayers, 0, 5 * 60 * 20);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(),
+                () -> Bukkit.getOnlinePlayers().forEach(CommandRankup::silentRankup), 0, 60 * 20);
         loadCache();
     }
 
+    @SuppressWarnings("ConstantConditions")
     private static void loadCache() {
         List<UUID> check = Arrays.stream(Core.getFile("players/").listFiles())
                 .filter(file -> file.getName().endsWith(".json")).map(f -> f.getName().split("\\.")[0])
@@ -62,13 +65,17 @@ public class DataHandler extends Mechanic {
     public void onJoinResult(PlayerLoginEvent evt) {
         String ip = evt.getAddress().toString().split("/")[1].split(":")[0];
 
+        KCPlayer p = KCPlayer.getWrapper(evt.getPlayer());
+        if (evt.getResult() == PlayerLoginEvent.Result.KICK_FULL && p.getRank().isAtLeast(EnumRank.THETA))
+            evt.allow();
+
         if (evt.getResult() != PlayerLoginEvent.Result.ALLOWED) {
             Core.alertStaff(ChatColor.RED + evt.getPlayer().getName() + " (" + ChatColor.YELLOW + evt.getAddress().toString()
                     + ChatColor.RED + ") attempted login.");
             return;
         }
 
-        KCPlayer.getWrapper(evt.getPlayer()).writeData(); // Save data.
+        p.writeData(); // Save data.
 
         QueryTools.queryData(d -> {
             List<KCPlayer> maybe = d.filter(k -> ip.equals(k.getLastIP()))

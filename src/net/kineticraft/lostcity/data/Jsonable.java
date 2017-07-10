@@ -22,6 +22,6 @@ public interface Jsonable {
      * @return json
      */
     default JsonData save() {
-        return JsonSerializer.save(this);
+        return new JsonData(JsonSerializer.save(this).getAsJsonObject());
     }
 }

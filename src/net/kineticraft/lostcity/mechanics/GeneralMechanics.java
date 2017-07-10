@@ -12,6 +12,7 @@ import net.kineticraft.lostcity.utils.TextUtils;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.*;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -19,6 +20,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.event.weather.LightningStrikeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Merchant;
 import org.bukkit.potion.PotionEffectType;
@@ -68,6 +70,26 @@ public class GeneralMechanics extends Mechanic {
                                 .collect(Collectors.joining("\n"))).toLegacy());
                     }
                 }, 50L);
+
+        // Don't allow players on top of the nether.
+        Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () -> {
+            World nether = Bukkit.getWorld(Core.getMainWorld().getName() + "_nether");
+            if (nether == null)
+                return;
+
+            Bukkit.getOnlinePlayers().stream()
+                    .filter(p -> p.getLocation().getBlockY() >= 127)
+                    .filter(p -> nether.equals(p.getWorld()))
+                    .forEach(p -> {
+                        Location loc = p.getLocation().clone();
+                        loc.setY(125);
+
+                        // Make it safe.
+                        loc.getBlock().setType(Material.AIR);
+                        loc.clone().subtract(0, 1, 0).getBlock().setType(Material.AIR);
+                        p.teleport(loc);
+                    });
+        }, 0L, 20L);
 
         idObjective = Bukkit.getScoreboardManager().getMainScoreboard().getObjective("id");
         if (idObjective == null)
@@ -157,5 +179,11 @@ public class GeneralMechanics extends Mechanic {
     public void onWaterTraverse(PlayerMoveEvent evt) {
         Utils.setPotion(evt.getPlayer(), PotionEffectType.WATER_BREATHING, evt.getPlayer().getVehicle() == null
                 && Utils.inSpawn(evt.getPlayer().getLocation()) && evt.getTo().clone().add(0, 1, 0).getBlock().isLiquid());
+    }
+
+    @EventHandler
+    public void onLightningStrike(LightningStrikeEvent evt) {
+        if (Utils.randChance(2))
+            evt.setCancelled(true);
     }
 }

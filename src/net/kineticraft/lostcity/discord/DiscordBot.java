@@ -11,6 +11,7 @@ import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionAddEvent;
 import net.dv8tion.jda.core.events.message.guild.react.GuildMessageReactionRemoveEvent;
+import net.dv8tion.jda.core.events.user.UserNameUpdateEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.commands.CommandType;
@@ -18,6 +19,7 @@ import net.kineticraft.lostcity.commands.Commands;
 import net.kineticraft.lostcity.commands.DiscordSender;
 import net.kineticraft.lostcity.commands.discord.CommandServerVote;
 import net.kineticraft.lostcity.config.Configs;
+import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -140,6 +142,24 @@ public class DiscordBot extends ListenerAdapter {
     }
 
     @Override
+    public void onUserNameUpdate(UserNameUpdateEvent event) {
+        fixName(event.getUser());
+    }
+
+    /**
+     * Update the user's discord name to match their in-game name.
+     * @param user
+     */
+    private static void fixName(User user) {
+        if (!DiscordAPI.isVerified(user))
+            return;
+
+        KCPlayer player = KCPlayer.getDiscord(user);
+        if (!DiscordAPI.getMember(user).getEffectiveName().equals(player.getUsername()))
+            DiscordAPI.setNick(user, player.getUsername());
+    }
+
+    @Override
     public void onMessageReceived(MessageReceivedEvent event) {
         if (event.getAuthor().isBot())
             return; // We don't listen for other bot messages, period.
@@ -159,6 +179,16 @@ public class DiscordBot extends ListenerAdapter {
         DiscordSender sender = new DiscordSender(event.getAuthor(), event.getMessage());
         String noColor = ChatColor.stripColor(event.getMessage().getContent());
         final String message = noColor.substring(0, Math.min(128, noColor.length())); // Limit size of message.
+
+        if (DiscordAPI.isVerified(event.getAuthor())) {
+            KCPlayer p = KCPlayer.getWrapper(sender);
+            if (p.isMuted()) {
+                event.getMessage().delete().queue();
+                DiscordAPI.sendPrivate(sender.getUser(),
+                        "You are muted. Please wait " + p.getMute().untilExpiry() + " before talking.");
+                return;
+            }
+        }
 
         if (channel == DiscordChannel.INGAME) {
             // Mirror the message into in-game.

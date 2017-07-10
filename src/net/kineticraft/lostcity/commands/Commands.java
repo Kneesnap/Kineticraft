@@ -99,14 +99,18 @@ public class Commands extends Mechanic {
         addCommand(new CommandFly());
         addCommand(new CommandGUIs());
         addCommand(new CommandMined());
+        addCommand(new CommandMute());
         addCommand(new CommandNear());
         addCommand(new CommandPunish());
         addCommand(new CommandReboot());
         addCommand(new CommandRescue());
         addCommand(new CommandSetRank());
         addCommand(new CommandSpectator());
+        addCommand(new CommandTeleport());
         addCommand(new CommandTestVote());
+        addCommand(new CommandUnmute());
         addCommand(new CommandVanish());
+        addCommand(new CommandVoteParty());
         addCommand(new CommandJS());
         addCommand(new CommandSee());
         addCommand(new CommandReloadData());
@@ -124,7 +128,11 @@ public class Commands extends Mechanic {
         getCommands().sort(Comparator.comparing(Command::getName));
     }
 
-    private static void addCommand(Command command) {
+    /**
+     * Register a command.
+     * @param command
+     */
+    public static void addCommand(Command command) {
         getCommands().add(command);
     }
 
@@ -240,12 +248,10 @@ public class Commands extends Mechanic {
         evt.setCompletions(possible.stream().filter(ac -> ac.toLowerCase().startsWith(lastArg) || space).collect(Collectors.toList()));
     }
 
-    // Remove duplicate entries, and remove any vanished players if they should not show.
+    // Remove duplicate entries.
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onSendTabCompletes(TabCompleteEvent evt) {
         Utils.removeDuplicates(evt.getCompletions()); // Remove duplicate entries, if any.
-        if (!Utils.getRank(evt.getSender()).isStaff()) // Remove vanished players from non-staff view.
-            Core.getHiddenPlayers().stream().map(Player::getName).forEach(evt.getCompletions()::remove);
     }
 
     @EventHandler(priority = EventPriority.LOW)

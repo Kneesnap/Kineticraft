@@ -1,9 +1,17 @@
 &8Changes:&0
- - Tab-complete is no longer case-sensitive.
- - New data storage system.
+ - PvP Toggle (/pvp)
+ - Jr Mod rank.
+ - Remove Helper.
+ - [hover=Added /vp]&7Shows the amount of votes until the next vote party.[/hover]
+ - Added /mute
+ - Theta+ can join while the server is full.
+ - Daily backups.
+ - Reboot every 12 hours.
+ - Automatic rankup.
+ - Nerfed weather.
 
 &8Bugfixes:&0
- - Server tabcomplete.
- - Fixed vote-rewards.
- - Teleport book vanishing.
- - Players getting more votes than they should.
+ - Announcer fixed.
+ - /whylag fix (Maybe)
+ - Fixed villager error.
+ - Top of the nether is not accessible.

@@ -10,8 +10,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.server.TabCompleteEvent;
 import org.bukkit.potion.PotionEffectType;
 
 /**
@@ -23,17 +23,16 @@ public class Vanish extends Mechanic {
 
     @Override
     public void onEnable() {
-
         // Tell vanished players they're vanished.
         Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), () ->
             Bukkit.getOnlinePlayers().stream().filter(p -> KCPlayer.getWrapper(p).isVanished())
                     .forEach(p -> p.sendActionBar(ChatColor.GRAY + "You are vanished.")), 0L, 40L);
     }
 
-    @EventHandler
-    public void onTab(PlayerChatTabCompleteEvent evt) {
-        Bukkit.getOnlinePlayers().stream().map(KCPlayer::getWrapper).filter(KCPlayer::isVanished)
-                .map(KCPlayer::getUsername).forEach(evt.getTabCompletions()::remove);
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onSendTabCompletes(TabCompleteEvent evt) {
+        if (!Utils.getRank(evt.getSender()).isStaff()) // Remove vanished players from non-staff view.
+            Core.getHiddenPlayers().stream().map(Player::getName).forEach(evt.getCompletions()::remove);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST) // Run after command logic.

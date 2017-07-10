@@ -4,7 +4,8 @@ import lombok.Getter;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.data.lists.QueueList;
-import net.kineticraft.lostcity.utils.TextBuilder;
+import net.kineticraft.lostcity.utils.ServerUtils;
+import net.kineticraft.lostcity.utils.TextUtils;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -28,9 +29,9 @@ public class ServerManager extends Mechanic {
     public void onEnable() {
         // Register announcer.
         Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () -> {
-            //TextBuilder tb = Utils.randElement(Configs.getTextConfig(Configs.ConfigType.ANNOUNCER));
-            //if (tb != null)
-            //    Bukkit.broadcast(tb.create()); //TODO: Fix announcer.
+            String s = Utils.randElement(Configs.getTextConfig(Configs.ConfigType.ANNOUNCER).getLines());
+            if (s != null)
+                Core.broadcast(TextUtils.fromMarkup(s).create());
         }, 0L, 5 * 20 * 60L);
 
         // Update render distance every minute.
@@ -41,9 +42,16 @@ public class ServerManager extends Mechanic {
         Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () -> {
             getTpsQueue().trim(25); // Only keep recent records.
             final long startTime = System.currentTimeMillis();
-            getTpsQueue().add((startTime - lastPoll) / (TPS_INTERVAL * (TPS_INTERVAL / 20D)));
+            getTpsQueue().add(Math.abs(((startTime - lastPoll) / (TPS_INTERVAL * (TPS_INTERVAL / 20D)) - 40)));
             lastPoll = startTime;
         }, 0L, TPS_INTERVAL);
+
+        if (!ServerUtils.isDevServer()) {
+            Utils.schedule(Utils.TimeInterval.DAY, 1, ServerUtils::takeBackup, 6); // Backup at 6am daily.
+
+            // Reboot after 12 hours of uptime.
+            Bukkit.getScheduler().runTaskLater(Core.getInstance(), () -> ServerUtils.reboot(3600), 11 * 60 * 60 * 20L);
+        }
     }
 
     @Override

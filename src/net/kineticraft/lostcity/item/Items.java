@@ -20,6 +20,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -86,7 +87,9 @@ public class Items extends Mechanic {
      */
     private static void removeTrades(Merchant merchant, Material... remove) {
         List<Material> checkFor = Arrays.asList(remove);
+        List<MerchantRecipe> newRecipes = new ArrayList<>(merchant.getRecipes());
         merchant.getRecipes().stream().filter(mr -> mr.getIngredients().stream().anyMatch(i ->
-                checkFor.contains(i.getType()))).forEach(merchant.getRecipes()::remove);
+                checkFor.contains(i.getType()))).forEach(newRecipes::remove);
+        merchant.setRecipes(newRecipes);
     }
 }

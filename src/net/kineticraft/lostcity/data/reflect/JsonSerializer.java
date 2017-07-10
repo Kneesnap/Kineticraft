@@ -1,5 +1,6 @@
 package net.kineticraft.lostcity.data.reflect;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.kineticraft.lostcity.data.JsonData;
 import net.kineticraft.lostcity.data.Jsonable;
@@ -22,7 +23,7 @@ import java.util.stream.Collectors;
 public class JsonSerializer {
 
     private static List<DataStore<?>> serializers = new ArrayList<>();
-    private static Map<Class<?>, List<Field>> fieldCache = new HashMap<>();
+    private static Map<Class<?>, List<Field>> fieldCache = new HashMap<>(); // Massive performance gain b
 
     static {
         add(new PrimitiveStore<>(Byte.TYPE, "Byte", Byte::new));
@@ -122,7 +123,7 @@ public class JsonSerializer {
      * @return saved - The saved json.
      */
     @SuppressWarnings("unchecked")
-    public static JsonData save(Object obj) {
+    public static JsonElement save(Object obj) {
         JsonData data = new JsonData();
 
         if (obj instanceof Jsonable) {
@@ -133,10 +134,11 @@ public class JsonSerializer {
                     throw new GeneralException("Failed to save " + obj.getClass().getName() + " as JSON.", e);
                 }
             });
-            return data;
+            return data.getJsonObject();
         }
 
-        return (JsonData) getHandler(obj.getClass(), "object").serialize(obj);
+        Object result = getHandler(obj.getClass(), "object").serialize(obj);
+        return result instanceof JsonData ? ((JsonData) result).getJsonObject() : (JsonElement) result;
 
     }
 

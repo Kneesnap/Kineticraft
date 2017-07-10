@@ -2,12 +2,9 @@ package net.kineticraft.lostcity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import net.kineticraft.lostcity.discord.DiscordAPI;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.ChatColor;
-import org.bukkit.NamespacedKey;
 
-import java.security.cert.CertPathBuilderSpi;
 import java.util.Arrays;
 
 /**
@@ -30,7 +27,7 @@ public enum EnumRank {
     VOTER("VOTR", ChatColor.LIGHT_PURPLE, ChatColor.LIGHT_PURPLE), // We don't actually set players to this rank.
     MEDIA("∈", ChatColor.DARK_PURPLE, ChatColor.LIGHT_PURPLE),
 
-    HELPER("HLPR", ChatColor.DARK_GRAY, ChatColor.DARK_GRAY),
+    TRIAL("JR MOD", ChatColor.DARK_GRAY, ChatColor.DARK_GRAY),
     BUILDER("BLD", ChatColor.GOLD, ChatColor.YELLOW),
     MOD("MOD", ChatColor.DARK_GREEN, ChatColor.GREEN),
     ADMIN("ADMN", ChatColor.DARK_RED,  ChatColor.RED),
@@ -98,7 +95,7 @@ public enum EnumRank {
      * @return staff
      */
     public boolean isStaff() {
-        return isAtLeast(HELPER);
+        return isAtLeast(TRIAL);
     }
 
     /**

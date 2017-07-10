@@ -86,6 +86,11 @@ public class ServerUtils {
     public static void reboot(int seconds) {
         cancelReboot(); // Cancel existing reboot, if any.
 
+        if (isBackingUp()) { // Don't reboot during a backup.
+            Bukkit.getScheduler().runTaskLater(Core.getInstance(), () -> reboot(seconds), 60 * 20L);
+            return;
+        }
+
         ServerUtils.announceReboot(seconds, 0); // Broadcast the message at this second.
         REBOOT_ALERTS.stream().filter(n -> n < seconds).forEach(n -> ServerUtils.announceReboot(n, seconds));
 

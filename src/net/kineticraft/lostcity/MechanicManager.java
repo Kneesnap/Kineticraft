@@ -44,6 +44,7 @@ public class MechanicManager implements Listener {
         PLAYER_DATA(DataHandler.class),
         PUNISHMENTS(Punishments.class),
         CALLBACKS(Callbacks.class),
+        TOGGLES(Toggles.class),
         COMMANDS(Commands.class),
         CRAKE(Crake.class),
         DISCORD(DiscordAPI.class),

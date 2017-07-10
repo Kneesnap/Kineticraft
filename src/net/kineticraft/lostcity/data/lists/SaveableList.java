@@ -136,6 +136,15 @@ public abstract class SaveableList<T> implements Iterable<T> {
     }
 
     /**
+     * Does this list contain the given value?
+     * @param value
+     * @return contains
+     */
+    public boolean contains(T value) {
+        return getValues().contains(value);
+    }
+
+    /**
      * Return the last element of this list, if possible.
      * @return lastElement
      */

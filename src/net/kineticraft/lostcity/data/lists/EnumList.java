@@ -2,7 +2,6 @@ package net.kineticraft.lostcity.data.lists;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
-import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.utils.Utils;
 
 /**
@@ -13,6 +12,10 @@ import net.kineticraft.lostcity.utils.Utils;
 public class EnumList<E extends Enum<E>> extends SaveableList<E> {
 
     private Class<E> enumClass;
+
+    public EnumList() {
+
+    }
 
     public EnumList(Class<E> clazz) {
         this.enumClass = clazz;

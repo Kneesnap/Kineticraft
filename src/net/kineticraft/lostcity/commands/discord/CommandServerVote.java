@@ -29,7 +29,7 @@ public class CommandServerVote extends DiscordCommand {
     private static final int MAX_VOTE_HOURS = 24;
 
     public CommandServerVote() {
-        super(EnumRank.HELPER, "<bill>", "Initiate a server proposal.", "vote");
+        super(EnumRank.TRIAL, "<bill>", "Initiate a server proposal.", "vote");
         setDeleteMessage(true);
         Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(),
                 CommandServerVote::scanChannel, 0L, 20 * 60 * 5L);
@@ -85,7 +85,7 @@ public class CommandServerVote extends DiscordCommand {
         if (!DiscordAPI.isAlive())
             return;
 
-        List<Message> messages = DiscordChannel.ORYX.getChannel().getHistory().retrievePast(25).complete();
+        List<Message> messages = DiscordChannel.ORYX.getChannel().getHistory().retrievePast(75).complete();
         Collections.reverse(messages); // Oldest to newest.
 
         String bill = null;

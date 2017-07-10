@@ -18,15 +18,14 @@ import java.util.stream.Collectors;
 @Getter
 public class TextConfig extends RawConfig {
 
-    private TextBuilder text;
+    private List<String> lines;
 
     @Override
     protected void load(List<String> lines) {
-        text = TextUtils.fromMarkup(lines.stream().collect(Collectors.joining("\n")));
+        this.lines = lines;
     }
 
-    @Override
-    public List<String> getLines() {
-        return Arrays.asList(text.toMarkup().split("\n"));
+    public TextBuilder getText() {
+        return TextUtils.fromMarkup(getLines().stream().collect(Collectors.joining("\n")));
     }
 }

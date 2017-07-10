@@ -29,8 +29,10 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -117,7 +119,9 @@ public class Utils {
      * @return safe
      */
     private static boolean isSafe(Location loc) {
-        return !isSolid(loc.getBlock()) && !isSolid(loc.clone().add(0, 1, 0).getBlock());
+        Material below = loc.clone().subtract(0, 1, 0).getBlock().getType();
+        return !isSolid(loc.getBlock()) && !isSolid(loc.clone().add(0, 1, 0).getBlock())
+                && below != Material.LAVA && below != Material.STATIONARY_LAVA;
     }
 
     /**
@@ -140,7 +144,6 @@ public class Utils {
 
     /**
      * Find the first available 'safe' teleport location.
-     *
      *
      * @param origin
      * @return safe
@@ -264,17 +267,63 @@ public class Utils {
         return formatted.length() > 0 ? formatted.substring(1) : "Now";
     }
 
+    /**
+     * Convert user input ie: "3d 2h" into a date relative to now.
+     * @param input
+     * @return date
+     */
+    public static Date fromInput(String input) {
+        long ms = System.currentTimeMillis();
+        for (String s : input.split(" ")) {
+            String code = s.substring(s.length() - 1, s.length());
+            TimeInterval ti = TimeInterval.getByCode(code);
+            if (ti == null)
+                throw new RuntimeException("Unknown time interval '" + code + "'.");
+            ms += Integer.parseInt(input.substring(0, s.length() - 1)) * ti.getInterval() * 1000;
+        }
+        return Date.from(Instant.ofEpochMilli(ms));
+    }
+
+    /**
+     * Schedule a task to run at a certain time interval.
+     * @param unit - The time unit to schedule at.
+     * @param amount
+     * @param runnable - Code to execute.
+     * @param at - When to schedule the task.
+     */
+    public static void schedule(TimeInterval unit, int amount, Runnable runnable,  int at) {
+        final TimerTask task = new TimerTask() { public void run() { runnable.run(); }}; // Lambda doesn't work on abstract classes.
+        Calendar c = Calendar.getInstance();
+        for (int i = 0; i < unit.ordinal(); i++)
+            c.set(unit.getCalendarId(), i == unit.ordinal() - 1 ? at : 0);
+        new Timer().schedule(task, c.getTime(), TimeUnit.MILLISECONDS.convert(amount, TimeInterval.values()[unit.ordinal() - 1].getUnit()));
+    }
+
     @AllArgsConstructor @Getter
-    private enum TimeInterval {
-        SECOND("s", 1),
-        MINUTE("min", 60 * SECOND.getInterval()),
-        HOUR("hr", 60 * MINUTE.getInterval()),
-        DAY("day", 24 * HOUR.getInterval()),
-        MONTH("month", 30 * DAY.getInterval()),
-        YEAR("yr", 365 * DAY.getInterval());
+    public enum TimeInterval {
+        SECOND("s", TimeUnit.SECONDS, Calendar.SECOND),
+        MINUTE("min", TimeUnit.MINUTES, Calendar.MINUTE),
+        HOUR("hr", TimeUnit.HOURS, Calendar.HOUR_OF_DAY),
+        DAY("day", TimeUnit.DAYS, Calendar.DAY_OF_MONTH),
+        MONTH("month", 30, Calendar.MONTH),
+        YEAR("yr", 365, Calendar.YEAR);
 
         private String suffix;
+        private TimeUnit unit;
         private int interval;
+        private int calendarId;
+
+        TimeInterval(String s, TimeUnit unit, int calendar) {
+            this(s, unit, (int) TimeUnit.SECONDS.convert(1, unit), calendar);
+        }
+
+        TimeInterval(String s, int days, int calendar) {
+            this(s, null, (int) TimeUnit.SECONDS.convert(days, TimeUnit.DAYS), calendar);
+        }
+
+        public static TimeInterval getByCode(String code) {
+            return Arrays.stream(values()).filter(ti -> ti.getSuffix().startsWith(code.toLowerCase())).findFirst().orElse(null);
+        }
     }
 
     /**

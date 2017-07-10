@@ -19,6 +19,7 @@ public enum Metadata {
     LAST_WHISPER(null),
     COMPASS_DEATH(0),
     QUIT(false),
+    VANISH_TIME(0L),
 
     // Entities
     NORMAL_SPEED(.1F), // Normal Walkspeed.

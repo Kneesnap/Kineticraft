@@ -3,6 +3,8 @@ package net.kineticraft.lostcity.commands.player;
 import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.data.QueryTools;
 import net.kineticraft.lostcity.mechanics.Punishments;
+import net.kineticraft.lostcity.mechanics.metadata.Metadata;
+import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -26,7 +28,9 @@ public class CommandSeen extends PlayerCommand {
             return;
 
         QueryTools.getData(args[0], p -> {
-            long seenTime = p.isOnline() ? 0 : System.currentTimeMillis() - Bukkit.getOfflinePlayer(p.getUuid()).getLastPlayed();
+            long seenTime = p.isOnline() ?
+                    (p.isVanished() ? MetadataManager.getMetadata(p.getPlayer(), Metadata.VANISH_TIME).asLong() : 0)
+                    : System.currentTimeMillis() - Bukkit.getOfflinePlayer(p.getUuid()).getLastPlayed();
 
             sender.sendMessage(ChatColor.GRAY + "Showing report of " + ChatColor.GRAY + p.getUsername() + ChatColor.GRAY + ":");
             sender.sendMessage(" - " + ChatColor.GRAY + "Last Seen: " + ChatColor.WHITE + Utils.formatTime(seenTime));

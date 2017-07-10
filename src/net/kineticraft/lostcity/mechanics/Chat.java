@@ -22,11 +22,22 @@ import java.util.regex.Pattern;
  */
 public class Chat extends Mechanic {
 
-    private static final Pattern URL_PATTERN = Pattern.compile("((?:(?:https?)://)?[\\w-_\\.]{2,})\\.([a-zA-Z]{2,3}(?:/\\S+)?)");
+    private static final Pattern URL_PATTERN = Pattern.compile("((?:(?:https?)://)?[-\\w_\\.]{2,})\\.([a-zA-Z]{2,3}(?:/\\S+)?)");
     private static final List<ChatColor> STAFF_ONLY = Arrays.asList(ChatColor.BLACK, ChatColor.MAGIC);
 
     @EventHandler(priority = EventPriority.LOW) // Filter should happen after commands.
     public void onChat(AsyncPlayerChatEvent evt) {
+
+        // Handle mutes.
+        KCPlayer pw = KCPlayer.getWrapper(evt.getPlayer());
+        if (pw.isMuted()) {
+            evt.setCancelled(true);
+            evt.getPlayer().sendMessage(ChatColor.RED + "You are muted for "  + pw.getMute().untilExpiry()+ ".");
+            evt.getPlayer().sendMessage(ChatColor.RED + "Reason: " + pw.getMute().getReason());
+            evt.getPlayer().sendMessage(ChatColor.RED + "Source: " + pw.getMute().getSource());
+            return;
+        }
+
         evt.setMessage(applyAllFilters(evt.getPlayer(), evt.getMessage())); // Apply all filters.
         evt.setFormat(KCPlayer.getWrapper(evt.getPlayer()).getDisplayPrefix() + " %s:" + ChatColor.WHITE + " %s");
 

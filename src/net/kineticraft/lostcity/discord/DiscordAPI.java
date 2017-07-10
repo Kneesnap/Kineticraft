@@ -141,6 +141,15 @@ public class DiscordAPI extends Mechanic {
     }
 
     /**
+     * Send a private message to a discord user.
+     * @param user
+     * @param message
+     */
+    public static void sendPrivate(User user, String message) {
+        user.openPrivateChannel().queue(c -> c.sendMessage(message).queue());
+    }
+
+    /**
      * Set the nickname of a discord user.
      * @param user
      * @param nick

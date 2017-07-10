@@ -7,6 +7,7 @@ import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.DiscordSender;
 import net.kineticraft.lostcity.config.Configs;
+import net.kineticraft.lostcity.data.lists.EnumList;
 import net.kineticraft.lostcity.data.lists.JsonList;
 import net.kineticraft.lostcity.data.lists.StringList;
 import net.kineticraft.lostcity.data.maps.JsonMap;
@@ -14,6 +15,7 @@ import net.kineticraft.lostcity.data.reflect.JsonSerializer;
 import net.kineticraft.lostcity.discord.DiscordAPI;
 import net.kineticraft.lostcity.discord.DiscordChannel;
 import net.kineticraft.lostcity.mechanics.DataHandler;
+import net.kineticraft.lostcity.mechanics.Toggles.Toggle;
 import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
 import net.kineticraft.lostcity.mechanics.metadata.Metadata;
 import net.kineticraft.lostcity.mechanics.Punishments.*;
@@ -57,7 +59,9 @@ public class KCPlayer implements Jsonable {
     private long lastVote;
     private int pendingVotes;
 
+    private Mute mute;
     private JsonList<Punishment> punishments = new JsonList<>();
+    private EnumList<Toggle> toggles = new EnumList<>();
     private JsonMap<Location> homes = new JsonMap<>();
     private JsonList<Location> deaths = new JsonList<>();
     private StringList notes = new StringList();
@@ -93,10 +97,33 @@ public class KCPlayer implements Jsonable {
     }
 
     /**
+     * Mute this player until the given expiry.
+     * @param source
+     * @param expiry
+     * @param reason
+     */
+    public void mute(CommandSender source, Date expiry, String reason) {
+        Dog.PUPPER_PATROL.say(ChatColor.RED + getUsername() + ChatColor.WHITE + " has been muted by "
+                + ChatColor.AQUA + source.getName() + ChatColor.WHITE + ".");
+        setMute(new Mute(expiry.getTime(), reason, source.getName()));
+        if (isOnline())
+            getPlayer().sendMessage(ChatColor.RED + "You have been muted. (" + reason + ")");
+    }
+
+    /**
+     * Is this player muted?
+     * @return muted
+     */
+    public boolean isMuted() {
+        return getMute() != null && !getMute().isExpired();
+    }
+
+    /**
      * Punish this user.
      * If run a-sync it will run next tick.
      *
      * @param type
+     * @param punisher
      */
     public void punish(PunishmentType type, CommandSender punisher) {
         if (!Bukkit.isPrimaryThread()) {
@@ -271,11 +298,31 @@ public class KCPlayer implements Jsonable {
             player.sendMessage(ChatColor.GOLD + "You have " + ChatColor.RED + getMail().size() + ChatColor.GOLD
                     + " unread messages. Use /mail to read them.");
 
-        player.setOp(getRank().isStaff());
+        player.setOp(getRank().isAtLeast(EnumRank.BUILDER));
 
         // Update things.
         setUsername(player.getName());
         setLastIP(player.getAddress().toString().split("/")[1].split(":")[0]);
+    }
+
+    /**
+     * Does this player have a given toggle enabled?
+     * @param toggle
+     * @return state
+     */
+    public boolean getState(Toggle toggle) {
+        return getToggles().contains(toggle) && getRank().isAtLeast(toggle.getMinRank());
+    }
+
+    /**
+     * Toggle a given toggle.
+     * @param toggle
+     */
+    public void toggle(Toggle toggle) {
+        if (!getToggles().remove(toggle))
+            getToggles().add(toggle); // Add the toggle if we did not remove it.
+        if (isOnline())
+            getPlayer().sendMessage(Utils.formatToggle(Utils.capitalize(toggle.name()), getState(toggle)));
     }
 
     /**
@@ -294,6 +341,7 @@ public class KCPlayer implements Jsonable {
     public void vanish(boolean vanishState) {
         setVanished(vanishState);
         Vanish.hidePlayers(getPlayer());
+        MetadataManager.setMetadata(getPlayer(), Metadata.VANISH_TIME, System.currentTimeMillis());
     }
 
     /**
