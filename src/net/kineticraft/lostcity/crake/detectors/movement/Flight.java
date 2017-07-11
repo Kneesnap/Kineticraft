@@ -60,7 +60,7 @@ public class Flight extends Detector {
     private static boolean checkNearby(Block bk) {
         for (int x = -1; x <= 1; x++)
             for (int z = -1; z <= 1; z++)
-                if (Utils.isSolid(bk.getLocation().clone().add(x, 0, z).getBlock()))
+                if (bk.getLocation().clone().add(x, 0, z).getBlock().getType().isSolid())
                     return false;
         return true;
     }

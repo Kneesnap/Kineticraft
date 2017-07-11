@@ -3,6 +3,7 @@ package net.kineticraft.lostcity.commands.staff;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.StaffCommand;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 /**
@@ -18,6 +19,6 @@ public class CommandBroadcast extends StaffCommand {
 
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
-        Core.announce(String.join(" ", args));
+        Core.announce(ChatColor.translateAlternateColorCodes('&', String.join(" ", args)));
     }
 }
