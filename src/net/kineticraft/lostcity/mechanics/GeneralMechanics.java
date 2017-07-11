@@ -26,6 +26,7 @@ import org.bukkit.inventory.Merchant;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Team;
 
 import java.util.stream.Collectors;
 
@@ -95,6 +96,9 @@ public class GeneralMechanics extends Mechanic {
         if (idObjective == null)
             idObjective = Bukkit.getScoreboardManager().getMainScoreboard().registerNewObjective("id", "dummy");
         idObjective.setDisplaySlot(DisplaySlot.PLAYER_LIST);
+
+        // Remove all existing teams. Since they are dynamically generated this makes sure we don't have problems.
+        Bukkit.getScoreboardManager().getMainScoreboard().getTeams().forEach(Team::unregister);
     }
 
     @Override

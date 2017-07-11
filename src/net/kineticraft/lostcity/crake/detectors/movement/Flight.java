@@ -86,6 +86,7 @@ public class Flight extends Detector {
         return player.getGameMode() != GameMode.SURVIVAL
                 || Utils.getRank(player).isAtLeast(EnumRank.MEDIA)
                 || player.isGliding()
-                || player.hasPotionEffect(PotionEffectType.LEVITATION);
+                || player.hasPotionEffect(PotionEffectType.LEVITATION)
+                || player.getVehicle() != null;
     }
 }

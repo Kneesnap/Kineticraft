@@ -847,6 +847,8 @@ public class Utils {
      * @return sameBlock
      */
     public static boolean isSameBlock(Location a, Location b) {
-        return a.getBlock().getLocation().distance(b.getBlock().getLocation()) == 0;
+        return a.getBlockX() == b.getBlockX()
+                && a.getBlockY() == b.getBlockY()
+                && a.getBlockZ() == b.getBlockZ();
     }
 }

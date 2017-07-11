@@ -109,10 +109,12 @@ public enum EnumRank {
         return Arrays.stream(values()).filter(rank -> rank.name().equalsIgnoreCase(name)).findAny().orElse(null);
     }
 
-    public Team getTeam() {
-        Team t = Bukkit.getScoreboardManager().getMainScoreboard().getTeam(name());
+    public Team getTeam() { // Adding zz to staff guarantees it showing at the bottom of the tablist.
+        String teamName = (isStaff() ? "zz" : "") + Utils.capitalize(name());
+
+        Team t = Bukkit.getScoreboardManager().getMainScoreboard().getTeam(teamName);
         if (t == null)
-            t = Bukkit.getScoreboardManager().getMainScoreboard().registerNewTeam(name());
+            t = Bukkit.getScoreboardManager().getMainScoreboard().registerNewTeam(teamName);
 
         t.setColor(getNameColor());
         t.setPrefix(getNameColor().toString());
