@@ -121,7 +121,7 @@ public class Utils {
     private static boolean isSafe(Location loc) {
         return !isSolid(loc.getBlock())
                 && !isSolid(loc.clone().add(0, 1, 0).getBlock())
-                && isSolid(loc.clone().subtract(0, 1, 0).getBlock());
+                && !loc.clone().subtract(0, 1, 0).getBlock().isLiquid();
     }
 
     /**

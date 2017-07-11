@@ -109,8 +109,8 @@ public enum EnumRank {
         return Arrays.stream(values()).filter(rank -> rank.name().equalsIgnoreCase(name)).findAny().orElse(null);
     }
 
-    public Team getTeam() { // Adding zz to staff guarantees it showing at the bottom of the tablist.
-        String teamName = (isStaff() ? "zz" : "") + Utils.capitalize(name());
+    public Team getTeam() { // Adding zz makes it alphebetically last (showing last) on the tablist. Order by rank importance.
+        String teamName = (getNameColor() != ChatColor.GRAY ? "zz" + ordinal() : "") + Utils.capitalize(name());
 
         Team t = Bukkit.getScoreboardManager().getMainScoreboard().getTeam(teamName);
         if (t == null)
