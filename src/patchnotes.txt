@@ -1,17 +1,9 @@
 &8Changes:&0
- - PvP Toggle (/pvp)
- - Jr Mod rank.
- - Remove Helper.
- - [hover=Added /vp]&7Shows the amount of votes until the next vote party.[/hover]
- - Added /mute
- - Theta+ can join while the server is full.
- - Daily backups.
- - Reboot every 12 hours.
- - Automatic rankup.
- - Nerfed weather.
+ - Added /condense
+ - Lag decreased.
+ - Doggos make noise when they talk.
+ - Administrative features.
+ - Expanded book-system.
 
 &8Bugfixes:&0
- - Announcer fixed.
- - /whylag fix (Maybe)
- - Fixed villager error.
- - Top of the nether is not accessible.
+ - Fixed villager leashing.

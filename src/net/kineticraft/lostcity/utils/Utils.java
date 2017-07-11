@@ -119,9 +119,9 @@ public class Utils {
      * @return safe
      */
     private static boolean isSafe(Location loc) {
-        Material below = loc.clone().subtract(0, 1, 0).getBlock().getType();
-        return !isSolid(loc.getBlock()) && !isSolid(loc.clone().add(0, 1, 0).getBlock())
-                && below != Material.LAVA && below != Material.STATIONARY_LAVA;
+        return !isSolid(loc.getBlock())
+                && !isSolid(loc.clone().add(0, 1, 0).getBlock())
+                && isSolid(loc.clone().subtract(0, 1, 0).getBlock());
     }
 
     /**
@@ -130,7 +130,7 @@ public class Utils {
      * @return solid
      */
     public static boolean isSolid(Block bk) {
-        return isSolid(bk.getType());
+        return isSolid(bk.getType()) && !bk.isLiquid();
     }
 
     /**
@@ -838,5 +838,15 @@ public class Utils {
         List<T> add = new ArrayList<>(Arrays.asList(arr));
         add.add(value);
         return add.toArray(arr);
+    }
+
+    /**
+     * Are the two supplied locations in the same block?
+     * @param a
+     * @param b
+     * @return sameBlock
+     */
+    public static boolean isSameBlock(Location a, Location b) {
+        return a.getBlock().getLocation().distance(b.getBlock().getLocation()) == 0;
     }
 }

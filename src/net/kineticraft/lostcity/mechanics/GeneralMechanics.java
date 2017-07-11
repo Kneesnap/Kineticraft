@@ -82,11 +82,11 @@ public class GeneralMechanics extends Mechanic {
                     .filter(p -> nether.equals(p.getWorld()))
                     .forEach(p -> {
                         Location loc = p.getLocation().clone();
-                        loc.setY(125);
+                        loc.setY(124);
 
                         // Make it safe.
                         loc.getBlock().setType(Material.AIR);
-                        loc.clone().subtract(0, 1, 0).getBlock().setType(Material.AIR);
+                        loc.clone().add(0, 1, 0).getBlock().setType(Material.AIR);
                         p.teleport(loc);
                     });
         }, 0L, 20L);

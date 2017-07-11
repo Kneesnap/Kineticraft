@@ -1,6 +1,10 @@
 package net.kineticraft.lostcity.crake;
 
+import net.kineticraft.lostcity.Core;
+import net.kineticraft.lostcity.crake.detectors.Detector;
+import net.kineticraft.lostcity.crake.detectors.movement.Flight;
 import net.kineticraft.lostcity.mechanics.Mechanic;
+import org.bukkit.Bukkit;
 
 /**
  * Crake - Custom cheat detection system.
@@ -8,4 +12,13 @@ import net.kineticraft.lostcity.mechanics.Mechanic;
  * Created by Kneesnap on 6/17/2017.
  */
 public class Crake extends Mechanic {
+
+    @Override
+    public void onEnable() {
+        addDetector(new Flight());
+    }
+
+    public static void addDetector(Detector d) {
+        Bukkit.getPluginManager().registerEvents(d, Core.getInstance());
+    }
 }

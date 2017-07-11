@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 
 /**
  * An easy book builder.
- * TODO: Allow book editting.
  *
  * Created by Kneesnap on 6/11/2017.
  */

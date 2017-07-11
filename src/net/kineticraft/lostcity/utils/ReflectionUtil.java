@@ -174,6 +174,16 @@ public class ReflectionUtil {
         setField(o, o.getClass(), varName, val);
     }
 
+    /**
+     * Get a static value from a class.
+     * @param clazz
+     * @param field
+     * @return value
+     */
+    public static Object getField(Class<?> clazz, String field) {
+        return getField(null, clazz, field);
+    }
+
     public static Object getField(Object o, String field) {
         return getField(o, o.getClass(), field);
     }

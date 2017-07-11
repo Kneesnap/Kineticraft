@@ -20,14 +20,15 @@ public class Leashes extends Mechanic {
 
     @EventHandler(ignoreCancelled = true)
     public void onLeash(PlayerInteractAtEntityEvent evt) {
-        if (!(evt.getRightClicked() instanceof LivingEntity))
+        if (!(evt.getRightClicked() instanceof Villager))
             return;
 
         LivingEntity e = (LivingEntity) evt.getRightClicked();
         ItemStack hand = evt.getPlayer().getInventory().getItem(evt.getHand());
-        if (!(e instanceof Villager) || hand == null || hand.getType() != Material.LEASH || !e.isLeashed())
+        if (hand == null || hand.getType() != Material.LEASH || e.isLeashed())
             return;
 
+        evt.setCancelled(true); // Don't open merchant GUI.
         Utils.useItem(hand);
         Bukkit.getScheduler().runTask(Core.getInstance(), () -> e.setLeashHolder(evt.getPlayer()));
     }

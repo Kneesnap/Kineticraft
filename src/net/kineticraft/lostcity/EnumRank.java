@@ -3,7 +3,9 @@ package net.kineticraft.lostcity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.kineticraft.lostcity.utils.Utils;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.scoreboard.Team;
 
 import java.util.Arrays;
 
@@ -105,5 +107,15 @@ public enum EnumRank {
      */
     public static EnumRank getByName(String name) {
         return Arrays.stream(values()).filter(rank -> rank.name().equalsIgnoreCase(name)).findAny().orElse(null);
+    }
+
+    public Team getTeam() {
+        Team t = Bukkit.getScoreboardManager().getMainScoreboard().getTeam(name());
+        if (t == null)
+            t = Bukkit.getScoreboardManager().getMainScoreboard().registerNewTeam(name());
+
+        t.setColor(getNameColor());
+        t.setPrefix(getNameColor().toString());
+        return t;
     }
 }

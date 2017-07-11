@@ -5,10 +5,7 @@ import lombok.Getter;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.item.display.*;
 import net.kineticraft.lostcity.item.items.ItemArmorStand;
-import net.kineticraft.lostcity.item.items.books.ItemBook;
-import net.kineticraft.lostcity.item.items.books.ItemBookFile;
-import net.kineticraft.lostcity.item.items.books.ItemPatchBook;
-import net.kineticraft.lostcity.item.items.books.ItemTPABook;
+import net.kineticraft.lostcity.item.items.books.*;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -20,6 +17,7 @@ import java.lang.reflect.InvocationTargetException;
 @AllArgsConstructor @Getter
 public enum ItemType {
 
+    INPUT_BOOK(ItemInputBook.class),
     PATCHNOTES_BOOK(ItemPatchBook.class),
     FILE_BOOK(ItemBookFile.class),
     TPA_BOOK(ItemTPABook.class),

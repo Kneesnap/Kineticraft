@@ -137,4 +137,12 @@ public class ServerUtils {
     public static boolean isBetaServer() {
         return getType() == BuildType.BETA;
     }
+
+    /**
+     * Get the current tick of the server.
+     * @return tick
+     */
+    public static int getCurrentTick() {
+        return (int) ReflectionUtil.getField(ReflectionUtil.getNMS("MinecraftServer"), "currentTick");
+    }
 }

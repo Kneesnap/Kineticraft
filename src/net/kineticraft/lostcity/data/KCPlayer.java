@@ -291,7 +291,7 @@ public class KCPlayer implements Jsonable {
 
         Player player = getPlayer();
         player.setDisplayName(getNickname() != null ? getNickname() : player.getName());
-        player.setPlayerListName(getDisplayName()); // Update tab name.
+        getTemporaryRank().getTeam().addPlayer(player);
         Voting.giveRewards(player); // Give vote rewards, if any.
 
         if (!getMail().isEmpty())

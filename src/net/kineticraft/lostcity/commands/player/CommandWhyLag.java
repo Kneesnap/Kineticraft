@@ -54,9 +54,6 @@ public class CommandWhyLag extends PlayerCommand {
             sender.sendMessage(ChatColor.GOLD + "Possible Lag Causes: ");
             Arrays.stream(LagCause.values()).filter(LagCause::isPossible).map(LagCause::getMessage).forEach(sender::sendMessage);
         }
-
-        if (Utils.getRank(sender).isAtLeast(EnumRank.DEV))
-            ServerManager.getTpsQueue().stream().map(t -> ChatColor.GRAY + " - " + t).forEach(sender::sendMessage);
     }
 
     /**
