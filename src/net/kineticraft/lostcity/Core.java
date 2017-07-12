@@ -1,5 +1,6 @@
 package net.kineticraft.lostcity;
 
+import com.google.common.collect.Sets;
 import lombok.Getter;
 import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.discord.DiscordAPI;
@@ -16,9 +17,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -99,7 +98,7 @@ public class Core extends JavaPlugin {
      * @param message
      */
     public static void alert(EnumRank minRank, DiscordChannel channel, String message) {
-        Bukkit.getOnlinePlayers().stream().map(KCPlayer::getWrapper).filter(pw -> pw.getRank().isAtLeast(minRank))
+        getOnlineAsync().stream().map(KCPlayer::getWrapper).filter(pw -> pw.getRank().isAtLeast(minRank))
                 .map(KCPlayer::getPlayer).forEach(p -> p.sendMessage(message));
         Bukkit.getConsoleSender().sendMessage(message);
 
@@ -150,13 +149,21 @@ public class Core extends JavaPlugin {
      * @return players
      */
     public static List<Player> getOnlinePlayers() {
-        List<Player> players = new ArrayList<>(Bukkit.getOnlinePlayers());
+        List<Player> players = new ArrayList<>(getOnlineAsync());
         players.removeAll(getHiddenPlayers());
         return players;
     }
 
     public static List<Player> getHiddenPlayers() {
-        return Bukkit.getOnlinePlayers().stream().filter(p -> KCPlayer.getWrapper(p).isVanished()).collect(Collectors.toList());
+        return getOnlineAsync().stream().filter(p -> KCPlayer.getWrapper(p).isVanished()).collect(Collectors.toList());
+    }
+
+    /**
+     * Get all online players, safe for async operations.
+     * @return players
+     */
+    public static Set<Player> getOnlineAsync() {
+        return new HashSet<>(Bukkit.getOnlinePlayers());
     }
 
     /**

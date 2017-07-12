@@ -211,6 +211,8 @@ public class Utils {
                         Bukkit.getScheduler().runTask(Core.getInstance(), () -> player.teleport(safe));
                     player.teleport(safe);
                     player.playSound(player.getLocation(), Sound.BLOCK_LAVA_POP, 1F, 1.333F);
+
+                    KCPlayer.getWrapper(player).updatePlayer(); // Show unread mail.
                 }
 
                 tpTime[0]--;

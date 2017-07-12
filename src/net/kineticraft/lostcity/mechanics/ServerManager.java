@@ -8,7 +8,12 @@ import net.kineticraft.lostcity.utils.ServerUtils;
 import net.kineticraft.lostcity.utils.TextUtils;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Manages basic core server utilities such as backing up, rebooting, announcements, lag controller, etc.
@@ -52,11 +57,35 @@ public class ServerManager extends Mechanic {
                 ServerUtils.takeBackup();
                 ServerUtils.reboot(3600);
             }, 23 * 60 * 60 * 20L);
+
+        Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), () -> {
+            List<Chunk> unload = new ArrayList<>();
+            Bukkit.getWorlds().forEach(w -> Stream.of(w.getLoadedChunks()).filter(Chunk::isLoaded)
+                    .filter(ServerManager::shouldUnload).forEach(unload::add));
+            if (!unload.isEmpty())
+                Core.alertStaff("Unloading " + unload.size() + " chunks.");
+
+            Bukkit.getScheduler().runTask(Core.getInstance(), () -> unload.forEach(Chunk::unload));
+        }, 0L, 60 * 20L);
     }
 
     @Override
     public void onJoin(Player player) {
         player.setViewDistance(getRenderDistance());
+    }
+
+    /**
+     * Get if a player is within render distance of a given chunk.
+     * @param c
+     * @return shouldUnload
+     */
+    private static boolean shouldUnload(Chunk c) {
+        int render = getRenderDistance();
+        for (Player p : Core.getOnlineAsync())
+            if (Math.abs((p.getLocation().getBlockX() / 16) - c.getX()) <= render
+                    && Math.abs((p.getLocation().getBlockZ() / 16) - c.getZ()) <= render)
+                return false;
+        return true;
     }
 
     /**

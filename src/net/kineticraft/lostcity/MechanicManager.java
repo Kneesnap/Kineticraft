@@ -6,6 +6,7 @@ import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.crake.Crake;
 import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.discord.DiscordAPI;
+import net.kineticraft.lostcity.dungeons.Dungeons;
 import net.kineticraft.lostcity.guis.GUIManager;
 import net.kineticraft.lostcity.item.Items;
 import net.kineticraft.lostcity.mechanics.*;
@@ -58,6 +59,7 @@ public class MechanicManager implements Listener {
         CUSTOM_ITEMS(Items.class),
         CHAT(Chat.class),
         COMPASS(CompassMechanics.class),
+        DUNGEONS(Dungeons.class),
         FARM_LIMIT(FarmLimiter.class),
         LEASHES(Leashes.class),
         ENCHANTS(Enchants.class),

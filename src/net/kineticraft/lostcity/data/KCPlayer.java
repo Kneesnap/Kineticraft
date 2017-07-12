@@ -136,7 +136,7 @@ public class KCPlayer implements Jsonable {
                 + ChatColor.WHITE + ".");
 
         getPunishments().add(new Punishment(type, punisher.getName()));
-        Dog.OFFICER_BORKLEY.say("Arf Arf! Punishment: " + ChatColor.YELLOW + Utils.formatTimeFull(getPunishExpiry())
+        Dog.OFFICER_BORKLEY.say("Arf Arf! Expires: " + ChatColor.YELLOW + Utils.formatTimeFull(getPunishExpiry())
                 + ChatColor.WHITE + ".");
 
         if (isOnline())

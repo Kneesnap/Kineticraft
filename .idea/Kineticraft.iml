@@ -22,5 +22,6 @@
     <orderEntry type="library" name="Votifier" level="project" />
     <orderEntry type="library" name="spigot_1.12" level="project" />
     <orderEntry type="library" name="JDA" level="project" />
+    <orderEntry type="library" name="ProtocolLib" level="project" />
   </component>
 </module>

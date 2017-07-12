@@ -1,9 +1,9 @@
 &8Changes:&0
- - Added /condense
- - Lag decreased.
- - Doggos make noise when they talk.
- - Administrative features.
- - Expanded book-system.
+ - Even more anti-lag measures.
+ - Added /list
+ - Expanded upon backend systems.
+ - Started coding Dungeon-System.
 
 &8Bugfixes:&0
- - Fixed villager leashing.
+ - /condense behaves correctly.
+ - Updated /ranks display.
