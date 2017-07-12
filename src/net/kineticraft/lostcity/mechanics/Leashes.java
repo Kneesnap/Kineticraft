@@ -4,12 +4,15 @@ import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Villager;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Allows players to leash entities.
@@ -18,9 +21,11 @@ import org.bukkit.inventory.ItemStack;
  */
 public class Leashes extends Mechanic {
 
+    private static final List<EntityType> LEASHABLE = Arrays.asList(EntityType.VILLAGER, EntityType.SKELETON_HORSE);
+
     @EventHandler(ignoreCancelled = true)
     public void onLeash(PlayerInteractAtEntityEvent evt) {
-        if (!(evt.getRightClicked() instanceof Villager))
+        if (!LEASHABLE.contains(evt.getRightClicked().getType()))
             return;
 
         LivingEntity e = (LivingEntity) evt.getRightClicked();

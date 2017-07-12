@@ -1,9 +1,5 @@
 &8Changes:&0
- - Even more anti-lag measures.
- - Added /list
- - Expanded upon backend systems.
- - Started coding Dungeon-System.
+ - Leash skeleton horses.
 
 &8Bugfixes:&0
- - /condense behaves correctly.
- - Updated /ranks display.
+ -
