@@ -9,6 +9,9 @@ import net.kineticraft.lostcity.utils.TextUtils;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
+import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_12_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -65,13 +68,13 @@ public class ServerManager extends Mechanic {
             if (!unload.isEmpty())
                 Core.alertStaff("Unloading " + unload.size() + " chunks.");
 
-            Bukkit.getScheduler().runTask(Core.getInstance(), () -> unload.forEach(Chunk::unload));
+            Bukkit.getScheduler().runTask(Core.getInstance(), () -> unload.stream().filter(c -> !c.unload())
+                    .map(c -> ((CraftWorld) c.getWorld()).getHandle().getPlayerChunkMap().getChunk(c.getX(), c.getZ()))
+                    .forEach(c -> {
+                        System.out.println("Chunk " + c.a());
+                        System.out.println("Players: " + c.c.size());
+                    }));
         }, 0L, 60 * 20L);
-    }
-
-    @Override
-    public void onJoin(Player player) {
-        player.setViewDistance(getRenderDistance());
     }
 
     /**
@@ -80,12 +83,10 @@ public class ServerManager extends Mechanic {
      * @return shouldUnload
      */
     private static boolean shouldUnload(Chunk c) {
-        int render = getRenderDistance();
-        for (Player p : Core.getOnlineAsync())
-            if (Math.abs((p.getLocation().getBlockX() / 16) - c.getX()) <= render
-                    && Math.abs((p.getLocation().getBlockZ() / 16) - c.getZ()) <= render)
-                return false;
-        return true;
+        int render = getRenderDistance() + 1;
+
+        return Core.getOnlineAsync().stream().map(Player::getLocation).map(Location::getChunk)
+                .noneMatch(chk -> Math.abs(chk.getX() - c.getX()) <= render || Math.abs(chk.getZ() - c.getZ()) <= render);
     }
 
     /**
@@ -93,12 +94,10 @@ public class ServerManager extends Mechanic {
      * @param newDistance
      */
     public static void setRenderDistance(int newDistance) {
-        newDistance = Math.max(MIN_RENDER, Math.min(newDistance, MAX_RENDER));
-        if (newDistance == getRenderDistance())
-            return; // Don't waste resources changing the render distance every pulse, only when it should change.
-
-        renderDistance = newDistance;
-        Bukkit.getOnlinePlayers().forEach(p -> p.setViewDistance(getRenderDistance()));
+        // MCP = setViewDistance(int i)
+        renderDistance = Math.max(MIN_RENDER, Math.min(newDistance, MAX_RENDER));
+        ((CraftServer) Bukkit.getServer()).getServer().getPlayerList().a(renderDistance);
+        Bukkit.getWorlds().forEach(w -> ((CraftWorld) w).getHandle().spigotConfig.viewDistance = renderDistance);
     }
 
     /**

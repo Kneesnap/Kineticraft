@@ -83,7 +83,7 @@ public class DiscordAPI extends Mechanic {
      * @return alive
      */
     public static boolean isAlive() {
-        return getBot() != null && !ServerUtils.isDevServer();
+        return getBot() != null && !ServerUtils.isDevServer() && Configs.getMainConfig().getServerId() != 0;
     }
 
     /**

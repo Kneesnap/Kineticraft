@@ -28,7 +28,7 @@ public class CommandCondense extends PlayerCommand {
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
         Player player = (Player) sender;
-        for (int i = 0; i < player.getInventory().getSize(); i++) {
+        for (int i = 0; i < 36; i++) {
             ItemStack item = player.getInventory().getItem(i);
             player.getInventory().setItem(i, null);
             if (item == null || item.getType() == Material.AIR)

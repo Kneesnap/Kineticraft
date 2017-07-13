@@ -65,6 +65,7 @@ public class Commands extends Mechanic {
         // Register player commands
         addCommand(new CommandCondense());
         addCommand(new CommandDelHome());
+        addCommand(new CommandExtinguish());
         addCommand(new CommandHelp());
         addCommand(new CommandHat());
         addCommand(new CommandHome());
@@ -104,6 +105,7 @@ public class Commands extends Mechanic {
         addCommand(new CommandMute());
         addCommand(new CommandNear());
         addCommand(new CommandPunish());
+        addCommand(new CommandPurchase());
         addCommand(new CommandReboot());
         addCommand(new CommandRescue());
         addCommand(new CommandSetRank());

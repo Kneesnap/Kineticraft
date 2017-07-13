@@ -33,9 +33,9 @@ public class CommandList extends PlayerCommand {
     private void sendGroup(CommandSender sender, EnumRank rank) {
         String players = Core.getOnlinePlayers().stream().map(KCPlayer::getWrapper)
                 .filter(p -> p.getRank() == rank).map(KCPlayer::getUsername)
-                .collect(Collectors.joining(ChatColor.GRAY + ", " + ChatColor.WHITE));
+                .collect(Collectors.joining(ChatColor.WHITE + ", " + ChatColor.GRAY));
 
         if (players.length() > 0)
-            sender.sendMessage(rank.getColor() + rank.getName() + ChatColor.GRAY + ": " + players);
+            sender.sendMessage(rank.getColor() + rank.getName() + ChatColor.WHITE + ": " + ChatColor.GRAY + players);
     }
 }

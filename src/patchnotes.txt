@@ -1,5 +1,7 @@
 &8Changes:&0
  - Leash skeleton horses.
+ - Added /ext.
 
 &8Bugfixes:&0
- -
+ - /condense does not touch armor.
+ - Fixed some bugs in anti-lag system.
