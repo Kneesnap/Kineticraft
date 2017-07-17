@@ -2,6 +2,7 @@ package net.kineticraft.lostcity.commands.player;
 
 import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.data.KCPlayer;
+import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -25,11 +26,9 @@ public class CommandRealName extends PlayerCommand {
 
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
-        String search = args[0].toLowerCase();
         List<String> matches = Bukkit.getOnlinePlayers().stream().map(KCPlayer::getWrapper)
-                .filter(k -> k.getNickname() != null) // Verify they have a nickname.
-                .filter(k -> ChatColor.stripColor(k.getNickname()).toLowerCase().contains(search)
-                    || k.getUsername().toLowerCase().contains(search)).map(KCPlayer::getUsername).collect(Collectors.toList());
+                .filter(k -> Utils.containsIgnoreCase(k.getNickname(), args[0]) || Utils.containsIgnoreCase(k.getUsername(), args[0]))
+                .map(KCPlayer::getUsername).collect(Collectors.toList());
 
         sender.sendMessage(ChatColor.GRAY + "Matches: " + (matches.isEmpty() ? ChatColor.RED + "None"
                 : matches.stream().collect(Collectors.joining(ChatColor.GRAY + ", " + ChatColor.GREEN,

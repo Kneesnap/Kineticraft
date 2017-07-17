@@ -9,6 +9,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -24,14 +25,14 @@ public class Leashes extends Mechanic {
 
     private static final List<EntityType> LEASHABLE = Arrays.asList(EntityType.VILLAGER, EntityType.SKELETON_HORSE);
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    public void onLeash(PlayerInteractAtEntityEvent evt) {
+    @EventHandler(ignoreCancelled = true)
+    public void onLeash(PlayerInteractEntityEvent evt) {
         if (!LEASHABLE.contains(evt.getRightClicked().getType()))
             return;
 
         LivingEntity e = (LivingEntity) evt.getRightClicked();
         ItemStack hand = evt.getPlayer().getInventory().getItem(evt.getHand());
-        if (hand == null || hand.getType() != Material.LEASH || e.isLeashed() || Utils.isProtected(evt.getPlayer(), e.getLocation()))
+        if (hand == null || hand.getType() != Material.LEASH || e.isLeashed())
             return;
 
         evt.setCancelled(true); // Don't open merchant GUI.

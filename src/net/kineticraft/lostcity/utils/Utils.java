@@ -889,4 +889,25 @@ public class Utils {
         Bukkit.getPluginManager().callEvent(evt);
         return evt.isCancelled();
     }
+
+    /**
+     * Get whether or not an entity is in a protected area.
+     * @param player
+     * @param target
+     * @return protected
+     */
+    public static boolean isProtected(Player player, Entity target) {
+        return isProtected(player, target.getLocation());
+    }
+
+    /**
+     * Check if a string contains a substring regardless of case. Null-safe. Ignores color codes.
+     * @param s1
+     * @param substring
+     * @return contains
+     */
+    public static boolean containsIgnoreCase(String s1, String substring) {
+        return s1 != null && substring != null
+                && ChatColor.stripColor(s1).toLowerCase().contains(ChatColor.stripColor(substring).toLowerCase());
+    }
 }

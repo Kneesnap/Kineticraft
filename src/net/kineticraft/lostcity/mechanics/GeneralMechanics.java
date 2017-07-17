@@ -144,8 +144,10 @@ public class GeneralMechanics extends Mechanic {
     @EventHandler // Prevent players from renaming villagers in spawn.
     public void onNameTagUsage(PlayerInteractEntityEvent evt) {
         if (evt.getPlayer().getInventory().getItem(evt.getHand()).getType() == Material.NAME_TAG
-                && Utils.inSpawn(evt.getPlayer().getLocation()))
+                && Utils.inSpawn(evt.getRightClicked().getLocation())) {
             evt.setCancelled(true);
+            evt.getPlayer().updateInventory();
+        }
     }
 
     @EventHandler
@@ -194,7 +196,7 @@ public class GeneralMechanics extends Mechanic {
 
     @EventHandler
     public void onLightningStrike(LightningStrikeEvent evt) {
-        if (Utils.randChance(2))
+        if (Utils.nextBool())
             evt.setCancelled(true);
     }
 }
