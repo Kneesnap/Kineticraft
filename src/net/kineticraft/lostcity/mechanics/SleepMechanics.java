@@ -17,7 +17,7 @@ import org.bukkit.event.player.PlayerBedLeaveEvent;
  */
 public class SleepMechanics extends Mechanic {
 
-    private static final double PERCENT_NEEDED = .4F; // The percentage of players needed to skip a night.
+    private static final double PERCENT_NEEDED = .1F; // The percentage of players needed to skip a night.
 
     public static void skipNight() {
         if (getSleepCount() < getNeededPlayers())

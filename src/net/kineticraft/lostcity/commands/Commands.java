@@ -258,7 +258,7 @@ public class Commands extends Mechanic {
         Utils.removeDuplicates(evt.getCompletions()); // Remove duplicate entries, if any.
     }
 
-    @EventHandler(priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onCommand(PlayerCommandPreprocessEvent evt) {
         Player p = evt.getPlayer();
         String input = evt.getMessage();
@@ -276,7 +276,7 @@ public class Commands extends Mechanic {
             Core.alertStaff(p.getName() + ": " + ChatColor.GRAY + input);
     }
 
-    @EventHandler(priority = EventPriority.LOW)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onServerCommand(ServerCommandEvent evt) {
         if (handleCommand(evt.getSender(), CommandType.SLASH, CommandType.SLASH.getPrefix() + evt.getCommand()))
             evt.setCancelled(true); // Handle console commands.

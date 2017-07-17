@@ -28,9 +28,10 @@ public class CommandSeen extends PlayerCommand {
             return;
 
         QueryTools.getData(args[0], p -> {
-            long seenTime = p.isOnline() ?
-                    (p.isVanished() ? MetadataManager.getMetadata(p.getPlayer(), Metadata.VANISH_TIME).asLong() : 0)
-                    : System.currentTimeMillis() - Bukkit.getOfflinePlayer(p.getUuid()).getLastPlayed();
+            long now = System.currentTimeMillis();
+            long seenTime = now - (p.isOnline() ?
+                    (p.isVanished() ? MetadataManager.getMetadata(p.getPlayer(), Metadata.VANISH_TIME).asLong() : now)
+                    : Bukkit.getOfflinePlayer(p.getUuid()).getLastPlayed());
 
             sender.sendMessage(ChatColor.GRAY + "Showing report of " + ChatColor.GRAY + p.getUsername() + ChatColor.GRAY + ":");
             sender.sendMessage(" - " + ChatColor.GRAY + "Last Seen: " + ChatColor.WHITE + Utils.formatTime(seenTime));

@@ -1,6 +1,7 @@
 package net.kineticraft.lostcity.mechanics;
 
 import net.kineticraft.lostcity.Core;
+import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -62,9 +63,12 @@ public class Restrictions extends Mechanic {
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent evt) {
-        if (evt.getBlock().getType() == Material.DIAMOND_ORE)
-            Core.alertStaff(ChatColor.BLUE + evt.getPlayer().getName() + " mined some "
-                    + ChatColor.AQUA + "diamond ore" + ChatColor.BLUE + ".");
+        if (evt.getBlock().getType() != Material.DIAMOND_ORE || evt.getBlock().getLocation().getY() > 20)
+            return;
+
+        Core.alertStaff(ChatColor.BLUE + evt.getPlayer().getName() + " mined some "
+                + ChatColor.AQUA + "diamond ore" + ChatColor.BLUE + ".");
+        MetadataManager.setCooldown(evt.getPlayer(), "lastDiamond", 6000); // 5 minutes
     }
 
     @Override

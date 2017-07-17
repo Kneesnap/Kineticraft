@@ -71,7 +71,10 @@ public class Voting extends Mechanic {
             doVoteParty();
         }
 
-        QueryTools.getData(username, player ->  {
+        QueryTools.getData(username, player -> {
+            if (!username.equalsIgnoreCase(player.getUsername()))
+                return; // Players are using a short-hand version of their name to get the reward twice.
+
             player.setMonthlyVotes(player.getMonthlyVotes() + 1);
             player.setPendingVotes(player.getPendingVotes() + 1);
             player.setLastVote(System.currentTimeMillis());

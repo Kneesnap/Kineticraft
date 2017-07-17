@@ -36,7 +36,7 @@ public class Flight extends Detector {
         Block b = p.getLocation().getBlock();
         if (isImmune(p) // Verify we should get an alert from this player.
                 || Utils.isSameBlock(evt.getFrom(), evt.getTo()) // Check they've moved at least to the next block.
-                || !checkNearby(b.getRelative(BlockFace.DOWN))) // Check if a block is nearby them.
+                || !checkNearby(b)) // Check if a block is nearby them.
             return;
 
         double yDif = evt.getTo().getY() - evt.getFrom().getY();
@@ -59,9 +59,10 @@ public class Flight extends Detector {
      */
     private static boolean checkNearby(Block bk) {
         for (int x = -1; x <= 1; x++)
-            for (int z = -1; z <= 1; z++)
-                if (bk.getLocation().clone().add(x, 0, z).getBlock().getType().isSolid())
-                    return false;
+            for (int y = -1; y <= 0; y++)
+                for (int z = -1; z <= 1; z++)
+                    if (bk.getLocation().clone().add(x, y, z).getBlock().getType().isSolid())
+                        return false;
         return true;
     }
 

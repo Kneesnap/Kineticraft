@@ -20,6 +20,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -205,7 +206,7 @@ public class Utils {
                 if (tpTime[0] > 0) {
                     player.sendMessage(ChatColor.WHITE + "Teleporting... " + ChatColor.UNDERLINE + tpTime[0] + "s");
                 } else {
-                    player.setNoDamageTicks(100);
+                    player.setNoDamageTicks(300); // 15 Seconds
                     final Location safe = findSafe(location.clone());
                     if (player.getWorld() != safe.getWorld()) // If teleporting cross-dimensionally we'll need to teleport them again.
                         Bukkit.getScheduler().runTask(Core.getInstance(), () -> player.teleport(safe));
@@ -379,6 +380,16 @@ public class Utils {
      */
     public static int randInt(int min, int max) {
         return max + min > 0 ? nextInt(max - min) + min : 0;
+    }
+
+    /**
+     * Generate a random number between two doubles.
+     * @param min
+     * @param max
+     * @return rand
+     */
+    public static double randDouble(double min, double max) {
+        return ThreadLocalRandom.current().nextDouble(min, max);
     }
 
     /**
@@ -852,5 +863,30 @@ public class Utils {
         return a.getBlockX() == b.getBlockX()
                 && a.getBlockY() == b.getBlockY()
                 && a.getBlockZ() == b.getBlockZ();
+    }
+
+    /**
+     * Get a random location within given bounds from an original location.
+     * @param start
+     * @param x
+     * @param y
+     * @param z
+     * @return loc
+     */
+    public static Location scatter(Location start, double x, double y, double z) {
+        return start.clone().add(randDouble(-x, x), randDouble(-y, y), randDouble(-z, z));
+    }
+
+    /**
+     * Is the given location protected to the given player?
+     * @param player
+     * @param loc
+     * @return protected
+     */
+    public static boolean isProtected(Player player, Location loc) {
+        BlockBreakEvent evt = new BlockBreakEvent(loc.getBlock(), player);
+        evt.setDropItems(false);
+        Bukkit.getPluginManager().callEvent(evt);
+        return evt.isCancelled();
     }
 }

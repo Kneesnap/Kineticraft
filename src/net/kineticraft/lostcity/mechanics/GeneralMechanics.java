@@ -134,11 +134,18 @@ public class GeneralMechanics extends Mechanic {
         idObjective.getScore(player.getName()).setScore(KCPlayer.getWrapper(player).getAccountId());
     }
 
-    @EventHandler
+    @EventHandler // Allow editting of villager trades.
     public void onVillagerInteract(PlayerInteractEntityEvent evt) {
         if (evt.getRightClicked() instanceof Merchant && evt.getPlayer().isSneaking()
                 && Utils.getRank(evt.getPlayer()).isAtLeast(EnumRank.MOD))
             new GUIMerchantEditor(evt.getPlayer(), (Merchant) evt.getRightClicked());
+    }
+
+    @EventHandler // Prevent players from renaming villagers in spawn.
+    public void onNameTagUsage(PlayerInteractEntityEvent evt) {
+        if (evt.getPlayer().getInventory().getItem(evt.getHand()).getType() == Material.NAME_TAG
+                && Utils.inSpawn(evt.getPlayer().getLocation()))
+            evt.setCancelled(true);
     }
 
     @EventHandler

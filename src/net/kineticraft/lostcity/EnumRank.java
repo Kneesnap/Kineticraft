@@ -110,7 +110,7 @@ public enum EnumRank {
     }
 
     public Team getTeam() { // Adding zz makes it alphebetically last (showing last) on the tablist. Order by rank importance.
-        String teamName = (isAtLeast(THETA) ? "zz" + (ordinal() - THETA.ordinal() + 1) : "") + Utils.capitalize(name());
+        String teamName = isAtLeast(THETA) ? "zz" + (ordinal() - THETA.ordinal() + 1) + Utils.capitalize(name()) : "Default";
 
         Team t = Bukkit.getScoreboardManager().getMainScoreboard().getTeam(teamName);
         if (t == null)

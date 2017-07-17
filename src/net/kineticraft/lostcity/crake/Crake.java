@@ -2,6 +2,7 @@ package net.kineticraft.lostcity.crake;
 
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.crake.detectors.Detector;
+import net.kineticraft.lostcity.crake.detectors.misc.Xray;
 import net.kineticraft.lostcity.crake.detectors.movement.Flight;
 import net.kineticraft.lostcity.mechanics.Mechanic;
 import org.bukkit.Bukkit;
@@ -16,6 +17,7 @@ public class Crake extends Mechanic {
     @Override
     public void onEnable() {
         addDetector(new Flight());
+        addDetector(new Xray());
     }
 
     public static void addDetector(Detector d) {

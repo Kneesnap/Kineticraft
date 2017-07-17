@@ -54,13 +54,15 @@ public class ServerManager extends Mechanic {
             lastPoll = startTime;
         }, 0L, TPS_INTERVAL);
 
-        if (!ServerUtils.isDevServer())
+        if (!ServerUtils.isDevServer()) {
             // Reboot after 12 hours of uptime.
             Bukkit.getScheduler().runTaskLater(Core.getInstance(), () -> {
                 ServerUtils.takeBackup();
                 ServerUtils.reboot(3600);
             }, 23 * 60 * 60 * 20L);
+        }
 
+        // Unload any chunks not caught by
         Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), () -> {
             List<Chunk> unload = new ArrayList<>();
             Bukkit.getWorlds().forEach(w -> Stream.of(w.getLoadedChunks()).filter(Chunk::isLoaded)
@@ -68,12 +70,7 @@ public class ServerManager extends Mechanic {
             if (!unload.isEmpty())
                 Core.alertStaff("Unloading " + unload.size() + " chunks.");
 
-            Bukkit.getScheduler().runTask(Core.getInstance(), () -> unload.stream().filter(c -> !c.unload())
-                    .map(c -> ((CraftWorld) c.getWorld()).getHandle().getPlayerChunkMap().getChunk(c.getX(), c.getZ()))
-                    .forEach(c -> {
-                        System.out.println("Chunk " + c.a());
-                        System.out.println("Players: " + c.c.size());
-                    }));
+            Bukkit.getScheduler().runTask(Core.getInstance(), () -> unload.forEach(Chunk::unload));
         }, 0L, 60 * 20L);
     }
 

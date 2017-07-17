@@ -19,11 +19,29 @@ public class Detection {
     }
 
     /**
+     * Returns whether or not this tick has expired based on time only.
+     * If it has, it executes onExpire.
+     * @return old
+     */
+    public boolean isOld(int expireTicks) {
+        boolean old = expireTicks >= 0 && ServerUtils.getCurrentTick() > getTick() + expireTicks;
+        if (old)
+            onExpire();
+        return old;
+    }
+
+    /**
      * Has this detection gone invalid?
-     *
      * @return expired
      */
     public boolean hasExpired() {
         return !getPlayer().isOnline();
+    }
+
+    /**
+     * Calls when this detection is deleted because it was too old.
+     */
+    public void onExpire() {
+
     }
 }

@@ -6,6 +6,7 @@ import net.kineticraft.lostcity.item.ItemManager;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * Allow players to spawn in skulls of a certain player.
@@ -15,12 +16,15 @@ import org.bukkit.entity.Player;
 public class CommandSkull extends PlayerCommand {
 
     public CommandSkull() {
-        super(EnumRank.GAMMA, "<name>", "Spawn a skull-item.", "skull");
+        super(EnumRank.PHI, "<name> [amount]", "Spawn a skull-item.", "skull");
         autocompleteOnline();
     }
 
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
-        Utils.giveItem((Player) sender, ItemManager.makeSkull(args[0]));
+        ItemStack skull = ItemManager.makeSkull(args[0]);
+        if (args.length > 1)
+            skull.setAmount(Math.max(1, Math.min(Integer.parseInt(args[1]), 64)));
+        Utils.giveItem((Player) sender, skull);
     }
 }
