@@ -1,9 +1,6 @@
 &8Changes:&0
- - /stack doesn't move items.
- - Added /pweather
- - Increased sleep requirement to skip night
- - Improved Crake.
+ - Item mail system.
+ - /mailbox
 
 &8Bugfixes:&0
- - Prevent trading tpbooks to villagers
- - Slime chunk finder.
+ -

@@ -73,6 +73,7 @@ public class Commands extends Mechanic {
         addCommand(new CommandList());
         addCommand(new CommandMessage());
         addCommand(new CommandMail());
+        addCommand(new CommandMailbox());
         addCommand(new CommandNick());
         addCommand(new CommandPTime());
         addCommand(new CommandPWeather());

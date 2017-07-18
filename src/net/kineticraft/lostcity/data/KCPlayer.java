@@ -22,10 +22,12 @@ import net.kineticraft.lostcity.mechanics.Punishments.*;
 import net.kineticraft.lostcity.mechanics.Vanish;
 import net.kineticraft.lostcity.mechanics.Voting;
 import net.kineticraft.lostcity.utils.Dog;
+import net.kineticraft.lostcity.utils.TextUtils;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.*;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -67,6 +69,7 @@ public class KCPlayer implements Jsonable {
     private StringList notes = new StringList();
     private StringList mail = new StringList();
     private StringList ignored = new StringList();
+    private JsonList<ItemStack> mailbox = new JsonList<>();
 
     public KCPlayer() {
 
@@ -294,15 +297,22 @@ public class KCPlayer implements Jsonable {
         getTemporaryRank().getTeam().addPlayer(player);
         Voting.giveRewards(player); // Give vote rewards, if any.
 
-        if (!getMail().isEmpty())
-            player.sendMessage(ChatColor.GOLD + "You have " + ChatColor.RED + getMail().size() + ChatColor.GOLD
-                    + " unread messages. Use /mail to read them.");
-
         player.setOp(getRank().isAtLeast(EnumRank.BUILDER));
 
         // Update things.
         setUsername(player.getName());
         setLastIP(player.getAddress().toString().split("/")[1].split(":")[0]);
+
+        Bukkit.getScheduler().runTaskLater(Core.getInstance(), () -> {
+            if (!getMail().isEmpty())
+                player.sendMessage(ChatColor.GOLD + "You have " + ChatColor.RED + getMail().size() + ChatColor.GOLD
+                        + " unread messages. Use /mail to read them.");
+            if (!getMailbox().isEmpty()) {
+                String l = ChatColor.YELLOW + "✉" + ChatColor.GOLD;
+                player.sendMessage(TextUtils.centerChat(l + " You have new mail! Claim it with /mailbox. " + l));
+            }
+        }, 20L);
+
     }
 
     /**

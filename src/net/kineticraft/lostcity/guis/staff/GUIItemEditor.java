@@ -142,17 +142,18 @@ public class GUIItemEditor extends GUI {
                     .leftClick(evt -> {
                         getPlayer().sendMessage(ChatColor.GREEN + "Please enter the new enchantment level.");
                         Callbacks.listenForNumber(getPlayer(), newLevel -> {
-                            edit.getItem().addUnsafeEnchantment(e, newLevel);
+                            edit.getRawStack().addUnsafeEnchantment(e, newLevel);
                             update("Enchantment level set");
+                            reconstruct();
                         });
                     }).rightClick(evt -> {
-                        edit.getItem().removeEnchantment(e);
+                        edit.getRawStack().removeEnchantment(e);
                         update(ChatColor.RED + "Enchant removed");
                         reconstruct();
                     });
         }
 
-        addItem(Material.WOOD, ChatColor.YELLOW + "Add Enchant", "Click here to add an enchant.")
+        addItem(Material.WOOL, ChatColor.YELLOW + "Add Enchant", "Click here to add an enchant.")
                 .anyClick(e -> {
                     List<ItemStack> enchants = new ArrayList<>();
                     for (Enchantment ench : Enchantment.values()) {
@@ -167,7 +168,7 @@ public class GUIItemEditor extends GUI {
                         }
                     }
 
-                    new GUIItemPicker(getPlayer(), enchants, i -> edit.getItem().addUnsafeEnchantments(i.getEnchantments()));
+                    new GUIItemPicker(getPlayer(), enchants, i -> edit.getRawStack().addUnsafeEnchantments(i.getEnchantments()));
                 }).setColor(DyeColor.YELLOW);
     }
 
