@@ -62,14 +62,11 @@ public class ServerManager extends Mechanic {
             }, 23 * 60 * 60 * 20L);
         }
 
-        // Unload any chunks not caught by
+        // Unload any chunks that shouldn't be loaded.
         Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), () -> {
             List<Chunk> unload = new ArrayList<>();
             Bukkit.getWorlds().forEach(w -> Stream.of(w.getLoadedChunks()).filter(Chunk::isLoaded)
                     .filter(ServerManager::shouldUnload).forEach(unload::add));
-            if (!unload.isEmpty())
-                Core.alertStaff("Unloading " + unload.size() + " chunks.");
-
             Bukkit.getScheduler().runTask(Core.getInstance(), () -> unload.forEach(Chunk::unload));
         }, 0L, 60 * 20L);
     }

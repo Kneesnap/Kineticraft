@@ -14,6 +14,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.*;
@@ -55,39 +56,13 @@ public class Items extends Mechanic {
             new ItemEntityInteractEvent(evt).fire();
     }
 
-    /*@EventHandler // Disabled for now.
-    public void onVillagerOpen(InventoryOpenEvent evt) {
-        if (!(evt.getInventory() instanceof MerchantInventory))
-            return;
-        Merchant merchant = (Villager) evt.getInventory().getHolder();
-
-        // Remove specified villager trades:
-        removeTrades(merchant, Material.BOOK, Material.WRITTEN_BOOK);
-        removeTrades(merchant, Material.PAPER);
-    }*/
-
     @EventHandler // Prevents players from selling custom items and crafting with them.
     public void onClick(InventoryClickEvent evt) {
-        if (!(evt.getInventory() instanceof MerchantInventory))
+        if (!(evt.getInventory() instanceof MerchantInventory) || evt.getRawSlot() != 2)
             return;
 
-        ItemStack item = evt.getClick() == ClickType.NUMBER_KEY ? evt.getWhoClicked().getInventory().getItem(evt.getRawSlot())
-                : (evt.isShiftClick() ? evt.getCurrentItem() : evt.getCursor());
-
-        if (ItemWrapper.getType(item) != null)
-            evt.setCancelled(true); // Cancel for all items that are custom.
-    }
-
-    /**
-     * Remove trades with the given item types as required ingredients.
-     * @param merchant
-     * @param remove
-     */
-    private static void removeTrades(Merchant merchant, Material... remove) {
-        List<Material> checkFor = Arrays.asList(remove);
-        List<MerchantRecipe> newRecipes = new ArrayList<>(merchant.getRecipes());
-        merchant.getRecipes().stream().filter(mr -> mr.getIngredients().stream().anyMatch(i ->
-                checkFor.contains(i.getType()))).forEach(newRecipes::remove);
-        merchant.setRecipes(newRecipes);
+        for (int i = 0; i < evt.getInventory().getSize() - 1; i++)
+            if (ItemWrapper.getType(evt.getInventory().getItem(i)) != null)
+                evt.setCancelled(true);
     }
 }

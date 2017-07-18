@@ -17,7 +17,7 @@ import org.bukkit.event.player.PlayerBedLeaveEvent;
  */
 public class SleepMechanics extends Mechanic {
 
-    private static final double PERCENT_NEEDED = .1F; // The percentage of players needed to skip a night.
+    private static final double PERCENT_NEEDED = .25F; // The percentage of players needed to skip a night.
 
     public static void skipNight() {
         if (getSleepCount() < getNeededPlayers())
@@ -26,7 +26,7 @@ public class SleepMechanics extends Mechanic {
         World world = Core.getMainWorld();
         world.setTime(0);
         world.setStorm(false);
-        Bukkit.broadcastMessage(ChatColor.GRAY + "" + ChatColor.ITALIC+ " * The night has been vanquished by the wonders of sleep. *");
+        Bukkit.broadcastMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + " * The night has been vanquished by the wonders of sleep. *");
     }
 
     /**

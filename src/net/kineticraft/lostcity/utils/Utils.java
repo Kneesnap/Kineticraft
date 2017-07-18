@@ -515,6 +515,15 @@ public class Utils {
     }
 
     /**
+     * Is an item equivalent to not existing?
+     * @param itemStack
+     * @return isAir
+     */
+    public static boolean isAir(ItemStack itemStack) {
+        return itemStack == null || itemStack.getType() == Material.AIR;
+    }
+
+    /**
      * Formats a boolean toggle to be displayed in chat.
      * @param name
      * @param value

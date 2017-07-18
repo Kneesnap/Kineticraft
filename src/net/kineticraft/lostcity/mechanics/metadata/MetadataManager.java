@@ -35,8 +35,7 @@ public class MetadataManager extends Mechanic {
      * @return
      */
     public static MetadataValue getMetadata(Metadatable metadatable, Metadata type) {
-        return hasMetadata(metadatable, type) ? metadatable.getMetadata(type.getKey()).get(0)
-                : (type.isEnumClass() ? null : type.getDefaultValue());
+        return hasMetadata(metadatable, type) ? metadatable.getMetadata(type.getKey()).get(0) : type.getDefaultValue();
     }
 
     /**

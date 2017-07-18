@@ -4,9 +4,6 @@ import org.bukkit.ChatColor;
 
 /**
  * Convert color formats.
- *
- * TODO: Dye Color
- *
  * Created by Kneesnap on 6/12/2017.
  */
 public class ColorConverter {

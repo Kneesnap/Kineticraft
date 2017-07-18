@@ -2,6 +2,7 @@ package net.kineticraft.lostcity.crake.internal;
 
 import lombok.Getter;
 import net.kineticraft.lostcity.Core;
+import net.kineticraft.lostcity.utils.ServerUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -20,6 +21,7 @@ public class DetectionStore<T extends Detection> {
     private int clearTicks;
     private int showMin;
     private String message;
+    private boolean reset;
     private List<T> detections = new ArrayList<>();
 
     public DetectionStore(String message) {
@@ -30,15 +32,15 @@ public class DetectionStore<T extends Detection> {
         this(clearSeconds, 2, message);
     }
 
-    /**
-     * @param clearSeconds - The amount of ticks until a detection is forgotten.
-     * @param showMin - Minimum detections before an alert is fired.
-     * @param message - The message to show on detection. Formatted with {Detection Count}
-     */
     public DetectionStore(int clearSeconds, int showMin, String message) {
+        this(clearSeconds, showMin, message, true);
+    }
+
+    public DetectionStore(int clearSeconds, int showMin, String message, boolean reset) {
         this.clearTicks = clearSeconds * 20;
         this.showMin = showMin;
         this.message = message;
+        this.reset = reset;
     }
 
     /**
@@ -57,9 +59,12 @@ public class DetectionStore<T extends Detection> {
      * @param res
      */
     public void detect(T detection, boolean... res) {
-        for (boolean b : res)
-            if (b)
-                detect(detection);
+        for (boolean fired : res) {
+            if (!fired)
+                continue;
+            getDetections().add(detection); // Add it manually because each detection here should count as a seperate one.
+            detect(detection);
+        }
     }
 
     /**
@@ -83,8 +88,9 @@ public class DetectionStore<T extends Detection> {
             return;
 
         Core.alertStaff("Crake: " + ChatColor.GRAY + detection.getPlayer().getName()
-                + " " + getMessage(detection.getPlayer()) + ".");
-        getDetections().removeAll(getDetections(detection.getPlayer())); // Remove all detections for this player.
+                + " " + getMessage(detection.getPlayer()) + "."); // Alert staff.
+        if (isReset()) // Remove all detections for this player.
+            getDetections().removeAll(getDetections(detection.getPlayer()));
     }
 
     /**
@@ -112,5 +118,15 @@ public class DetectionStore<T extends Detection> {
      */
     protected String getMessage(Player player) {
         return String.format(getMessage(), getDetections(player).size());
+    }
+
+    /**
+     * Get the ticks the oldest detection has been here.
+     * @param player
+     * @return detection
+     */
+    public int firstDetection(Player player) {
+        int cTick = ServerUtils.getCurrentTick();
+        return cTick - getDetections(player).stream().mapToInt(Detection::getTick).min().orElse(cTick);
     }
 }

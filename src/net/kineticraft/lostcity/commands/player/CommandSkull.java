@@ -3,6 +3,7 @@ package net.kineticraft.lostcity.commands.player;
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.item.ItemManager;
+import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -22,9 +23,12 @@ public class CommandSkull extends PlayerCommand {
 
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
+        if (MetadataManager.updateCooldown((Player) sender, "skull", 200))
+            return;
+
         ItemStack skull = ItemManager.makeSkull(args[0]);
         if (args.length > 1)
-            skull.setAmount(Math.max(1, Math.min(Integer.parseInt(args[1]), 64)));
+            skull.setAmount(Math.max(1, Math.min(Integer.parseInt(args[1]), 10)));
         Utils.giveItem((Player) sender, skull);
     }
 }

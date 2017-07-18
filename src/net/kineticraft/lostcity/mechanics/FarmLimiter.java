@@ -26,15 +26,13 @@ import java.util.List;
  */
 public class FarmLimiter extends Mechanic {
 
-
-    private static final int MAX_CRAMMING = 32;
     private static final int RADIUS = 8;
     private static List<EntityType> IGNORE = Arrays.asList(EntityType.GUARDIAN, EntityType.ELDER_GUARDIAN, EntityType.ARMOR_STAND);
 
     @EventHandler
     public void onChickenSpawn(CreatureSpawnEvent evt) {
         if ((evt.getSpawnReason() == SpawnReason.DISPENSE_EGG || evt.getSpawnReason() == SpawnReason.EGG)
-                && getEntityCount(evt.getLocation(), EntityType.CHICKEN) >= MAX_CRAMMING)
+                && getEntityCount(evt.getLocation(), EntityType.CHICKEN) >= 32)
             evt.setCancelled(true); // There are more chickens here than we allow, don't spawn another one.
     }
 
@@ -46,13 +44,13 @@ public class FarmLimiter extends Mechanic {
 
     @EventHandler
     public void onEntityDeath(EntityDeathEvent evt) {
-        if (!(evt.getEntity() instanceof Player) && evt.getEntity() instanceof LivingEntity // Not an applicable entity.
-                && getPlayerDamage(evt.getEntity()) < getDamageNeeded(evt.getEntity()) // Not enough player damage.
+        if (!(evt.getEntity() instanceof Player) // Not an applicable entity.
+                && (getEntityCount(evt.getEntity().getLocation()) >= 5 || getPlayerDamage(evt.getEntity()) < getDamageNeeded(evt.getEntity()))
                 && !IGNORE.contains(evt.getEntityType())) // Not a type we ignore
             evt.getDrops().clear();
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onEntityDamage(EntityDamageByEntityEvent evt) {
         Entity e = evt.getEntity();
         Entity a = evt.getDamager();

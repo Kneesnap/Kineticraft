@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
+import org.bukkit.util.Vector;
 
 import java.util.Random;
 
@@ -19,7 +20,7 @@ public class SlimeFinder extends Mechanic {
 
     @Override
     public void onEnable() {
-        Bukkit.getScheduler().runTaskTimer(Core.getInstance(), this::bounceSlimes, 0L, 2 * 60 * 20L);
+        Bukkit.getScheduler().runTaskTimer(Core.getInstance(), this::bounceSlimes, 0L, 100L);
     }
 
     /**
@@ -27,11 +28,10 @@ public class SlimeFinder extends Mechanic {
      */
     private void bounceSlimes() {
         Core.getMainWorld().getEntities().stream().filter(entity -> entity instanceof Item)
-                .map(e -> (Item)e).filter(entity ->  entity.getLocation().getY() <= 40)
-                .filter(i -> isSlimeChunk(i.getLocation().getChunk())).filter(Entity::isValid)
-                .filter(i -> i.getItemStack().getType() == Material.SLIME_BLOCK).forEach(slime -> {
+                .map(e -> (Item)e).filter(i -> isSlimeChunk(i.getLocation().getChunk())).filter(Entity::isValid)
+                .filter(i -> i.getItemStack().getType() == Material.SLIME_BALL).forEach(slime -> {
                     slime.getWorld().playSound(slime.getLocation(), Sound.ENTITY_SLIME_JUMP, .5F, 1F);
-                    slime.getVelocity().setY(.33D);
+                    slime.setVelocity(new Vector(0, .33F, 0));
                 });
     }
 

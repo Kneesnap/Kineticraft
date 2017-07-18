@@ -1,15 +1,9 @@
 &8Changes:&0
- - /skull can spawn an amount.
- - Extended tp invulnerability to 15 seconds.
- - Disallow setting homes in claims you don't have permissions for.
+ - /stack doesn't move items.
+ - Added /pweather
+ - Increased sleep requirement to skip night
  - Improved Crake.
- - Lower sleep count.
 
 &8Bugfixes:&0
- - /condense works on lapis.
- - PvP in overworld.
- - Vote exploit.
- - /ranks updated.
- - Leashing villagers in claims you don't own.
- - Renaming spawn villagers.
- - /realname <username>
+ - Prevent trading tpbooks to villagers
+ - Slime chunk finder.
