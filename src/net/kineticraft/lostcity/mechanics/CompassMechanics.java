@@ -2,6 +2,7 @@ package net.kineticraft.lostcity.mechanics;
 
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.data.KCPlayer;
+import net.kineticraft.lostcity.data.PlayerDeath;
 import net.kineticraft.lostcity.mechanics.metadata.Metadata;
 import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
 import net.kineticraft.lostcity.utils.Utils;
@@ -31,14 +32,9 @@ public class CompassMechanics extends Mechanic {
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent evt) {
-        Location location = evt.getEntity().getLocation();
-        Bukkit.getLogger().info(evt.getEntity().getName() + " died at " + Utils.toString(location));
-        KCPlayer player = KCPlayer.getWrapper(evt.getEntity());
-        player.getDeaths().add(location);
-        player.getDeaths().trim(3); // Only store 3 deaths
-        //TODO: PowerNBT save data.
+        Bukkit.getLogger().info(evt.getEntity().getName() + " died at " + Utils.toString(evt.getEntity().getLocation()));
+        KCPlayer.getWrapper(evt.getEntity()).getDeaths().add(new PlayerDeath(evt), 3);
     }
-
 
     @EventHandler
     public void onWorldChange(PlayerChangedWorldEvent evt) {
@@ -59,11 +55,11 @@ public class CompassMechanics extends Mechanic {
 
         int newId = MetadataManager.getMetadata(player, Metadata.COMPASS_DEATH).asInt();
         newId = p.getDeaths().hasIndex(newId + 1) ? newId + 1 : 0;
-
-        player.sendMessage(ChatColor.GRAY + "Compass pointed at your "
-                + (newId > 0 ? (newId == 1 ? "second" : "third") + " to " : "") + "last death.");
         MetadataManager.setMetadata(player, Metadata.COMPASS_DEATH, newId);
 
+        //newId = 2 - newId;
+        player.sendMessage(ChatColor.GRAY + "Compass pointed at your "
+                + (newId > 0 ? (newId == 1 ? "second" : "third") + " to " : "") + "last death.");
         updateCompass(player);
     }
 

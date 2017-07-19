@@ -22,7 +22,7 @@ public class EnumList<E extends Enum<E>> extends SaveableList<E> {
     }
 
     @Override
-    protected E load(JsonElement e) {
+    protected E loadSingle(JsonElement e) {
         return Utils.getEnum(e.getAsString(), this.enumClass);
     }
 

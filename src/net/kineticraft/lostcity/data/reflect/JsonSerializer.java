@@ -1,13 +1,14 @@
 package net.kineticraft.lostcity.data.reflect;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import net.kineticraft.lostcity.data.JsonData;
 import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.data.reflect.behavior.*;
 import net.kineticraft.lostcity.data.reflect.behavior.bukkit.*;
 import net.kineticraft.lostcity.utils.GeneralException;
 import net.kineticraft.lostcity.utils.ReflectionUtil;
+import net.kineticraft.lostcity.utils.Utils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -51,24 +52,15 @@ public class JsonSerializer {
     }
 
     /**
-     * Deserialize an object from stored json.
-     * May fail if the object passed does not have a deserializer.
-     *
-     * @param load - The class to load.
-     * @param data - The data to load from.
+     * Deserialize an object from stored json text.
+     * @param load
+     * @param data
+     * @param args
      * @param <T>
      * @return newObject
      */
-    @SuppressWarnings("unchecked")
-    public static <T> T loadUnsafe(Class<T> load, JsonData data) {
-        if (Jsonable.class.isAssignableFrom(load))
-            return (T) fromJson((Class<Jsonable>) load, data);
-
-        try {
-            return ((DataStore<T>) getHandler(load, "unsafe object")).loadObject(data);
-        } catch (Exception e) {
-            throw new GeneralException("Could not load " + load.getClass().getSimpleName() + " from JSON.", e);
-        }
+    public static <T> T fromJson(Class<T> load, String data, Object... args) {
+        return fromJson(load, new JsonParser().parse(data), args);
     }
 
     /**
@@ -76,29 +68,26 @@ public class JsonSerializer {
      * @param load - The class of the object to load
      * @param data - The json data to load from
      * @param args - Any additional arguments passed to the constructor.
-     * @param <T>
      * @return newObject - The object created.
      */
-    public static <T extends Jsonable> T fromJson(Class<T> load, JsonData data, Object... args) {
+    @SuppressWarnings("unchecked")
+    public static <T> T fromJson(Class<T> load, JsonElement data, Object... args) {
+        if (!Jsonable.class.isAssignableFrom(load)) {
+            // It's a normal object.
+            try {
+                return ((DataStore<T>) getHandler(load, "unsafe object")).loadObject(data);
+            } catch (Exception e) {
+                throw new GeneralException("Could not load class '" + load.getClass().getSimpleName() + "' from JSON.", e);
+            }
+        }
+
         try {
             T val = ReflectionUtil.construct(load, args);
-            val.load(data);
+            ((Jsonable) val).load(data);
             return val;
         } catch (Exception e) {
             throw new GeneralException("Could not load " + load.getClass().getSimpleName() + " from JSON.", e);
         }
-    }
-
-    /**
-     * Deserialize an object from stored json.
-     * @param load - The class of the object to load
-     * @param json - The json data to load from
-     * @param args - Any additional arguments passed to the constructor.
-     * @param <T>
-     * @return newObject - The object created.
-     */
-    public static <T extends Jsonable> T fromJson(Class<T> load, JsonObject json, Object... args) {
-        return fromJson(load, new JsonData(json), args);
     }
 
     /**
@@ -184,5 +173,14 @@ public class JsonSerializer {
             fieldCache.put(obj.getClass(), cache);
         }
         return fieldCache.get(obj.getClass());
+    }
+
+    /**
+     * Create a json element from a compressed string.
+     * @param string
+     * @return element
+     */
+    public static JsonElement decompress(String string) {
+        return new JsonParser().parse(Utils.decompress(string)).getAsJsonObject();
     }
 }

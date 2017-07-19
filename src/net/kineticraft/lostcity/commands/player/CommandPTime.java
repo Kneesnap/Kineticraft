@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 public class CommandPTime extends PlayerCommand {
 
     public CommandPTime() {
-        super(EnumRank.GAMMA, "<time|reset>", "Set your local time.", "ptime");
+        super(EnumRank.SIGMA, "<time|reset>", "Set your local time.", "ptime");
     }
 
     @Override

@@ -17,6 +17,7 @@
       <w>requestor</w>
       <w>saveable</w>
       <w>teleport</w>
+      <w>teleported</w>
       <w>teleporting</w>
       <w>unignore</w>
       <w>xray</w>

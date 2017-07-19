@@ -2,7 +2,6 @@ package net.kineticraft.lostcity.data.maps;
 
 import lombok.Getter;
 import net.kineticraft.lostcity.data.JsonData;
-import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.data.reflect.JsonSerializer;
 
 /**
@@ -30,6 +29,6 @@ public class JsonMap<T> extends SaveableMap<String, T> {
 
     @Override
     protected void load(JsonData data, String key) {
-        getMap().put(key, JsonSerializer.loadUnsafe(getClassType(), data.getData(key)));
+        getMap().put(key, JsonSerializer.fromJson(getClassType(), data.getJson(key)));
     }
 }

@@ -2,6 +2,7 @@ package net.kineticraft.lostcity.utils;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.DiscordSender;
@@ -26,8 +27,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -36,6 +36,8 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * Utils - Contains basic static utilties.
@@ -185,8 +187,8 @@ public class Utils {
 
         MetadataManager.setMetadata(player, Metadata.TELEPORTING, true);
         player.playSound(player.getLocation(), Sound.AMBIENT_CAVE, 1F, 1F);
-        player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 20 * (tpTime[0] + 4), 2));
-        player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20 * (tpTime[0] + 4), 2));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 20 * (tpTime[0] + 2), 2));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20 * (tpTime[0] + 2), 2));
         player.sendMessage(ChatColor.BOLD + "Teleport: " + ChatColor.WHITE + ChatColor.UNDERLINE + locationDescription);
 
         tpTask[0] = Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () -> {
@@ -350,6 +352,24 @@ public class Utils {
             player.getWorld().dropItem(player.getLocation(), itemStack);
             player.sendMessage(ChatColor.RED + "Your inventory was full, so you dropped the item.");
         }
+    }
+
+    /**
+     * Give items to a player, if they have space. Otherwise, drop it.
+     * @param player
+     * @param items
+     */
+    public static void giveItems(Player player, ItemStack... items) {
+        giveItems(player, Arrays.asList(items));
+    }
+
+    /**
+     * Give items to a player, if they have space. Otherwise, drop it.
+     * @param player
+     * @param items
+     */
+    public static void giveItems(Player player, Iterable<ItemStack> items) {
+        items.forEach(i -> giveItem(player,  i));
     }
 
     /**
@@ -918,5 +938,34 @@ public class Utils {
     public static boolean containsIgnoreCase(String s1, String substring) {
         return s1 != null && substring != null
                 && ChatColor.stripColor(s1).toLowerCase().contains(ChatColor.stripColor(substring).toLowerCase());
+    }
+
+    /**
+     * Decompress a string using GZip.
+     * @param data
+     * @return decompressed
+     */
+    @SneakyThrows
+    public static String decompress(String data) {
+        ByteArrayInputStream bais = new ByteArrayInputStream(data.getBytes());
+        BufferedReader in = new BufferedReader(new InputStreamReader(new GZIPInputStream(bais), "UTF-8"));
+        StringWriter sw = new StringWriter();
+        for (int i = 0; i < bais.available(); i++)
+            sw.write(in.read());
+        return sw.toString();
+    }
+
+    /**
+     * Compress data using GZip.
+     * @param data
+     * @return compressed
+     */
+    @SneakyThrows
+    public static String compress(String data) {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        GZIPOutputStream gzip = new GZIPOutputStream(out);
+        gzip.write(data.getBytes("UTF-8"));
+        gzip.close();
+        return out.toString("UTF-8");
     }
 }

@@ -20,7 +20,7 @@ public class StringList extends SaveableList<String> {
     }
 
     @Override
-    protected String load(JsonElement e) {
+    protected String loadSingle(JsonElement e) {
         return e.getAsString();
     }
 

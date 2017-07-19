@@ -30,15 +30,23 @@ public class Callbacks extends Mechanic {
 
     public static String CANCEL_MESSAGE = ChatColor.RED.toString() + ChatColor.BOLD + "CANCELLED";
 
+    /**
+     * Prompt the player for confirmation of an action.
+     * @param player
+     * @param confirm
+     */
+    public static void promptConfirm(Player player, Runnable confirm) {
+        promptConfirm(player, confirm, () -> player.sendMessage(CANCEL_MESSAGE));
+    }
 
     /**
      * Prompt the player a yes or no listener with clickable buttons.
      * @param player
-     * @param accept
-     * @param deny
+     * @param confirm
+     * @param cancel
      */
-    public static void promptConfirm(Player player, Runnable accept, Runnable deny) {
-        promptConfirm(player, accept, deny, "CONFIRM", "CANCEL");
+    public static void promptConfirm(Player player, Runnable confirm, Runnable cancel) {
+        promptConfirm(player, confirm, cancel, "CONFIRM", "CANCEL");
     }
 
     /**

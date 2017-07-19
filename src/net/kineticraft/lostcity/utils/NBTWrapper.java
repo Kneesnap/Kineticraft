@@ -96,6 +96,6 @@ public class NBTWrapper implements Jsonable {
      * @return json
      */
     public static JsonData toJson(ItemStack item) {
-        return item != null && item.getType() != Material.AIR ? new NBTWrapper(item).save() : null;
+        return item != null && item.getType() != Material.AIR ? new JsonData(new NBTWrapper(item)) : null;
     }
 }

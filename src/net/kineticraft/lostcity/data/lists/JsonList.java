@@ -5,6 +5,8 @@ import lombok.Getter;
 import net.kineticraft.lostcity.data.JsonData;
 import net.kineticraft.lostcity.data.reflect.JsonSerializer;
 
+import java.util.List;
+
 /**
  * JsonList - A list of Jsonable values.
  *
@@ -19,13 +21,17 @@ public class JsonList<T> extends SaveableList<T> {
 
     }
 
+    public JsonList(Iterable<T> values) {
+        super(values);
+    }
+
     public JsonList(Class<T> clazz) {
         this.jsonClass = clazz;
     }
 
     @Override
-    protected T load(JsonElement e) {
-        return JsonSerializer.loadUnsafe(this.jsonClass, new JsonData(e.getAsJsonObject()));
+    protected T loadSingle(JsonElement e) {
+        return JsonSerializer.fromJson(getJsonClass(), e);
     }
 
     @Override

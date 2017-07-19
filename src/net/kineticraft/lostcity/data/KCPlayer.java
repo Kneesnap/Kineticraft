@@ -47,6 +47,7 @@ public class KCPlayer implements Jsonable {
     private int accountId = generateNewId();
     private long discordId;
     private String username;
+    private String spoofedName;
     private String lastIP;
     private EnumRank rank = EnumRank.MU;
     private String icon;
@@ -65,7 +66,7 @@ public class KCPlayer implements Jsonable {
     private JsonList<Punishment> punishments = new JsonList<>();
     private EnumList<Toggle> toggles = new EnumList<>();
     private JsonMap<Location> homes = new JsonMap<>();
-    private JsonList<Location> deaths = new JsonList<>();
+    private JsonList<PlayerDeath> deaths = new JsonList<>();
     private StringList notes = new StringList();
     private StringList mail = new StringList();
     private StringList ignored = new StringList();
@@ -214,7 +215,9 @@ public class KCPlayer implements Jsonable {
      * @return death
      */
     public Location getSelectedDeath() {
-        return getDeaths().getValueSafe(MetadataManager.getMetadata(getPlayer(), Metadata.COMPASS_DEATH).asInt());
+        int index = getDeaths().size() - MetadataManager.getMetadata(getPlayer(), Metadata.COMPASS_DEATH).asInt() - 1;
+        PlayerDeath death = getDeaths().getValueSafe(index);
+        return death != null ? death.getLocation() : null;
     }
 
     /**
@@ -237,7 +240,7 @@ public class KCPlayer implements Jsonable {
      * Save our playerdata to disk.
      */
     public void writeData() {
-        save().toFile(getPath(getUuid()));
+        new JsonData(save().getAsJsonObject()).toFile(getPath(getUuid()));
     }
 
     /**

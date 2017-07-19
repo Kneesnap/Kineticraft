@@ -25,6 +25,6 @@ public class ItemStackStore extends SpecialStore<ItemStack> {
 
     @Override
     public ItemStack getField(JsonData data, String key, Field field) {
-        return JsonSerializer.fromJson(NBTWrapper.class, data.getData(key)).getItem();
+        return JsonSerializer.fromJson(NBTWrapper.class, data.getJson(key)).getItem();
     }
 }

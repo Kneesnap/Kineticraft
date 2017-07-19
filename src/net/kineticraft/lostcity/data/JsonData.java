@@ -3,6 +3,7 @@ package net.kineticraft.lostcity.data;
 import com.google.gson.*;
 import lombok.Getter;
 import net.kineticraft.lostcity.Core;
+import net.kineticraft.lostcity.data.lists.JsonList;
 import net.kineticraft.lostcity.data.lists.SaveableList;
 import net.kineticraft.lostcity.data.maps.SaveableMap;
 import net.kineticraft.lostcity.data.reflect.JsonSerializer;
@@ -34,6 +35,10 @@ public class JsonData {
 
     public JsonData(JsonObject object) {
         this.jsonObject = object;
+    }
+
+    public JsonData(Jsonable jsonable) {
+        this(jsonable.save().getAsJsonObject());
     }
 
     /**
@@ -74,9 +79,7 @@ public class JsonData {
      * @return jsonList
      */
     public <T extends SaveableList> T getList(String key, Class<T> type, Object... args) {
-        T list = ReflectionUtil.construct(type, args);
-        list.load(getArray(key));
-        return list;
+        return JsonSerializer.fromJson(type, getArray(key), args);
     }
 
     /**
@@ -379,6 +382,10 @@ public class JsonData {
      */
     public JsonData getData(String key) {
         return new JsonData(getObject(key));
+    }
+
+    public JsonElement getJson(String key) {
+        return get(key);
     }
 
     /**

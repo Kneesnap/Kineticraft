@@ -1,6 +1,7 @@
 package net.kineticraft.lostcity.discord;
 
 import lombok.Getter;
+import net.dv8tion.jda.client.events.group.GroupUserJoinEvent;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
@@ -139,6 +140,13 @@ public class DiscordBot extends ListenerAdapter {
     public void onGuildMessageReactionRemove(GuildMessageReactionRemoveEvent evt) {
         if(DiscordChannel.getChannel(evt.getChannel()) == DiscordChannel.ORYX && !evt.getUser().isBot())
             CommandServerVote.scanChannel();
+    }
+
+    @Override // If a user leaves discord and re-joins, give them their rank and such.
+    public void onGroupUserJoin(GroupUserJoinEvent evt) {
+        KCPlayer kc = KCPlayer.getDiscord(evt.getUser());
+        if (kc != null)
+            kc.updateDiscord();
     }
 
     @Override

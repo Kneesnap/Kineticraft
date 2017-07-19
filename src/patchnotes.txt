@@ -1,6 +1,12 @@
 &8Changes:&0
  - Item mail system.
- - /mailbox
+ - Added /mailbox
+ - Added /censor
+ - Added /ignorelist
+ - Improved storage system.
+ - Backup playerdata on death.
 
 &8Bugfixes:&0
- -
+ - TP effect lasting too long.
+ - Mob Drops.
+ - Sigma has /ptime.

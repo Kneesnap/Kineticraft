@@ -1,5 +1,6 @@
 package net.kineticraft.lostcity.data;
 
+import com.google.gson.JsonElement;
 import net.kineticraft.lostcity.data.reflect.JsonSerializer;
 
 /**
@@ -13,15 +14,23 @@ public interface Jsonable {
      * Load this data from a JSON object.
      * @param data
      */
-    default void load(JsonData data) {
-        JsonSerializer.deserialize(this, data);
+    default void load(JsonElement data) {
+        JsonSerializer.deserialize(this, new JsonData(data.getAsJsonObject()));
     }
 
     /**
      * Save this to a JSON object.
      * @return json
      */
-    default JsonData save() {
-        return new JsonData(JsonSerializer.save(this).getAsJsonObject());
+    default JsonElement save() {
+        return JsonSerializer.save(this).getAsJsonObject();
+    }
+
+    /**
+     * Return the json data for this object.
+     * @return jsonData.
+     */
+    default String toJsonString() {
+        return save().toString();
     }
 }

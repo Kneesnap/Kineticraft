@@ -3,10 +3,9 @@ package net.kineticraft.lostcity.data.lists;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import lombok.Getter;
+import net.kineticraft.lostcity.data.Jsonable;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -16,12 +15,16 @@ import java.util.stream.Stream;
  * Created by Kneesnap on 6/10/2017.
  */
 @Getter
-public abstract class SaveableList<T> implements Iterable<T> {
+public abstract class SaveableList<T> implements Iterable<T>, Jsonable {
 
     private List<T> values = new ArrayList<>();
 
     public SaveableList() {
 
+    }
+
+    public SaveableList(Iterable<T> values) {
+        values.forEach(getValues()::add);
     }
 
     /**
@@ -80,6 +83,16 @@ public abstract class SaveableList<T> implements Iterable<T> {
     }
 
     /**
+     * Add a value, then trim to the max length.
+     * @param val
+     * @param maxSize
+     */
+    public void add(T val, int maxSize) {
+        add(val);
+        trim(maxSize);
+    }
+
+    /**
      * Return the value at the given index.
      * @param index
      * @return
@@ -101,7 +114,7 @@ public abstract class SaveableList<T> implements Iterable<T> {
      * @param index
      */
     public void trim(int index) {
-        while (size() >= index)
+        while (size() > index)
             remove(0);
     }
 
@@ -156,15 +169,17 @@ public abstract class SaveableList<T> implements Iterable<T> {
      * Load this array from json.
      * @param array
      */
-    public void load(JsonArray array) {
-        array.forEach(val -> getValues().add(load(val)));
+    @Override
+    public void load(JsonElement array) {
+        array.getAsJsonArray().forEach(val -> getValues().add(loadSingle(val)));
     }
 
     /**
      * Save the values of this into a JsonArray.
      * @return JsonArray
      */
-    public JsonArray save() {
+    @Override
+    public JsonElement save() {
         JsonArray array = new JsonArray();
         getValues().stream().map(this::save).forEach(array::add);
         return array;
@@ -219,7 +234,7 @@ public abstract class SaveableList<T> implements Iterable<T> {
      * @param e
      * @return value
      */
-    protected abstract T load(JsonElement e);
+    protected abstract T loadSingle(JsonElement e);
 
     /**
      * Save a value to json

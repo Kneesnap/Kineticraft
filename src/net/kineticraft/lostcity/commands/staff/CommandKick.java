@@ -24,7 +24,7 @@ public class CommandKick extends StaffCommand {
 
         Player p = Bukkit.getPlayer(args[0]);
         String reason = String.join(" ", Utils.shift(args));
-        p.kickPlayer("Kicked by an operator:\n" + reason);
+        p.kickPlayer(args.length > 1 ? reason : "Kicked by an operator.");
         sender.sendMessage("Kicked " + p.getName() + (reason != null && reason.length() > 0 ? " for " + reason : "") + ".");
     }
 }

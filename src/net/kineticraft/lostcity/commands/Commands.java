@@ -70,6 +70,7 @@ public class Commands extends Mechanic {
         addCommand(new CommandHat());
         addCommand(new CommandHome());
         addCommand(new CommandIgnore());
+        addCommand(new CommandIgnoreList());
         addCommand(new CommandList());
         addCommand(new CommandMessage());
         addCommand(new CommandMail());

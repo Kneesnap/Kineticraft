@@ -5,13 +5,20 @@ import lombok.Getter;
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.Commands;
 import net.kineticraft.lostcity.commands.PlayerCommand;
+import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.data.KCPlayer;
+import net.kineticraft.lostcity.utils.TextUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Handle players toggling things.
@@ -43,6 +50,18 @@ public class Toggles extends Mechanic {
         }
     }
 
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onChat(AsyncPlayerChatEvent evt) {
+        List<Player> filter = evt.getRecipients().stream().filter(p -> getToggle(p, Toggle.CENSOR)).collect(Collectors.toList());
+        String censored = String.format(evt.getFormat(), evt.getPlayer().getName(), evt.getMessage());
+        for (String badWord : Configs.getMainConfig().getSwearWords())
+            censored = censored.replaceAll("(?i)" + badWord, TextUtils.makeString('*', badWord.length()));
+
+        evt.getRecipients().removeAll(filter);
+        final String clean = censored;
+        filter.forEach(p -> p.sendMessage(clean));
+    }
+
     /**
      * Get the state of a toggle for a player.
      * @param player
@@ -65,19 +84,31 @@ public class Toggles extends Mechanic {
 
         @Override
         protected void onCommand(CommandSender sender, String[] args) {
+            if (this.toggle.shouldConfirm() && getToggle((Player) sender, this.toggle)) {
+                sender.sendMessage(ChatColor.GRAY + "Are you sure you want to " + ChatColor.RED + "disable"
+                        + ChatColor.GRAY + " the " + this.toggle.getDescription() + "?");
+                Callbacks.promptConfirm((Player) sender, () -> KCPlayer.getWrapper(sender).toggle(this.toggle));
+                return;
+            }
+
             KCPlayer.getWrapper(sender).toggle(this.toggle);
         }
     }
 
     @AllArgsConstructor @Getter
     public enum Toggle {
-        PVP("pvp status");
+        PVP("pvp status"),
+        CENSOR("chat filter");
 
         private final EnumRank minRank;
         private String description;
 
         Toggle(String description) {
             this(EnumRank.MU, description);
+        }
+
+        public boolean shouldConfirm() {
+            return this == CENSOR;
         }
     }
 }

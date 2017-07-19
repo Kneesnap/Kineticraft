@@ -2,7 +2,6 @@ package net.kineticraft.lostcity.mechanics;
 
 import net.kineticraft.lostcity.mechanics.metadata.Metadata;
 import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
-import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -26,27 +25,24 @@ import java.util.List;
  */
 public class FarmLimiter extends Mechanic {
 
-    private static final int RADIUS = 8;
-    private static List<EntityType> IGNORE = Arrays.asList(EntityType.GUARDIAN, EntityType.ELDER_GUARDIAN, EntityType.ARMOR_STAND);
+    private static final int RADIUS = 4;
+    private static List<EntityType> IGNORE = Arrays.asList(EntityType.GUARDIAN, EntityType.ELDER_GUARDIAN,
+            EntityType.ARMOR_STAND, EntityType.PLAYER);
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onChickenSpawn(CreatureSpawnEvent evt) {
-        if ((evt.getSpawnReason() == SpawnReason.DISPENSE_EGG || evt.getSpawnReason() == SpawnReason.EGG)
-                && getEntityCount(evt.getLocation(), EntityType.CHICKEN) >= 32)
-            evt.setCancelled(true); // There are more chickens here than we allow, don't spawn another one.
-    }
-
-    @EventHandler
-    public void onPigmanDeath(EntityDeathEvent evt) {
-        if (evt.getEntityType() == EntityType.PIG_ZOMBIE)
-            evt.getDrops().clear(); // Disable pig drops.
+        evt.setCancelled((evt.getSpawnReason() == SpawnReason.DISPENSE_EGG || evt.getSpawnReason() == SpawnReason.EGG)
+                && getEntityCount(evt.getEntity()) >= 32);// There are more chickens here than we allow, don't spawn another one.
     }
 
     @EventHandler
     public void onEntityDeath(EntityDeathEvent evt) {
-        if (!(evt.getEntity() instanceof Player) // Not an applicable entity.
-                && (getEntityCount(evt.getEntity().getLocation()) >= 5 || getPlayerDamage(evt.getEntity()) < getDamageNeeded(evt.getEntity()))
-                && !IGNORE.contains(evt.getEntityType())) // Not a type we ignore
+        LivingEntity e = evt.getEntity();
+        EntityType type = evt.getEntityType();
+        boolean limit = (getEntityCount(e) >= 5 && e instanceof Monster)
+                || getPlayerDamage(e) < getDamageNeeded(e)
+                || type == EntityType.PIG_ZOMBIE;
+        if (!IGNORE.contains(type) && limit)
             evt.getDrops().clear();
     }
 
@@ -55,14 +51,13 @@ public class FarmLimiter extends Mechanic {
         Entity e = evt.getEntity();
         Entity a = evt.getDamager();
         if (a instanceof Player || (a instanceof Projectile && ((Projectile) a).getShooter() instanceof Player))
-            addPlayerDamage(e, evt.getDamage()); // Count all damage delt by players.
+            addPlayerDamage(e, evt.getDamage()); // Count all damage dealt by players.
     }
-
 
     /**
      * Get the amount of damage inflicted by a player on this entity.
      * @param entity
-     * @return
+     * @return playerDamage
      */
     private static double getPlayerDamage(Entity entity) {
         return MetadataManager.getMetadata(entity, Metadata.PLAYER_DAMAGE).asDouble();
@@ -77,38 +72,27 @@ public class FarmLimiter extends Mechanic {
         MetadataManager.setMetadata(entity, Metadata.PLAYER_DAMAGE, getPlayerDamage(entity) + damage);
     }
 
-
     /**
      * Get the amount of required player-inflicted damage to kill this entity.
      * Takes in factors such as the number of entities nearby and max health.
      *
      * @param entity
-     * @return
+     * @return damageNeeded
      */
     private static double getDamageNeeded(LivingEntity entity) {
-        int entityCount = getEntityCount(entity.getLocation()) - 2; // Don't include the combatants.
+        int entityCount = getEntityCount(entity);
         double percentNeeded = Math.max(1, entityCount - 3) / 10D; //10% needed for each mob nearby, if > 3 mobs are nearby.
         percentNeeded = Math.max(Math.min(percentNeeded, .75D), .25D); // Restrict the damage amounts between 25% and 75%.
         return percentNeeded * entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
     }
 
     /**
-     * Get the number of entities within the constant radius of a given location.
-     * @param loc
-     * @return
+     * Get the number of entities near an entity..
+     * @param entity
+     * @return entityCount
      */
-    private static int getEntityCount(Location loc) {
-        return getEntityCount(loc, null);
-    }
-
-    /**
-     * Get the number of entities of a certain type within the constant radius of a given location.
-     * @param loc
-     * @param check - Null = Any Type.
-     * @return
-     */
-    private static int getEntityCount(Location loc, EntityType check) {
-        return (int) loc.getWorld().getNearbyEntities(loc, RADIUS, RADIUS, RADIUS).stream()
-                .filter(entity ->  (check == null || check == entity.getType())).count();
+    private static int getEntityCount(Entity entity) {
+        return (int) entity.getWorld().getNearbyEntities(entity.getLocation(), RADIUS, RADIUS, RADIUS).stream()
+                .filter(e -> e.getType() == entity.getType()).count();
     }
 }

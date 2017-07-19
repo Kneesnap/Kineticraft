@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.kineticraft.lostcity.BuildType;
 import net.kineticraft.lostcity.config.JsonConfig;
+import net.kineticraft.lostcity.data.lists.StringList;
 import net.kineticraft.lostcity.data.maps.JsonStringMap;
 
 /**
@@ -21,4 +22,5 @@ public class MainConfig extends JsonConfig {
     private BuildType buildType;
     private int build;
     private int lastNotesSize;
+    private StringList swearWords = new StringList();
 }

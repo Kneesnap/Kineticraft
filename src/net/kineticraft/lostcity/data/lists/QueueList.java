@@ -28,7 +28,7 @@ public class QueueList<T> extends SaveableList<T> {
 
 
     @Override
-    protected T load(JsonElement e) {
+    protected T loadSingle(JsonElement e) {
         throw new UnsupportedOperationException();
     }
 

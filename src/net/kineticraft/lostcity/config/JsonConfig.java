@@ -15,9 +15,10 @@ public abstract class JsonConfig extends Config implements Jsonable {
     /**
      * Loads Json data from disk.
      */
+    @SuppressWarnings("ConstantConditions")
     @Override
     public void loadFromDisk() {
-        load(JsonData.fromFile(getFileName()));
+        load(JsonData.fromFile(getFileName()).getJsonObject());
     }
 
     /**
@@ -25,7 +26,7 @@ public abstract class JsonConfig extends Config implements Jsonable {
      */
     @Override
     public void saveToDisk() {
-        save().toFile(getFileName());
+        new JsonData(this).toFile(getFileName());
     }
 
     @Override

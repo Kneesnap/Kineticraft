@@ -1,5 +1,6 @@
 package net.kineticraft.lostcity.data.maps;
 
+import com.google.gson.JsonElement;
 import lombok.Getter;
 import net.kineticraft.lostcity.data.JsonData;
 import net.kineticraft.lostcity.data.Jsonable;
@@ -21,10 +22,6 @@ public abstract class SaveableMap<K, V> implements Jsonable {
 
     public SaveableMap() {
 
-    }
-
-    public SaveableMap(JsonData data) {
-        load(data);
     }
 
     /**
@@ -96,15 +93,16 @@ public abstract class SaveableMap<K, V> implements Jsonable {
     }
 
     @Override
-    public void load(JsonData data) {
+    public void load(JsonElement je) {
+        JsonData data = new JsonData(je.getAsJsonObject());
         data.keySet().forEach(k -> load(data, k));
     }
 
     @Override
-    public JsonData save() {
+    public JsonElement save() {
         JsonData data = new JsonData();
-        getMap().entrySet().forEach(e -> save(data, e.getKey(), e.getValue()));
-        return data;
+        getMap().forEach((k, v) -> save(data, k, v));
+        return data.getJsonObject();
     }
 
     /**

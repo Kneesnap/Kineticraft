@@ -1,5 +1,6 @@
 package net.kineticraft.lostcity.data.reflect.behavior;
 
+import com.google.gson.JsonElement;
 import lombok.Getter;
 import net.kineticraft.lostcity.data.JsonData;
 import net.kineticraft.lostcity.utils.ReflectionUtil;
@@ -62,13 +63,11 @@ public abstract class DataStore<T> {
 
     /**
      * Load an object from json data.
-     * Does not work with any serializers that use the field parameter in getField yet.
-     *
-     * @param data
+     * @param element
      * @return obj
      */
-    public T loadObject(JsonData data) {
-        return getField(new JsonData().setElement("temp", data), "temp", null);
+    public T loadObject(JsonElement element) {
+        return getField(new JsonData().setElement("temp", element), "temp", null);
     }
 
     /**

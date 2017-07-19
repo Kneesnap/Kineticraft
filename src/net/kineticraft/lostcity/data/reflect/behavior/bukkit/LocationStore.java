@@ -20,8 +20,11 @@ public class LocationStore extends SpecialStore<Location> {
 
     @Override
     public JsonData serialize(Location l) {
-        return new JsonData().setNum("x", l.getX()).setNum("y", l.getY()).setNum("z", l.getZ())
-                .setNum("yaw", l.getYaw()).setNum("pitch", l.getPitch()).setString("world", l.getWorld().getName());
+        JsonData data = new JsonData();
+        if (l != null)
+            data.setNum("x", l.getX()).setNum("y", l.getY()).setNum("z", l.getZ()).setNum("yaw", l.getYaw())
+                    .setNum("pitch", l.getPitch()).setString("world", l.getWorld().getName());
+        return data;
     }
 
     @Override

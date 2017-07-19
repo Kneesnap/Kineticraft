@@ -58,7 +58,7 @@ public class DataHandler extends Mechanic {
 
     @EventHandler(priority = EventPriority.LOWEST) // Run first, so other things like ban checker have data.
     public void onAttemptJoin(AsyncPlayerPreLoginEvent evt) {
-        KCPlayer.getPlayerMap().putIfAbsent(evt.getUniqueId(), new KCPlayer(evt.getUniqueId(), evt.getName()));
+        KCPlayer.getPlayerMap().putIfAbsent(evt.getUniqueId(), new KCPlayer(evt.getUniqueId(), evt.getName())); // Create new playerdata.
     }
 
     @EventHandler(priority = EventPriority.HIGHEST) // Run last.
