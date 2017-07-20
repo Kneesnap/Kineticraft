@@ -1,6 +1,5 @@
 package net.kineticraft.lostcity;
 
-import com.google.common.collect.Sets;
 import lombok.Getter;
 import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.discord.DiscordAPI;
@@ -173,5 +172,13 @@ public class Core extends JavaPlugin {
      */
     public static InputStream loadResource(String fileName) {
         return getInstance().getResource(fileName);
+    }
+
+    /**
+     * Return the plugin's class loader.
+     * @return classLoader
+     */
+    public ClassLoader getClazzLoader() {
+        return getClassLoader();
     }
 }

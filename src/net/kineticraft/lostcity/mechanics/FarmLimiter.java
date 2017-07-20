@@ -27,7 +27,7 @@ public class FarmLimiter extends Mechanic {
 
     private static final int RADIUS = 4;
     private static List<EntityType> IGNORE = Arrays.asList(EntityType.GUARDIAN, EntityType.ELDER_GUARDIAN,
-            EntityType.ARMOR_STAND, EntityType.PLAYER);
+            EntityType.ARMOR_STAND, EntityType.PLAYER, EntityType.WITHER);
 
     @EventHandler(ignoreCancelled = true)
     public void onChickenSpawn(CreatureSpawnEvent evt) {

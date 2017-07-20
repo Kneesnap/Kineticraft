@@ -1,12 +1,10 @@
 package net.kineticraft.lostcity.mechanics;
 
 import net.kineticraft.lostcity.Core;
-import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.discord.DiscordAPI;
 import net.kineticraft.lostcity.discord.DiscordChannel;
-import net.kineticraft.lostcity.guis.staff.GUIMerchantEditor;
 import net.kineticraft.lostcity.item.ItemManager;
 import net.kineticraft.lostcity.utils.TextUtils;
 import net.kineticraft.lostcity.utils.Utils;
@@ -22,7 +20,6 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.weather.LightningStrikeEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.Merchant;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -132,13 +129,6 @@ public class GeneralMechanics extends Mechanic {
         }, 125L);
 
         idObjective.getScore(player.getName()).setScore(KCPlayer.getWrapper(player).getAccountId());
-    }
-
-    @EventHandler // Allow editting of villager trades.
-    public void onVillagerInteract(PlayerInteractEntityEvent evt) {
-        if (evt.getRightClicked() instanceof Merchant && evt.getPlayer().isSneaking()
-                && Utils.getRank(evt.getPlayer()).isAtLeast(EnumRank.MOD))
-            new GUIMerchantEditor(evt.getPlayer(), (Merchant) evt.getRightClicked());
     }
 
     @EventHandler // Prevent players from renaming villagers in spawn.

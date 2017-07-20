@@ -57,7 +57,6 @@ public class CompassMechanics extends Mechanic {
         newId = p.getDeaths().hasIndex(newId + 1) ? newId + 1 : 0;
         MetadataManager.setMetadata(player, Metadata.COMPASS_DEATH, newId);
 
-        //newId = 2 - newId;
         player.sendMessage(ChatColor.GRAY + "Compass pointed at your "
                 + (newId > 0 ? (newId == 1 ? "second" : "third") + " to " : "") + "last death.");
         updateCompass(player);

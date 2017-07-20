@@ -135,7 +135,7 @@ public abstract class GUI {
      * @param slot
      */
     protected void rowSlot(int slot) {
-        setSlotIndex((getSlotIndex() / ROW_SIZE) * ROW_SIZE + (slot - 1));
+        setSlotIndex((getSlotIndex() / ROW_SIZE) * ROW_SIZE + (slot - 2));
     }
 
     /**

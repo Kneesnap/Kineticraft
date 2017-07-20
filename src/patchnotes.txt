@@ -1,12 +1,5 @@
 &8Changes:&0
- - Item mail system.
- - Added /mailbox
- - Added /censor
- - Added /ignorelist
- - Improved storage system.
- - Backup playerdata on death.
+ - Lots of general changes and fixes mostly for staff.
 
 &8Bugfixes:&0
- - TP effect lasting too long.
- - Mob Drops.
- - Sigma has /ptime.
+ - Fixed Ozzy + Ruby's trade deals.

@@ -58,7 +58,7 @@ public class CommandJS extends StaffCommand {
         // Allow JS to load java classes.
         Thread currentThread = Thread.currentThread();
         ClassLoader previousClassLoader = currentThread.getContextClassLoader();
-        currentThread.setContextClassLoader(getClass().getClassLoader());
+        currentThread.setContextClassLoader(Core.getInstance().getClazzLoader());
 
         try {
             // Make the 'eval' command behave exactly as the eval used here does.

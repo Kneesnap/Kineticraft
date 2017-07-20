@@ -30,3 +30,7 @@ var setInterval = function (callback, intervalMS) {
     var delayMS = toTicks(intervalMS);
     return server.scheduler.runTaskTimer(plugin, callback, delayMS, delayMS);
 }
+
+var toNMS = function (item) {
+    return Packages.org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack.asNMSCopy(item);
+}

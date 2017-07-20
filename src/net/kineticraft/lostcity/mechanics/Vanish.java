@@ -3,7 +3,9 @@ package net.kineticraft.lostcity.mechanics;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.data.KCPlayer;
+import net.kineticraft.lostcity.utils.ReflectionUtil;
 import net.kineticraft.lostcity.utils.Utils;
+import net.minecraft.server.v1_12_R1.EnumGamemode;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -13,6 +15,12 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.server.TabCompleteEvent;
 import org.bukkit.potion.PotionEffectType;
+import org.inventivetalent.packetlistener.PacketListenerAPI;
+import org.inventivetalent.packetlistener.handler.PacketHandler;
+import org.inventivetalent.packetlistener.handler.ReceivedPacket;
+import org.inventivetalent.packetlistener.handler.SentPacket;
+
+import java.util.List;
 
 /**
  * Handles vanished players.
@@ -27,6 +35,22 @@ public class Vanish extends Mechanic {
         Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), () ->
             Bukkit.getOnlinePlayers().stream().filter(p -> KCPlayer.getWrapper(p).isVanished())
                     .forEach(p -> p.sendActionBar(ChatColor.GRAY + "You are vanished.")), 0L, 40L);
+
+        PacketListenerAPI.addPacketHandler(new PacketHandler(Core.getInstance()) {
+            @Override
+            public void onSend(SentPacket packet) {
+                if (!packet.hasPlayer())
+                    return;
+
+                if (packet.getPacketName().equalsIgnoreCase("PacketPlayOutPlayerInfo") && !Utils.getRank(packet.getPlayer()).isStaff())
+                    ((List<?>) packet.getPacketValueSilent("b")).stream()
+                            .filter(d -> ReflectionUtil.getField(d, "c") == EnumGamemode.SPECTATOR)
+                            .forEach(d -> ReflectionUtil.setField(d, "c", EnumGamemode.CREATIVE));
+            }
+
+            @Override
+            public void onReceive(ReceivedPacket receivedPacket) {}
+        });
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -35,7 +59,7 @@ public class Vanish extends Mechanic {
             Core.getHiddenPlayers().stream().map(Player::getName).forEach(evt.getCompletions()::remove);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST) // Run after command logic.
+    @EventHandler(priority = EventPriority.HIGH) // Run after command logic.
     public void onChat(AsyncPlayerChatEvent evt) {
         if (!KCPlayer.getWrapper(evt.getPlayer()).isVanished())
             return;

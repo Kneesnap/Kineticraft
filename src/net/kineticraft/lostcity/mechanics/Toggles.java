@@ -47,6 +47,7 @@ public class Toggles extends Mechanic {
             attacker.sendMessage(ChatColor.RED + (outgoingFail ? "You have PvP disabled. (/togglepvp)"
                     : evt.getEntity().getName() + " has PvP disabled."));
             evt.setCancelled(true);
+            evt.getEntity().setFireTicks(-1); // Disable fire damage.
         }
     }
 
@@ -55,11 +56,22 @@ public class Toggles extends Mechanic {
         List<Player> filter = evt.getRecipients().stream().filter(p -> getToggle(p, Toggle.CENSOR)).collect(Collectors.toList());
         String censored = String.format(evt.getFormat(), evt.getPlayer().getName(), evt.getMessage());
         for (String badWord : Configs.getMainConfig().getSwearWords())
-            censored = censored.replaceAll("(?i)" + badWord, TextUtils.makeString('*', badWord.length()));
+            censored = censored.replaceAll(makeFilter(badWord), TextUtils.makeString('*', badWord.length()));
 
         evt.getRecipients().removeAll(filter);
         final String clean = censored;
         filter.forEach(p -> p.sendMessage(clean));
+    }
+
+    /**
+     * Take a bad word and turn it into a regex filter.
+     * @param filter
+     * @return newFilter
+     */
+    private static String makeFilter(String filter) {
+        for (String s : new String[] {"i1!", "e3", "s5$", "a@", "o0"})
+            filter = filter.replaceAll(s.substring(0, 1), "[" + s + "]");
+        return "(?i)" + filter; // Case-insensitive.
     }
 
     /**

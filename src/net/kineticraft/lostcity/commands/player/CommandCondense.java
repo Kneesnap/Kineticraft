@@ -76,7 +76,12 @@ public class CommandCondense extends PlayerCommand {
         }
 
         //Add the leftover stack to the inventory.
-        player.getInventory().setItem(fallbackSlot >= 0 ? fallbackSlot : player.getInventory().firstEmpty(), itemStack);
+        int newSlot = fallbackSlot >= 0 ? fallbackSlot : player.getInventory().firstEmpty();
+        if (newSlot >= 0) {
+            player.getInventory().setItem(newSlot, itemStack);
+        } else {
+            Utils.giveItem(player, itemStack);
+        }
     }
 
     static {

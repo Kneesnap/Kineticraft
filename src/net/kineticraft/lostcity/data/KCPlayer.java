@@ -110,8 +110,16 @@ public class KCPlayer implements Jsonable {
         Dog.PUPPER_PATROL.say(ChatColor.RED + getUsername() + ChatColor.WHITE + " has been muted by "
                 + ChatColor.AQUA + source.getName() + ChatColor.WHITE + ".");
         setMute(new Mute(expiry.getTime(), reason, source.getName()));
+        sendMessage(ChatColor.RED + "You have been muted. (" + reason + ")");
+    }
+
+    /**
+     * Send a message to this player if they're online.
+     * @param message
+     */
+    public void sendMessage(String message) {
         if (isOnline())
-            getPlayer().sendMessage(ChatColor.RED + "You have been muted. (" + reason + ")");
+            getPlayer().sendMessage(message);
     }
 
     /**
@@ -197,8 +205,8 @@ public class KCPlayer implements Jsonable {
      */
     public boolean isRank(EnumRank rank) {
         boolean hasPerms = getRank().isAtLeast(rank);
-        if (!hasPerms && isOnline())
-            getPlayer().sendMessage(ChatColor.RED + "You must be at least rank " + rank.getName() + " to do this.");
+        if (!hasPerms)
+            sendMessage(ChatColor.RED + "You must be at least rank " + rank.getName() + " to do this.");
         return hasPerms;
     }
 
@@ -271,8 +279,7 @@ public class KCPlayer implements Jsonable {
      */
     public void setNickname(String newNick) {
         this.nickname = newNick;
-        if (isOnline())
-            getPlayer().sendMessage(ChatColor.GOLD + "Nickname " + (newNick != null ? "updated" : "removed") + ".");
+        sendMessage(ChatColor.GOLD + "Nickname " + (newNick != null ? "updated" : "removed") + ".");
         updatePlayer();
     }
 
@@ -297,7 +304,7 @@ public class KCPlayer implements Jsonable {
 
         Player player = getPlayer();
         player.setDisplayName(getNickname() != null ? getNickname() : player.getName());
-        getTemporaryRank().getTeam().addPlayer(player);
+        getTemporaryRank().getTeam().addEntry(player.getName());
         Voting.giveRewards(player); // Give vote rewards, if any.
 
         player.setOp(getRank().isAtLeast(EnumRank.BUILDER));
@@ -334,8 +341,7 @@ public class KCPlayer implements Jsonable {
     public void toggle(Toggle toggle) {
         if (!getToggles().remove(toggle))
             getToggles().add(toggle); // Add the toggle if we did not remove it.
-        if (isOnline())
-            getPlayer().sendMessage(Utils.formatToggle(Utils.capitalize(toggle.name()), getState(toggle)));
+        sendMessage(Utils.formatToggle(Utils.capitalize(toggle.name()), getState(toggle)));
     }
 
     /**
