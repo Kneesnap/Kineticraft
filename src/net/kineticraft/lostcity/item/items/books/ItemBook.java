@@ -146,7 +146,8 @@ public class ItemBook extends ItemWrapper {
      */
     public ItemBook addText(String text) {
         attemptNext();
-        getPage().append(text);
+        if (text.length() > 0)
+            getPage().append(text);
         return this;
     }
 
@@ -157,6 +158,16 @@ public class ItemBook extends ItemWrapper {
      */
     public ItemBook addLine(String text) {
         return addText(text + "\n");
+    }
+
+    /**
+     * Add text to the current page then move to the next page.
+     * @param text
+     * @return this
+     */
+    public ItemBook addPage(String text) {
+        addText(text);
+        return nextPage();
     }
 
     /**
@@ -275,11 +286,19 @@ public class ItemBook extends ItemWrapper {
 
     /**
      * Attempt to go to the next page.
+     * Adds text that overflowed from the current page onto the next one.
+     * (Overflow text will lose click/hover events.)
      * @return this
      */
     public ItemBook attemptNext() {
-        if (getPage().getLineCount(TextUtils.BOOK_SIZE) >= LINES_PER_PAGE)
+        if (getPage().getLineCount(TextUtils.BOOK_SIZE) >= LINES_PER_PAGE) {
             nextPage();
+            String full = getPage().toLegacy();
+            String remove = "";
+            while (TextUtils.getLinesUsed(remove, TextUtils.BOOK_SIZE) <= LINES_PER_PAGE && remove.length() < full.length())
+                remove += full.substring(remove.length(), remove.length() + 1);
+            addText(full.substring(remove.length()));
+        }
         return this;
     }
 
@@ -320,7 +339,6 @@ public class ItemBook extends ItemWrapper {
      * @param player
      */
     public void open(Player player) {
-        getPages().stream().map(ComponentBuilder::create).forEach(player::sendMessage);
         PacketUtil.openBook(player, generateFullBook());
     }
 }

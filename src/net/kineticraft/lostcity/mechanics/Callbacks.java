@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.guis.GUI;
 import net.kineticraft.lostcity.guis.GUIManager;
+import net.kineticraft.lostcity.mechanics.system.Mechanic;
 import net.kineticraft.lostcity.utils.TextBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -172,7 +173,7 @@ public class Callbacks extends Mechanic {
      * @param callback
      * @param failCallback
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({"unchecked", "ConstantConditions"})
     private static <T> void listen(Player player, ListenerType type,  Consumer<T> callback, Runnable failCallback) {
         if (hasListener(player, type)) // Fail any existing listeners of this type.
             getListener(player, type).fail();
@@ -205,6 +206,7 @@ public class Callbacks extends Mechanic {
      * @param type
      * @param obj
      */
+    @SuppressWarnings("unchecked")
     public static boolean accept(Player player, ListenerType type, Object obj) {
         if (!hasListener(player, type))
             return false;
@@ -290,13 +292,11 @@ public class Callbacks extends Mechanic {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onChat(AsyncPlayerChatEvent evt) {
-        if (accept(evt.getPlayer(), ListenerType.CHAT, evt.getMessage()))
-            evt.setCancelled(true); // Handles chat callbacks.
+        evt.setCancelled(accept(evt.getPlayer(), ListenerType.CHAT, evt.getMessage())); // Handles chat callbacks.
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onInteract(PlayerInteractEntityEvent evt) {
-        if (accept(evt.getPlayer(), ListenerType.ENTITY, evt.getRightClicked()))
-            evt.setCancelled(true); // Handles entity click callbacks.
+        evt.setCancelled(accept(evt.getPlayer(), ListenerType.ENTITY, evt.getRightClicked())); // Handles entity click callbacks.
     }
 }

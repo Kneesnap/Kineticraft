@@ -1,12 +1,16 @@
-package net.kineticraft.lostcity;
+package net.kineticraft.lostcity.mechanics.system;
 
 import lombok.Getter;
+import net.kineticraft.lostcity.Core;
+import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.Commands;
 import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.crake.Crake;
+import net.kineticraft.lostcity.cutscenes.Cutscenes;
 import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.discord.DiscordAPI;
 import net.kineticraft.lostcity.dungeons.Dungeons;
+import net.kineticraft.lostcity.events.MechanicRegisterEvent;
 import net.kineticraft.lostcity.guis.GUIManager;
 import net.kineticraft.lostcity.item.Items;
 import net.kineticraft.lostcity.mechanics.*;
@@ -14,7 +18,6 @@ import net.kineticraft.lostcity.mechanics.enchants.Enchants;
 import net.kineticraft.lostcity.mechanics.metadata.Metadata;
 import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
 import net.kineticraft.lostcity.utils.ReflectionUtil;
-import net.kineticraft.lostcity.utils.ServerUtils;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -27,7 +30,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.server.PluginDisableEvent;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -39,65 +41,67 @@ public class MechanicManager implements Listener {
 
     @Getter private static List<Mechanic> mechanics = new ArrayList<>();
 
-    @Getter
-    private enum Mechanics {
-        CONFIGS(Configs.class),
-        PLAYER_DATA(DataHandler.class),
-        PUNISHMENTS(Punishments.class),
-        CALLBACKS(Callbacks.class),
-        TOGGLES(Toggles.class),
-        COMMANDS(Commands.class),
-        CRAKE(Crake.class),
-        DISCORD(DiscordAPI.class),
-        RESTRICTIONS(Restrictions.class),
-        SERVER_MANAGER(ServerManager.class),
-        GENERAL(GeneralMechanics.class),
-        VANISH(Vanish.class),
-        GUIS(GUIManager.class),
-        SLEEP(SleepMechanics.class),
-        SLIME_FINDER(SlimeFinder.class),
-        CUSTOM_ITEMS(Items.class),
-        CHAT(Chat.class),
-        COMPASS(CompassMechanics.class),
-        DUNGEONS(Dungeons.class),
-        FARM_LIMIT(FarmLimiter.class),
-        LEASHES(Leashes.class),
-        ENCHANTS(Enchants.class),
-        VOTING(Voting.class),
-        AFK(AFK.class),
-        METADATA(MetadataManager.class);
-
-        private final Class<? extends Mechanic> mechanicClass;
-        private Mechanic mechanic;
-
-        Mechanics(Class<? extends Mechanic> clazz) {
-            this.mechanicClass = clazz;
-        }
-
-        /**
-         * Is this mechanic registered and active on the server?
-         * @return registered
-         */
-        public boolean isRegistered() {
-            return getMechanic() != null;
-        }
-
-        /**
-         * Register this mechanic.
-         * Silently fails if it should not be applied on this server-type.
-         */
-        public void register() {
-            if (ServerUtils.getType() == null || !ServerUtils.getType().getDontRegister().contains(this))
-                addMechanic(this.mechanic = ReflectionUtil.construct(getMechanicClass()));
-        }
+    /**
+     * Register built-in mechanics.
+     */
+    private static void registerDefault() {
+        addMechanic(Configs.class);
+        addMechanic(DataHandler.class);
+        addMechanic(Punishments.class);
+        addMechanic(Callbacks.class);
+        addMechanic(Toggles.class);
+        addMechanic(Cutscenes.class);
+        addMechanic(Commands.class);
+        addMechanic(Crake.class);
+        addMechanic(DiscordAPI.class);
+        addMechanic(Restrictions.class);
+        addMechanic(ServerManager.class);
+        addMechanic(GeneralMechanics.class);
+        addMechanic(Vanish.class);
+        addMechanic(GUIManager.class);
+        addMechanic(SleepMechanics.class);
+        addMechanic(SlimeFinder.class);
+        addMechanic(Items.class);
+        addMechanic(Chat.class);
+        addMechanic(CompassMechanics.class);
+        addMechanic(Dungeons.class);
+        addMechanic(FarmLimiter.class);
+        addMechanic(Leashes.class);
+        addMechanic(Enchants.class);
+        addMechanic(Voting.class);
+        addMechanic(AFK.class);
+        addMechanic(MetadataManager.class);
     }
 
     /**
-     * Register a custom mechanic.
+     * Get a mechanic's instance from its class.
+     * @param mechanicClass
+     * @param <T>
+     * @return mechanicInstance
+     */
+    @SuppressWarnings("unchecked")
+    public static <T extends Mechanic> T getInstance(Class<T> mechanicClass) {
+        return (T) getMechanics().stream().filter(m -> m.getClass().equals(mechanicClass)).findAny().orElse(null);
+    }
+
+    /**
+     * Register a game mechanic class, if it can be registered on this build.
+     * @param mechanicClass
+     */
+    public static void addMechanic(Class<? extends Mechanic> mechanicClass) {
+        addMechanic(ReflectionUtil.construct(mechanicClass));
+    }
+
+    /**
+     * Register a game mechanic, if it can be registered on this build.
      * @param m
      */
     public static void addMechanic(Mechanic m) {
+        Utils.confirm(getInstance(m.getClass()) == null, m.getClass().getSimpleName() + " is already registered!");
+        if (!Core.isApplicableBuild(m))
+            return;
         MechanicManager.getMechanics().add(m);
+        Bukkit.getPluginManager().registerEvents(m, Core.getInstance());
         m.onEnable();
     }
 
@@ -109,7 +113,8 @@ public class MechanicManager implements Listener {
         Bukkit.getPluginManager().registerEvents(new MechanicManager(), Core.getInstance()); // Ready to listen for event.
 
         // Register all mechanics here, in order of startup:
-        Arrays.stream(Mechanics.values()).forEach(Mechanics::register);
+        registerDefault();
+        Bukkit.getPluginManager().callEvent(new MechanicRegisterEvent()); // Tell other plugins to register their mechanics.
 
         Core.logInfo("Mechanics Registered.");
     }

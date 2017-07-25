@@ -22,6 +22,8 @@
     <orderEntry type="library" name="Votifier" level="project" />
     <orderEntry type="library" name="spigot_1.12" level="project" />
     <orderEntry type="library" name="JDA" level="project" />
-    <orderEntry type="library" name="ProtocolLib" level="project" />
+    <orderEntry type="library" name="PacketListenerAPI_v3.6.0-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="WorldGuard" level="project" />
+    <orderEntry type="library" name="WorldEdit" level="project" />
   </component>
 </module>

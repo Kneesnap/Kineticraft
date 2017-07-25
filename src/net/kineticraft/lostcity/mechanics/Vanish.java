@@ -2,7 +2,9 @@ package net.kineticraft.lostcity.mechanics;
 
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
+import net.kineticraft.lostcity.cutscenes.Cutscenes;
 import net.kineticraft.lostcity.data.KCPlayer;
+import net.kineticraft.lostcity.mechanics.system.Mechanic;
 import net.kineticraft.lostcity.utils.ReflectionUtil;
 import net.kineticraft.lostcity.utils.Utils;
 import net.minecraft.server.v1_12_R1.EnumGamemode;
@@ -20,11 +22,11 @@ import org.inventivetalent.packetlistener.handler.PacketHandler;
 import org.inventivetalent.packetlistener.handler.ReceivedPacket;
 import org.inventivetalent.packetlistener.handler.SentPacket;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Handles vanished players.
- *
  * Created by Kneesnap on 6/11/2017.
  */
 public class Vanish extends Mechanic {
@@ -36,13 +38,18 @@ public class Vanish extends Mechanic {
             Bukkit.getOnlinePlayers().stream().filter(p -> KCPlayer.getWrapper(p).isVanished())
                     .forEach(p -> p.sendActionBar(ChatColor.GRAY + "You are vanished.")), 0L, 40L);
 
+        // Hides GM3 from non-staff. Does not hide them from any players in GM3 to stop interferance.
         PacketListenerAPI.addPacketHandler(new PacketHandler(Core.getInstance()) {
             @Override
             public void onSend(SentPacket packet) {
                 if (!packet.hasPlayer())
                     return;
 
-                if (packet.getPacketName().equalsIgnoreCase("PacketPlayOutPlayerInfo") && !Utils.getRank(packet.getPlayer()).isStaff())
+                Player p = packet.getPlayer();
+                boolean staff = Utils.getRank(p).isStaff();
+                String packetName = packet.getPacketName();
+
+                if (packetName.equals("PacketPlayOutPlayerInfo") && !staff && !Cutscenes.isWatching(p))
                     ((List<?>) packet.getPacketValueSilent("b")).stream()
                             .filter(d -> ReflectionUtil.getField(d, "c") == EnumGamemode.SPECTATOR)
                             .forEach(d -> ReflectionUtil.setField(d, "c", EnumGamemode.CREATIVE));
@@ -55,8 +62,12 @@ public class Vanish extends Mechanic {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onSendTabCompletes(TabCompleteEvent evt) {
-        if (!Utils.getRank(evt.getSender()).isStaff()) // Remove vanished players from non-staff view.
-            Core.getHiddenPlayers().stream().map(Player::getName).forEach(evt.getCompletions()::remove);
+        if (Utils.getRank(evt.getSender()).isStaff()) // Remove vanished players from non-staff view.
+            return;
+
+        List<String> completes = new ArrayList<>(evt.getCompletions());
+        Core.getHiddenPlayers().stream().map(Player::getName).forEach(completes::remove);
+        evt.setCompletions(completes);
     }
 
     @EventHandler(priority = EventPriority.HIGH) // Run after command logic.

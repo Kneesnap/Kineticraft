@@ -2,23 +2,41 @@ package net.kineticraft.lostcity.dungeons;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.utils.Utils;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+
+import java.io.File;
 
 /**
  * A registry of our dungeons.
- *
  * Created by Kneesnap on 7/11/2017.
  */
 @AllArgsConstructor @Getter
 public enum DungeonType {
 
-    BARLEYS_HOPE(Dungeon.class);
+    BARLEYS_HOPE(Dungeon.class, "Barley's Hope", "Save Mr. Barley!", "Mr. Barley has been saved");
 
     private final Class<? extends Dungeon> dungeonClass;
+    private final String name;
+    private final String entryMessage;
+    private final String finishMessage;
 
+    /**
+     * Get the color of this dungeon's name.
+     * @return color
+     */
+    public ChatColor getColor() {
+        return getRank().getColor();
+    }
+
+    /**
+     * Get the display name of this dungeon.
+     * @return displayName
+     */
     public String getDisplayName() {
         return getRank().getColor() + Utils.capitalize(name());
     }
@@ -29,6 +47,14 @@ public enum DungeonType {
      */
     public EnumRank getRank() {
         return EnumRank.values()[ordinal() + 1];
+    }
+
+    /**
+     * Get the zipped up world for this dungeon.
+     * @return world
+     */
+    public File getWorld() {
+        return Core.getFile("dungeons/" + name().toLowerCase() + ".zip");
     }
 
     /**

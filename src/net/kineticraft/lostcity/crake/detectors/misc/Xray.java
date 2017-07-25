@@ -20,7 +20,7 @@ import org.bukkit.event.block.BlockBreakEvent;
  */
 public class Xray extends Detector {
 
-    private DetectionStore<BrokenBlock> blocks = new DetectionStore<>(3600, 5, "might be xraying", false);
+    private DetectionStore<BrokenBlock> blocks = new DetectionStore<>(3600, 6, "might be xraying", false);
     private DetectionStore<BrokenBlock> elevation = new DetectionStore<>(15, 5, "is mining vertically");
 
     private static final int STONE_MULT = 1000;

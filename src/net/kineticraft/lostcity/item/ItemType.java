@@ -17,7 +17,7 @@ import java.lang.reflect.InvocationTargetException;
 @AllArgsConstructor @Getter
 public enum ItemType {
 
-    INPUT_BOOK(ItemInputBook.class),
+    PLAYER_NOTEBOOK(ItemBookNotes.class),
     PATCHNOTES_BOOK(ItemPatchBook.class),
     FILE_BOOK(ItemBookFile.class),
     TPA_BOOK(ItemTPABook.class),

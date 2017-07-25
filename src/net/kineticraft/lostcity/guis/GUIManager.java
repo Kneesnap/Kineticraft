@@ -1,6 +1,6 @@
 package net.kineticraft.lostcity.guis;
 
-import net.kineticraft.lostcity.mechanics.Mechanic;
+import net.kineticraft.lostcity.mechanics.system.Mechanic;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,8 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Controls GUIs
- *
+ * Manages GUIs.
  * Created by Kneesnap on 6/8/2017.
  */
 public class GUIManager extends Mechanic {

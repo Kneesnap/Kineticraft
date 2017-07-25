@@ -17,7 +17,6 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.commands.CommandType;
 import net.kineticraft.lostcity.commands.Commands;
-import net.kineticraft.lostcity.commands.DiscordSender;
 import net.kineticraft.lostcity.commands.discord.CommandServerVote;
 import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.data.KCPlayer;
@@ -190,10 +189,16 @@ public class DiscordBot extends ListenerAdapter {
 
         if (DiscordAPI.isVerified(event.getAuthor())) {
             KCPlayer p = KCPlayer.getWrapper(sender);
-            if (p != null && p.isMuted()) {
-                event.getMessage().delete().queue();
-                DiscordAPI.sendPrivate(sender.getUser(),
-                        "You are muted. Please wait " + p.getMute().untilExpiry() + " before talking.");
+
+            if (p == null) { // If they have the tag
+                DiscordAPI.setRoles(sender.getUser()); // Remove roles.
+                reply("No player is associated with your discord account, please re-verify.");
+                return;
+            }
+
+
+            if (p.isMuted()) {
+                sender.fail("You are muted. Please wait " + p.getMute().untilExpiry() + " before talking.");
                 return;
             }
         }
@@ -203,8 +208,9 @@ public class DiscordBot extends ListenerAdapter {
             // Also will attempt to run the input as a slash command.
             // For some reason the sender is cast to CommandBlockSender throwing an async exception, so we have to do it sync.
 
-            if (!DiscordAPI.isVerified(event.getAuthor())) {
-                reply("Please verify with /verify before using this feature.");
+            KCPlayer p = KCPlayer.getDiscord(event.getAuthor());
+            if (p.isBanned()) {
+                sender.fail("You may not use in-game chat until your ban expires.");
                 return;
             }
 

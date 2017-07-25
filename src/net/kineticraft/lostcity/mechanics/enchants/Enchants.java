@@ -1,6 +1,6 @@
 package net.kineticraft.lostcity.mechanics.enchants;
 
-import net.kineticraft.lostcity.mechanics.Mechanic;
+import net.kineticraft.lostcity.mechanics.system.Mechanic;
 import org.bukkit.enchantments.Enchantment;
 
 import java.lang.reflect.Field;

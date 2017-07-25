@@ -49,8 +49,12 @@ public abstract class GUI {
         this.inventory = Bukkit.createInventory(null, rows * ROW_SIZE, title);
         this.previous = GUIManager.getGUI(player);
 
-        // Don't allow async openings, and lets the subclass' constructor to finish setup.
-        Bukkit.getScheduler().runTask(Core.getInstance(), this::open);
+        if (Core.isApplicableBuild(this)) {
+            // Don't allow async openings, and lets the subclass' constructor to finish setup.
+            Bukkit.getScheduler().runTask(Core.getInstance(), this::open);
+        } else {
+            player.sendMessage(ChatColor.RED + "This GUI is disabled on this build-type.");
+        }
     }
 
     /**

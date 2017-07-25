@@ -7,9 +7,7 @@ import net.md_5.bungee.chat.ComponentSerializer;
 import net.minecraft.server.v1_12_R1.ChatBaseComponent;
 import net.minecraft.server.v1_12_R1.IChatBaseComponent;
 import org.bukkit.ChatColor;
-import org.bukkit.Color;
 import org.bukkit.command.CommandSender;
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 import java.text.DecimalFormat;
 import java.util.Arrays;

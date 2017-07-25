@@ -2,7 +2,7 @@ package net.kineticraft.lostcity.mechanics.metadata;
 
 import lombok.Getter;
 import net.kineticraft.lostcity.Core;
-import net.kineticraft.lostcity.mechanics.Mechanic;
+import net.kineticraft.lostcity.mechanics.system.Mechanic;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -64,7 +64,7 @@ public class MetadataManager extends Mechanic {
      *
      * IMPORTANT:
      * Cooldowns are seperate from the metadata enum because the metadata enum will get removed on logout.
-     * Also, it's stupid to add them to the enum.
+     * Also, it's inconvenient to add them to the enum.
      *
      * @param obj
      * @param cooldown

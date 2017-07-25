@@ -1,15 +1,18 @@
 package net.kineticraft.lostcity.data.reflect.behavior.bukkit;
 
 import net.kineticraft.lostcity.data.JsonData;
+import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.data.reflect.behavior.SpecialStore;
+import net.kineticraft.lostcity.item.display.GUIItem;
+import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 
 import java.lang.reflect.Field;
 
 /**
  * Save / load bukkit locations as json.
- *
  * Created by Kneesnap on 7/5/2017.
  */
 public class LocationStore extends SpecialStore<Location> {
@@ -32,5 +35,17 @@ public class LocationStore extends SpecialStore<Location> {
         data = data.getData(key);
         return new Location(Bukkit.getWorld(data.getString("world")), data.getDouble("x"),
                 data.getDouble("y"), data.getDouble("z"), data.getFloat("yaw"), data.getFloat("pitch"));
+    }
+
+    @Override
+    public void editItem(GUIItem item, Field f, Jsonable data) throws IllegalAccessException {
+        Location loc = (Location) f.get(data);
+        item.leftClick(ce -> ce.getPlayer().teleport(loc)).rightClick(ce -> {
+            try {
+                f.set(data, ce.getPlayer().getLocation());
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }).addLore("Location: " + ChatColor.GOLD + Utils.toString(loc), "", "Left-Click: Teleport", "Right-Click: Set Location");
     }
 }

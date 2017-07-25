@@ -1,7 +1,5 @@
-package net.kineticraft.lostcity.mechanics;
+package net.kineticraft.lostcity.mechanics.system;
 
-import net.kineticraft.lostcity.Core;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
@@ -13,7 +11,7 @@ import org.bukkit.event.Listener;
 public class Mechanic implements Listener {
 
     public Mechanic() {
-        Bukkit.getPluginManager().registerEvents(this, Core.getInstance());
+
     }
 
     /**

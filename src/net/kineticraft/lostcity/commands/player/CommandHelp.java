@@ -1,31 +1,28 @@
 package net.kineticraft.lostcity.commands.player;
 
-import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.Command;
 import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.commands.Commands;
 import net.kineticraft.lostcity.utils.Utils;
-import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * CommandHelp - List help for all commands
- *
  * Created by Kneesnap on 5/30/2017.
  */
 public class CommandHelp extends PlayerCommand {
 
-    private static int PER_PAGE = 10;
+    private static final int PER_PAGE = 10;
 
     public CommandHelp() {
-        super("[command]", "Display command usage.", "help", "?");
+        super("[command|page]", "Display command usage.", "help", "?");
+        autocomplete(() -> Commands.getCommands().stream().map(Command::getName).collect(Collectors.toList()));
     }
 
     @Override
@@ -38,12 +35,8 @@ public class CommandHelp extends PlayerCommand {
             int totalPages = help.size() / PER_PAGE + Math.min(1, help.size() % PER_PAGE);
 
             sender.sendMessage(bar + ChatColor.GRAY + " Command Help (" + page + "/" + totalPages + ") " + bar);
-            List<String> block = new ArrayList<>();
-
             for (int i = (page - 1) * PER_PAGE; i < Math.min(help.size(), page * PER_PAGE); i++)
-                block.add(help.get(i)); // Show help
-
-            sender.sendMessage(block.toArray(new String[0]));
+                sender.sendMessage(help.get(i)); // Show help.
         } else {
 
             Command cmd = Commands.getCommand(null, args[0]);

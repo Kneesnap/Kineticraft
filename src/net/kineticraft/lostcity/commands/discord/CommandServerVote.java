@@ -5,7 +5,7 @@ import lombok.Getter;
 import net.dv8tion.jda.core.entities.*;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
-import net.kineticraft.lostcity.commands.DiscordSender;
+import net.kineticraft.lostcity.discord.DiscordSender;
 import net.kineticraft.lostcity.discord.DiscordAPI;
 import net.kineticraft.lostcity.discord.DiscordChannel;
 import net.kineticraft.lostcity.utils.Utils;
@@ -72,7 +72,7 @@ public class CommandServerVote extends DiscordCommand {
      * @return totalStaff
      */
     private static int getTotalStaff() {
-        List<Role> staffRoles = Arrays.stream(EnumRank.values()).filter(EnumRank::isStaff).map(EnumRank::getDiscordRole)
+        List<Role> staffRoles = Arrays.stream(EnumRank.values()).filter(EnumRank::isStaff).map(EnumRank::getName)
                 .map(DiscordAPI::getRole).filter(Objects::nonNull).collect(Collectors.toList());
         return (int) DiscordAPI.getServer().getMembers().stream().map(Member::getRoles)
                 .filter(m -> Utils.containsAny(m, staffRoles)).count();
@@ -81,6 +81,7 @@ public class CommandServerVote extends DiscordCommand {
     /**
      * Scan the channel to update all existing proposals.
      */
+    @SuppressWarnings("ConstantConditions")
     public static void scanChannel() {
         if (!DiscordAPI.isAlive())
             return;

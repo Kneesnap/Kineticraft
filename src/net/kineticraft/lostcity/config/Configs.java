@@ -3,7 +3,7 @@ package net.kineticraft.lostcity.config;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.kineticraft.lostcity.config.configs.*;
-import net.kineticraft.lostcity.mechanics.Mechanic;
+import net.kineticraft.lostcity.mechanics.system.Mechanic;
 import net.kineticraft.lostcity.utils.ReflectionUtil;
 
 import java.util.HashMap;

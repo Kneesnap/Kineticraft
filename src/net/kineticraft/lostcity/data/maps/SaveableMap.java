@@ -9,20 +9,16 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.BiConsumer;
 
 /**
  * Base of a json saveable map.
- *
  * Created by Kneesnap on 6/10/2017.
  */
 @Getter
 public abstract class SaveableMap<K, V> implements Jsonable {
 
     private transient Map<K, V> map = new HashMap<>();
-
-    public SaveableMap() {
-
-    }
 
     /**
      * Get the element with the specified key.
@@ -90,6 +86,14 @@ public abstract class SaveableMap<K, V> implements Jsonable {
      */
     public int size() {
         return keySet().size();
+    }
+
+    /**
+     * Run code on each element of this map.
+     * @param action
+     */
+    public void forEach(BiConsumer<? super K, ? super V> action) {
+        getMap().forEach(action);
     }
 
     @Override

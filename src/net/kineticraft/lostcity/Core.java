@@ -4,6 +4,9 @@ import lombok.Getter;
 import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.discord.DiscordAPI;
 import net.kineticraft.lostcity.discord.DiscordChannel;
+import net.kineticraft.lostcity.mechanics.system.Restrict;
+import net.kineticraft.lostcity.mechanics.system.MechanicManager;
+import net.kineticraft.lostcity.utils.ServerUtils;
 import net.kineticraft.lostcity.utils.TextUtils;
 import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Bukkit;
@@ -118,7 +121,7 @@ public class Core extends JavaPlugin {
      * @param folder
      */
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    private static void makeFolder(String folder) {
+    public static void makeFolder(String folder) {
         getFile(folder + "/").mkdirs();
     }
 
@@ -180,5 +183,16 @@ public class Core extends JavaPlugin {
      */
     public ClassLoader getClazzLoader() {
         return getClassLoader();
+    }
+
+    /**
+     * Return whether a passed object can be registered on this build.
+     * @param object - An object or class that may be disabled on a given build type.
+     * @return applicable
+     */
+    public static boolean isApplicableBuild(Object object) {
+        Class<?> cls = (object instanceof Class) ? (Class<?>) object : object.getClass();
+        return !cls.isAnnotationPresent(Restrict.class)
+                || !Arrays.asList(cls.getAnnotation(Restrict.class).value()).contains(ServerUtils.getType());
     }
 }

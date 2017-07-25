@@ -1,11 +1,13 @@
 package net.kineticraft.lostcity.utils;
 
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import lombok.AllArgsConstructor;
+import lombok.Cleanup;
 import lombok.Getter;
-import lombok.SneakyThrows;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
-import net.kineticraft.lostcity.commands.DiscordSender;
+import net.kineticraft.lostcity.discord.DiscordSender;
 import net.kineticraft.lostcity.data.lists.JsonList;
 import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.data.KCPlayer;
@@ -19,10 +21,12 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
@@ -34,10 +38,7 @@ import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 /**
  * Utils - Contains basic static utilties.
@@ -84,36 +85,6 @@ public class Utils {
         for (String s : split)
             out.add(s.length() > 0 ? s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase() : "");
         return String.join(" ", out);
-    }
-
-    /**
-     * Joins a string together by the given string.
-     * @deprecated Use String#join
-     *
-     * @param join
-     * @param values
-     * @param display
-     * @return
-     */
-    public static <T> String join(String join, T[] values, Function<T, String> display) {
-        return join(join, Arrays.asList(values), display);
-    }
-
-    /**
-     * Joins a string together by the delimeter.
-     * @deprecrated Use String#join
-     *
-     * @param join
-     * @param values
-     * @param displayer
-     * @param <T>
-     * @return joined
-     */
-    public static <T> String join(String join, Iterable<T> values, Function<T, String> displayer) {
-        String res = "";
-        for (T val : values)
-            res += (res.length() > 0 ? join : "") + displayer.apply(val);
-        return res;
     }
 
     /**
@@ -209,12 +180,8 @@ public class Utils {
                     player.sendMessage(ChatColor.WHITE + "Teleporting... " + ChatColor.UNDERLINE + tpTime[0] + "s");
                 } else {
                     player.setNoDamageTicks(300); // 15 Seconds
-                    final Location safe = findSafe(location.clone());
-                    if (player.getWorld() != safe.getWorld()) // If teleporting cross-dimensionally we'll need to teleport them again.
-                        Bukkit.getScheduler().runTask(Core.getInstance(), () -> player.teleport(safe));
-                    player.teleport(safe);
+                    safeTp(player, location);
                     player.playSound(player.getLocation(), Sound.BLOCK_LAVA_POP, 1F, 1.333F);
-
                     KCPlayer.getWrapper(player).updatePlayer(); // Show unread mail.
                 }
 
@@ -248,7 +215,6 @@ public class Utils {
     /**
      * Formats milliseconds into a user friendly display.
      * Different from formatTime because this does not use abbreviations.
-     *
      * @param time
      * @return formatted
      */
@@ -296,7 +262,8 @@ public class Utils {
      * @param runnable - Code to execute.
      * @param at - When to schedule the task.
      */
-    public static void schedule(TimeInterval unit, int amount, Runnable runnable,  int at) {
+    @SuppressWarnings("MagicConstant")
+    public static void schedule(TimeInterval unit, int amount, Runnable runnable, int at) {
         final TimerTask task = new TimerTask() { public void run() { runnable.run(); }}; // Lambda doesn't work on abstract classes.
         Calendar c = Calendar.getInstance();
         for (int i = 0; i < unit.ordinal(); i++)
@@ -550,7 +517,7 @@ public class Utils {
      * @return string
      */
     public static String formatToggle(String name, boolean value) {
-        return ChatColor.GRAY + name + ": " + (value ? ChatColor.GREEN : ChatColor.RED) + value;
+        return (name != null ? ChatColor.GRAY + name + ": " : "") + (value ? ChatColor.GREEN : ChatColor.RED) + value;
     }
 
     /**
@@ -570,6 +537,15 @@ public class Utils {
     public static EnumRank getRank(CommandSender sender) {
         return hasWrapper(sender) ? KCPlayer.getWrapper(sender).getRank()
                 : (sender instanceof ConsoleCommandSender ? EnumRank.DEV : EnumRank.MU);
+    }
+
+    /**
+     * Is the given CommandSender a staff member?
+     * @param sender
+     * @return isStaff
+     */
+    public static boolean isStaff(CommandSender sender) {
+        return getRank(sender).isStaff();
     }
 
     /**
@@ -607,12 +583,12 @@ public class Utils {
 
     /**
      * Give a player an infinite potion effect, but only if they do not already have a potion of this type.
-     * @param player
+     * @param entity
      * @param type
      */
-    public static void giveInfinitePotion(Player player, PotionEffectType type) {
-        if (!player.hasPotionEffect(type))
-            player.addPotionEffect(new PotionEffect(type, Integer.MAX_VALUE, 2));
+    public static void giveInfinitePotion(LivingEntity entity, PotionEffectType type) {
+        if (!entity.hasPotionEffect(type))
+            entity.addPotionEffect(new PotionEffect(type, Integer.MAX_VALUE, 2));
     }
 
     /**
@@ -709,7 +685,6 @@ public class Utils {
 
     /**
      * Get players nearby an entity. Async-Safe.
-     *
      * @param entity
      * @param radius
      * @return players
@@ -720,7 +695,6 @@ public class Utils {
 
     /**
      * Get players nearby a location. Async-Safe.
-     *
      * @param loc
      * @param radius
      * @return players
@@ -733,7 +707,6 @@ public class Utils {
     /**
      * Get entities nearby a location. Async-Safe
      * TODO: Make this actually async-safe.
-     *
      * @param loc
      * @param radius
      * @return entities
@@ -941,31 +914,175 @@ public class Utils {
     }
 
     /**
-     * Decompress a string using GZip.
-     * @param data
-     * @return decompressed
+     * Get the WorldGuard region name that the entity is currently in.
+     * @param ent
+     * @return regionName
      */
-    @SneakyThrows
-    public static String decompress(String data) {
-        ByteArrayInputStream bais = new ByteArrayInputStream(data.getBytes());
-        BufferedReader in = new BufferedReader(new InputStreamReader(new GZIPInputStream(bais), "UTF-8"));
-        StringWriter sw = new StringWriter();
-        for (int i = 0; i < bais.available(); i++)
-            sw.write(in.read());
-        return sw.toString();
+    public static String getRegion(Entity ent) {
+        return getRegion(ent.getLocation());
     }
 
     /**
-     * Compress data using GZip.
-     * @param data
-     * @return compressed
+     * Get the WorldGuard region name for the location specified.
+     * @param loc
+     * @return regionName
      */
-    @SneakyThrows
-    public static String compress(String data) {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        GZIPOutputStream gzip = new GZIPOutputStream(out);
-        gzip.write(data.getBytes("UTF-8"));
-        gzip.close();
-        return out.toString("UTF-8");
+    public static String getRegion(Location loc) {
+        String name = "__global__";
+        int priority = -1;
+
+        for (ProtectedRegion r : WorldGuardPlugin.inst().getRegionManager(loc.getWorld()).getApplicableRegions(loc)) {
+            if (r.getPriority() > priority) {
+                priority = r.getPriority();
+                name = r.getId();
+            }
+        }
+
+        return name;
+    }
+
+    /**
+     * Delete a file relative to the server path.
+     * @param path
+     */
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    public static void removeFile(String path) {
+        File f = new File(path);
+        if (f.exists())
+            f.delete();
+    }
+
+    /**
+     * Spawn a firework at the given location.
+     * @param loc
+     * @param firework
+     */
+    public static void spawnFirework(Location loc, FireworkEffect.Builder firework) {
+        Firework fw = (Firework) loc.getWorld().spawnEntity(loc, EntityType.FIREWORK);
+        FireworkMeta meta = fw.getFireworkMeta();
+        meta.setPower(0);
+        meta.addEffects(firework.build());
+        fw.setFireworkMeta(meta);
+    }
+
+    /**
+     * Run a shell command asynchronously, but runs 'onFinish' synchronously after it completes.
+     * @param cmd
+     * @param onFinish
+     */
+    public static void runShell(String cmd, Runnable onFinish) {
+        Bukkit.getScheduler().runTaskAsynchronously(Core.getInstance(), () -> {
+            try {
+                final ProcessBuilder childBuilder = new ProcessBuilder(cmd);
+                childBuilder.redirectErrorStream(true);
+                childBuilder.directory(Core.getInstance().getDataFolder().getParentFile().getParentFile());
+                final Process child = childBuilder.start();
+
+                Bukkit.getScheduler().runTaskAsynchronously(Core.getInstance(), () -> {
+                    try {
+                        @Cleanup BufferedReader reader = new BufferedReader(new InputStreamReader(child.getInputStream()));
+                        String line;
+                        while ((line = reader.readLine()) != null)
+                            Bukkit.getLogger().info(line);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+                child.waitFor();
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (onFinish != null)
+                    Bukkit.getScheduler().runTask(Core.getInstance(), onFinish);
+            }
+        });
+    }
+
+    /**
+     * Teleport an entity to spawn.
+     * @param ent
+     */
+    public static void toSpawn(Entity ent) {
+        safeTp(ent, Core.getMainWorld().getSpawnLocation());
+    }
+
+    /**
+     * Teleport an entity safely, including interdimensionally.
+     * @param e
+     * @param loc
+     */
+    public static void safeTp(Entity e, Location loc) {
+        final Location safe = findSafe(loc.clone());
+        if (e.getWorld() != safe.getWorld()) // If teleporting cross-dimensionally we'll need to teleport them again.
+            e.teleport(safe);
+        e.teleport(safe);
+    }
+
+    /**
+     * Confirm a condition is correct, otherwise throw a RuntimeException.
+     * @param condition
+     * @param error
+     */
+    public static void confirm(boolean condition, String error) {
+        if (!condition)
+            throw new RuntimeException(error);
+    }
+
+    /**
+     * Get the item currently in an entities equipment slot.
+     * @param le
+     * @param slot
+     * @return item
+     */
+    public static ItemStack getItem(LivingEntity le, EquipmentSlot slot) {
+        EntityEquipment e = le.getEquipment();
+        switch (slot) {
+            case HAND:
+                return e.getItemInMainHand();
+            case OFF_HAND:
+                return e.getItemInOffHand();
+            case FEET:
+                return e.getBoots();
+            case LEGS:
+                return e.getLeggings();
+            case CHEST:
+                return e.getChestplate();
+            case HEAD:
+                return e.getHelmet();
+            default:
+                throw new IllegalArgumentException("Cannot retreive " + slot);
+        }
+    }
+
+    /**
+     * Set the item in an entities equipment slot.
+     * @param le
+     * @param slot
+     * @param item
+     */
+    public static void setItem(LivingEntity le, EquipmentSlot slot, ItemStack item) {
+        EntityEquipment e = le.getEquipment();
+        switch (slot) {
+            case HAND:
+                e.setItemInMainHand(item);
+                break;
+            case OFF_HAND:
+                e.setItemInOffHand(item);
+                break;
+            case FEET:
+                e.setBoots(item);
+                break;
+            case LEGS:
+                e.setLeggings(item);
+                break;
+            case CHEST:
+                e.setChestplate(item);
+                break;
+            case HEAD:
+                e.setHelmet(item);
+                break;
+            default:
+                throw new IllegalArgumentException("Cannot store " + slot);
+        }
     }
 }

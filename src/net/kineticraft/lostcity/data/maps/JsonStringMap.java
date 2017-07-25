@@ -4,14 +4,9 @@ import net.kineticraft.lostcity.data.JsonData;
 
 /**
  * Json String map
- *
  * Created by Kneesnap on 6/10/2017.
  */
 public class JsonStringMap extends SaveableMap<String, String> {
-
-    public JsonStringMap() {
-
-    }
 
     @Override
     protected void save(JsonData data, String key, String value) {

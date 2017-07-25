@@ -2,6 +2,7 @@ package net.kineticraft.lostcity.mechanics;
 
 import net.kineticraft.lostcity.mechanics.metadata.Metadata;
 import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
+import net.kineticraft.lostcity.mechanics.system.Mechanic;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -27,7 +28,7 @@ public class FarmLimiter extends Mechanic {
 
     private static final int RADIUS = 4;
     private static List<EntityType> IGNORE = Arrays.asList(EntityType.GUARDIAN, EntityType.ELDER_GUARDIAN,
-            EntityType.ARMOR_STAND, EntityType.PLAYER, EntityType.WITHER);
+            EntityType.ARMOR_STAND, EntityType.PLAYER, EntityType.WITHER, EntityType.ENDER_DRAGON);
 
     @EventHandler(ignoreCancelled = true)
     public void onChickenSpawn(CreatureSpawnEvent evt) {

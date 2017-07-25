@@ -6,7 +6,7 @@ import net.dv8tion.jda.core.entities.impl.MemberImpl;
 import net.dv8tion.jda.core.managers.GuildController;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.config.Configs;
-import net.kineticraft.lostcity.mechanics.Mechanic;
+import net.kineticraft.lostcity.mechanics.system.Mechanic;
 import net.kineticraft.lostcity.utils.ServerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -92,7 +92,7 @@ public class DiscordAPI extends Mechanic {
      * @return roll
      */
     public static Role getRole(String rollName) {
-        List<Role> roles = DiscordAPI.getServer().getRolesByName(rollName, true);
+        List<Role> roles = getServer().getRolesByName(rollName, true);
         return roles.isEmpty() ? null : roles.get(0);
     }
 

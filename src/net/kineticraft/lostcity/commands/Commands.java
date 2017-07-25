@@ -10,10 +10,12 @@ import net.kineticraft.lostcity.commands.staff.*;
 import net.kineticraft.lostcity.commands.trigger.*;
 import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.config.Configs.ConfigType;
+import net.kineticraft.lostcity.discord.DiscordSender;
+import net.kineticraft.lostcity.events.CommandRegisterEvent;
 import net.kineticraft.lostcity.guis.GUIType;
 import net.kineticraft.lostcity.item.ItemType;
 import net.kineticraft.lostcity.mechanics.Chat;
-import net.kineticraft.lostcity.mechanics.Mechanic;
+import net.kineticraft.lostcity.mechanics.system.Mechanic;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -34,7 +36,6 @@ import java.util.stream.Collectors;
 
 /**
  * Handles command usage.
- *
  * Created by Kneesnap on 5/29/2017.
  */
 public class Commands extends Mechanic {
@@ -65,6 +66,7 @@ public class Commands extends Mechanic {
         // Register player commands
         addCommand(new CommandCondense());
         addCommand(new CommandDelHome());
+        addCommand(new CommandEmote());
         addCommand(new CommandExtinguish());
         addCommand(new CommandHelp());
         addCommand(new CommandHat());
@@ -87,6 +89,7 @@ public class Commands extends Mechanic {
         addCommand(new CommandShovel());
         addCommand(new CommandSkull());
         addCommand(new CommandSpawn());
+        addCommand(new CommandStats());
         addCommand(new CommandUnignore());
         addCommand(new CommandTPA());
         addCommand(new CommandTPBook());
@@ -100,17 +103,22 @@ public class Commands extends Mechanic {
         addCommand(new CommandBright());
         addCommand(new CommandBroadcast());
         addCommand(new CommandConfig());
+        addCommand(new CommandCutscene());
         addCommand(new CommandDeathTeleport());
+        addCommand(new CommandEdit());
         addCommand(new CommandFly());
         addCommand(new CommandGUIs());
         addCommand(new CommandKick());
+        addCommand(new CommandInvoke());
         addCommand(new CommandMined());
         addCommand(new CommandMute());
         addCommand(new CommandNear());
+        addCommand(new CommandNotes());
         addCommand(new CommandPunish());
         addCommand(new CommandPurchase());
         addCommand(new CommandReboot());
         addCommand(new CommandRescue());
+        addCommand(new CommandSay());
         addCommand(new CommandSetRank());
         addCommand(new CommandSpectator());
         addCommand(new CommandTeleport());
@@ -131,16 +139,20 @@ public class Commands extends Mechanic {
         addCommand(new CommandDiscordVerify());
         addCommand(new CommandServerVote());
 
+        // Tell plugins its time to register their commands.
+        Bukkit.getPluginManager().callEvent(new CommandRegisterEvent());
+
         // Sort commands alphabetically:
         getCommands().sort(Comparator.comparing(Command::getName));
     }
 
     /**
-     * Register a command.
+     * Register a command, if it's allowed on this build.
      * @param command
      */
     public static void addCommand(Command command) {
-        getCommands().add(command);
+        if (Core.isApplicableBuild(command))
+            getCommands().add(command);
     }
 
     @Override
@@ -266,8 +278,7 @@ public class Commands extends Mechanic {
         Player p = evt.getPlayer();
         String input = evt.getMessage();
 
-        if (handleCommand(p, CommandType.SLASH, input) || handleCommand(p, CommandType.TRIGGER, input))
-            evt.setCancelled(true); // Don't show 'unknown command....'
+        evt.setCancelled(handleCommand(p, CommandType.SLASH, input) || handleCommand(p, CommandType.TRIGGER, input)); // Don't show 'unknown command....'
 
         if (input.startsWith("/ ")) {
             sendStaffChat(p, input.substring(2));
@@ -281,8 +292,7 @@ public class Commands extends Mechanic {
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onServerCommand(ServerCommandEvent evt) {
-        if (handleCommand(evt.getSender(), CommandType.SLASH, CommandType.SLASH.getPrefix() + evt.getCommand()))
-            evt.setCancelled(true); // Handle console commands.
+        evt.setCancelled(handleCommand(evt.getSender(), CommandType.SLASH, CommandType.SLASH.getPrefix() + evt.getCommand())); // Handle console commands.
 
         if (evt.getCommand().startsWith("/ ")) {
             sendStaffChat(evt.getSender(), evt.getCommand().substring(2));
@@ -298,6 +308,4 @@ public class Commands extends Mechanic {
     private static void sendStaffChat(CommandSender sender, String message) {
         Core.alertStaff("[AC] " + sender.getName() + ": " + ChatColor.GREEN + Chat.applyAllFilters(sender, message));
     }
-
-    //TODO: Command block commands.
 }

@@ -171,7 +171,9 @@ public abstract class SaveableList<T> implements Iterable<T>, Jsonable {
      */
     @Override
     public void load(JsonElement array) {
-        array.getAsJsonArray().forEach(val -> getValues().add(loadSingle(val)));
+        for (JsonElement je : array.getAsJsonArray())
+            if (je != null && !je.isJsonNull())
+                getValues().add(loadSingle(je));
     }
 
     /**
@@ -181,7 +183,7 @@ public abstract class SaveableList<T> implements Iterable<T>, Jsonable {
     @Override
     public JsonElement save() {
         JsonArray array = new JsonArray();
-        getValues().stream().map(this::save).forEach(array::add);
+        getValues().stream().filter(Objects::nonNull).map(this::save).filter(Objects::nonNull).forEach(array::add);
         return array;
     }
 

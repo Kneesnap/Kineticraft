@@ -5,7 +5,7 @@ import lombok.Setter;
 import net.dv8tion.jda.core.entities.User;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
-import net.kineticraft.lostcity.commands.DiscordSender;
+import net.kineticraft.lostcity.discord.DiscordSender;
 import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.data.lists.EnumList;
 import net.kineticraft.lostcity.data.lists.JsonList;
@@ -47,7 +47,6 @@ public class KCPlayer implements Jsonable {
     private int accountId = generateNewId();
     private long discordId;
     private String username;
-    private String spoofedName;
     private String lastIP;
     private EnumRank rank = EnumRank.MU;
     private String icon;
@@ -291,7 +290,7 @@ public class KCPlayer implements Jsonable {
             return; // There's no linked discord account to update.
 
         DiscordAPI.setNick(getDiscord(), getUsername());
-        DiscordAPI.setRoles(getDiscord(), getRank().isStaff() ? "Staff" : "Verified", getRank().getDiscordRole());
+        DiscordAPI.setRoles(getDiscord(), getRank().isStaff() ? "Staff" : "Verified", getRank().getName());
     }
 
     /**
@@ -306,8 +305,7 @@ public class KCPlayer implements Jsonable {
         player.setDisplayName(getNickname() != null ? getNickname() : player.getName());
         getTemporaryRank().getTeam().addEntry(player.getName());
         Voting.giveRewards(player); // Give vote rewards, if any.
-
-        player.setOp(getRank().isAtLeast(EnumRank.BUILDER));
+        player.setOp(getRank().isAtLeast(EnumRank.BUILDER)); // Grant or remove OP status if the player is of high enough level.
 
         // Update things.
         setUsername(player.getName());

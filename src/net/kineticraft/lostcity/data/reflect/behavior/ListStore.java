@@ -1,7 +1,9 @@
 package net.kineticraft.lostcity.data.reflect.behavior;
 
 import net.kineticraft.lostcity.data.JsonData;
+import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.data.lists.SaveableList;
+import net.kineticraft.lostcity.item.display.GUIItem;
 
 import java.lang.reflect.Field;
 
@@ -19,5 +21,10 @@ public class ListStore extends DataStore<SaveableList> {
     @Override
     public SaveableList<?> getField(JsonData data, String key, Field field) {
         return data.getList(key, (Class<? extends SaveableList>) field.getType(), getArgs(field));
+    }
+
+    @Override
+    public void editItem(GUIItem item, Field f, Jsonable data) throws IllegalAccessException {
+
     }
 }

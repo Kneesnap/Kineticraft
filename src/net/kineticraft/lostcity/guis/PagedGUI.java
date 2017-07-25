@@ -41,7 +41,7 @@ public abstract class PagedGUI extends GUI {
 
     @Override // Show items from the current GUI page + the overlay.
     protected void showItems() {
-        getPage().entrySet().forEach(e -> getInventory().setItem(e.getKey(), e.getValue().generateItem())); // Show page items.
+        getPage().forEach((k, v) -> getInventory().setItem(k, v.generateItem())); // Show page items.
         super.showItems(); // Show overlay.
     }
 

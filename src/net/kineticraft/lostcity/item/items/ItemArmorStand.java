@@ -17,8 +17,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.inventory.ItemStack;
 
 /**
- * Represents an Armor Stand that can
- *
+ * Represents an Armor Stand that has modifiers, such as being small, or having arms.
  * Created by Kneesnap on 6/12/2017.
  */
 @Getter @Setter

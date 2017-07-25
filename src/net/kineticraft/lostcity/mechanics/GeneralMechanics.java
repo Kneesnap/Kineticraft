@@ -6,6 +6,7 @@ import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.discord.DiscordAPI;
 import net.kineticraft.lostcity.discord.DiscordChannel;
 import net.kineticraft.lostcity.item.ItemManager;
+import net.kineticraft.lostcity.mechanics.system.Mechanic;
 import net.kineticraft.lostcity.utils.TextUtils;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.*;
@@ -184,9 +185,8 @@ public class GeneralMechanics extends Mechanic {
                 && Utils.inSpawn(evt.getPlayer().getLocation()) && evt.getTo().clone().add(0, 1, 0).getBlock().isLiquid());
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onLightningStrike(LightningStrikeEvent evt) {
-        if (Utils.nextBool())
-            evt.setCancelled(true);
+        evt.setCancelled(Utils.nextBool());
     }
 }

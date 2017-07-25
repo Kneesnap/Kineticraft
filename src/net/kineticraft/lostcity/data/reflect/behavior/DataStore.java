@@ -3,6 +3,8 @@ package net.kineticraft.lostcity.data.reflect.behavior;
 import com.google.gson.JsonElement;
 import lombok.Getter;
 import net.kineticraft.lostcity.data.JsonData;
+import net.kineticraft.lostcity.data.Jsonable;
+import net.kineticraft.lostcity.item.display.GUIItem;
 import net.kineticraft.lostcity.utils.ReflectionUtil;
 import org.bukkit.Bukkit;
 
@@ -11,7 +13,6 @@ import java.lang.reflect.Method;
 
 /**
  * A template serializer for storing and loading values in JSON.
- *
  * @param <T>
  * Created by Kneesnap on 7/3/2017.
  */
@@ -60,6 +61,12 @@ public abstract class DataStore<T> {
         if (value != null) // Set the value if there is one.
             field.set(to, value);
     }
+
+    /**
+     * Apply the item editor data to an item.
+     * @param item
+     */
+    public abstract void editItem(GUIItem item, Field f, Jsonable data) throws IllegalAccessException;
 
     /**
      * Load an object from json data.

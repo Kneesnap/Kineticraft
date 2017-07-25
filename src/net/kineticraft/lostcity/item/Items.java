@@ -3,7 +3,7 @@ package net.kineticraft.lostcity.item;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.item.event.events.ItemEntityInteractEvent;
 import net.kineticraft.lostcity.item.event.events.ItemInteractEvent;
-import net.kineticraft.lostcity.mechanics.Mechanic;
+import net.kineticraft.lostcity.mechanics.system.Mechanic;
 import net.kineticraft.lostcity.utils.ReflectionUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -12,16 +12,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.*;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Custom Item Event System

@@ -413,7 +413,15 @@ public class JsonData {
      * @return jsonData
      */
     public static JsonData fromFile(String path) {
-        File file = getFile(path);
+        return fromFile(getFile(path));
+    }
+
+    /**
+     * Load JSON from a file.
+     * @param file
+     * @return jsonData.
+     */
+    public static JsonData fromFile(File file) {
         if (!file.exists())
             return new JsonData();
 

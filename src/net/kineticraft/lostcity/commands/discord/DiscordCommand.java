@@ -5,7 +5,7 @@ import lombok.Setter;
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.Command;
 import net.kineticraft.lostcity.commands.CommandType;
-import net.kineticraft.lostcity.commands.DiscordSender;
+import net.kineticraft.lostcity.discord.DiscordSender;
 import net.kineticraft.lostcity.discord.DiscordAPI;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.command.CommandSender;

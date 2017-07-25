@@ -14,9 +14,8 @@ public class StringList extends SaveableList<String> {
 
     }
 
-    public StringList(String... strings) {
-        for (String s : strings)
-            getValues().add(s);
+    public StringList(Iterable<String> val) {
+        super(val);
     }
 
     @Override

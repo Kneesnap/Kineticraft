@@ -6,6 +6,7 @@ import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.player.CommandRankup;
 import net.kineticraft.lostcity.data.QueryTools;
 import net.kineticraft.lostcity.data.KCPlayer;
+import net.kineticraft.lostcity.mechanics.system.Mechanic;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;

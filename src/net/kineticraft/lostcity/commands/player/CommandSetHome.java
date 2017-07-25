@@ -2,6 +2,7 @@ package net.kineticraft.lostcity.commands.player;
 
 import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.data.KCPlayer;
+import net.kineticraft.lostcity.mechanics.Chat;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
@@ -27,8 +28,8 @@ public class CommandSetHome extends PlayerCommand {
             return;
         }
 
-        if (args[0].equalsIgnoreCase("bed")) {
-            sender.sendMessage(ChatColor.RED + "This home name is reserved.");
+        if (args[0].equalsIgnoreCase("bed") || Chat.isObscene(args[0])) {
+            sender.sendMessage(ChatColor.RED + "This home name is not permitted.");
             return;
         }
 

@@ -2,8 +2,10 @@ package net.kineticraft.lostcity.mechanics;
 
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
+import net.kineticraft.lostcity.mechanics.system.Mechanic;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -13,9 +15,9 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 import org.bukkit.event.player.PlayerRegisterChannelEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 import java.util.stream.Collectors;
 
@@ -48,11 +50,11 @@ public class Restrictions extends Mechanic {
 
     @EventHandler
     public void onVehicleMove(VehicleMoveEvent evt) {
-        if (evt.getVehicle().getType() == EntityType.BOAT && !evt.getFrom().getBlock().isLiquid()
-                && evt.getTo().getY() > evt.getFrom().getY() && evt.getVehicle().getVelocity().length() == 0)
-            Core.alertStaff(evt.getVehicle().getPassengers().stream().filter(e -> e instanceof Player)
-                    .map(Entity::getName).collect(Collectors.joining(", ", "[BoatFly] " + ChatColor.GRAY,
-                            ChatColor.GRAY + "may be using BoatFly.")));
+        String fly = evt.getVehicle().getPassengers().stream().filter(e -> e instanceof Player).map(Entity::getName)
+                .collect(Collectors.joining(", "));
+        if (evt.getVehicle().getType() == EntityType.BOAT && !evt.getFrom().getBlock().isLiquid() && fly.length() > 0
+                && evt.getTo().getY() > evt.getFrom().getY() && evt.getVehicle().getVelocity().getY() <= 0)
+            Core.alertStaff("[BoatFly] " + ChatColor.GRAY + fly + "may be using BoatFly.");
     }
 
     @Override // Removes all infinite potion effects. (Players aren't supposed to keep them.)
@@ -71,9 +73,16 @@ public class Restrictions extends Mechanic {
         MetadataManager.setCooldown(evt.getPlayer(), "lastDiamond", 6000); // 5 minutes
     }
 
+    @EventHandler(ignoreCancelled = true) // Prevent players from teleporting using gm3.
+    public void onTeleport(PlayerTeleportEvent evt) {
+        evt.setCancelled(evt.getCause() == PlayerTeleportEvent.TeleportCause.SPECTATE && !Utils.getRank(evt.getPlayer()).isStaff());
+    }
+
     @Override
     public void onJoin(Player player) {
         player.sendMessage(DISABLE_TEXT);
+        if (!Utils.getRank(player).isStaff())
+            player.setGameMode(GameMode.SURVIVAL);
     }
 
     @EventHandler

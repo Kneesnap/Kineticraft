@@ -8,8 +8,8 @@ import net.kineticraft.lostcity.data.reflect.behavior.*;
 import net.kineticraft.lostcity.data.reflect.behavior.bukkit.*;
 import net.kineticraft.lostcity.utils.GeneralException;
 import net.kineticraft.lostcity.utils.ReflectionUtil;
-import net.kineticraft.lostcity.utils.Utils;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
@@ -52,6 +52,19 @@ public class JsonSerializer {
     }
 
     /**
+     * Deserialize an object from a stored json file.
+     * @param load
+     * @param f
+     * @param args
+     * @param <T>
+     * @return newObject
+     */
+    @SuppressWarnings("ConstantConditions")
+    public static <T> T fromFile(Class<T> load, File f, Object... args) {
+        return fromJson(load, JsonData.fromFile(f).getJsonObject(), args);
+    }
+
+    /**
      * Deserialize an object from stored json text.
      * @param load
      * @param data
@@ -72,21 +85,20 @@ public class JsonSerializer {
      */
     @SuppressWarnings("unchecked")
     public static <T> T fromJson(Class<T> load, JsonElement data, Object... args) {
-        if (!Jsonable.class.isAssignableFrom(load)) {
-            // It's a normal object.
-            try {
-                return ((DataStore<T>) getHandler(load, "unsafe object")).loadObject(data);
-            } catch (Exception e) {
-                throw new GeneralException("Could not load class '" + load.getClass().getSimpleName() + "' from JSON.", e);
-            }
-        }
+        if (data.isJsonObject() && data.getAsJsonObject().has("class"))
+            load = (Class<T>) ReflectionUtil.getClass(data.getAsJsonObject().get("class").getAsString());
 
+        assert load != null;
         try {
+            if (!Jsonable.class.isAssignableFrom(load))
+                return ((DataStore<T>) getHandler(load, "unsafe object")).loadObject(data);
+
             T val = ReflectionUtil.construct(load, args);
             ((Jsonable) val).load(data);
             return val;
         } catch (Exception e) {
-            throw new GeneralException("Could not load " + load.getClass().getSimpleName() + " from JSON.", e);
+            e.printStackTrace();
+            return null;
         }
     }
 
@@ -101,7 +113,7 @@ public class JsonSerializer {
             try {
                 getHandler(f).loadField(data, refresh, f);
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                e.printStackTrace();
             }
         });
     }
@@ -120,7 +132,7 @@ public class JsonSerializer {
                 try {
                     getHandler(f).saveField(data, f.get(obj), f.getName());
                 } catch (Exception e) {
-                    throw new GeneralException("Failed to save '" + f.getName() + "' (" + obj.getClass().getName() + ")", e);
+                    e.printStackTrace();
                 }
             });
             return data.getJsonObject();
@@ -128,7 +140,6 @@ public class JsonSerializer {
 
         Object result = getHandler(obj.getClass(), "object").serialize(obj);
         return result instanceof JsonData ? ((JsonData) result).getJsonObject() : (JsonElement) result;
-
     }
 
     /**
@@ -138,7 +149,7 @@ public class JsonSerializer {
      * @param field
      * @return handler
      */
-    private static DataStore getHandler(Field field) {
+    public static DataStore getHandler(Field field) {
         return getHandler(field.getType(), field.getName());
     }
 
@@ -163,7 +174,7 @@ public class JsonSerializer {
      * @param obj
      * @return fields
      */
-    private static List<Field> getFields(Object obj) {
+    public static List<Field> getFields(Object obj) {
         if (!fieldCache.containsKey(obj.getClass())) {
             List<Field> cache = ReflectionUtil.getAllFields(obj.getClass()).stream()
                     .filter(f -> !Modifier.isStatic(f.getModifiers()))
@@ -176,11 +187,14 @@ public class JsonSerializer {
     }
 
     /**
-     * Create a json element from a compressed string.
-     * @param string
-     * @return element
+     * Identify a json object's class.
+     * @param object
+     * @param je
+     * @return je
      */
-    public static JsonElement decompress(String string) {
-        return new JsonParser().parse(Utils.decompress(string)).getAsJsonObject();
+    public static JsonElement addClass(Object object, Class<?> superClass, JsonElement je) {
+        if (je.isJsonObject() && !object.getClass().equals(superClass))
+            je.getAsJsonObject().addProperty("class", object.getClass().getName());
+        return je;
     }
 }

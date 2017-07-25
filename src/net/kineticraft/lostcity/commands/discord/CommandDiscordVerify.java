@@ -1,6 +1,6 @@
 package net.kineticraft.lostcity.commands.discord;
 
-import net.kineticraft.lostcity.commands.DiscordSender;
+import net.kineticraft.lostcity.discord.DiscordSender;
 import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.discord.DiscordAPI;
 import net.kineticraft.lostcity.mechanics.Callbacks;
@@ -32,6 +32,7 @@ public class CommandDiscordVerify extends DiscordCommand {
 
         Player verify = Bukkit.getPlayer(args[0]);
         KCPlayer pw = KCPlayer.getWrapper(verify);
+        pw.updateDiscord();
 
         if (pw.isVerified()) {
             discord.sendMessage(verify.getName() + " has already verified.");

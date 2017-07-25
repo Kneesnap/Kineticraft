@@ -34,16 +34,17 @@ public class CommandSeen extends PlayerCommand {
                     : Bukkit.getOfflinePlayer(p.getUuid()).getLastPlayed());
 
             sender.sendMessage(ChatColor.GRAY + "Showing report of " + ChatColor.GRAY + p.getUsername() + ChatColor.GRAY + ":");
-            sender.sendMessage(" - " + ChatColor.GRAY + "Last Seen: " + ChatColor.WHITE + Utils.formatTime(seenTime));
+            sendValue(sender, "Last Seen", Utils.formatTime(seenTime));
 
             // Show extra data to helpers.
-            if (Utils.getRank(sender).isStaff())
-                sender.sendMessage(" - " + ChatColor.GRAY + "IP Address: " + ChatColor.WHITE + p.getLastIP());
-
+            if (Utils.isStaff(sender))
+                sendValue(sender, "IP Address", p.getLastIP());
 
             // Show punishments.
+            sendValue(sender, "Muted", p.isMuted());
+
             if (!p.getPunishments().isEmpty()) {
-                sender.sendMessage(" - " + Utils.formatToggle("Banned", p.isBanned()));
+                sendValue(sender, "Banned", p.isBanned());
                 sender.sendMessage(ChatColor.GRAY + "Punishments:");
                 p.getPunishments().stream().map(Punishments.Punishment::toString).forEach(sender::sendMessage);
             }

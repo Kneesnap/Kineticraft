@@ -1,5 +1,16 @@
 &8Changes:&0
- - Lots of general changes and fixes mostly for staff.
+ - [hover=Open-source preparations]We plan to open-source the code to KCv4 soon, meaning anyone can see the code.[/hover]
+ - [hover=Dungeon Progress]A dungeon system has been written, all that's left is to make the dungeons themselves.[/hover]
+ - [hover=Cutscene System]Cutscenes will mainly be used in dungeons and parties, letting us make cutscenes.[/hover]
+ - [hover=Queue discord messages]Automatically bundles messages sent to discord via #in-game, to avoid delay.[/hover]
+ - [hover=Improved Crake]Improved our anti-cheat system.[/hover]
+ - [hover=Added /stats]View the statistics of a player.[/hover]
+ - Better reboot scheduler
+ - Added /notes
+ - Other backend improvements.
 
-&8Bugfixes:&0
- - Fixed Ozzy + Ruby's trade deals.
+&8Bugfixes:
+ - Fix tabcompletes.
+ - Restrict #in-game for banned players.
+ - Don't save invalid list data.
+ - Fixed /verify de-sync.

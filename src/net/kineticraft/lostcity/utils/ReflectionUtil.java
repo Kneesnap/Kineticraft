@@ -1,7 +1,6 @@
 package net.kineticraft.lostcity.utils;
 
 import net.kineticraft.lostcity.Core;
-import net.minecraft.server.v1_12_R1.ExceptionEntityNotFound;
 import org.bukkit.Bukkit;
 
 import java.lang.reflect.Field;
@@ -245,7 +244,7 @@ public class ReflectionUtil {
      * @param path
      * @return class
      */
-    private static Class<?> getClass(String path) {
+    public static Class<?> getClass(String path) {
         try {
             if (!classCacheMap.containsKey(path))
                 classCacheMap.put(path, Class.forName(path));

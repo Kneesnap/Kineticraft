@@ -2,10 +2,12 @@ package net.kineticraft.lostcity.guis;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.guis.donor.*;
 import net.kineticraft.lostcity.guis.staff.*;
 import net.kineticraft.lostcity.utils.ReflectionUtil;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 /**
@@ -30,10 +32,9 @@ public enum GUIType {
     /**
      * Construct this as a GUI for the given player.
      * @param player
-     * @return gui
      */
-    public GUI construct(Player player) {
+    public void construct(Player player) {
         assert KCPlayer.getWrapper(player) != null;
-        return ReflectionUtil.construct(getGuiClass(), new Class[] {Player.class}, player);
+        ReflectionUtil.construct(getGuiClass(), new Class[]{Player.class}, player);
     }
 }

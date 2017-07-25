@@ -3,6 +3,8 @@ package net.kineticraft.lostcity.mechanics;
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.data.KCPlayer;
+import net.kineticraft.lostcity.mechanics.system.Mechanic;
+import net.kineticraft.lostcity.utils.TextUtils;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -45,6 +47,26 @@ public class Chat extends Mechanic {
         new ArrayList<>(evt.getRecipients()).stream()
                 .filter(p -> KCPlayer.getWrapper(p).getIgnored().containsIgnoreCase(evt.getPlayer().getName()))
                 .forEach(evt.getRecipients()::remove);
+    }
+
+    /**
+     * Censor a message.
+     * @param s
+     * @return censored
+     */
+    public static String censor(String s) {
+        for (String badWord : Configs.getMainConfig().getSwearWords())
+            s = s.replaceAll("(?i)" + badWord, TextUtils.makeString('*', badWord.length()));
+        return s;
+    }
+
+    /**
+     * Is a message obscene?
+     * @param str
+     * @return obscene
+     */
+    public static boolean isObscene(String str) {
+        return !censor(str).equals(str);
     }
 
     /**

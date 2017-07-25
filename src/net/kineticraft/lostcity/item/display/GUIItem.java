@@ -22,6 +22,7 @@ import java.util.function.Function;
  *
  * Created by Kneesnap on 6/2/2017.
  */
+@Getter
 public class GUIItem extends DisplayItem {
 
     private Map<IClickType, List<Consumer<ClickEvent>>> listeners = new HashMap<>();

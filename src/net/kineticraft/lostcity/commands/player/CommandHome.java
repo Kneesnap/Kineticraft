@@ -1,21 +1,16 @@
 package net.kineticraft.lostcity.commands.player;
 
-import net.kineticraft.lostcity.data.QueryTools;
 import net.kineticraft.lostcity.utils.Utils;
 import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.data.KCPlayer;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 /**
  * CommandHome - Teleport to your home.
- * TODO: Remove the admin code from this once the manager gui is added.
- *
  * Created by Kneesnap on 6/1/2017.
  */
 public class CommandHome extends PlayerCommand {
@@ -29,60 +24,26 @@ public class CommandHome extends PlayerCommand {
         Player player = (Player) sender;
         KCPlayer kcPlayer = KCPlayer.getWrapper(player);
 
-        if (args[0].contains(":") && kcPlayer.getRank().isStaff()) {
-            String[] split = args[0].split(":");
-            QueryTools.getData(split[0], k -> {
-                if (split.length == 1) {
-                    listHomes(sender, k);
-                } else {
-                    String homeName = IntStream.range(1, split.length).mapToObj(i -> split[i]).collect(Collectors.joining(":"));
-                    if (homeName.equalsIgnoreCase("bed")) {
-                        Location bedSpawn = player.getBedSpawnLocation();
-                        if (bedSpawn == null) {
-                            sender.sendMessage(ChatColor.RED + k.getUsername() + " doesn't have a bed set.");
-                        } else {
-                            Utils.teleport(player, k.getUsername() + "'s Bed", player.getBedSpawnLocation());
-                        }
-                    } else if (k.getHomes().containsKey(homeName)) {
-                        Utils.teleport(player, k.getUsername() + "'s home named \"" + homeName + "\"", k.getHomes().get(homeName));
-                    } else {
-                        sender.sendMessage(ChatColor.RED + k.getUsername() + " doesn't have a home named \"" + homeName + "\"");
-                    }
-                }
-            }, () -> sender.sendMessage(ChatColor.RED + "Player not found."));
+        if (args[0].equalsIgnoreCase("bed") && player.getBedSpawnLocation() != null) {
+            Utils.teleport(player, "Bed", player.getBedSpawnLocation());
             return;
         }
 
-        if (args[0].equalsIgnoreCase("bed")) {
-            Location bedSpawn = player.getBedSpawnLocation();
-            if (bedSpawn == null) {
-                sender.sendMessage(ChatColor.RED + "You don't have a bed set.");
-            } else {
-                Utils.teleport(player, "Bed", player.getBedSpawnLocation());
-            }
+        if (!kcPlayer.getHomes().containsKey(args[0])) {
+            showUsage(sender);
             return;
         }
 
-        if (kcPlayer.getHomes().containsKey(args[0])) {
-            Utils.teleport(player, "Home", kcPlayer.getHomes().get(args[0]));
-            return;
-        }
-
-        showUsage(sender);
-    }
-
-    private static void listHomes(CommandSender sender, KCPlayer target) {
-        sender.sendMessage(target.getHomes().keySet().stream().map(s -> ChatColor.GREEN + s)
-                .collect(Collectors.joining(ChatColor.GRAY + ", ", ChatColor.GRAY + "Homes: ", "")));
+        Utils.teleport(player, "Home", kcPlayer.getHomes().get(args[0]));
     }
 
     @Override
     protected void showUsage(CommandSender sender) {
         super.showUsage(sender);
 
-        KCPlayer kcPlayer = KCPlayer.getWrapper(sender);
-        listHomes(sender, kcPlayer);
+        sender.sendMessage(KCPlayer.getWrapper(sender).getHomes().keySet().stream().map(s -> ChatColor.GREEN + s)
+                .collect(Collectors.joining(ChatColor.GRAY + ", ", ChatColor.GRAY + "Homes: ", "")));
         if (((Player) sender).getBedSpawnLocation() != null)
-            sender.sendMessage(ChatColor.GRAY + "You can access your bed with " + ChatColor.DARK_PURPLE + "/home bed");
+            sender.sendMessage(ChatColor.GRAY + "You can access your bed with " + ChatColor.RED + "/home bed");
     }
 }

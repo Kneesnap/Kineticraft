@@ -4,6 +4,7 @@ import lombok.Getter;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.data.lists.QueueList;
+import net.kineticraft.lostcity.mechanics.system.Mechanic;
 import net.kineticraft.lostcity.utils.ServerUtils;
 import net.kineticraft.lostcity.utils.TextUtils;
 import net.kineticraft.lostcity.utils.Utils;
@@ -20,7 +21,6 @@ import java.util.stream.Stream;
 
 /**
  * Manages basic core server utilities such as backing up, rebooting, announcements, lag controller, etc.
- *
  * Created by Kneesnap on 6/28/2017.
  */
 public class ServerManager extends Mechanic {
@@ -32,6 +32,7 @@ public class ServerManager extends Mechanic {
     private static final int TPS_INTERVAL = 50;
     private static final int MAX_RENDER = 10;
     private static final int MIN_RENDER = 5;
+    private static final int REBOOT_TIME = 3600;
 
     @Override
     public void onEnable() {
@@ -44,7 +45,7 @@ public class ServerManager extends Mechanic {
 
         // Update render distance every minute.
         Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () ->
-            setRenderDistance(getRenderDistance() + (getTPS() >= 19 ? 1 : -1)), 0L, 60 * 20L);
+            setRenderDistance(getRenderDistance() + (getTPS() >= 19 ? 1 : -1)), 0L, 1200L);
 
         // Update TPS Counter
         Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () -> {
@@ -56,13 +57,16 @@ public class ServerManager extends Mechanic {
 
         if (!ServerUtils.isDevServer()) {
             // Reboot after 12 hours of uptime.
-            Bukkit.getScheduler().runTaskLater(Core.getInstance(), () -> {
+            Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () -> {
+                if (ServerUtils.getTicksToReboot() > REBOOT_TIME * 20 || ServerUtils.isRebootScheduled())
+                    return;
+
                 ServerUtils.takeBackup();
-                ServerUtils.reboot(3600);
-            }, 23 * 60 * 60 * 20L);
+                ServerUtils.reboot(REBOOT_TIME);
+            }, 0L, 20L);
         }
 
-        // Unload any chunks that shouldn't be loaded.
+        // Unload any chunks that shouldn't be loaded. TODO - We might be able to get rid of this.
         Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), () -> {
             List<Chunk> unload = new ArrayList<>();
             Bukkit.getWorlds().forEach(w -> Stream.of(w.getLoadedChunks()).filter(Chunk::isLoaded)
@@ -78,7 +82,6 @@ public class ServerManager extends Mechanic {
      */
     private static boolean shouldUnload(Chunk c) {
         int render = getRenderDistance() + 1;
-
         return Core.getOnlineAsync().stream().map(Player::getLocation).map(Location::getChunk)
                 .noneMatch(chk -> Math.abs(chk.getX() - c.getX()) <= render || Math.abs(chk.getZ() - c.getZ()) <= render);
     }

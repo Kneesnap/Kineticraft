@@ -32,6 +32,18 @@ public abstract class PlayerCommand extends Command {
         this.minRank = minRank;
     }
 
+    /**
+     * Send a message formatted as a value to a CommandSender.
+     * @param sender
+     * @param name
+     * @param value
+     */
+    protected void sendValue(CommandSender sender, String name, Object value) {
+        if (value instanceof Boolean)
+            value = Utils.formatToggle(null, (Boolean) value);
+        sender.sendMessage(" - " + ChatColor.GRAY + name + ": " + ChatColor.WHITE + value);
+    }
+
     @Override
     public boolean canUse(CommandSender sender, boolean showMessage) {
         boolean passRank = Utils.getRank(sender).isAtLeast(getMinRank());

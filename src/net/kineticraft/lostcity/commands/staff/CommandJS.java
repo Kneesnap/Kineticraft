@@ -3,7 +3,6 @@ package net.kineticraft.lostcity.commands.staff;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.StaffCommand;
-import net.kineticraft.lostcity.discord.DiscordAPI;
 import org.bukkit.command.CommandSender;
 
 import javax.script.ScriptEngine;
@@ -16,12 +15,8 @@ import java.util.List;
 /**
  * Allows developers to execute javascript code in-game.
  * Enforces a hard-coded list of developers for maximum security.
- *
- * //TODO: Dynamically alias all classes in the default Bukkit package, or all enums.
- *
  * Created by egoscio on 6/20/17.
  */
-
 public class CommandJS extends StaffCommand {
 
     private ScriptEngine engine;

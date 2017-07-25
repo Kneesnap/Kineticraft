@@ -11,7 +11,6 @@ import java.util.Arrays;
 
 /**
  * EnumRank - Basic data about each player rank.
- *
  * Created by Kneesnap on 5/29/2017.
  */
 @AllArgsConstructor @Getter
@@ -82,14 +81,6 @@ public enum EnumRank {
      */
     public boolean isAtLeast(EnumRank other) {
         return ordinal() >= other.ordinal();
-    }
-
-    /**
-     * Return the name of the rank associated with this discord account.
-     * @return rank
-     */
-    public String getDiscordRole() {
-        return Utils.capitalize(name());
     }
 
     /**

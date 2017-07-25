@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 
 import java.util.*;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -240,7 +241,7 @@ public abstract class Command {
      * Set static values to add to the tab-complete the next argument.
      * @param results
      */
-    protected void autocomplete(List<String> results) {
+    protected void autocomplete(Iterable<String> results) {
         autocomplete(-1, results);
     }
 
@@ -249,8 +250,25 @@ public abstract class Command {
      * @param arg
      * @param results
      */
-    protected void autocomplete(int arg, List<String> results) {
+    protected void autocomplete(int arg, Iterable<String> results) {
         autocomplete(arg, p -> results);
+    }
+
+    /**
+     * Set the next dynamic autocomplete result.
+     * @param supplier
+     */
+    protected void autocomplete(Supplier<Iterable<String>> supplier) {
+        autocomplete(-1, supplier);
+    }
+
+    /**
+     * Dynamically get autocomplete results without parameters.
+     * @param arg
+     * @param supplier
+     */
+    protected void autocomplete(int arg, Supplier<Iterable<String>> supplier) {
+        autocomplete(arg, cs -> supplier.get());
     }
 
     /**

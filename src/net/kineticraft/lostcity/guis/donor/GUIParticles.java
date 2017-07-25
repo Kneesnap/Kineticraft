@@ -9,8 +9,6 @@ import org.bukkit.entity.Player;
 
 /**
  * Lets donors pick their particles.
- * TODO: Each particle should look different in the GUI.
- *
  * Created by Kneesnap on 6/11/2017.
  */
 public class GUIParticles extends GUI {

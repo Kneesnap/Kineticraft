@@ -2,6 +2,7 @@ package net.kineticraft.lostcity.mechanics;
 
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
+import net.kineticraft.lostcity.mechanics.system.Mechanic;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -12,7 +13,6 @@ import org.bukkit.event.player.PlayerBedLeaveEvent;
 
 /**
  * SleepMechanics - Handles when players go to bed.
- *
  * Created by Kneesnap on 6/2/2017.
  */
 public class SleepMechanics extends Mechanic {
@@ -54,6 +54,7 @@ public class SleepMechanics extends Mechanic {
                     + " players need to enter a bed to skip the night.");
     }
 
+    @SuppressWarnings("unused")
     @EventHandler
     public void onBedExit(PlayerBedLeaveEvent evt) {
         updateBeds();

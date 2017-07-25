@@ -5,6 +5,7 @@ import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.data.PlayerDeath;
 import net.kineticraft.lostcity.mechanics.metadata.Metadata;
 import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
+import net.kineticraft.lostcity.mechanics.system.Mechanic;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
