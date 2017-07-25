@@ -7,10 +7,12 @@
  - [hover=Added /stats]View the statistics of a player.[/hover]
  - Better reboot scheduler
  - Added /notes
- - Other backend improvements.
+ - Start of in-game JSON editor.
+ - Backend improvements.
 
 &8Bugfixes:
  - Fix tabcompletes.
  - Restrict #in-game for banned players.
  - Don't save invalid list data.
  - Fixed /verify de-sync.
+ - Text overflows between patchnotes pages.

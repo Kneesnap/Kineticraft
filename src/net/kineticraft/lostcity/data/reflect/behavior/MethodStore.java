@@ -42,6 +42,6 @@ public class MethodStore<T> extends DataStore<T> {
 
     @Override
     public void editItem(GUIItem item, Field f, Jsonable data) throws IllegalAccessException {
-        item.addLore("Value: " + ChatColor.YELLOW + f.get(data).toString());
+        item.addLore("Value: " + ChatColor.YELLOW + f.get(data));
     }
 }
