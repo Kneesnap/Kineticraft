@@ -46,10 +46,10 @@ public class Vanish extends Mechanic {
                     return;
 
                 Player p = packet.getPlayer();
-                boolean staff = Utils.getRank(p).isStaff();
+                boolean allowed = Utils.getRank(p).isAtLeast(EnumRank.MEDIA);
                 String packetName = packet.getPacketName();
 
-                if (packetName.equals("PacketPlayOutPlayerInfo") && !staff && !Cutscenes.isWatching(p))
+                if (packetName.equals("PacketPlayOutPlayerInfo") && !allowed && !Cutscenes.isWatching(p))
                     ((List<?>) packet.getPacketValueSilent("b")).stream()
                             .filter(d -> ReflectionUtil.getField(d, "c") == EnumGamemode.SPECTATOR)
                             .forEach(d -> ReflectionUtil.setField(d, "c", EnumGamemode.CREATIVE));

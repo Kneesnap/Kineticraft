@@ -21,8 +21,8 @@ public class GUIPunish extends GUI {
     private KCPlayer target;
 
     public GUIPunish(Player player, KCPlayer punish) {
-        super(player, "Punish " + punish.getUsername(), fitSize(Punishments.PunishmentType.values())
-                + (punish.getPunishments().isEmpty() ? 0 : 2));
+        super(player, "Punish " + punish.getUsername(), fitSize(Punishments.PunishmentType.values(),
+                punish.getPunishments().isEmpty() ? 0 : 2));
         target = punish;
     }
 

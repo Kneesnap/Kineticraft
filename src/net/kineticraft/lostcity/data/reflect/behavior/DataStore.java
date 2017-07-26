@@ -66,7 +66,47 @@ public abstract class DataStore<T> {
      * Apply the item editor data to an item.
      * @param item
      */
-    public abstract void editItem(GUIItem item, Field f, Jsonable data) throws IllegalAccessException;
+    public abstract void editItem(GUIItem item, Field f, Jsonable data);
+
+    /**
+     * Set the value of a field.
+     * @param f
+     * @param data
+     * @param value
+     */
+    protected void set(Field f, Jsonable data, Object value) {
+        try {
+            f.set(data, value);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Remove the value of a field when clicked.
+     * @param f
+     * @param data
+     * @param onClick
+     */
+    protected void setNull(Field f, Jsonable data, GUIItem onClick) {
+        if (get(f, data) != null)
+            onClick.rightClick(ce -> set(f, data, null)).addLoreAction("Right", "Remove Value");
+    }
+
+    /**
+     * Get the value of a field.
+     * @param f
+     * @param data
+     * @return
+     */
+    protected Object get(Field f, Jsonable data) {
+        try {
+            return f.get(data);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     /**
      * Load an object from json data.

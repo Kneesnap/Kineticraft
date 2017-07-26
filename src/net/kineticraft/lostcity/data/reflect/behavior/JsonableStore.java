@@ -3,8 +3,9 @@ package net.kineticraft.lostcity.data.reflect.behavior;
 import net.kineticraft.lostcity.data.JsonData;
 import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.data.reflect.JsonSerializer;
-import net.kineticraft.lostcity.guis.staff.GUIJsonEditor;
+import net.kineticraft.lostcity.guis.data.GUIJsonEditor;
 import net.kineticraft.lostcity.item.display.GUIItem;
+import org.bukkit.Material;
 
 import java.lang.reflect.Field;
 
@@ -25,9 +26,11 @@ public class JsonableStore extends DataStore<Jsonable> {
     }
 
     @Override
-    public void editItem(GUIItem item, Field f, Jsonable data) throws IllegalAccessException {
-        Jsonable j = (Jsonable) f.get(data);
+    public void editItem(GUIItem item, Field f, Jsonable data) {
+        Jsonable j = (Jsonable) get(f, data);
         if (j != null)
-           item.leftClick(ce -> new GUIJsonEditor(ce.getPlayer(), j)).addLore("Left-Click: Edit");
+           item.leftClick(ce -> new GUIJsonEditor(ce.getPlayer(), j)).addLoreAction("Left", "Open Value");
+        item.setIcon(Material.MOB_SPAWNER);
+        setNull(f, data, item);
     }
 }

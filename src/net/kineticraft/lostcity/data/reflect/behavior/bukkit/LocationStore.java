@@ -8,6 +8,7 @@ import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 
 import java.lang.reflect.Field;
 
@@ -38,14 +39,15 @@ public class LocationStore extends SpecialStore<Location> {
     }
 
     @Override
-    public void editItem(GUIItem item, Field f, Jsonable data) throws IllegalAccessException {
-        Location loc = (Location) f.get(data);
-        item.leftClick(ce -> ce.getPlayer().teleport(loc)).rightClick(ce -> {
-            try {
-                f.set(data, ce.getPlayer().getLocation());
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }).addLore("Location: " + ChatColor.GOLD + Utils.toString(loc), "", "Left-Click: Teleport", "Right-Click: Set Location");
+    public void editItem(GUIItem item, Field f, Jsonable data) {
+        Location loc = (Location) get(f, data);
+        if (loc != null) {
+            item.leftClick(ce -> ce.getPlayer().teleport(loc))
+                    .addLore("Location: " + ChatColor.GOLD + Utils.toString(loc), "")
+                    .addLoreAction("Left", "Teleport");
+        }
+        item.rightClick(ce -> set(f, data, ce.getPlayer().getLocation()))
+                .setIcon(Material.ELYTRA)
+                .addLoreAction("Right", "Set Location");
     }
 }

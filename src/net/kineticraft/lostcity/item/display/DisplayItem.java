@@ -48,6 +48,16 @@ public class DisplayItem extends ItemWrapper {
     }
 
     /**
+     * Update the icon for this item.
+     * @param icon
+     * @return this
+     */
+    public DisplayItem setIcon(Material icon) {
+        getItem().setType(icon);
+        return this;
+    }
+
+    /**
      * Set the amount of this item.
      * @param amount
      * @return this

@@ -17,16 +17,16 @@ import java.util.function.Consumer;
  * Allows staff to edit vote rewards.
  * This is kind of yucky. Please don't use this as a baseline for creating other display. Use interfaces instead.
  * Created on a time crunch.
- *
+ * TODO: Make this not terrible.
  * Created by Kneesnap on 6/8/2017.
  */
 public class GUIEditVoteRewards extends GUI {
 
     public GUIEditVoteRewards(Player player) {
         super(player, "Vote Rewards", 2
-                + fitSize(Configs.getVoteData().getParty().size() + 1)
-                + fitSize(Configs.getVoteData().getAchievements().size() + 1)
-                + fitSize(Configs.getVoteData().getNormal().size() + 1));
+                + fitSize(Configs.getVoteData().getParty(), 1)
+                + fitSize(Configs.getVoteData().getAchievements(), 1)
+                + fitSize(Configs.getVoteData().getNormal(), 1));
     }
 
     @Override

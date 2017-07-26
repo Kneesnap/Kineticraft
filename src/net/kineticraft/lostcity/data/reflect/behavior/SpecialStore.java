@@ -6,7 +6,6 @@ import java.lang.reflect.Field;
 
 /**
  * All wrappers that have hardcoded handles should extend this class.
- *
  * Created by Kneesnap on 7/5/2017.
  */
 public abstract class SpecialStore<T> extends DataStore<T> {

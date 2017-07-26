@@ -37,7 +37,7 @@ public class GUIItemEditor extends GUI {
     }
 
     public GUIItemEditor(Player player, ItemStack item,  Consumer<ItemWrapper> onFinish) {
-        super(player, "Item Editor", 3 + fitSize(item.getEnchantments().size() + 1));
+        super(player, "Item Editor", 3 + fitSize(item.getEnchantments().keySet(), 1));
         this.original = item != null && item.getType() != Material.AIR ? item : new ItemStack(Material.DIRT);
         this.edit = new DisplayItem(original);
         this.onFinish = onFinish;

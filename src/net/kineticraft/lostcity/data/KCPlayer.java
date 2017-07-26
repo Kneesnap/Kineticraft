@@ -110,6 +110,8 @@ public class KCPlayer implements Jsonable {
                 + ChatColor.AQUA + source.getName() + ChatColor.WHITE + ".");
         setMute(new Mute(expiry.getTime(), reason, source.getName()));
         sendMessage(ChatColor.RED + "You have been muted. (" + reason + ")");
+        DiscordAPI.sendMessage(DiscordChannel.ORYX, source.getName() + " has punished " + getUsername()
+                + " for " + Utils.formatTimeFull(getPunishExpiry()) + ".");
     }
 
     /**

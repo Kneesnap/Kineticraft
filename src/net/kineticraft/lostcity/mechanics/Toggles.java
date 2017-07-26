@@ -5,10 +5,8 @@ import lombok.Getter;
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.Commands;
 import net.kineticraft.lostcity.commands.PlayerCommand;
-import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.mechanics.system.Mechanic;
-import net.kineticraft.lostcity.utils.TextUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -52,7 +50,7 @@ public class Toggles extends Mechanic {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onChat(AsyncPlayerChatEvent evt) {
         List<Player> filter = evt.getRecipients().stream().filter(p -> getToggle(p, Toggle.CENSOR)).collect(Collectors.toList());
         String censored = Chat.censor(String.format(evt.getFormat(), evt.getPlayer().getName(), evt.getMessage()));

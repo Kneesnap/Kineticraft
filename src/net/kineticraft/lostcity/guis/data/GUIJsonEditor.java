@@ -1,4 +1,4 @@
-package net.kineticraft.lostcity.guis.staff;
+package net.kineticraft.lostcity.guis.data;
 
 import lombok.Getter;
 import net.kineticraft.lostcity.data.Jsonable;
@@ -20,7 +20,7 @@ public class GUIJsonEditor extends GUI {
     private Jsonable data;
 
     public GUIJsonEditor(Player player, Jsonable data) {
-        super(player, "JSON Editor", fitSize(JsonSerializer.getFields(data).size() + 1));
+        super(player, "JSON Editor", fitSize(JsonSerializer.getFields(data), 1));
         this.data = data;
     }
 
@@ -29,30 +29,32 @@ public class GUIJsonEditor extends GUI {
         JsonSerializer.getFields(getData()).forEach(f -> {
             GUIItem gi = addItem(Material.WOOL, ChatColor.YELLOW + ucFirst(f.getName()));
 
+            // Get the current value.
+            Object o = null;
             try {
-                JsonSerializer.getHandler(f).editItem(gi, f, getData());
+                o = f.get(getData());
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
-            if (!gi.getListeners().containsKey(GUIItem.IClickType.RIGHT)) {
-                gi.rightClick(ce -> {
-                    try {
-                        if (!f.getType().isPrimitive())
-                            f.set(getData(), null);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+            // Display the current value.
+            if (o == null || o.toString().length() < 50)
+                gi.addLore("Value: " + ChatColor.YELLOW + o, "");
+
+            // Apply the handler specific code.
+            JsonSerializer.getHandler(f).editItem(gi, f, getData());
+
+            // If it's using the default icon, set the color based on the data state.
+            if (gi.getItem().getType() == Material.WOOL) {
+                boolean green = o != null && (!(o instanceof Boolean) || ((Boolean) o));
+                gi.setColor(green ? DyeColor.LIME : DyeColor.RED);
+            }
+
+            // Update the gui if the value changes.
+            gi.anyClick(ce -> {
+                if (ce.getGUI() == this)
                     reconstruct();
-                }).addLore("Right-Click: Remove Value");
-            }
-
-            try {
-                Object o = f.get(getData());
-                gi.setColor(o != null ? DyeColor.LIME : DyeColor.RED);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            });
         });
 
         addBackButton();

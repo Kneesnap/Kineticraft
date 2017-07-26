@@ -118,7 +118,6 @@ public class Utils {
 
     /**
      * Find the first available 'safe' teleport location.
-     *
      * @param origin
      * @return safe
      */
@@ -134,7 +133,7 @@ public class Utils {
             if (isSafe(temp) && origin.distanceSquared(safe) > origin.distanceSquared(temp))
                 safe = temp.clone(); // This location is closer than the saved one, and it's safe.
         }
-        return safe;
+        return safe.add(0, 0.5, 0);
     }
 
     /**
@@ -1084,5 +1083,17 @@ public class Utils {
             default:
                 throw new IllegalArgumentException("Cannot store " + slot);
         }
+    }
+
+    /**
+     * Convert an Iterable to a List.
+     * @param values
+     * @param <T>
+     * @return list
+     */
+    public static <T> List<T> toList(Iterable<T> values) {
+        List<T> list = new ArrayList<>();
+        values.forEach(list::add);
+        return list;
     }
 }

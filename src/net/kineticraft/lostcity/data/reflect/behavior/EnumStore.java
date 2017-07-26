@@ -2,17 +2,11 @@ package net.kineticraft.lostcity.data.reflect.behavior;
 
 import net.kineticraft.lostcity.data.JsonData;
 import net.kineticraft.lostcity.data.Jsonable;
-import net.kineticraft.lostcity.guis.staff.GUIItemPicker;
-import net.kineticraft.lostcity.item.ItemManager;
+import net.kineticraft.lostcity.guis.data.GUIEnumPicker;
 import net.kineticraft.lostcity.item.display.GUIItem;
-import net.kineticraft.lostcity.utils.Utils;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Save / load an enum.
@@ -32,18 +26,10 @@ public class EnumStore extends DataStore<Enum> {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void editItem(GUIItem item, Field f, Jsonable data) throws IllegalAccessException {
-
-        List<ItemStack> items = new ArrayList<>();
-        for (Enum e : (Enum[]) f.getType().getEnumConstants())
-            items.add(ItemManager.createItem(Material.LAPIS_BLOCK, ChatColor.YELLOW + e.name()));
-
-        item.leftClick(ce -> new GUIItemPicker(ce.getPlayer(), items, i -> {
-            try {
-                f.set(data, Utils.getEnum(ChatColor.stripColor(Utils.getItemName(i)), (Class<? extends Enum>) f.getType()));
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }));
+    public void editItem(GUIItem item, Field f, Jsonable data) {
+        item.leftClick(ce -> new GUIEnumPicker(ce.getPlayer(), (Enum[])f.getType().getEnumConstants(), val -> {
+            set(f, data, val);
+            ce.getGUI().openPrevious();
+        })).setIcon(Material.GOLD_BLOCK).addLoreAction("Left", "Set Value");
     }
 }

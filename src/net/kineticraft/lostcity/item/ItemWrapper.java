@@ -255,6 +255,10 @@ public abstract class ItemWrapper {
         return this;
     }
 
+    public ItemWrapper addLoreAction(String click, String action) {
+        return addLore(ChatColor.WHITE + click + "-Click: " + ChatColor.GRAY + action);
+    }
+
     /**
      * Apply our editted NBT to this item.
      * Invalidates the old ItemStack.

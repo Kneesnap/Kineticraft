@@ -2,8 +2,11 @@ package net.kineticraft.lostcity.data.reflect.behavior;
 
 import net.kineticraft.lostcity.data.JsonData;
 import net.kineticraft.lostcity.data.Jsonable;
+import net.kineticraft.lostcity.data.lists.JsonList;
 import net.kineticraft.lostcity.data.lists.SaveableList;
+import net.kineticraft.lostcity.guis.data.GUIListEditor;
 import net.kineticraft.lostcity.item.display.GUIItem;
+import org.bukkit.Material;
 
 import java.lang.reflect.Field;
 
@@ -23,8 +26,10 @@ public class ListStore extends DataStore<SaveableList> {
         return data.getList(key, (Class<? extends SaveableList>) field.getType(), getArgs(field));
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public void editItem(GUIItem item, Field f, Jsonable data) throws IllegalAccessException {
-
+    public void editItem(GUIItem item, Field f, Jsonable data) {
+        item.leftClick(ce -> new GUIListEditor<>(ce.getPlayer(), (JsonList<? extends Jsonable>) get(f, data)))
+                .setIcon(Material.MINECART).addLoreAction("Left", "Edit Values");
     }
 }

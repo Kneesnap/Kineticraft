@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
  */
 public class GUIParticles extends GUI {
     public GUIParticles(Player player) {
-        super(player, "Particle Selector", fitSize(getParticles().length + 2));
+        super(player, "Particle Selector", fitSize(getParticles(), + 2));
     }
 
     @Override

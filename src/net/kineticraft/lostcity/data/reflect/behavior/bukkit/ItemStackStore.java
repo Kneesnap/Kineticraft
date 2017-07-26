@@ -9,6 +9,7 @@ import net.kineticraft.lostcity.item.display.GUIItem;
 import net.kineticraft.lostcity.utils.NBTWrapper;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Field;
@@ -34,14 +35,10 @@ public class ItemStackStore extends SpecialStore<ItemStack> {
     }
 
     @Override
-    public void editItem(GUIItem item, Field f, Jsonable data) throws IllegalAccessException {
-        ItemStack i = (ItemStack) f.get(data);
-        item.leftClick(ce -> new GUIItemEditor(ce.getPlayer(), i, iw -> {
-            try {
-                f.set(data, iw.generateItem());
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        })).addLore("Item: " + ChatColor.GOLD + Utils.getItemName(i), "", "Left-Click: Edit Item");
+    public void editItem(GUIItem item, Field f, Jsonable data) {
+        ItemStack i = (ItemStack) get(f, data);
+        item.leftClick(ce -> new GUIItemEditor(ce.getPlayer(), i, iw -> set(f, data, iw.generateItem()))).setIcon(Material.STICK)
+                .addLore("Item: " + ChatColor.GOLD + Utils.getItemName(i), "").addLoreAction("Left", "Edit Item");
+        setNull(f, data, item);
     }
 }

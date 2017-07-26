@@ -6,6 +6,7 @@ import net.kineticraft.lostcity.data.JsonData;
 import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.data.reflect.behavior.*;
 import net.kineticraft.lostcity.data.reflect.behavior.bukkit.*;
+import net.kineticraft.lostcity.data.reflect.behavior.generic.*;
 import net.kineticraft.lostcity.utils.GeneralException;
 import net.kineticraft.lostcity.utils.ReflectionUtil;
 
@@ -18,7 +19,8 @@ import java.util.stream.Collectors;
 /**
  * Basic utility for saving and loading objects as json.
  * Ignores static and transient fields.
- *
+ * Use JsonList in place of Lists or arrays.
+ * Use JsonMap in place of HashMap.
  * Created by Kneesnap on 7/3/2017.
  */
 public class JsonSerializer {
@@ -27,18 +29,16 @@ public class JsonSerializer {
     private static Map<Class<?>, List<Field>> fieldCache = new HashMap<>(); // Massive performance gain b
 
     static {
-        add(new PrimitiveStore<>(Byte.TYPE, "Byte", Byte::new));
-        add(new PrimitiveStore<>(Short.TYPE, "Short", Short::new));
-        add(new PrimitiveStore<>(Integer.TYPE, "Int", Integer::new));
-        add(new PrimitiveStore<>(Long.TYPE, "Long", Long::new));
-        add(new PrimitiveStore<>(Float.TYPE, "Float", Float::new));
-        add(new PrimitiveStore<>(Double.TYPE, "Double", Double::new));
+        add(new PrimitiveStore<>(Byte.TYPE, "Byte", Byte::new, Byte::parseByte));
+        add(new PrimitiveStore<>(Short.TYPE, "Short", Short::new, Short::parseShort));
+        add(new PrimitiveStore<>(Integer.TYPE, "Int", Integer::new, Integer::parseInt));
+        add(new PrimitiveStore<>(Long.TYPE, "Long", Long::new, Long::parseLong));
+        add(new PrimitiveStore<>(Float.TYPE, "Float", Float::new, Float::parseFloat));
+        add(new PrimitiveStore<>(Double.TYPE, "Double", Double::new, Double::parseDouble));
 
-        add(new MethodStore<>(Boolean.TYPE, "Boolean"));
-        add(new MethodStore<>(String.class, "String"));
-        add(new MethodStore<>(UUID.class, "UUID"));
-        add(new MethodStore<>(JsonData.class, "setElement", "getData"));
-
+        add(new BooleanStore());
+        add(new StringStore());
+        add(new UUIDStore());
         add(new MapStore());
         add(new EnumStore());
         add(new ListStore());
@@ -177,8 +177,9 @@ public class JsonSerializer {
     public static List<Field> getFields(Object obj) {
         if (!fieldCache.containsKey(obj.getClass())) {
             List<Field> cache = ReflectionUtil.getAllFields(obj.getClass()).stream()
-                    .filter(f -> !Modifier.isStatic(f.getModifiers()))
-                    .filter(f -> !Modifier.isTransient(f.getModifiers()))
+                    .filter(f -> !Modifier.isStatic(f.getModifiers())) // Not static
+                    .filter(f -> !Modifier.isTransient(f.getModifiers())) // Not marked as not serialized
+                    .filter(f -> !f.getType().isArray()) // Not an array.
                     .collect(Collectors.toList());
             cache.forEach(f -> f.setAccessible(true)); // Set all fields as accessable.
             fieldCache.put(obj.getClass(), cache);

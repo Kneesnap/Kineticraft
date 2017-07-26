@@ -1,16 +1,21 @@
 package net.kineticraft.lostcity.commands.staff;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.StaffCommand;
 import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.config.JsonConfig;
 import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.data.KCPlayer;
-import net.kineticraft.lostcity.guis.staff.GUIJsonEditor;
+import net.kineticraft.lostcity.guis.data.GUIJsonEditor;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.function.Function;
 
 /**
  * Allow editting of json data.
@@ -24,21 +29,22 @@ public class CommandEdit extends StaffCommand {
 
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
-        Jsonable j = null;
-
-        if (args[0].equals("player")) {
-            if (!Utils.isVisible(sender, args[1]))
-                return;
-            j = KCPlayer.getWrapper(Bukkit.getPlayer(args[1]));
-        } else if (args[0].equals("config")) {
-            j = (JsonConfig) Configs.getConfig(Configs.ConfigType.valueOf(args[1].toUpperCase()));
-        }
+        Edittable e = Edittable.valueOf(args[0].toUpperCase());
+        Jsonable j = e.getSupplier().apply(args[1]);
 
         if (j == null) {
-            showUsage(sender);
+            sender.sendMessage(ChatColor.RED + "Unknown target data '" + args[1] + "'.");
             return;
         }
 
         new GUIJsonEditor((Player) sender, j);
+    }
+
+    @AllArgsConstructor @Getter
+    private enum Edittable {
+        PLAYER(p -> KCPlayer.getWrapper(Bukkit.getPlayer(p))),
+        CONFIG(j -> (JsonConfig) Configs.getConfig(Configs.ConfigType.valueOf(j.toUpperCase())));
+
+        private final Function<String, Jsonable> supplier;
     }
 }

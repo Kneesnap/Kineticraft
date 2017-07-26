@@ -2,6 +2,7 @@ package net.kineticraft.lostcity.commands.player;
 
 import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.data.QueryTools;
+import net.kineticraft.lostcity.discord.DiscordSender;
 import net.kineticraft.lostcity.mechanics.Punishments;
 import net.kineticraft.lostcity.mechanics.metadata.Metadata;
 import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
@@ -37,7 +38,7 @@ public class CommandSeen extends PlayerCommand {
             sendValue(sender, "Last Seen", Utils.formatTime(seenTime));
 
             // Show extra data to helpers.
-            if (Utils.isStaff(sender))
+            if (Utils.isStaff(sender) && !(sender instanceof DiscordSender))
                 sendValue(sender, "IP Address", p.getLastIP());
 
             // Show punishments.

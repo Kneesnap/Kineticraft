@@ -9,18 +9,23 @@ import org.bukkit.entity.Player;
 
 /**
  * Allow players to edit their own weather.
- *
  * Created by Kneesnap on 7/17/2017.
  */
 public class CommandPWeather extends PlayerCommand {
 
     public CommandPWeather() {
-        super(EnumRank.GAMMA, "<downfall|clear>", "Set your local weather.", "pweather");
+        super(EnumRank.GAMMA, "<downfall|clear|reset>", "Set your local weather.", "pweather");
     }
 
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
+        if (args[0].equalsIgnoreCase("reset")) {
+            ((Player) sender).resetPlayerWeather();
+            sender.sendMessage(ChatColor.GOLD + "Weather returned to normal.");
+            return;
+        }
+
         ((Player) sender).setPlayerWeather(WeatherType.valueOf(args[0].toUpperCase()));
-        sender.sendMessage(ChatColor.GOLD + "Weather  set to " + ChatColor.RED + args[0]);
+        sender.sendMessage(ChatColor.GOLD + "Weather set to " + ChatColor.RED + args[0]);
     }
 }

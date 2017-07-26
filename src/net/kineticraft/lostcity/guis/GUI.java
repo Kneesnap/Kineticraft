@@ -8,6 +8,7 @@ import net.kineticraft.lostcity.item.ItemManager;
 import net.kineticraft.lostcity.item.ItemWrapper;
 import net.kineticraft.lostcity.item.display.GUIItem;
 import net.kineticraft.lostcity.utils.PacketUtil;
+import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
@@ -286,7 +287,7 @@ public abstract class GUI {
      * Display the items in the GUI.
      */
     protected void showItems() {
-        itemMap.entrySet().stream().forEach(m -> getInventory().setItem(m.getKey(), m.getValue().generateItem()));
+        itemMap.forEach((k, v) -> getInventory().setItem(k, v.generateItem()));
     }
 
     /**
@@ -369,7 +370,7 @@ public abstract class GUI {
      * @param add
      */
     protected void deposit(ItemStack add) {
-
+        throw new UnsupportedOperationException("Not implemented yet"); //TODO
     }
 
     /**
@@ -405,14 +406,49 @@ public abstract class GUI {
         return KCPlayer.getWrapper(getPlayer());
     }
 
+    /**
+     * Get the number of rows needed to fit each object of an array.
+     * @param arr
+     * @return rows
+     */
     protected static int fitSize(Object[] arr) {
-        return fitSize(arr.length);
+        return fitSize(arr, 0);
     }
 
-    protected static int fitSize(List<?> list) {
-        return fitSize(list.size());
+    /**
+     * Get the number of rows needed to fix each object of an array, plus an extra item count.
+     * @param arr
+     * @param extra
+     * @return rows
+     */
+    protected static int fitSize(Object[] arr, int extra) {
+        return fitSize(arr.length + extra);
     }
 
+    /**
+     * Get the number of rows needed to fit each object of a list.
+     * @param list
+     * @return rows
+     */
+    protected static int fitSize(Iterable<?> list) {
+        return fitSize(list, 0);
+    }
+
+    /**
+     * Get the number of rows needed to fix each object of a list, plus an extra item count.
+     * @param list
+     * @param extra
+     * @return rows
+     */
+    protected static int fitSize(Iterable<?> list, int extra) {
+        return fitSize(Utils.toList(list).size() + extra);
+    }
+
+    /**
+     * Get the number of rows needed, from a given number of items.
+     * @param items
+     * @return rows
+     */
     protected static int fitSize(int items) {
         return Math.min(6, (8 + items) / 9);
     }

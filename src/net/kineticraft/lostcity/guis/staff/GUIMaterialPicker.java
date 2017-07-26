@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 
 /**
  * Pick from a list of all items.
- *
  * Created by Kneesnap on 6/9/2017.
  */
 public class GUIMaterialPicker extends GUIItemPicker {
