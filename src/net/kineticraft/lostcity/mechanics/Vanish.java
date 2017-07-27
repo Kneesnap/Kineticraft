@@ -49,10 +49,12 @@ public class Vanish extends Mechanic {
                 boolean allowed = Utils.getRank(p).isAtLeast(EnumRank.MEDIA);
                 String packetName = packet.getPacketName();
 
-                if (packetName.equals("PacketPlayOutPlayerInfo") && !allowed && !Cutscenes.isWatching(p))
+                if (packetName.equals("PacketPlayOutPlayerInfo")) {
+                    EnumGamemode gm = allowed || Cutscenes.isWatching(p) ? EnumGamemode.SPECTATOR : EnumGamemode.CREATIVE;
                     ((List<?>) packet.getPacketValueSilent("b")).stream()
                             .filter(d -> ReflectionUtil.getField(d, "c") == EnumGamemode.SPECTATOR)
-                            .forEach(d -> ReflectionUtil.setField(d, "c", EnumGamemode.CREATIVE));
+                            .forEach(d -> ReflectionUtil.setField(d, "c", gm));
+                }
             }
 
             @Override
@@ -103,7 +105,7 @@ public class Vanish extends Mechanic {
         Utils.setPotion(player, PotionEffectType.INVISIBILITY, vanished);
 
         Bukkit.getOnlinePlayers().stream().filter(pl -> pl != player).forEach(pl -> {
-            if (!vanished || KCPlayer.getWrapper(pl).getRank().isAtLeast(EnumRank.MEDIA)) {
+            if (!vanished) {
                 pl.showPlayer(player);
             } else {
                 pl.hidePlayer(player);
