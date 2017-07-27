@@ -14,7 +14,6 @@ import java.util.List;
 
 /**
  * A Configuration base.
- *
  * Created by Kneesnap on 6/3/2017.
  */
 @Setter @Getter

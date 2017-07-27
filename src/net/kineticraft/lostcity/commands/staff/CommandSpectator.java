@@ -8,7 +8,6 @@ import org.bukkit.entity.Player;
 
 /**
  * Swap in and out of gamemode 3.
- *
  * Created by Kneesnap on 6/1/2017.
  */
 public class CommandSpectator extends StaffCommand {

@@ -13,7 +13,6 @@ import org.bukkit.command.CommandSender;
 
 /**
  * Check when a player was last seen.
- *
  * Created by Kneesnap on 6/17/2017.
  */
 public class CommandSeen extends PlayerCommand {

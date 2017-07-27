@@ -10,7 +10,6 @@ import org.bukkit.entity.Player;
 
 /**
  * CommandSetHome - Allow players to set their homes.
- *
  * Created by Kneesnap on 6/1/2017.
  */
 public class CommandSetHome extends PlayerCommand {

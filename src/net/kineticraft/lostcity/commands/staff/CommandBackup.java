@@ -7,7 +7,6 @@ import org.bukkit.command.CommandSender;
 
 /**
  * Backup the server.
- *
  * Created by Kneesnap on 6/14/2017.
  */
 public class CommandBackup extends StaffCommand {

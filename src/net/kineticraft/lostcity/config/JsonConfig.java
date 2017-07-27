@@ -7,7 +7,6 @@ import java.util.List;
 
 /**
  * A Json Configuration base.
- *
  * Created by Kneesnap on 6/3/2017.
  */
 public abstract class JsonConfig extends Config implements Jsonable {

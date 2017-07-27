@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 
 /**
  * CommandSetRank - Set the rank of a player.
- *
  * Created by Kneesnap on 5/30/2017.
  */
 public class CommandSetRank extends StaffCommand {

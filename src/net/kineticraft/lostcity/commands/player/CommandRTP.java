@@ -11,7 +11,6 @@ import org.bukkit.entity.Player;
 
 /**
  * Random Teleport
- *
  * Created by Kneesnap on 6/1/2017.
  */
 public class CommandRTP extends PlayerCommand {

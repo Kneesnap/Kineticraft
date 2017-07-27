@@ -50,7 +50,7 @@ public class CommandJS extends StaffCommand {
      */
     private void initJS() {
 
-        // Allow JS to load java classes.
+        // Allow JS to load java classes. TODO: This doesn't work.
         Thread currentThread = Thread.currentThread();
         ClassLoader previousClassLoader = currentThread.getContextClassLoader();
         currentThread.setContextClassLoader(Core.getInstance().getClazzLoader());

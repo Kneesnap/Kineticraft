@@ -1,13 +1,11 @@
 package net.kineticraft.lostcity.commands.player;
 
 import lombok.AllArgsConstructor;
-import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.mechanics.ServerManager;
 import net.kineticraft.lostcity.utils.PlayerUtils;
 import net.kineticraft.lostcity.utils.ServerUtils;
 import net.kineticraft.lostcity.utils.TextUtils;
-import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -20,7 +18,6 @@ import java.util.function.Supplier;
 
 /**
  * Get a status report of potential lag.
- *
  * Created by Kneesnap on 6/28/2017.
  */
 public class CommandWhyLag extends PlayerCommand {

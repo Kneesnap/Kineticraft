@@ -7,11 +7,9 @@ import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.mechanics.Chat;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 /**
  * Allows players to choose a nickname.
- *
  * Created by Kneesnap on 6/16/2017.
  */
 public class CommandNick extends PlayerCommand {
@@ -25,7 +23,7 @@ public class CommandNick extends PlayerCommand {
         if (QueryTools.isBusy(sender))
             return;
 
-        KCPlayer p = KCPlayer.getWrapper((Player) sender);
+        KCPlayer p = KCPlayer.getWrapper(sender);
         String newNick = Chat.applyColor(sender, args[0]);
         String noColor = ChatColor.stripColor(newNick);
 

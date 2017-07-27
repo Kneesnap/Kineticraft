@@ -17,8 +17,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
- * Command - A KC command base.
- *
+ * Command - A command base.
  * Created by Kneesnap on 5/29/2017.
  */
 @Getter

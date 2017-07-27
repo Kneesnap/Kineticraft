@@ -7,7 +7,6 @@ import org.bukkit.command.CommandSender;
 
 /**
  * Allows staff to add votes.
- *
  * Created by Kneesnap on 6/10/2017.
  */
 public class CommandTestVote extends StaffCommand {

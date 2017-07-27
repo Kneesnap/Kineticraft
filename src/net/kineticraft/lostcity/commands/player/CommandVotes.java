@@ -5,7 +5,6 @@ import net.kineticraft.lostcity.data.QueryTools;
 import net.kineticraft.lostcity.data.KCPlayer;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.util.Comparator;
 import java.util.List;
@@ -13,7 +12,6 @@ import java.util.stream.Collectors;
 
 /**
  * Show top voters.
- *
  * Created by Kneesnap on 6/10/2017.
  */
 public class CommandVotes extends PlayerCommand {
@@ -32,7 +30,7 @@ public class CommandVotes extends PlayerCommand {
         QueryTools.queryData(stream -> {
             List<KCPlayer> list = stream.sorted(Comparator.comparing(KCPlayer::getMonthlyVotes).reversed())
                     .collect(Collectors.toList());
-            KCPlayer p = KCPlayer.getWrapper((Player) sender);
+            KCPlayer p = KCPlayer.getWrapper(sender);
             String bar = ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------";
             int show = Math.min(ENTRIES, list.size());
 

@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 
 /**
  * Open a book.
- *
  * Created by Kneesnap on 6/30/2017.
  */
 @Getter

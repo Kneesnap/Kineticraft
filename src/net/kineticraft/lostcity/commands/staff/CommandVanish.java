@@ -11,7 +11,6 @@ import org.bukkit.entity.Player;
 
 /**
  * Allows media+ to vanish.
- *
  * Created by Kneesnap on 6/11/2017.
  */
 public class CommandVanish extends StaffCommand {

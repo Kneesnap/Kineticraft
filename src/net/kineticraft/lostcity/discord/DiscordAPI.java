@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 
 /**
  * Control the discord bot.
- *
  * Created by Kneesnap on 6/28/2017.
  */
 public class DiscordAPI extends Mechanic {

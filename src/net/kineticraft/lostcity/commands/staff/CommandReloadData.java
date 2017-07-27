@@ -9,7 +9,6 @@ import org.bukkit.command.CommandSender;
 
 /**
  * Reload playerdata.
- *
  * Created by Kneesnap on 6/30/2017.
  */
 public class CommandReloadData extends StaffCommand {

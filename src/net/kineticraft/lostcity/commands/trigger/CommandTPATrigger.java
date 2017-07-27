@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 
 /**
  * Allows teleporting to players.
- *
  * Created by Kneesnap on 6/14/2017.
  */
 public class CommandTPATrigger extends TriggerCommand {

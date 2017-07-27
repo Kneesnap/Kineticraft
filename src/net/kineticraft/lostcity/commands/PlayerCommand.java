@@ -10,7 +10,6 @@ import org.bukkit.command.CommandSender;
 
 /**
  * Represents a commands that can be run in-game as a player.
- *
  * Created by Kneesnap on 5/29/2017.
  */
 @Getter

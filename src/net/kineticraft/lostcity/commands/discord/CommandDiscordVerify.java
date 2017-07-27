@@ -13,7 +13,6 @@ import org.bukkit.entity.Player;
 
 /**
  * Allows players to register themselves as verified on discord.
- *
  * Created by Kneesnap on 6/28/2017.
  */
 public class CommandDiscordVerify extends DiscordCommand {

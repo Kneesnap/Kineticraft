@@ -7,7 +7,6 @@ import org.bukkit.command.CommandSender;
 
 /**
  * List votes until a vote party.
- *
  * Created by Kneesnap on 7/9/2017.
  */
 public class CommandVoteParty extends PlayerCommand {

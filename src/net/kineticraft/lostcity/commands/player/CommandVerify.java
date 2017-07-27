@@ -6,7 +6,6 @@ import org.bukkit.command.CommandSender;
 
 /**
  * Tell players how to verify.
- *
  * Created by Kneesnap on 6/29/2017.
  */
 public class CommandVerify extends PlayerCommand {

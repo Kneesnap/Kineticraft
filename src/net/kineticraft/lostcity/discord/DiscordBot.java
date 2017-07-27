@@ -29,7 +29,6 @@ import java.util.function.Consumer;
 /**
  * Basic Discord bot.
  * Handles discord events.
- *
  * Created by Kneesnap on 6/28/2017.
  */
 @Getter

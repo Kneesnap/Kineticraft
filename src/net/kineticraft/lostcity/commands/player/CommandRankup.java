@@ -16,7 +16,6 @@ import java.util.List;
 
 /**
  * Rankup to the next rank, if possible.
- *
  * Created by Kneesnap on 6/10/2017.
  */
 public class CommandRankup extends PlayerCommand {

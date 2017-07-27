@@ -8,8 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Tameable;
 
 /**
- *
- *
+ * Remove the owner of an animal.
  * Created by Kneesnap on 6/2/2017.
  */
 public class CommandRescue extends StaffCommand {

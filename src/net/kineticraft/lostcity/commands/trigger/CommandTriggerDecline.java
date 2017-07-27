@@ -7,7 +7,6 @@ import org.bukkit.entity.Player;
 
 /**
  * Command to decline a trigger prompt.
- *
  * Created by Kneesnap on 6/14/2017.
  */
 public class CommandTriggerDecline extends TriggerCommand {

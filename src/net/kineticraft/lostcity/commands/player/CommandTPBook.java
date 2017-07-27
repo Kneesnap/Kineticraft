@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
+ * Spawn a teleport book.
  * Created by Kneesnap on 6/14/2017.
  */
 public class CommandTPBook extends PlayerCommand {

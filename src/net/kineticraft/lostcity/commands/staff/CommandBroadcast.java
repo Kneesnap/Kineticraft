@@ -8,7 +8,6 @@ import org.bukkit.command.CommandSender;
 
 /**
  * Broadcast a message cross-server.
- *
  * Created by Kneesnap on 6/27/2017.
  */
 public class CommandBroadcast extends StaffCommand {

@@ -10,7 +10,6 @@ import java.util.List;
 
 /**
  * Represents a config that has no file structure, just raw text.
- *
  * Created by Kneesnap on 6/3/2017.
  */
 @Getter

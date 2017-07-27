@@ -10,8 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
- * Spawn a claim shovel
- *
+ * Spawn a claim shovel.
  * Created by Kneesnap on 6/16/2017.
  */
 public class CommandShovel extends PlayerCommand {

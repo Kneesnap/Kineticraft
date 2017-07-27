@@ -11,7 +11,6 @@ import org.bukkit.entity.Player;
 
 /**
  * Reply to the last person you private messaged.
- *
  * Created by Kneesnap on 6/10/2017.
  */
 public class CommandReply extends PlayerCommand {

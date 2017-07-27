@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
  * Ignores static and transient fields.
  * Use JsonList in place of Lists or arrays.
  * Use JsonMap in place of HashMap.
+ *
  * Created by Kneesnap on 7/3/2017.
  */
 public class JsonSerializer {
@@ -190,11 +191,12 @@ public class JsonSerializer {
     /**
      * Identify a json object's class.
      * @param object
+     * @param parentClass
      * @param je
      * @return je
      */
-    public static JsonElement addClass(Object object, Class<?> superClass, JsonElement je) {
-        if (je.isJsonObject() && !object.getClass().equals(superClass))
+    public static JsonElement addClass(Object object, Class<?> parentClass, JsonElement je) {
+        if (je.isJsonObject() && (parentClass == null || !object.getClass().getName().equals(parentClass.getName())))
             je.getAsJsonObject().addProperty("class", object.getClass().getName());
         return je;
     }

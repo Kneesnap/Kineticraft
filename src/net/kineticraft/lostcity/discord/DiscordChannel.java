@@ -10,7 +10,6 @@ import java.util.Arrays;
 /**
  * List of discord channels the code explicity needs to send messages too.
  * These are ones like Oryx, which will have a message sent when Core.warn is called.
- *
  * Created by Kneesnap on 6/28/2017.
  */
 @AllArgsConstructor @Getter

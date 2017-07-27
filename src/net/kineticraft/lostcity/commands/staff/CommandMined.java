@@ -7,7 +7,6 @@ import org.bukkit.entity.Player;
 
 /**
  * Show ores nearby from a mined player.
- *
  * Created by Kneesnap on 6/10/2017.
  */
 public class CommandMined extends StaffCommand {

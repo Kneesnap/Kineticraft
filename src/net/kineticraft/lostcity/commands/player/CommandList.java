@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 
 /**
  * List online players.
- *
  * Created by Kneesnap on 7/11/2017.
  */
 public class CommandList extends PlayerCommand {

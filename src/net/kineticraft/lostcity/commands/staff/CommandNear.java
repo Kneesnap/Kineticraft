@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 
 /**
  * Get entities near the CommandSender.
- *
  * Created by Kneesnap on 6/27/17.
  */
 public class CommandNear extends StaffCommand {

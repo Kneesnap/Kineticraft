@@ -7,7 +7,6 @@ import org.bukkit.entity.Player;
 
 /**
  * Trigger command to accept a prompt.
- *
  * Created by Kneesnap on 6/14/2017.
  */
 public class CommandTriggerAccept extends TriggerCommand {

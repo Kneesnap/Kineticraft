@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 /**
  * A container for detections.
- *
  * Created by Kneesnap on 7/10/2017.
  */
 @Getter

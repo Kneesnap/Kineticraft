@@ -5,7 +5,6 @@ import com.google.gson.JsonElement;
 /**
  * Represents a queue.
  * Cannot be saved or loaded.
- *
  * Created by Kneesnap on 6/28/2017.
  */
 public class QueueList<T> extends SaveableList<T> {

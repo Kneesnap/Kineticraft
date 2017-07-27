@@ -7,7 +7,6 @@ import org.bukkit.entity.Player;
 
 /**
  * TPA - Teleport to another player.
- *
  * Created by Kneesnap on 6/12/2017.
  */
 public class CommandTPA extends PlayerCommand {

@@ -1,5 +1,5 @@
 &8Changes:
- -
+ - Code cleanup
 
 &8Staff Changes:
  - Ingame JSON editor.
@@ -7,3 +7,4 @@
 
 &8Bugfixes:
  - Teleporting onto slabs.
+ - Rebooting works.

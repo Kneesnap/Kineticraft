@@ -11,12 +11,12 @@ import org.bukkit.entity.Player;
 
 /**
  * Teleport to spawn.
- *
  * Created by Kneesnap on 6/1/2017.
  */
 public class CommandSpawn extends PlayerCommand {
     public CommandSpawn() {
         super("", "Teleport to spawn", "spawn");
+        autocompleteOnline();
     }
 
     @Override

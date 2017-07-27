@@ -11,7 +11,6 @@ import java.util.stream.Stream;
 
 /**
  * A base for a saveable list.
- *
  * Created by Kneesnap on 6/10/2017.
  */
 @Getter

@@ -5,7 +5,6 @@ import com.google.gson.JsonPrimitive;
 
 /**
  * Store string arrays in Json.
- *
  * Created by Kneesnap on 6/10/2017.
  */
 public class StringList extends SaveableList<String> {

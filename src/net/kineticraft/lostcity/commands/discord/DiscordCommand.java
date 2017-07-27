@@ -11,8 +11,7 @@ import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.command.CommandSender;
 
 /**
- * A command that can be executed in discord.
- *
+ * A command that can be executed only in discord.
  * Created by Kneesnap on 6/28/2017.
  */
 @Getter @Setter

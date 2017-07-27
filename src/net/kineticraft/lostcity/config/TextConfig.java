@@ -3,16 +3,12 @@ package net.kineticraft.lostcity.config;
 import lombok.Getter;
 import net.kineticraft.lostcity.utils.TextBuilder;
 import net.kineticraft.lostcity.utils.TextUtils;
-import net.md_5.bungee.api.chat.BaseComponent;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 /**
  * Configuration specifically for chat components.
- *
  * Created by Kneesnap on 6/28/2017.
  */
 @Getter

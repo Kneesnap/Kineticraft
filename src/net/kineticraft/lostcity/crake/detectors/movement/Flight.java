@@ -23,7 +23,6 @@ import java.util.stream.Stream;
  * A rudementary flight detector.
  * Based on Archelaus' fly detector.
  * Detects descent and ascent.
- *
  * Created by Kneesnap on 7/10/2017.
  */
 public class Flight extends Detector {

@@ -8,8 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
- * Put out a fire.
- *
+ * Stop, drop, and roll.
  * Created by Kneesnap on 7/12/2017.
  */
 public class CommandExtinguish extends PlayerCommand {

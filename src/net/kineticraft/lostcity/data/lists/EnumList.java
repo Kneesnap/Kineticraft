@@ -6,7 +6,6 @@ import net.kineticraft.lostcity.utils.Utils;
 
 /**
  * Store enums in Json
- *
  * Created by Kneesnap on 6/10/2017.
  */
 public class EnumList<E extends Enum<E>> extends SaveableList<E> {

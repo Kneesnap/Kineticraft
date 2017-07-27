@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 
 /**
  * Allows staff to reload configs.
- *
  * Created by Kneesnap on 6/3/2017.
  */
 public class CommandConfig extends StaffCommand {

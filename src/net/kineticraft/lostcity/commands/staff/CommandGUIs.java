@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 
 /**
  * Open any GUI.
- *
  * Created by Kneesnap on 6/9/2017.
  */
 public class CommandGUIs extends StaffCommand {

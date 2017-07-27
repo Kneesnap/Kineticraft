@@ -10,7 +10,6 @@ import org.bukkit.inventory.ItemStack;
 
 /**
  * Wear your held item as a hat.
- *
  * Created by Kneesnap on 6/16/2017.
  */
 public class CommandHat extends PlayerCommand {

@@ -11,9 +11,7 @@ import java.util.Map;
 
 /**
  * Configuration manager.
- *
  * TODO: When http://openjdk.java.net/jeps/301 is implemented, remove the special case getVoteData() and such in favor of having getConfig() automaticaly casting it using generics.
- *
  * Created by Kneesnap on 6/3/2017.
  */
 public class Configs extends Mechanic {

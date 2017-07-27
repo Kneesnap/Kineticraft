@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 
 /**
  * Allow punishing players.
- *
  * Created by Kneesnap on 6/17/2017.
  */
 public class CommandPunish extends StaffCommand {

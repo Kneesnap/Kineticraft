@@ -7,11 +7,9 @@ import net.kineticraft.lostcity.data.lists.StringList;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 /**
  * Send mail to another user.
- *
  * Created by Kneesnap on 6/10/2017.
  */
 public class CommandMail extends PlayerCommand {
@@ -51,10 +49,10 @@ public class CommandMail extends PlayerCommand {
                 p.updatePlayer();
             }, () -> sender.sendMessage(ChatColor.RED + "Player not found."));
         } else if (args[0].equalsIgnoreCase("clear")){
-            KCPlayer.getWrapper((Player) sender).getMail().clear();
+            KCPlayer.getWrapper(sender).getMail().clear();
             sender.sendMessage(ChatColor.GOLD + "Mail cleared.");
         } else {
-            StringList mail = KCPlayer.getWrapper((Player) sender).getMail();
+            StringList mail = KCPlayer.getWrapper(sender).getMail();
 
             if (mail.isEmpty()) {
                 sender.sendMessage(ChatColor.RED + "You have no mail.");

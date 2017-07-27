@@ -6,8 +6,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 /**
- * All unmuting of players.
- *
+ * Handle unmuting of players.
  * Created by Kneesnap on 7/9/2017.
  */
 public class CommandUnmute extends StaffCommand {

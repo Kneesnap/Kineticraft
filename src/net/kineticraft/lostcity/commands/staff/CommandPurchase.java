@@ -9,7 +9,6 @@ import org.bukkit.command.CommandSender;
 
 /**
  * Lets buycraft indicate someone has donated.
- *
  * Created by Kneesnap on 7/12/2017.
  */
 public class CommandPurchase extends StaffCommand {

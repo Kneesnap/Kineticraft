@@ -19,8 +19,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Allows automated voting.
- *
+ * Allows automated voting on server propositins.
  * Created by Kneesnap on 6/29/2017.
  */
 public class CommandServerVote extends DiscordCommand {

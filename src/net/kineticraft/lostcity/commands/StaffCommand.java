@@ -4,7 +4,6 @@ import net.kineticraft.lostcity.EnumRank;
 
 /**
  * StaffCommand - Represents a command executable by staff.
- *
  * Created by Kneesnap on 6/1/2017.
  */
 public abstract class StaffCommand extends PlayerCommand {

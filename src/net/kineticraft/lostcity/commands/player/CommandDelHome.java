@@ -8,7 +8,6 @@ import org.bukkit.entity.Player;
 
 /**
  * CommandDelHome - Remove a home.
- *
  * Created by Kneesnap on 6/1/2017.
  */
 public class CommandDelHome extends PlayerCommand {

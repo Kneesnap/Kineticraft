@@ -4,11 +4,9 @@ import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.data.KCPlayer;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 /**
  * Unignore a player
- *
  * Created by Kneesnap on 6/10/2017.
  */
 public class CommandUnignore extends PlayerCommand {
@@ -20,7 +18,7 @@ public class CommandUnignore extends PlayerCommand {
 
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
-        KCPlayer player = KCPlayer.getWrapper((Player) sender);
+        KCPlayer player = KCPlayer.getWrapper(sender);
 
         if (!player.getIgnored().containsIgnoreCase(args[0])) {
             sender.sendMessage(ChatColor.GRAY + "You are not ignoring this player.");
@@ -35,6 +33,6 @@ public class CommandUnignore extends PlayerCommand {
     protected void showUsage(CommandSender sender) {
         super.showUsage(sender);
         sender.sendMessage(ChatColor.RED + "Ignored Players: " + String.join(ChatColor.GRAY + ", " + ChatColor.RED,
-                KCPlayer.getWrapper((Player) sender).getIgnored()));
+                KCPlayer.getWrapper(sender).getIgnored()));
     }
 }

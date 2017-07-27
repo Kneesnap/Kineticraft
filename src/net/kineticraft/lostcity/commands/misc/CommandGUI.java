@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 
 /**
  * Opens a GUI.
- *
  * Created by Kneesnap on 6/8/2017.
  */
 public class CommandGUI extends PlayerCommand {

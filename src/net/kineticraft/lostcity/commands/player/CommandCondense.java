@@ -13,7 +13,6 @@ import java.util.*;
 
 /**
  * Allow players to condense their items.
- *
  * Created by Kneesnap on 6/16/2017.
  */
 public class CommandCondense extends PlayerCommand {

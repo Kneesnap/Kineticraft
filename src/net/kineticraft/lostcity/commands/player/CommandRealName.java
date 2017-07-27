@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 
 /**
  * Get a player's username from their nickname.
- *
  * Created by Kneesnap on 6/27/17.
  */
 public class CommandRealName extends PlayerCommand {

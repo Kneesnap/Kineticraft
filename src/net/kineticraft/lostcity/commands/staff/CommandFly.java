@@ -8,7 +8,6 @@ import org.bukkit.entity.Player;
 
 /**
  * Allows media+ to fly.
- *
  * Created by Kneesnap on 6/11/2017.
  */
 public class CommandFly extends StaffCommand {

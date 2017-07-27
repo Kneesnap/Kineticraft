@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 
 /**
  * Teleport to a player's last death point.
- *
  * Created by Kneesnap on 6/2/2017.
  */
 public class CommandDeathTeleport extends StaffCommand {

@@ -8,7 +8,6 @@ import org.bukkit.entity.Player;
 
 /**
  * Allow players to change their local time.
- *
  * Created by Kneesnap on 6/16/2017.
  */
 public class CommandPTime extends PlayerCommand {

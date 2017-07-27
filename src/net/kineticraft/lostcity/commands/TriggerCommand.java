@@ -3,14 +3,12 @@ package net.kineticraft.lostcity.commands;
 import net.kineticraft.lostcity.utils.TextUtils;
 import net.kineticraft.lostcity.utils.Utils;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TranslatableComponent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
  * Represents a command that wraps around a /trigger command.
- *
  * Created by Kneesnap on 6/14/2017.
  */
 public abstract class TriggerCommand extends Command {
@@ -27,7 +25,7 @@ public abstract class TriggerCommand extends Command {
             return;
         }
 
-        int num = 0;
+        int num;
         try {
             num = Integer.parseInt(args[1]);
         } catch (NumberFormatException nfe) {

@@ -14,7 +14,6 @@ import org.bukkit.entity.Player;
 
 /**
  * Send a private message.
- *
  * Created by Kneesnap on 6/10/2017.
  */
 public class CommandMessage extends PlayerCommand {

@@ -9,7 +9,6 @@ import net.kineticraft.lostcity.config.JsonConfig;
 import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.guis.data.GUIJsonEditor;
-import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;

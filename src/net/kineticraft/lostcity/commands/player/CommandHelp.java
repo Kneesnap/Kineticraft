@@ -38,7 +38,6 @@ public class CommandHelp extends PlayerCommand {
             for (int i = (page - 1) * PER_PAGE; i < Math.min(help.size(), page * PER_PAGE); i++)
                 sender.sendMessage(help.get(i)); // Show help.
         } else {
-
             Command cmd = Commands.getCommand(null, args[0]);
 
             // If the command isn't found or it isn't a command a player needs to see.
