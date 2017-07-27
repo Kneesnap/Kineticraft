@@ -8,11 +8,20 @@ import org.bukkit.inventory.ItemStack;
 /**
  * General utilities for packets.
  * We'd like to keep our NMS all in the same places, so do NMS packet related stuff here.
- *
  * Created by Kneesnap on 6/9/2017.
  */
 public class PacketUtil {
 
+    /**
+     * Update the gamemode of a player packet-wise.
+     * @param receiver
+     * @param of
+     */
+    public static void updateGameMode(Player receiver, Player of) {
+        if (of != null)
+            sendPacket(receiver, new PacketPlayOutPlayerInfo(
+                    PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_GAME_MODE, PlayerUtils.getNMSPlayer(of)));
+    }
 
     /**
      * Send a packet to the given player.

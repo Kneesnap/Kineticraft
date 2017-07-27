@@ -81,7 +81,7 @@ public class Restrictions extends Mechanic {
     @Override
     public void onJoin(Player player) {
         player.sendMessage(DISABLE_TEXT);
-        if (!Utils.getRank(player).isStaff())
+        if (!Utils.isStaff(player))
             player.setGameMode(GameMode.SURVIVAL);
     }
 

@@ -5,15 +5,18 @@ import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.cutscenes.Cutscenes;
 import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.mechanics.system.Mechanic;
+import net.kineticraft.lostcity.utils.PacketUtil;
 import net.kineticraft.lostcity.utils.ReflectionUtil;
 import net.kineticraft.lostcity.utils.Utils;
 import net.minecraft.server.v1_12_R1.EnumGamemode;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.server.TabCompleteEvent;
 import org.bukkit.potion.PotionEffectType;
@@ -46,14 +49,12 @@ public class Vanish extends Mechanic {
                     return;
 
                 Player p = packet.getPlayer();
-                boolean allowed = Utils.getRank(p).isAtLeast(EnumRank.MEDIA);
                 String packetName = packet.getPacketName();
 
-                if (packetName.equals("PacketPlayOutPlayerInfo")) {
-                    EnumGamemode gm = allowed || Cutscenes.isWatching(p) ? EnumGamemode.SPECTATOR : EnumGamemode.CREATIVE;
+                if (packetName.equals("PacketPlayOutPlayerInfo") && !canSeeSpectator(p)) {
                     ((List<?>) packet.getPacketValueSilent("b")).stream()
                             .filter(d -> ReflectionUtil.getField(d, "c") == EnumGamemode.SPECTATOR)
-                            .forEach(d -> ReflectionUtil.setField(d, "c", gm));
+                            .forEach(d -> ReflectionUtil.setField(d, "c", EnumGamemode.CREATIVE));
                 }
             }
 
@@ -90,8 +91,14 @@ public class Vanish extends Mechanic {
         Core.alert(EnumRank.MEDIA, null, ChatColor.GRAY + evt.getPlayer().getName() + " joined silently.");
     }
 
+    @EventHandler
+    public void onGameModeChange(PlayerGameModeChangeEvent evt) {
+        showSpectator(evt.getPlayer());
+    }
+
     @Override
     public void onJoin(Player player) {
+        showSpectator(player); // Show spectator.
         updateVanish(); // Correct vanish stuff for new players.
     }
 
@@ -118,5 +125,25 @@ public class Vanish extends Mechanic {
      */
     public static void updateVanish() {
         Bukkit.getOnlinePlayers().forEach(Vanish::hidePlayers);
+    }
+
+    /**
+     * Can a player see other players in gamemode 3?
+     * @param player
+     * @return canSee
+     */
+    private static boolean canSeeSpectator(Player player) {
+        return Utils.getRank(player).isAtLeast(EnumRank.MEDIA) || Cutscenes.isWatching(player);
+    }
+
+    /**
+     * Show spectator mode to the right players.
+     * @param player
+     */
+    public static void showSpectator(Player player) {
+        Bukkit.getScheduler().runTask(Core.getInstance(), () -> {
+            if (player.getGameMode() == GameMode.SPECTATOR)
+                Bukkit.getOnlinePlayers().stream().filter(Vanish::canSeeSpectator).forEach(p -> PacketUtil.updateGameMode(p, player));
+        });
     }
 }

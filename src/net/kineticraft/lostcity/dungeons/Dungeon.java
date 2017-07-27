@@ -101,7 +101,7 @@ public class Dungeon {
     }
 
     /**
-     * Get a list of players in survival mode in the dungoen.
+     * Get a list of players in survival mode in the dungeon.
      * @return survivalPlayers
      */
     public List<Player> getSurvivalPlayers() {
