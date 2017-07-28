@@ -1,7 +1,9 @@
 package net.kineticraft.lostcity.data.reflect;
 
+import com.google.common.reflect.Reflection;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import net.kineticraft.lostcity.data.JsonData;
 import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.data.reflect.behavior.*;
@@ -140,7 +142,10 @@ public class JsonSerializer {
         }
 
         Object result = getHandler(obj.getClass(), "object").serialize(obj);
-        return result instanceof JsonData ? ((JsonData) result).getJsonObject() : (JsonElement) result;
+        if (result instanceof JsonData)
+            return ((JsonData) result).getJsonObject();
+
+        return result instanceof JsonElement ? (JsonElement) result : ReflectionUtil.construct(JsonPrimitive.class, result);
     }
 
     /**
