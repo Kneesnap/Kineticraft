@@ -5,8 +5,11 @@ import lombok.Data;
 import lombok.Getter;
 import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.data.KCPlayer;
+import net.kineticraft.lostcity.discord.DiscordAPI;
+import net.kineticraft.lostcity.discord.DiscordChannel;
 import net.kineticraft.lostcity.item.ItemManager;
 import net.kineticraft.lostcity.mechanics.system.Mechanic;
+import net.kineticraft.lostcity.utils.TimeInterval;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -15,13 +18,28 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Punishments - Port of our old JS punishment system.
- *
  * Created by Kneesnap on 6/17/2017.
  */
 public class Punishments extends Mechanic {
+
+    @Override
+    public void onEnable() {
+        Utils.runCalendarTaskEvery(TimeInterval.WEEK, () -> {
+            Map<String, Integer> banCount = new HashMap<>();
+            KCPlayer.getPlayerMap().values().forEach(p -> p.getPunishments().stream() // Generate ban report.
+                    .filter(pu -> (System.currentTimeMillis() - pu.getTimestamp()) / 1000 <= TimeInterval.WEEK.getInterval())
+                    .forEach(pu -> banCount.put(pu.getSource(), banCount.getOrDefault(pu.getSource(), 0) + 1)));
+
+            DiscordAPI.sendMessage(DiscordChannel.ORYX, "Weekly Ban Report:\n" // Broadcast ban report to discord.
+                    + banCount.entrySet().stream().map(e -> e.getKey() + ": " + e.getValue()).collect(Collectors.joining("\n")));
+        });
+    }
 
     @EventHandler
     public void onJoin(AsyncPlayerPreLoginEvent evt) {
@@ -55,7 +73,6 @@ public class Punishments extends Mechanic {
 
     @Data
     public static class Punishment implements Jsonable {
-
         private PunishmentType type;
         private String source;
         private long timestamp;
@@ -114,7 +131,6 @@ public class Punishments extends Mechanic {
         /**
          * Get the initial amount of hours this punishment stands for.
          * -1 = Forever.
-         *
          * @return initial
          */
         public int getInitialTime() {

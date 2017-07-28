@@ -2,9 +2,7 @@ package net.kineticraft.lostcity.utils;
 
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import lombok.AllArgsConstructor;
 import lombok.Cleanup;
-import lombok.Getter;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.discord.DiscordSender;
@@ -37,7 +35,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -252,49 +251,6 @@ public class Utils {
             ms += Integer.parseInt(input.substring(0, s.length() - 1)) * ti.getInterval() * 1000;
         }
         return Date.from(Instant.ofEpochMilli(ms));
-    }
-
-    /**
-     * Schedule a task to run at a certain time interval.
-     * @param unit - The time unit to schedule at.
-     * @param amount
-     * @param runnable - Code to execute.
-     * @param at - When to schedule the task.
-     */
-    @SuppressWarnings("MagicConstant")
-    public static void schedule(TimeInterval unit, int amount, Runnable runnable, int at) {
-        final TimerTask task = new TimerTask() { public void run() { runnable.run(); }}; // Lambda doesn't work on abstract classes.
-        Calendar c = Calendar.getInstance();
-        for (int i = 0; i < unit.ordinal(); i++)
-            c.set(unit.getCalendarId(), i == unit.ordinal() - 1 ? at : 0);
-        new Timer().schedule(task, c.getTime(), TimeUnit.MILLISECONDS.convert(amount, TimeInterval.values()[unit.ordinal() - 1].getUnit()));
-    }
-
-    @AllArgsConstructor @Getter
-    public enum TimeInterval {
-        SECOND("s", TimeUnit.SECONDS, Calendar.SECOND),
-        MINUTE("min", TimeUnit.MINUTES, Calendar.MINUTE),
-        HOUR("hr", TimeUnit.HOURS, Calendar.HOUR_OF_DAY),
-        DAY("day", TimeUnit.DAYS, Calendar.DAY_OF_MONTH),
-        MONTH("month", 30, Calendar.MONTH),
-        YEAR("yr", 365, Calendar.YEAR);
-
-        private String suffix;
-        private TimeUnit unit;
-        private int interval;
-        private int calendarId;
-
-        TimeInterval(String s, TimeUnit unit, int calendar) {
-            this(s, unit, (int) TimeUnit.SECONDS.convert(1, unit), calendar);
-        }
-
-        TimeInterval(String s, int days, int calendar) {
-            this(s, null, (int) TimeUnit.SECONDS.convert(days, TimeUnit.DAYS), calendar);
-        }
-
-        public static TimeInterval getByCode(String code) {
-            return Arrays.stream(values()).filter(ti -> ti.getSuffix().startsWith(code.toLowerCase())).findFirst().orElse(null);
-        }
     }
 
     /**
@@ -1095,5 +1051,47 @@ public class Utils {
         List<T> list = new ArrayList<>();
         values.forEach(list::add);
         return list;
+    }
+
+    /**
+     * Run a task repeatedly at a given calendar time, accurate to the second.
+     * @param interval
+     * @param unit
+     * @param task
+     */
+    public static void runCalendarTaskAt(TimeInterval interval, int unit, Runnable task) {
+        AtomicBoolean runYet = new AtomicBoolean();
+        Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () -> {
+            boolean isTime = interval.getValue() == unit;
+            if (!runYet.get() && isTime)
+                task.run();
+            runYet.set(isTime);
+        }, 0L, 20L);
+    }
+
+    /**
+     * Run a task every given interval on the calendar. Accurate to the second.
+     * @param interval
+     * @param task
+     */
+    public static void runCalendarTaskEvery(TimeInterval interval, Runnable task) {
+        runCalendarTaskEvery(interval, 1, task);
+    }
+
+    /**
+     * Run a task every given interval on the calendar. Accurate to the second.
+     * @param interval
+     * @param unit
+     * @param task
+     */
+    public static void runCalendarTaskEvery(TimeInterval interval, int unit, Runnable task) {
+        AtomicInteger lastRun = new AtomicInteger(interval.getValue());
+        Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () -> {
+            int now = interval.getValue();
+            if (now % unit == 0 && now != lastRun.get()) {
+                task.run();
+                lastRun.set(now);
+            }
+        }, 0L, 20L);
     }
 }

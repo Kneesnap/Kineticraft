@@ -1,37 +1,41 @@
 package net.kineticraft.lostcity.guis.data;
 
-import net.kineticraft.lostcity.data.Jsonable;
-import net.kineticraft.lostcity.data.lists.JsonList;
-import net.kineticraft.lostcity.guis.GUI;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
+import net.kineticraft.lostcity.data.lists.SaveableList;
+import net.kineticraft.lostcity.item.display.GUIItem;
 import org.bukkit.entity.Player;
+
+import java.util.function.Consumer;
 
 /**
  * Edit a JsonList
  * Created by Kneesnap on 7/25/2017.
  */
-public class GUIListEditor<T extends Jsonable> extends GUI {
+public class GUIListEditor<T> extends GUIJsonEditor {
 
-    private JsonList<T> list;
+    private SaveableList<T> list;
 
-    public GUIListEditor(Player player, JsonList<T> list) {
-        super(player, "List Editor", fitSize(list, 1));
+    public GUIListEditor(Player player, SaveableList<T> list) {
+        super(player, fitSize(list, 1));
         this.list = list;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public void addItems() {
-        for (T o : list) {
-            addItem(Material.PAPER, ChatColor.YELLOW + "Element " + list.indexOf(o))
-                    .leftClick(ce -> new GUIJsonEditor(ce.getPlayer(), o))
-                    .rightClick(ce -> {
-                        list.remove(o);
-                        reconstruct();
-                    })
-                    .addLoreAction("Left", "Edit Value").addLoreAction("Right", "Remove");
+        for (int i = 0; i < list.size(); i++) {
+            final int index = i;
+            Object o = list.get(i);
+            addItem("Element " + i, o.getClass(), o, val -> list.set(index, (T) val));
         }
 
         addBackButton();
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected GUIItem addItem(String itemName, Class<?> type, Object value, Consumer<Object> setter) {
+        GUIItem gi = super.addItem(itemName, type, value, setter);
+        gi.rightClick(ce -> list.remove((T) value)).addLoreAction("Right", "Remove Value");
+        return gi;
     }
 }

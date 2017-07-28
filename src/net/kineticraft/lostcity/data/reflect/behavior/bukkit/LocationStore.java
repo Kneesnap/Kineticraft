@@ -1,7 +1,6 @@
 package net.kineticraft.lostcity.data.reflect.behavior.bukkit;
 
 import net.kineticraft.lostcity.data.JsonData;
-import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.data.reflect.behavior.SpecialStore;
 import net.kineticraft.lostcity.item.display.GUIItem;
 import net.kineticraft.lostcity.utils.Utils;
@@ -11,6 +10,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 
 import java.lang.reflect.Field;
+import java.util.function.Consumer;
 
 /**
  * Save / load bukkit locations as json.
@@ -39,15 +39,15 @@ public class LocationStore extends SpecialStore<Location> {
     }
 
     @Override
-    public void editItem(GUIItem item, Field f, Jsonable data) {
-        Location loc = (Location) get(f, data);
+    public void editItem(GUIItem item, Object value, Consumer<Object> setter) {
+        Location loc = (Location) value;
         if (loc != null) {
             item.leftClick(ce -> ce.getPlayer().teleport(loc))
                     .addLore("Location: " + ChatColor.GOLD + Utils.toString(loc), "")
                     .addLoreAction("Left", "Teleport");
         }
-        item.rightClick(ce -> set(f, data, ce.getPlayer().getLocation()))
+        item.middleClick(ce -> setter.accept(ce.getPlayer().getLocation()))
                 .setIcon(Material.ELYTRA)
-                .addLoreAction("Right", "Set Location");
+                .addLoreAction("Middle", "Set Location");
     }
 }

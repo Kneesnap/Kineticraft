@@ -1,9 +1,12 @@
 &8Changes:
- - Code cleanup
+ - Added /tpahere.
+ - Code cleanup.
 
 &8Staff Changes:
  - Ingame JSON editor.
  - /see is now /oi.
+ - Added /god.
+ - Fixed /notes.
 
 &8Bugfixes:
  - Teleporting onto slabs.

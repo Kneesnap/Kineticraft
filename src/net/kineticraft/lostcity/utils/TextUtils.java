@@ -15,7 +15,6 @@ import java.util.function.BiConsumer;
 
 /**
  * Contains basic utils and aliases to methods that are not easy to find / documented.
- *
  * Created by Kneesnap on 6/10/2017.
  */
 public class TextUtils {
@@ -229,6 +228,7 @@ public class TextUtils {
      * @param input
      * @return textBuilder
      */
+    @SuppressWarnings("EqualsBetweenInconvertibleTypes")
     public static TextBuilder fromMarkup(String input) {
         input = ChatColor.translateAlternateColorCodes('&', input);
         String[] queue = input.split("");

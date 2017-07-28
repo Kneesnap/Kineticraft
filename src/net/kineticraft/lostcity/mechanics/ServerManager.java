@@ -7,6 +7,7 @@ import net.kineticraft.lostcity.data.lists.QueueList;
 import net.kineticraft.lostcity.mechanics.system.Mechanic;
 import net.kineticraft.lostcity.utils.ServerUtils;
 import net.kineticraft.lostcity.utils.TextUtils;
+import net.kineticraft.lostcity.utils.TimeInterval;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -56,13 +57,12 @@ public class ServerManager extends Mechanic {
         }, 0L, TPS_INTERVAL);
 
         if (!ServerUtils.isDevServer()) {
-            // Reboot after 12 hours of uptime.
-            Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () -> {
-                if (ServerUtils.getTicksToReboot() > REBOOT_TIME * 20 || ServerUtils.isRebootScheduled())
-                    return;
+            Utils.runCalendarTaskAt(TimeInterval.HOUR, 6, ServerUtils::takeBackup); // Backup the server at 6AM daily.
 
-                ServerUtils.takeBackup();
-                ServerUtils.reboot(REBOOT_TIME);
+            // Automatically reboot after a while.
+            Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () -> {
+                if (ServerUtils.getTicksToReboot() <= REBOOT_TIME * 20 && !ServerUtils.isRebootScheduled())
+                    ServerUtils.reboot(REBOOT_TIME);
             }, 0L, 20L);
         }
 
@@ -71,7 +71,11 @@ public class ServerManager extends Mechanic {
             List<Chunk> unload = new ArrayList<>();
             Bukkit.getWorlds().forEach(w -> Stream.of(w.getLoadedChunks()).filter(Chunk::isLoaded)
                     .filter(ServerManager::shouldUnload).forEach(unload::add));
-            Bukkit.getScheduler().runTask(Core.getInstance(), () -> unload.forEach(Chunk::unload));
+            Bukkit.getScheduler().runTask(Core.getInstance(), () -> {
+                long fail = unload.stream().filter(c -> !c.unload()).count();
+                if (fail > 0)
+                    System.out.println("Failed to unload " + fail + " chunks.");
+            });
         }, 0L, 60 * 20L);
     }
 

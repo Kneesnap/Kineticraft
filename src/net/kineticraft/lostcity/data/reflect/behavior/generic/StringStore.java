@@ -1,12 +1,11 @@
 package net.kineticraft.lostcity.data.reflect.behavior.generic;
 
-import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.data.reflect.behavior.MethodStore;
 import net.kineticraft.lostcity.item.display.GUIItem;
 import net.kineticraft.lostcity.mechanics.Callbacks;
 import org.bukkit.ChatColor;
 
-import java.lang.reflect.Field;
+import java.util.function.Consumer;
 
 /**
  * Save and load strings.
@@ -19,14 +18,14 @@ public class StringStore extends MethodStore<String> {
     }
 
     @Override
-    public void editItem(GUIItem item, Field f, Jsonable data) {
+    public void editItem(GUIItem item, Object value, Consumer<Object> setter) {
         item.leftClick(ce -> {
             ce.getPlayer().sendMessage(ChatColor.GREEN + "Please enter the new value.");
             Callbacks.listenForChat(ce.getPlayer(), m -> {
-                set(f, data, m);
+                setter.accept(m);
                 ce.getPlayer().sendMessage(ChatColor.GREEN + "Value updated.");
             }, null);
         }).addLoreAction("Left", "Set Value");
-        setNull(f, data, item);
+        setNull(item, value, setter);
     }
 }

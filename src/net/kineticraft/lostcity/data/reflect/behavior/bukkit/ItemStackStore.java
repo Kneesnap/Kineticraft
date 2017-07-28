@@ -1,7 +1,6 @@
 package net.kineticraft.lostcity.data.reflect.behavior.bukkit;
 
 import net.kineticraft.lostcity.data.JsonData;
-import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.data.reflect.JsonSerializer;
 import net.kineticraft.lostcity.data.reflect.behavior.SpecialStore;
 import net.kineticraft.lostcity.guis.staff.GUIItemEditor;
@@ -13,6 +12,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.Field;
+import java.util.function.Consumer;
 
 /**
  * Store an ItemStack
@@ -35,10 +35,10 @@ public class ItemStackStore extends SpecialStore<ItemStack> {
     }
 
     @Override
-    public void editItem(GUIItem item, Field f, Jsonable data) {
-        ItemStack i = (ItemStack) get(f, data);
-        item.leftClick(ce -> new GUIItemEditor(ce.getPlayer(), i, iw -> set(f, data, iw.generateItem()))).setIcon(Material.STICK)
+    public void editItem(GUIItem item, Object value, Consumer<Object> setter) {
+        ItemStack i = (ItemStack) value;
+        item.leftClick(ce -> new GUIItemEditor(ce.getPlayer(), i, iw -> setter.accept(iw.generateItem()))).setIcon(Material.STICK)
                 .addLore("Item: " + ChatColor.GOLD + Utils.getItemName(i), "").addLoreAction("Left", "Edit Item");
-        setNull(f, data, item);
+        setNull(item, value, setter);
     }
 }

@@ -101,6 +101,10 @@ public class GeneralMechanics extends Mechanic {
 
     @Override
     public void onJoin(Player player) {
+        if (!KCPlayer.getWrapper(player).getNotes().isEmpty())
+            Core.alertStaff(player.getName() + " has notes. See "  + ChatColor.YELLOW + "/notes " + player.getName()
+                    + ChatColor.RED + " for details.");
+
         String gray = ChatColor.GRAY.toString() + ChatColor.ITALIC;
         player.sendMessage(TextUtils.centerChat(ChatColor.BOLD + "Kineticraft v4"));
         player.sendMessage(TextUtils.centerChat(ChatColor.AQUA.toString() + ChatColor.BOLD + "The Lost City"));

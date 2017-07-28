@@ -146,7 +146,6 @@ public class JsonSerializer {
     /**
      * Get the serializer for a given field.
      * Alerts staff and returns null if not found.
-     *
      * @param field
      * @return handler
      */
@@ -157,12 +156,11 @@ public class JsonSerializer {
     /**
      * Get the serializer for a given class.
      * Alerts staff and returns null if not found.
-     *
      * @param clazz
      * @param objName
      * @return handler
      */
-    private static DataStore getHandler(Class<?> clazz, String objName) {
+    public static DataStore getHandler(Class<?> clazz, String objName) {
         DataStore app = serializers.stream().filter(d -> d.getApplyTo().isAssignableFrom(clazz)).findFirst().orElse(null);
 
         if (app == null)

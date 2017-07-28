@@ -53,7 +53,7 @@ public class Dungeons extends Mechanic {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onBlockBreak(BlockBreakEvent evt) { // Prevents block destruction.
-        evt.setCancelled(isDungeon(evt.getBlock().getWorld()) && !Utils.getRank(evt.getPlayer()).isStaff());
+        evt.setCancelled(isDungeon(evt.getBlock().getWorld()) && !Utils.isStaff(evt.getPlayer()));
     }
 
     @EventHandler

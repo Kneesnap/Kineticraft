@@ -1,11 +1,10 @@
 package net.kineticraft.lostcity.data.reflect.behavior.generic;
 
-import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.data.reflect.behavior.MethodStore;
 import net.kineticraft.lostcity.item.display.GUIItem;
 
-import java.lang.reflect.Field;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 /**
  * Save and load UUIDS.
@@ -18,7 +17,7 @@ public class UUIDStore extends MethodStore<UUID> {
     }
 
     @Override
-    public void editItem(GUIItem item, Field f, Jsonable data) {
+    public void editItem(GUIItem item, Object value, Consumer<Object> setter) {
 
     }
 }

@@ -10,6 +10,8 @@ import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
+import java.util.function.Consumer;
+
 /**
  * Allows viewing or editting of JSON data.
  * Created by Kneesnap on 7/20/2017.
@@ -19,17 +21,18 @@ public class GUIJsonEditor extends GUI {
 
     private Jsonable data;
 
+    protected GUIJsonEditor(Player player, int rows) {
+        super(player, "JSON Editor", rows);
+    }
+
     public GUIJsonEditor(Player player, Jsonable data) {
-        super(player, "JSON Editor", fitSize(JsonSerializer.getFields(data), 1));
+        this(player, fitSize(JsonSerializer.getFields(data), 1));
         this.data = data;
     }
 
     @Override
     public void addItems() {
         JsonSerializer.getFields(getData()).forEach(f -> {
-            GUIItem gi = addItem(Material.WOOL, ChatColor.YELLOW + ucFirst(f.getName()));
-
-            // Get the current value.
             Object o = null;
             try {
                 o = f.get(getData());
@@ -37,27 +40,43 @@ public class GUIJsonEditor extends GUI {
                 e.printStackTrace();
             }
 
-            // Display the current value.
-            if (o == null || o.toString().length() < 50)
-                gi.addLore("Value: " + ChatColor.YELLOW + o, "");
+            Consumer<Object> setter = val -> {
+                try {
+                    f.set(getData(), val);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            };
 
-            // Apply the handler specific code.
-            JsonSerializer.getHandler(f).editItem(gi, f, getData());
+            addItem(ucFirst(f.getName()), f.getType(), o, setter);
+        });
+        addBackButton();
+    }
 
-            // If it's using the default icon, set the color based on the data state.
-            if (gi.getItem().getType() == Material.WOOL) {
-                boolean green = o != null && (!(o instanceof Boolean) || ((Boolean) o));
-                gi.setColor(green ? DyeColor.LIME : DyeColor.RED);
-            }
+    @SuppressWarnings("unchecked")
+    protected GUIItem addItem(String itemName, Class<?> type, Object value, Consumer<Object> setter) {
+        GUIItem gi = addItem(Material.WOOL, ChatColor.YELLOW + itemName);
 
-            // Update the gui if the value changes.
-            gi.anyClick(ce -> {
-                if (ce.getGUI() == this)
-                    reconstruct();
-            });
+        // Display the current value.
+        if (value == null || value.toString().length() < 50)
+            gi.addLore("Value: " + ChatColor.YELLOW + value, "");
+
+        // Apply the handler specific code.
+        JsonSerializer.getHandler(type, itemName).editItem(gi, value, setter, type);
+
+        // If it's using the default icon, set the color based on the data state.
+        if (gi.getItem().getType() == Material.WOOL) {
+            boolean green = value != null && (!(value instanceof Boolean) || ((Boolean) value));
+            gi.setColor(green ? DyeColor.LIME : DyeColor.RED);
+        }
+
+        // Update the gui if the value changes.
+        gi.anyClick(ce -> {
+            if (ce.getGUI() == this)
+                reconstruct();
         });
 
-        addBackButton();
+        return gi;
     }
 
     private static String ucFirst(String s) {

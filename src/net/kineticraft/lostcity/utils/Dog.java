@@ -38,6 +38,6 @@ public enum Dog {
                 + getName() + ChatColor.GRAY + ": " + ChatColor.WHITE + message);
 
         if (getSound() != null)
-            Bukkit.getOnlinePlayers().stream().forEach(p -> p.playSound(p.getLocation(), getSound(), 1, 1.7F));
+            Bukkit.getOnlinePlayers().forEach(p -> p.playSound(p.getLocation(), getSound(), 1, 1.7F));
     }
 }

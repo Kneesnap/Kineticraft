@@ -131,6 +131,7 @@ public class Commands extends Mechanic {
 
         // Register trigger commands
         addCommand(new CommandTPATrigger());
+        addCommand(new CommandTPAHereTrigger());
         addCommand(new CommandTriggerAccept());
         addCommand(new CommandTriggerDecline());
 

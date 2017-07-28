@@ -325,6 +325,9 @@ public class ItemBook extends ItemWrapper {
             getMeta().pages.addAll(getPages().stream().map(TextBuilder::create)
                     .map(TextUtils::toNMSComponent).collect(Collectors.toList()));
 
+        if (getMeta().pages.isEmpty()) // Allow the book to be opened / editted.
+            getMeta().addPage("");
+
         getMeta().setGeneration(BookMeta.Generation.TATTERED);
         this.page = 0; // Reset writer.
     }

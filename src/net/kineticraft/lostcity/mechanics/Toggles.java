@@ -14,6 +14,7 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import java.util.List;
@@ -31,7 +32,12 @@ public class Toggles extends Mechanic {
             Commands.addCommand(new ToggleCommand(t));
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onEntityDamage(EntityDamageEvent evt) {
+        evt.setCancelled(evt.getEntity() instanceof Player && getToggle((Player) evt.getEntity(), Toggle.GOD));
+    }
+
+    @EventHandler(ignoreCancelled = true)
     public void onPvP(EntityDamageByEntityEvent evt) {
         Player attacker = evt.getDamager() instanceof Player ? (Player) evt.getDamager() :
                 (evt.getDamager() instanceof Projectile && ((Projectile) evt.getDamager()).getShooter() instanceof Player
@@ -73,7 +79,7 @@ public class Toggles extends Mechanic {
         private Toggle toggle;
 
         public ToggleCommand(Toggle t) {
-            super("", "Toggle your " + t.getDescription() + ".",
+            super(t.getMinRank(), "", "Toggle your " + t.getDescription() + ".",
                     "toggle" + t.name().toLowerCase(), t.name().toLowerCase());
             this.toggle = t;
         }
@@ -94,7 +100,8 @@ public class Toggles extends Mechanic {
     @AllArgsConstructor @Getter
     public enum Toggle {
         PVP("pvp status"),
-        CENSOR("chat filter");
+        CENSOR("chat filter"),
+        GOD(EnumRank.TRIAL, "god mode");
 
         private final EnumRank minRank;
         private String description;

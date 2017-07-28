@@ -1,4 +1,4 @@
-package net.kineticraft.lostcity.utils;
+package net.kineticraft.lostcity.utils.tasks;
 
 import lombok.Getter;
 import net.kineticraft.lostcity.Core;
@@ -12,7 +12,6 @@ import java.util.function.Consumer;
 
 /**
  * Allows resource allocation of large tasks.
- *
  * @param <T>
  * Created by Kneesnap on 6/30/2017.
  */
@@ -69,7 +68,7 @@ public class SchedulerTask<T> {
         }
 
         checkComplete = Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () -> {
-            if (!getTasks().isEmpty())
+            if (!tasks.isEmpty())
                 return;
 
             checkComplete.cancel(); // Don't call again.

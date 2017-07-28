@@ -1,12 +1,12 @@
 package net.kineticraft.lostcity.data.reflect.behavior;
 
 import net.kineticraft.lostcity.data.JsonData;
-import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.guis.data.GUIEnumPicker;
 import net.kineticraft.lostcity.item.display.GUIItem;
 import org.bukkit.Material;
 
 import java.lang.reflect.Field;
+import java.util.function.Consumer;
 
 /**
  * Save / load an enum.
@@ -24,11 +24,16 @@ public class EnumStore extends DataStore<Enum> {
         return data.getEnum(key, (Class<Enum>) field.getType());
     }
 
+    @Override
+    protected void editItem(GUIItem item, Object value, Consumer<Object> setter) {
+        throw new UnsupportedOperationException();
+    }
+
     @SuppressWarnings("unchecked")
     @Override
-    public void editItem(GUIItem item, Field f, Jsonable data) {
-        item.leftClick(ce -> new GUIEnumPicker(ce.getPlayer(), (Enum[])f.getType().getEnumConstants(), val -> {
-            set(f, data, val);
+    public void editItem(GUIItem item, Object value, Consumer<Object> setter, Class<?> type) {
+        item.leftClick(ce -> new GUIEnumPicker(ce.getPlayer(), (Enum[]) type.getEnumConstants(), val -> {
+            setter.accept(val);
             ce.getGUI().openPrevious();
         })).setIcon(Material.GOLD_BLOCK).addLoreAction("Left", "Set Value");
     }

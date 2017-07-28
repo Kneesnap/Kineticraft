@@ -3,13 +3,13 @@ package net.kineticraft.lostcity.data.reflect.behavior;
 import com.google.gson.JsonElement;
 import lombok.Getter;
 import net.kineticraft.lostcity.data.JsonData;
-import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.item.display.GUIItem;
 import net.kineticraft.lostcity.utils.ReflectionUtil;
 import org.bukkit.Bukkit;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.function.Consumer;
 
 /**
  * A template serializer for storing and loading values in JSON.
@@ -65,47 +65,31 @@ public abstract class DataStore<T> {
     /**
      * Apply the item editor data to an item.
      * @param item
+     * @param value
+     * @param setter
      */
-    public abstract void editItem(GUIItem item, Field f, Jsonable data);
+    protected abstract void editItem(GUIItem item, Object value, Consumer<Object> setter);
 
     /**
-     * Set the value of a field.
-     * @param f
-     * @param data
+     * Apply the item editor data to an item.
+     * @param item
      * @param value
+     * @param setter
+     * @param classType
      */
-    protected void set(Field f, Jsonable data, Object value) {
-        try {
-            f.set(data, value);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    public void editItem(GUIItem item, Object value, Consumer<Object> setter, Class<?> classType) {
+        editItem(item, value, setter);
     }
 
     /**
      * Remove the value of a field when clicked.
-     * @param f
-     * @param data
-     * @param onClick
+     * @param item
+     * @param value
+     * @param setter
      */
-    protected void setNull(Field f, Jsonable data, GUIItem onClick) {
-        if (get(f, data) != null)
-            onClick.rightClick(ce -> set(f, data, null)).addLoreAction("Right", "Remove Value");
-    }
-
-    /**
-     * Get the value of a field.
-     * @param f
-     * @param data
-     * @return
-     */
-    protected Object get(Field f, Jsonable data) {
-        try {
-            return f.get(data);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
+    protected void setNull(GUIItem item, Object value, Consumer<Object> setter) {
+        if (value != null)
+            item.rightClick(ce -> setter.accept(null)).addLoreAction("Right", "Remove Value");
     }
 
     /**

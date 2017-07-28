@@ -3,10 +3,12 @@ package net.kineticraft.lostcity.data.reflect.behavior;
 import net.kineticraft.lostcity.data.JsonData;
 import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.data.maps.SaveableMap;
+import net.kineticraft.lostcity.guis.data.GUIMapEditor;
 import net.kineticraft.lostcity.item.display.GUIItem;
 import org.bukkit.Material;
 
 import java.lang.reflect.Field;
+import java.util.function.Consumer;
 
 /**
  * Handles dictionary saving / loading
@@ -30,8 +32,8 @@ public class MapStore extends DataStore<SaveableMap> {
     }
 
     @Override
-    public void editItem(GUIItem item, Field f, Jsonable data) {
+    public void editItem(GUIItem item, Object value, Consumer<Object> setter) {
         item.setIcon(Material.CHEST).addLoreAction("Left", "Edit Values");
-        Jsonable j = (Jsonable) get(f, data);
+        item.leftClick(ce -> new GUIMapEditor<>(ce.getPlayer(), (SaveableMap<?, ?>) value));
     }
 }

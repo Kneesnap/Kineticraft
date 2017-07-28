@@ -8,6 +8,7 @@ import net.kineticraft.lostcity.item.display.GUIItem;
 import org.bukkit.Material;
 
 import java.lang.reflect.Field;
+import java.util.function.Consumer;
 
 /**
  * Load / save Json data.
@@ -26,11 +27,11 @@ public class JsonableStore extends DataStore<Jsonable> {
     }
 
     @Override
-    public void editItem(GUIItem item, Field f, Jsonable data) {
-        Jsonable j = (Jsonable) get(f, data);
+    public void editItem(GUIItem item, Object value, Consumer<Object> setter) {
+        Jsonable j = (Jsonable) value;
         if (j != null)
            item.leftClick(ce -> new GUIJsonEditor(ce.getPlayer(), j)).addLoreAction("Left", "Open Value");
         item.setIcon(Material.MOB_SPAWNER);
-        setNull(f, data, item);
+        setNull(item, value, setter);
     }
 }

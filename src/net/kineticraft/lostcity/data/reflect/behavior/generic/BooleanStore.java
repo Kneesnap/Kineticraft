@@ -1,10 +1,9 @@
 package net.kineticraft.lostcity.data.reflect.behavior.generic;
 
-import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.data.reflect.behavior.MethodStore;
 import net.kineticraft.lostcity.item.display.GUIItem;
 
-import java.lang.reflect.Field;
+import java.util.function.Consumer;
 
 /**
  * Store and load boolean values.
@@ -17,7 +16,7 @@ public class BooleanStore extends MethodStore<Boolean> {
     }
 
     @Override
-    public void editItem(GUIItem item, Field f, Jsonable data) {
-        item.leftClick(ce -> set(f, data, !((Boolean) get(f, data)))).addLoreAction("Left", "Toggle");
+    public void editItem(GUIItem item, Object value, Consumer<Object> setter) {
+        item.leftClick(ce -> setter.accept(!((Boolean) value))).addLoreAction("Left", "Toggle");
     }
 }
