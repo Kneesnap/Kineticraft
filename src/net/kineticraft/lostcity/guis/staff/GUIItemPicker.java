@@ -21,7 +21,6 @@ public class GUIItemPicker extends PagedGUI {
         super(player, "Item Selector", fitSize(items));
         this.onPick = onPick;
         this.items = items;
-        markSub();
     }
 
     @Override

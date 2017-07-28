@@ -28,6 +28,15 @@ public class Configs extends Mechanic {
     }
 
     /**
+     * Gets the given config data.
+     * @param config
+     * @return config
+     */
+    public static Config getConfig(String config) {
+        return getConfig(ConfigType.valueOf(config.toUpperCase()));
+    }
+
+    /**
      * Get vote data.
      * @return voteConfig
      */

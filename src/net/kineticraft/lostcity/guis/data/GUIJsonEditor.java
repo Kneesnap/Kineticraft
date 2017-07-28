@@ -10,6 +10,7 @@ import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 /**
@@ -20,14 +21,20 @@ import java.util.function.Consumer;
 public class GUIJsonEditor extends GUI {
 
     private Jsonable data;
+    private BiConsumer<Player, Jsonable> onFinish;
 
     protected GUIJsonEditor(Player player, int rows) {
         super(player, "JSON Editor", rows);
     }
 
     public GUIJsonEditor(Player player, Jsonable data) {
+        this(player, data, null);
+    }
+
+    public GUIJsonEditor(Player player, Jsonable data, BiConsumer<Player, Jsonable> onFinish) {
         this(player, fitSize(JsonSerializer.getFields(data), 1));
         this.data = data;
+        this.onFinish = onFinish;
     }
 
     @Override
@@ -77,6 +84,12 @@ public class GUIJsonEditor extends GUI {
         });
 
         return gi;
+    }
+
+    @Override
+    public void onClose() {
+        if (this.onFinish != null && getData() != null)
+            this.onFinish.accept(getPlayer(), getData());
     }
 
     private static String ucFirst(String s) {

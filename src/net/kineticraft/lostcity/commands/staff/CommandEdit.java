@@ -14,6 +14,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 /**
@@ -22,28 +25,48 @@ import java.util.function.Function;
  */
 public class CommandEdit extends StaffCommand {
 
+    private static List<JsonProvider> providers = new ArrayList<>();
+
     public CommandEdit() {
         super(EnumRank.MOD, "<player|config> <data>", "Edit json data.", "edit");
+        providers.add(new JsonProvider<>("player", p -> KCPlayer.getWrapper(Bukkit.getPlayer(p)), KCPlayer::updatePlayer));
+        providers.add(new JsonProvider<>("config", c -> (JsonConfig) Configs.getConfig(c), JsonConfig::saveToDisk));
     }
 
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
-        Edittable e = Edittable.valueOf(args[0].toUpperCase());
-        Jsonable j = e.getSupplier().apply(args[1]);
+        JsonProvider<?> pv = providers.stream().filter(p -> p.getName().equalsIgnoreCase(args[0])).findAny().orElse(null);
+        if (pv == null) { // Unknown provider.
+            showUsage(sender);
+            return;
+        }
 
-        if (j == null) {
+        Jsonable j = pv.getGetter().apply(args[1]);
+        if (j == null) { // Data wasn't found.
             sender.sendMessage(ChatColor.RED + "Unknown target data '" + args[1] + "'.");
             return;
         }
 
-        new GUIJsonEditor((Player) sender, j);
+        new GUIJsonEditor((Player) sender, j, pv::update);
     }
 
-    @AllArgsConstructor @Getter
-    private enum Edittable {
-        PLAYER(p -> KCPlayer.getWrapper(Bukkit.getPlayer(p))),
-        CONFIG(j -> (JsonConfig) Configs.getConfig(Configs.ConfigType.valueOf(j.toUpperCase())));
+    @AllArgsConstructor
+    private class JsonProvider<T extends Jsonable> {
 
-        private final Function<String, Jsonable> supplier;
+        @Getter private String name;
+        @Getter private final Function<String, T> getter;
+        private final Consumer<T> updater;
+
+        /**
+         * Update the refresh after it's been editted.
+         * @param player
+         * @param data
+         */
+        @SuppressWarnings("unchecked")
+        public void update(Player player, Jsonable data) {
+            player.sendMessage(ChatColor.GREEN + "Updated " + getName());
+            if (updater != null)
+                updater.accept((T) data);
+        }
     }
 }

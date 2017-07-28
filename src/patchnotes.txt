@@ -9,5 +9,6 @@
  - Fixed /notes.
 
 &8Bugfixes:
- - Teleporting onto slabs.
+ - Slab teleport fix
  - Rebooting works.
+ - Fix GUI close hook.

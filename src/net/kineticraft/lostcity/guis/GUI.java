@@ -52,6 +52,7 @@ public abstract class GUI {
 
         if (Core.isApplicableBuild(this)) {
             // Don't allow async openings, and lets the subclass' constructor to finish setup.
+            markSub();
             Bukkit.getScheduler().runTask(Core.getInstance(), this::open);
         } else {
             player.sendMessage(ChatColor.RED + "This GUI is disabled on this build-type.");
@@ -231,11 +232,11 @@ public abstract class GUI {
      * Open this GUI.
      */
     public void open() {
-        setParent(false); // We're no longer looking at a sub GUI.
         Bukkit.getScheduler().runTask(Core.getInstance(), () -> {
             reconstruct();
             getPlayer().openInventory(getInventory());
             GUIManager.setGUI(getPlayer(), this);
+            setParent(false); // We're no longer looking at a sub GUI.
         });
     }
 
