@@ -42,12 +42,13 @@ public class LocationStore extends SpecialStore<Location> {
     public void editItem(GUIItem item, Object value, Consumer<Object> setter) {
         Location loc = (Location) value;
         if (loc != null) {
-            item.leftClick(ce -> ce.getPlayer().teleport(loc))
-                    .addLore("Location: " + ChatColor.GOLD + Utils.toString(loc), "")
+            item.leftClick(ce -> {
+                if (!ce.getEvent().isShiftClick())
+                    ce.getPlayer().teleport(loc);
+            }).addLore("Location: " + ChatColor.GOLD + Utils.toString(loc), "")
                     .addLoreAction("Left", "Teleport");
         }
-        item.middleClick(ce -> setter.accept(ce.getPlayer().getLocation()))
-                .setIcon(Material.ELYTRA)
-                .addLoreAction("Middle", "Set Location");
+        item.shiftClick(ce -> setter.accept(ce.getPlayer().getLocation()))
+                .setIcon(Material.ELYTRA).addLoreAction("Shift", "Set Location");
     }
 }

@@ -59,6 +59,15 @@ public class GUIItem extends DisplayItem {
     }
 
     /**
+     * Listen for a shift-click.
+     * @param evt
+     * @return this
+     */
+    public GUIItem shiftClick(Consumer<ClickEvent> evt) {
+        return onClick(IClickType.SHIFT, evt);
+    }
+
+    /**
      * Listen for any click.
      * @param evt
      * @return this
@@ -67,6 +76,15 @@ public class GUIItem extends DisplayItem {
         return onClick(IClickType.ANY, evt);
     }
 
+    /**
+     * Remove all listeners of a given clicktype.
+     * @param type
+     * @return this
+     */
+    public GUIItem clear(IClickType type) {
+        getListeners().getOrDefault(type, new ArrayList<>()).clear();
+        return this;
+    }
     /**
      * Listen for a specified click-type.
      * @param type
@@ -126,6 +144,7 @@ public class GUIItem extends DisplayItem {
 
     @AllArgsConstructor
     public enum IClickType {
+        SHIFT(ClickType::isShiftClick),
         LEFT(ClickType::isLeftClick),
         MIDDLE(t -> t == ClickType.MIDDLE),
         RIGHT(ClickType::isRightClick),

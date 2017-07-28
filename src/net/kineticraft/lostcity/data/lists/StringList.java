@@ -45,4 +45,13 @@ public class StringList extends SaveableList<String> {
         String remove = stream().filter(s ->  s.equalsIgnoreCase(value)).findAny().orElse(null);
         return remove != null && remove(remove);
     }
+
+    /**
+     * Join this StringList together into a string.
+     * @param delimeter
+     * @return string
+     */
+    public String join(String delimeter) {
+        return String.join(delimeter, getValues());
+    }
 }

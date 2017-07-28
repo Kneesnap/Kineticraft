@@ -101,7 +101,7 @@ public class GeneralMechanics extends Mechanic {
 
     @Override
     public void onJoin(Player player) {
-        if (!KCPlayer.getWrapper(player).getNotes().isEmpty())
+        if (KCPlayer.getWrapper(player).getNotes().join("").length() > 0)
             Core.alertStaff(player.getName() + " has notes. See "  + ChatColor.YELLOW + "/notes " + player.getName()
                     + ChatColor.RED + " for details.");
 

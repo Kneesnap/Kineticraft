@@ -22,7 +22,7 @@ public class StringStore extends MethodStore<String> {
         item.leftClick(ce -> {
             ce.getPlayer().sendMessage(ChatColor.GREEN + "Please enter the new value.");
             Callbacks.listenForChat(ce.getPlayer(), m -> {
-                setter.accept(m);
+                setter.accept(ChatColor.translateAlternateColorCodes('&', m));
                 ce.getPlayer().sendMessage(ChatColor.GREEN + "Value updated.");
             }, null);
         }).addLoreAction("Left", "Set Value");

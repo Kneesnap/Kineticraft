@@ -241,7 +241,7 @@ public abstract class ItemWrapper {
      * @return this
      */
     public ItemWrapper addLore(String... lore) {
-        List<String> loreList = getMeta().hasLore() ? getMeta().getLore() : new ArrayList<>();
+        List<String> loreList = getLore();
 
         if (needsReset) {
             loreList.clear();
@@ -255,8 +255,26 @@ public abstract class ItemWrapper {
         return this;
     }
 
+    /**
+     * Add a lore action. Does not get added if an action with the same click type exists.
+     * @param click - The mouse click type that fires this action.
+     * @param action - The action to display.
+     * @return this
+     */
     public ItemWrapper addLoreAction(String click, String action) {
-        return addLore(ChatColor.WHITE + click + "-Click: " + ChatColor.GRAY + action);
+        String control = ChatColor.WHITE + click + "-Click: " + ChatColor.GRAY;
+        for (String s : getLore())
+            if (s.startsWith(ChatColor.GRAY + control))
+                return this;
+        return addLore(control + action);
+    }
+
+    /**
+     * Get the lore of this item.
+     * @return lore
+     */
+    private List<String> getLore() {
+        return getMeta().hasLore() ? getMeta().getLore() : new ArrayList<>();
     }
 
     /**

@@ -35,7 +35,7 @@ public class GUIListEditor<T> extends GUIJsonEditor {
     @Override
     protected GUIItem addItem(String itemName, Class<?> type, Object value, Consumer<Object> setter) {
         GUIItem gi = super.addItem(itemName, type, value, setter);
-        gi.rightClick(ce -> list.remove((T) value)).addLoreAction("Right", "Remove Value");
+        gi.clear(GUIItem.IClickType.RIGHT).rightClick(ce -> list.remove((T) value)).addLoreAction("Right", "Remove Value");
         return gi;
     }
 }

@@ -2,6 +2,8 @@ package net.kineticraft.lostcity.guis.data;
 
 import net.kineticraft.lostcity.data.maps.SaveableMap;
 import net.kineticraft.lostcity.item.display.GUIItem;
+import net.kineticraft.lostcity.mechanics.Callbacks;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.function.Consumer;
@@ -26,9 +28,17 @@ public class GUIMapEditor<K, V> extends GUIJsonEditor {
         addBackButton();
     }
 
+    @SuppressWarnings("unchecked")
     protected GUIItem addItem(String itemName, Class<?> type, Object value, Consumer<Object> setter, K key) {
         GUIItem gi = addItem(itemName, type, value, setter);
-        gi.rightClick(ce -> map.remove(key)).addLoreAction("Right", "Remove Value");
+        gi.clear(GUIItem.IClickType.RIGHT).rightClick(ce -> map.remove(key)).addLoreAction("Right", "Remove Value");
+
+        if (key instanceof String) {
+            gi.middleClick(ce -> {
+                ce.getPlayer().sendMessage(ChatColor.GREEN + "What should the key '" + key.toString() + "' be changed to?");
+                Callbacks.listenForChat(ce.getPlayer(), m -> map.put((K) m, map.remove(key)));
+            }).addLoreAction("Middle", "Change Key");
+        }
         return gi;
     }
 }
