@@ -114,7 +114,6 @@ public class Dungeons extends Mechanic {
      * @param type
      * @param edit
      */
-
     public static void startDungeon(Player player, DungeonType type, boolean edit) {
         if (!type.hasUnlocked(player))
             return;
