@@ -24,8 +24,6 @@ public class CommandSeen extends PlayerCommand {
 
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
-        if (QueryTools.isBusy(sender))
-            return;
 
         QueryTools.getData(args[0], p -> {
             long now = System.currentTimeMillis();

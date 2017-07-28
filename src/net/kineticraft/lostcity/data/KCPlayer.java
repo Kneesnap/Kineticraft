@@ -427,6 +427,16 @@ public class KCPlayer implements Jsonable {
     }
 
     /**
+     * Get a player's wrapper by their name.
+     * Will be deprecated at a future date.
+     * @param name
+     * @return wrapper
+     */
+    public static KCPlayer getWrapper(String name) {
+        return getPlayerMap().values().stream().filter(kc -> kc.getUsername().equalsIgnoreCase(name)).findAny().orElse(null);
+    }
+
+    /**
      * Get a player's data. Loads it if it is not present.
      * @param player
      * @return playerData

@@ -21,8 +21,6 @@ public class CommandMail extends PlayerCommand {
 
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
-        if (QueryTools.isBusy(sender))
-            return;
 
         if (args[0].equalsIgnoreCase("send")) {
             if (args.length < 3) {

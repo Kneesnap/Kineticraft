@@ -9,7 +9,6 @@ import net.kineticraft.lostcity.config.JsonConfig;
 import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.guis.data.GUIJsonEditor;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -29,7 +28,7 @@ public class CommandEdit extends StaffCommand {
 
     public CommandEdit() {
         super(EnumRank.MOD, "<player|config> <data>", "Edit json data.", "edit");
-        providers.add(new JsonProvider<>("player", p -> KCPlayer.getWrapper(Bukkit.getPlayer(p)), KCPlayer::updatePlayer));
+        providers.add(new JsonProvider<>("player", KCPlayer::getWrapper, KCPlayer::updatePlayer));
         providers.add(new JsonProvider<>("config", c -> (JsonConfig) Configs.getConfig(c), JsonConfig::saveToDisk));
     }
 

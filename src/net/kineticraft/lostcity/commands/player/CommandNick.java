@@ -20,8 +20,6 @@ public class CommandNick extends PlayerCommand {
 
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
-        if (QueryTools.isBusy(sender))
-            return;
 
         KCPlayer p = KCPlayer.getWrapper(sender);
         String newNick = Chat.applyColor(sender, args[0]);

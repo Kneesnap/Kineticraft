@@ -23,8 +23,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 /**
- * Core - Kineticraft Core Plugin
- *
+ * Core - Kineticraft Plugin Core
  * Created May 26th, 2017.
  * @author Kneesnap
  */

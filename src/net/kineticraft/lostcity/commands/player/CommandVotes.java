@@ -24,9 +24,6 @@ public class CommandVotes extends PlayerCommand {
 
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
-        if (QueryTools.isBusy(sender))
-            return;
-
         QueryTools.queryData(stream -> {
             List<KCPlayer> list = stream.sorted(Comparator.comparing(KCPlayer::getMonthlyVotes).reversed())
                     .collect(Collectors.toList());

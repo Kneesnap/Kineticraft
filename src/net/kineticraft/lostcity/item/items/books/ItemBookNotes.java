@@ -16,28 +16,30 @@ import org.bukkit.inventory.ItemStack;
 @Setter @Getter
 public class ItemBookNotes extends ItemInputBook {
 
-    private KCPlayer player;
+    private String player;
 
     public ItemBookNotes(KCPlayer target) {
         super(ItemType.PLAYER_NOTEBOOK, target.getNotes());
-        setPlayer(target);
+        setPlayer(target.getUsername());
     }
 
     public ItemBookNotes(ItemStack item) {
         super(item);
-        QueryTools.getData(getTagString("player"), this::setPlayer);
+        setPlayer(getTagString("player"));
     }
 
     @Override
     public void updateItem() {
-        setTagString("player", getPlayer().getUsername());
+        setTagString("player", getPlayer());
         super.updateItem();
     }
 
     @Override
     protected void onUpdate(Player player) {
-        getPlayer().setNotes(getLines());
-        getPlayer().writeData();
-        player.sendMessage(ChatColor.GREEN + "Notes updated.");
+        QueryTools.getData(getPlayer(), p -> {
+            p.setNotes(getLines());
+            p.writeData();
+            player.sendMessage(ChatColor.GREEN + "Notes updated.");
+        });
     }
 }

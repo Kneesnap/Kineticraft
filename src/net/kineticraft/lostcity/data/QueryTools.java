@@ -1,10 +1,7 @@
 package net.kineticraft.lostcity.data;
 
-import lombok.Getter;
 import net.kineticraft.lostcity.Core;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.function.Consumer;
@@ -12,14 +9,9 @@ import java.util.stream.Stream;
 
 /**
  * An API that allows for easily querying of all offline playerdata.
- *
  * Created by Kneesnap on 5/29/2017.
  */
 public class QueryTools {
-
-    @Getter private static int currentQueries;
-
-    private static final int MAX_PLAYER_QUERIES = 2;
 
     /**
      * Asynchronously loads all playerdata then runs the callback.
@@ -65,19 +57,5 @@ public class QueryTools {
                 callback.accept(p);
                 p.writeData(); // Save back to disk.
             }));
-    }
-
-    /**
-     * Returns if a non-staff member is clear to initiate a query.
-     * Prevents a player from spamming a bunch of queries.
-     *
-     * @param sender
-     * @return dontAcceptQuery
-     */
-    public static boolean isBusy(CommandSender sender) {
-        boolean busy = getCurrentQueries() >= MAX_PLAYER_QUERIES;
-        if (busy)
-            sender.sendMessage(ChatColor.GRAY + "Please wait before using this command");
-        return busy;
     }
 }
