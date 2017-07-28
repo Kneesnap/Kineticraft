@@ -39,6 +39,14 @@ public class GUIJsonEditor extends GUI {
 
     @Override
     public void addItems() {
+        addElements();
+        addBackButton();
+    }
+
+    /**
+     * Add all edittable elements to the gui.
+     */
+    protected void addElements() {
         JsonSerializer.getFields(getData()).forEach(f -> {
             Object o = null;
             try {
@@ -57,7 +65,6 @@ public class GUIJsonEditor extends GUI {
 
             addItem(ucFirst(f.getName()), f.getType(), o, setter);
         });
-        addBackButton();
     }
 
     @SuppressWarnings("unchecked")

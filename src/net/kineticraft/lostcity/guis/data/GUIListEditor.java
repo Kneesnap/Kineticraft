@@ -21,14 +21,12 @@ public class GUIListEditor<T> extends GUIJsonEditor {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void addItems() {
+    public void addElements() {
         for (int i = 0; i < list.size(); i++) {
             final int index = i;
             Object o = list.get(i);
             addItem("Element " + i, o.getClass(), o, val -> list.set(index, (T) val));
         }
-
-        addBackButton();
     }
 
     @SuppressWarnings("unchecked")

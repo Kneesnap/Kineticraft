@@ -23,9 +23,8 @@ public class GUIMapEditor<K, V> extends GUIJsonEditor {
 
     @SuppressWarnings("unchecked")
     @Override
-    public void addItems() {
+    public void addElements() {
         map.forEach((k, v) -> addItem(k.toString(), v.getClass(), v, val -> map.put(k, (V) val), k));
-        addBackButton();
     }
 
     @SuppressWarnings("unchecked")

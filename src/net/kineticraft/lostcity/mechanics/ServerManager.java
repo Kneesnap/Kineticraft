@@ -73,8 +73,7 @@ public class ServerManager extends Mechanic {
                     .filter(ServerManager::shouldUnload).forEach(unload::add));
             Bukkit.getScheduler().runTask(Core.getInstance(), () -> {
                 long fail = unload.stream().filter(c -> !c.unload()).count();
-                if (fail > 0)
-                    System.out.println("Failed to unload " + fail + " chunks.");
+                System.out.println("Unloaded " + (unload.size() - fail) + "/" + fail);
             });
         }, 0L, 60 * 20L);
     }

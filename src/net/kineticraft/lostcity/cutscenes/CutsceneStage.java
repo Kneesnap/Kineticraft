@@ -1,6 +1,7 @@
 package net.kineticraft.lostcity.cutscenes;
 
 import lombok.Getter;
+import lombok.Setter;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.data.lists.JsonList;
@@ -13,7 +14,7 @@ import org.bukkit.Bukkit;
 @Getter
 public class CutsceneStage implements Jsonable {
     private JsonList<CutsceneAction> actions = new JsonList<>();
-    private int ticks = 20; // The amount of ticks until the next stage.
+    @Setter private int ticks = 20; // The amount of ticks until the next stage.
 
     /**
      * Perform all actions in this stage.

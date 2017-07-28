@@ -1,26 +1,25 @@
 package net.kineticraft.lostcity.cutscenes;
 
 import lombok.Getter;
+import net.kineticraft.lostcity.cutscenes.actions.*;
+import net.kineticraft.lostcity.cutscenes.actions.entity.*;
 import net.kineticraft.lostcity.data.maps.JsonMap;
 import net.kineticraft.lostcity.mechanics.system.Restrict;
 import net.kineticraft.lostcity.mechanics.system.BuildType;
 import net.kineticraft.lostcity.mechanics.system.MechanicManager;
 import net.kineticraft.lostcity.mechanics.system.ModularMechanic;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.player.PlayerToggleSneakEvent;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * Manages Cutscenes.
- * TODO Entity pathfind from A to B.
- * TODO Entity follow track.
- *
  * TODO: Show players in cutscene at startLocation.
- * //TODO Ingame editor:
  * QUEST TODO Create a particle exclamation mark for quest NPCs.
  * Created by Kneesnap on 6/1/2017.
  */
@@ -28,6 +27,7 @@ import java.util.Map;
 public class Cutscenes extends ModularMechanic<Cutscene> {
 
     @Getter private static Map<Player, CutsceneStatus> dataMap = new HashMap<>();
+    @Getter private static List<Class<? extends CutsceneAction>> actions = new ArrayList<>();
 
     public Cutscenes() {
         super("cinematics", Cutscene.class);
@@ -49,6 +49,20 @@ public class Cutscenes extends ModularMechanic<Cutscene> {
     @EventHandler(ignoreCancelled = true) // Prevent dismounting from the camera mount.
     public void onSneak(PlayerToggleSneakEvent evt) {
         evt.setCancelled(isWatching(evt.getPlayer()) && evt.isSneaking());
+    }
+
+    @EventHandler(ignoreCancelled = true) // Force entities to target their pathfinder goal.
+    public void onEntityTarget(EntityTargetEvent evt) {
+        evt.setCancelled(isProp(evt.getEntity()));
+    }
+
+    /**
+     * Is this entity a cutscene prop?
+     * @param entity
+     * @return isProp
+     */
+    public static boolean isProp(Entity entity) {
+        return getDataMap().values().stream().anyMatch(cs -> cs.getEntityMap().values().contains(entity));
     }
 
     /**
@@ -84,5 +98,17 @@ public class Cutscenes extends ModularMechanic<Cutscene> {
     public static JsonMap<Cutscene> getCutscenes() {
         Cutscenes instance = MechanicManager.getInstance(Cutscenes.class);
         return instance != null ? instance.getMap() : new JsonMap<>();
+    }
+
+    private static void add(Class<? extends CutsceneAction>... classes) {
+        Stream.of(classes).forEach(getActions()::add);
+    }
+
+    static {
+        add(ActionCreateEntity.class, ActionEntityAnimation.class, ActionEntityCameraTrack.class, ActionEntityGear.class,
+                ActionEntityNodHead.class, ActionEntityPathfind.class, ActionEntityShakeHead.class, ActionEntityTalk.class,
+                ActionEntityVelocity.class, ActionRemoveEntity.class, ActionTeleportEntity.class, ActionUpdateEntity.class,
+                ActionBlockUpdate.class, ActionCameraFilter.class, ActionPlaySound.class, ActionSendMessage.class,
+                ActionSpawnParticles.class);
     }
 }
