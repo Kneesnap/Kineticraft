@@ -1,7 +1,9 @@
 package net.kineticraft.lostcity.cutscenes.actions.entity;
 
+import net.kineticraft.lostcity.cutscenes.ActionData;
 import net.kineticraft.lostcity.cutscenes.CutsceneEvent;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Entity;
 
@@ -10,8 +12,8 @@ import org.bukkit.entity.Entity;
  * TODO: Maybe the talking entity could glow.
  * Created by Kneesnap on 7/22/2017.
  */
+@ActionData(Material.PUMPKIN)
 public class ActionEntityTalk extends ActionEntity {
-
     private String message;
     private Sound sound;
     private float pitch = 1F;

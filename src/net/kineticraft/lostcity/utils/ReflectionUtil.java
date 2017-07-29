@@ -3,13 +3,11 @@ package net.kineticraft.lostcity.utils;
 import net.kineticraft.lostcity.Core;
 import org.bukkit.Bukkit;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Static utils for using reflection.
@@ -111,7 +109,43 @@ public class ReflectionUtil {
     }
 
     /**
-     * Constructa class with the given arguments.
+     * Force construct a class with default or null values, if possible.
+     * @param clazz
+     * @param <T>
+     * @return constructed
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T forceConstruct(Class<T> clazz) {
+        try {
+            Constructor c = null;
+            int minParams = Integer.MAX_VALUE;
+            for (Constructor cls : clazz.getDeclaredConstructors()) {
+                if (cls.getParameterCount() < minParams) {
+                    minParams = cls.getParameterCount();
+                    c = cls;
+                }
+            }
+
+            Object[] args = new Object[minParams];
+            for (int i = 0; i < minParams; i++) {
+                Class<?> cls = c.getParameterTypes()[i];
+                if (ReflectionUtil.getNumbers().contains(cls)) {
+                    args[i] = 0;
+                } else if (Boolean.class.isAssignableFrom(cls)) {
+                    args[i] = false;
+                }
+            }
+
+            return (T) c.newInstance(args);
+        } catch (IllegalAccessException | InvocationTargetException | InstantiationException ex) {
+            ex.printStackTrace();
+            Bukkit.getLogger().warning("Failed to force-construct" + clazz.getSimpleName() + ".");
+            return null;
+        }
+    }
+
+    /**
+     * Construct a class with the given arguments.
      * @param clazz
      * @param args
      * @param <T>
@@ -275,6 +309,10 @@ public class ReflectionUtil {
     public static Class<?> getGenericType(Field f) {
         return f.getGenericType() instanceof ParameterizedType ?
                 getClass(((ParameterizedType) f.getGenericType()).getActualTypeArguments()[0]) : null;
+    }
+
+    public static Collection<Class<?>> getNumbers() {
+        return REPLACE.values();
     }
 
     static {

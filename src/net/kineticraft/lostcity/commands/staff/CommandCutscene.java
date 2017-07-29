@@ -20,7 +20,7 @@ import org.bukkit.entity.Player;
 public class CommandCutscene extends StaffCommand {
 
     public CommandCutscene() {
-        super(EnumRank.MOD, "<cutscene> <player>", "Play a cutscene", "cutscene", "play");
+        super(EnumRank.MOD, "<cutscene> [player]", "Play a cutscene", "cutscene", "play");
         autocomplete(Cutscenes.getCutscenes()::keySet);
         autocompleteOnline();
     }

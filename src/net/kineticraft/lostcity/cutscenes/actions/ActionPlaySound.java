@@ -1,14 +1,17 @@
 package net.kineticraft.lostcity.cutscenes.actions;
 
+import net.kineticraft.lostcity.cutscenes.ActionData;
 import net.kineticraft.lostcity.cutscenes.CutsceneAction;
 import net.kineticraft.lostcity.cutscenes.CutsceneEvent;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 
 /**
  * Play a sound at a location.
  * Created by Kneesnap on 7/22/2017.
  */
+@ActionData(Material.NOTE_BLOCK)
 public class ActionPlaySound extends CutsceneAction {
 
     private Location location;

@@ -66,6 +66,7 @@ public class MechanicManager implements Listener {
         addMechanic(CompassMechanics.class);
         addMechanic(Dungeons.class);
         addMechanic(FarmLimiter.class);
+        addMechanic(ArmorStands.class);
         addMechanic(Leashes.class);
         addMechanic(Enchants.class);
         addMechanic(Voting.class);

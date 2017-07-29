@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.kineticraft.lostcity.cutscenes.gui.CutsceneActionEditor;
 import net.kineticraft.lostcity.data.Jsonable;
-import org.bukkit.Material;
 
 /**
  * Represents an action taken during a cutscene stage.
@@ -13,10 +12,12 @@ import org.bukkit.Material;
 @AllArgsConstructor @Getter
 public abstract class CutsceneAction implements Jsonable {
 
-    private final Material icon;
-
-    public CutsceneAction() {
-        this(Material.DIRT);
+    /**
+     * Get annotated action data of this action.
+     * @return data
+     */
+    public ActionData getData() {
+        return getClass().getAnnotation(ActionData.class);
     }
 
     /**

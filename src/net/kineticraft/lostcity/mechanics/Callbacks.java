@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 
 import java.util.Arrays;
@@ -297,6 +298,11 @@ public class Callbacks extends Mechanic {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onInteract(PlayerInteractEntityEvent evt) {
+        evt.setCancelled(accept(evt.getPlayer(), ListenerType.ENTITY, evt.getRightClicked())); // Handles entity click callbacks.
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onInteract(PlayerInteractAtEntityEvent evt) {
         evt.setCancelled(accept(evt.getPlayer(), ListenerType.ENTITY, evt.getRightClicked())); // Handles entity click callbacks.
     }
 }

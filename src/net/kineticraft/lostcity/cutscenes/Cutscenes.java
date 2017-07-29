@@ -19,6 +19,7 @@ import java.util.stream.Stream;
 
 /**
  * Manages Cutscenes.
+ * TODO: Locations should get their world from the world the cutscene starts in.
  * TODO: Show players in cutscene at startLocation.
  * QUEST TODO Create a particle exclamation mark for quest NPCs.
  * Created by Kneesnap on 6/1/2017.
@@ -100,15 +101,12 @@ public class Cutscenes extends ModularMechanic<Cutscene> {
         return instance != null ? instance.getMap() : new JsonMap<>();
     }
 
-    private static void add(Class<? extends CutsceneAction>... classes) {
-        Stream.of(classes).forEach(getActions()::add);
-    }
-
+    // Register all CutsceneActions.
     static {
-        add(ActionCreateEntity.class, ActionEntityAnimation.class, ActionEntityCameraTrack.class, ActionEntityGear.class,
+        Stream.of(ActionCreateEntity.class, ActionEntityAnimation.class, ActionEntityCameraTrack.class, ActionEntityGear.class,
                 ActionEntityNodHead.class, ActionEntityPathfind.class, ActionEntityShakeHead.class, ActionEntityTalk.class,
                 ActionEntityVelocity.class, ActionRemoveEntity.class, ActionTeleportEntity.class, ActionUpdateEntity.class,
                 ActionBlockUpdate.class, ActionCameraFilter.class, ActionPlaySound.class, ActionSendMessage.class,
-                ActionSpawnParticles.class);
+                ActionSpawnParticles.class).forEach(getActions()::add);
     }
 }

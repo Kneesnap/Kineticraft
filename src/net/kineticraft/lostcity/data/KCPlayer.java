@@ -110,7 +110,7 @@ public class KCPlayer implements Jsonable {
                 + ChatColor.AQUA + source.getName() + ChatColor.WHITE + ".");
         setMute(new Mute(expiry.getTime(), reason, source.getName()));
         sendMessage(ChatColor.RED + "You have been muted. (" + reason + ")");
-        DiscordAPI.sendMessage(DiscordChannel.ORYX, source.getName() + " has punished " + getUsername()
+        DiscordAPI.sendMessage(DiscordChannel.ORYX, source.getName() + " has muted " + getUsername()
                 + " for " + Utils.formatTimeFull(getPunishExpiry()) + ".");
     }
 
@@ -433,7 +433,7 @@ public class KCPlayer implements Jsonable {
      * @return wrapper
      */
     public static KCPlayer getWrapper(String name) {
-        return getPlayerMap().values().stream().filter(kc -> kc.getUsername().equalsIgnoreCase(name)).findAny().orElse(null);
+        return getPlayerMap().values().stream().filter(kc -> name.equalsIgnoreCase(kc.getUsername())).findAny().orElse(null);
     }
 
     /**

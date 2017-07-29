@@ -1,7 +1,9 @@
 package net.kineticraft.lostcity.dungeons;
 
+import com.destroystokyo.paper.Title;
 import lombok.Getter;
 import net.kineticraft.lostcity.Core;
+import net.kineticraft.lostcity.mechanics.ArmorStands;
 import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
 import net.kineticraft.lostcity.mechanics.system.Restrict;
 import net.kineticraft.lostcity.mechanics.system.BuildType;
@@ -9,16 +11,19 @@ import net.kineticraft.lostcity.mechanics.system.Mechanic;
 import net.kineticraft.lostcity.utils.ReflectionUtil;
 import net.kineticraft.lostcity.utils.ServerUtils;
 import net.kineticraft.lostcity.utils.Utils;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +53,7 @@ public class Dungeons extends Mechanic {
     @Override
     public void onQuit(Player player) {
         if (isDungeon(player))
-            Utils.toSpawn(player);
+            getDungeon(player).removePlayer(player);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
@@ -57,10 +62,48 @@ public class Dungeons extends Mechanic {
     }
 
     @EventHandler
-    public void onMove(PlayerMoveEvent evt) {
+    public void onEnter(PlayerMoveEvent evt) {
         String to = Utils.getRegion(evt.getTo());
         if (!to.equals(Utils.getRegion(evt.getFrom())) && to.startsWith("dungeon_"))
              Dungeons.startDungeon(evt.getPlayer(), DungeonType.valueOf(to.substring("dungeon_".length()).toUpperCase()), false);
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onAttemptExit(PlayerTeleportEvent evt) {
+        if (!isDungeon(evt.getFrom()) || isDungeon(evt.getTo()))
+            return;
+        evt.setCancelled(true);
+        evt.getPlayer().sendMessage(ChatColor.RED + "You may not teleport out of a dungeon. Use /dquit if you'd like to exit.");
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true) // Handle dungeon death.
+    public void onPlayerDeath(PlayerDeathEvent evt) {
+        if (!isDungeon(evt.getEntity()))
+            return;
+
+        Player p = evt.getEntity();
+        makeCorpse(p);
+        p.setHealth(p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()); // Restore to max health.
+        p.setGameMode(GameMode.SPECTATOR); // Set to spectator.
+        p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 50, 2)); // Give blindness.
+        p.sendTitle(new Title(ChatColor.RED + "Dungeon Failed"));
+        getDungeon(p).announce(ChatColor.LIGHT_PURPLE + "[Dungeon] " + ChatColor.GRAY + p.getName() + " has been eliminated.");
+        // TODO: Sound
+        Bukkit.getScheduler().runTaskLater(Core.getInstance(), () -> {
+            Utils.toSpawn(p);
+            p.setGameMode(GameMode.SURVIVAL);
+        }, 50L);
+    }
+
+    /**
+     * Create an armor stand corpse for a dead player.
+     * @param p
+     */
+    private static void makeCorpse(Player p) {
+        ArmorStand as = ArmorStands.spawnArmorStand(p.getLocation(), "corpse");
+        Utils.mirrorItems(p, as);
+        as.setCustomName(ChatColor.RED + p.getName() + "'s Corpse");
+        as.setCustomNameVisible(true);
     }
 
     /**
@@ -106,6 +149,15 @@ public class Dungeons extends Mechanic {
      */
     public static Dungeon getDungeon(World world) {
         return getDungeons().stream().filter(d -> d.getWorld().equals(world)).findFirst().orElse(null);
+    }
+
+    /**
+     * Get the dungeon that this entity or player is currently in.
+     * @param e
+     * @return dungeon
+     */
+    public static Dungeon getDungeon(Entity e) {
+        return getDungeon(e.getWorld());
     }
 
     /**

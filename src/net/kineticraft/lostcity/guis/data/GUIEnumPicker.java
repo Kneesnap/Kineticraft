@@ -1,6 +1,6 @@
 package net.kineticraft.lostcity.guis.data;
 
-import net.kineticraft.lostcity.guis.GUI;
+import net.kineticraft.lostcity.guis.PagedGUI;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -12,7 +12,7 @@ import java.util.function.Consumer;
  * Pick an enum
  * Created by Kneesnap on 7/25/2017.
  */
-public class GUIEnumPicker<E extends Enum<E>> extends GUI {
+public class GUIEnumPicker<E extends Enum<E>> extends PagedGUI {
 
     private E[] values;
     private Consumer<E> onPick;
@@ -34,6 +34,6 @@ public class GUIEnumPicker<E extends Enum<E>> extends GUI {
                     });
         }
 
-        addBackButton();
+        super.addItems();
     }
 }

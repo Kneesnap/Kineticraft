@@ -21,6 +21,9 @@ public enum Metadata {
     QUIT(false),
     VANISH_TIME(0L),
 
+    // Armor Stands
+    NO_MODIFY(false),
+
     // Entities
     NORMAL_SPEED(.1F), // Normal Walkspeed.
     PLAYER_DAMAGE(0D);

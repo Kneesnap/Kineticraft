@@ -24,7 +24,7 @@ public class GUICutsceneEditor extends GUI {
     public void addItems() {
         for (int i = 0; i < cutscene.getStages().size(); i++) {
             CutsceneStage stage = cutscene.getStages().get(i);
-            addItem(Material.PAPER, ChatColor.YELLOW + "Stage " + i, "Actions: " + ChatColor.YELLOW + stage.getActions().size(), "")
+            addItem(Material.PAPER, ChatColor.YELLOW + "Stage " + (i + 1), "Actions: " + ChatColor.YELLOW + stage.getActions().size(), "")
                     .leftClick(ce -> new GUIStageEditor(ce.getPlayer(), stage)).rightClick(ce -> {
                         cutscene.getStages().remove(stage);
                         reconstruct();

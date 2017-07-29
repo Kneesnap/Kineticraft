@@ -1,10 +1,12 @@
 package net.kineticraft.lostcity.cutscenes.actions.entity;
 
 import net.kineticraft.lostcity.Core;
+import net.kineticraft.lostcity.cutscenes.ActionData;
 import net.kineticraft.lostcity.cutscenes.CutsceneEvent;
 import net.kineticraft.lostcity.data.lists.JsonList;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -15,8 +17,8 @@ import java.util.List;
  * Follow a camera track.
  * Created by Kneesnap on 7/27/2017.
  */
+@ActionData(Material.RAILS)
 public class ActionEntityCameraTrack extends ActionEntity {
-
     private JsonList<Location> track = new JsonList<>();
     private int perSecond = 5;
     private transient BukkitTask task;

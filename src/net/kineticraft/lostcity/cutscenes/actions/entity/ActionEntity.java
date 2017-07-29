@@ -1,7 +1,6 @@
 package net.kineticraft.lostcity.cutscenes.actions.entity;
 
 import lombok.Getter;
-import lombok.Setter;
 import net.kineticraft.lostcity.cutscenes.CutsceneAction;
 import net.kineticraft.lostcity.cutscenes.CutsceneEvent;
 import org.bukkit.entity.Entity;
@@ -11,7 +10,7 @@ import org.bukkit.entity.LivingEntity;
  * Represents a CutsceneAction that performs on an entity.
  * Created by Kneesnap on 7/22/2017.
  */
-@Getter @Setter
+@Getter
 public abstract class ActionEntity extends CutsceneAction {
 
     private String entityName = "Camera";

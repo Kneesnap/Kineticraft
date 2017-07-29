@@ -1042,6 +1042,16 @@ public class Utils {
     }
 
     /**
+     * Mirror the armor and held items of an entity to the other.
+     * @param from
+     * @param to
+     */
+    public static void mirrorItems(LivingEntity from, LivingEntity to) {
+        for(EquipmentSlot slot : EquipmentSlot.values())
+            setItem(to, slot, getItem(from, slot));
+    }
+
+    /**
      * Convert an Iterable to a List.
      * @param values
      * @param <T>
@@ -1093,5 +1103,15 @@ public class Utils {
                 lastRun.set(now);
             }
         }, 0L, 20L);
+    }
+
+    /**
+     * Remove all non-alphanumeric characters from a string.
+     * Used to sanitize file names.
+     * @param input
+     * @return sanitized
+     */
+    public static String sanitizeFileName(String input) {
+        return input.replaceAll("[^a-zA-Z0-9 -]", "");
     }
 }

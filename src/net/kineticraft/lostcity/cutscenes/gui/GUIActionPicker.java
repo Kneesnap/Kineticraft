@@ -1,5 +1,6 @@
 package net.kineticraft.lostcity.cutscenes.gui;
 
+import net.kineticraft.lostcity.cutscenes.ActionData;
 import net.kineticraft.lostcity.cutscenes.CutsceneAction;
 import net.kineticraft.lostcity.cutscenes.Cutscenes;
 import net.kineticraft.lostcity.guis.GUI;
@@ -26,7 +27,8 @@ public class GUIActionPicker extends GUI {
     public void addItems() {
         for (Class<? extends CutsceneAction> action : Cutscenes.getActions()) {
             CutsceneAction a = ReflectionUtil.construct(action);
-            addItem(a.getIcon(), ChatColor.YELLOW + a.getClass().getSimpleName(), "Click here to select this action.")
+            ActionData data = a.getData();
+            addItem(data.value(), (byte) data.meta(), ChatColor.YELLOW + a.getClass().getSimpleName(), "Click here to select this action.")
                     .leftClick(ce -> {
                         onPick.accept(a);
                         openPrevious();

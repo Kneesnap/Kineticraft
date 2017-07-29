@@ -16,10 +16,6 @@ import org.bukkit.craftbukkit.v1_12_R1.CraftServer;
 import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Stream;
-
 /**
  * Manages basic core server utilities such as backing up, rebooting, announcements, lag controller, etc.
  * Created by Kneesnap on 6/28/2017.
@@ -65,17 +61,6 @@ public class ServerManager extends Mechanic {
                     ServerUtils.reboot(REBOOT_TIME);
             }, 0L, 20L);
         }
-
-        // Unload any chunks that shouldn't be loaded. TODO - We might be able to get rid of this.
-        Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), () -> {
-            List<Chunk> unload = new ArrayList<>();
-            Bukkit.getWorlds().forEach(w -> Stream.of(w.getLoadedChunks()).filter(Chunk::isLoaded)
-                    .filter(ServerManager::shouldUnload).forEach(unload::add));
-            Bukkit.getScheduler().runTask(Core.getInstance(), () -> {
-                long fail = unload.stream().filter(c -> !c.unload()).count();
-                System.out.println("Unloaded " + (unload.size() - fail) + "/" + fail);
-            });
-        }, 0L, 60 * 20L);
     }
 
     /**

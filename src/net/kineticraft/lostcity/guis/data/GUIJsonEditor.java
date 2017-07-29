@@ -76,7 +76,7 @@ public class GUIJsonEditor extends GUI {
             gi.addLore("Value: " + ChatColor.YELLOW + value, "");
 
         // Apply the handler specific code.
-        JsonSerializer.getHandler(type, itemName).editItem(gi, value, setter, type);
+        JsonSerializer.getHandler(type).editItem(gi, value, setter, type);
 
         // If it's using the default icon, set the color based on the data state.
         if (gi.getItem().getType() == Material.WOOL) {

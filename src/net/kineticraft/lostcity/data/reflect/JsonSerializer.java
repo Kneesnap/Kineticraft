@@ -8,7 +8,6 @@ import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.data.reflect.behavior.*;
 import net.kineticraft.lostcity.data.reflect.behavior.bukkit.*;
 import net.kineticraft.lostcity.data.reflect.behavior.generic.*;
-import net.kineticraft.lostcity.utils.GeneralException;
 import net.kineticraft.lostcity.utils.ReflectionUtil;
 
 import java.io.File;
@@ -47,6 +46,7 @@ public class JsonSerializer {
         add(new JsonableStore());
         add(new LocationStore());
         add(new ItemStackStore());
+        add(new ObjectStore()); // Needs to be at the bottom to be the fallback.
     }
 
     private static void add(DataStore<?> store) {
@@ -92,11 +92,19 @@ public class JsonSerializer {
 
         assert load != null;
         try {
-            if (!Jsonable.class.isAssignableFrom(load))
-                return ((DataStore<T>) getHandler(load, "unsafe object")).loadObject(data);
+            DataStore<T> handler = getHandler(load);
+            boolean forceJsonable = handler instanceof ObjectStore;
+            if (!Jsonable.class.isAssignableFrom(load) && !forceJsonable)
+                return handler.loadObject(data);
 
-            T val = ReflectionUtil.construct(load, args);
-            ((Jsonable) val).load(data);
+            T val;
+            if (forceJsonable) {
+                val = ReflectionUtil.forceConstruct(load);
+                deserialize(val, new JsonData(data.getAsJsonObject()));
+            } else {
+                val = ReflectionUtil.construct(load, args);
+                ((Jsonable) val).load(data);
+            }
             return val;
         } catch (Exception e) {
             e.printStackTrace();
@@ -121,15 +129,25 @@ public class JsonSerializer {
     }
 
     /**
+     * Save a json object to serialized json.
+     * @param obj
+     * @return saved
+     */
+    public static JsonElement save(Object obj) {
+        return save(obj, false);
+    }
+
+    /**
      * Save a java object as serialized json.
      * @param obj - The object to convert to json.
+     * @param forceJson - Force this object to be handled as if it was Jsonable.
      * @return saved - The saved json.
      */
     @SuppressWarnings("unchecked")
-    public static JsonElement save(Object obj) {
+    public static JsonElement save(Object obj, boolean forceJson) {
         JsonData data = new JsonData();
 
-        if (obj instanceof Jsonable) {
+        if (obj instanceof Jsonable || forceJson) {
             getFields(obj).forEach(f -> {
                 try {
                     getHandler(f).saveField(data, f.get(obj), f.getName());
@@ -140,7 +158,7 @@ public class JsonSerializer {
             return data.getJsonObject();
         }
 
-        Object result = getHandler(obj.getClass(), "object").serialize(obj);
+        Object result = getHandler(obj.getClass()).serialize(obj);
         if (result instanceof JsonData)
             return ((JsonData) result).getJsonObject();
 
@@ -154,22 +172,17 @@ public class JsonSerializer {
      * @return handler
      */
     public static DataStore getHandler(Field field) {
-        return getHandler(field.getType(), field.getName());
+        return getHandler(field.getType());
     }
 
     /**
      * Get the serializer for a given class.
      * Alerts staff and returns null if not found.
      * @param clazz
-     * @param objName
      * @return handler
      */
-    public static DataStore getHandler(Class<?> clazz, String objName) {
-        DataStore app = serializers.stream().filter(d -> d.getApplyTo().isAssignableFrom(clazz)).findFirst().orElse(null);
-
-        if (app == null)
-            throw new GeneralException("Don't know how to handle " + objName + " as a " + clazz.getSimpleName() + ".");
-        return app;
+    public static DataStore getHandler(Class<?> clazz) {
+        return serializers.stream().filter(d -> d.getApplyTo().isAssignableFrom(clazz)).findFirst().orElse(null);
     }
 
     /**

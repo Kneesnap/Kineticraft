@@ -8,10 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.*;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Holds information about a player and their current cutscene.
@@ -28,7 +25,7 @@ public class CutsceneStatus {
 
     public CutsceneStatus(Cutscene cutscene, List<Player> players) {
         this.cutscene = cutscene;
-        this.players = players;
+        this.players = new ArrayList<>(players);
         this.startLocation = players.get(0).getLocation();
         getPlayers().forEach(p -> Cutscenes.getDataMap().put(p, this)); // Players must be listed under this cutscene before the camera is created.
         makeCamera(EntityType.ARMOR_STAND);
@@ -84,8 +81,17 @@ public class CutsceneStatus {
      * Finish this cutscene, remove entities and finish players.
      */
     public void finish() {
-        getEntityMap().values().forEach(Entity::remove);
+        new HashSet<>(getEntityMap().keySet()).forEach(this::removeEntity);
         new ArrayList<>(getPlayers()).forEach(this::finish);
+    }
+
+    /**
+     * Remove this entity prop from the cutscene, and from the world.
+     * @param name
+     */
+    public void removeEntity(String name) {
+        Entity e = getEntityMap().remove(name);
+        e.remove();
     }
 
     public LivingEntity getCamera() {

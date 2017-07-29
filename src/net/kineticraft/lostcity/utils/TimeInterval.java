@@ -17,7 +17,7 @@ public enum TimeInterval {
     MINUTE("min", TimeUnit.MINUTES, Calendar.MINUTE),
     HOUR("hr", TimeUnit.HOURS, Calendar.HOUR_OF_DAY),
     DAY("day", TimeUnit.DAYS, Calendar.DAY_OF_MONTH),
-    WEEK("week", 7, Calendar.DAY_OF_WEEK),
+    WEEK("week", 7, Calendar.WEEK_OF_MONTH),
     MONTH("month", 30, Calendar.MONTH),
     YEAR("yr", 365, Calendar.YEAR);
 

@@ -1,15 +1,18 @@
 package net.kineticraft.lostcity.cutscenes.actions.entity;
 
 import net.kineticraft.lostcity.Core;
+import net.kineticraft.lostcity.cutscenes.ActionData;
 import net.kineticraft.lostcity.cutscenes.CutsceneEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 
 /**
  * Have an entity nod their head yes.
  * Created by Kneesnap on 7/22/2017.
  */
+@ActionData(Material.ARMOR_STAND)
 public class ActionEntityNodHead extends ActionEntity {
     private static final float DEGREE = 60F;
     private int nods = 3;

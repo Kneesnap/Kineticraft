@@ -6,6 +6,7 @@ import net.kineticraft.lostcity.data.JsonData;
 import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.data.maps.JsonMap;
 import net.kineticraft.lostcity.data.reflect.JsonSerializer;
+import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
 
 import java.io.File;
@@ -55,7 +56,7 @@ public class ModularMechanic<T extends Jsonable> extends Mechanic {
      */
     public void save() {
         Core.makeFolder(getDirectory());
-        getMap().keySet().forEach(f -> new JsonData(getModule(f)).toFile(getDirectory() + "/" + f));
+        getMap().keySet().forEach(f -> new JsonData(getModule(f)).toFile(getDirectory() + "/" + Utils.sanitizeFileName(f)));
     }
 
     /**

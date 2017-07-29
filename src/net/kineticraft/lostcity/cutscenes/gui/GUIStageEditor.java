@@ -1,5 +1,6 @@
 package net.kineticraft.lostcity.cutscenes.gui;
 
+import net.kineticraft.lostcity.cutscenes.ActionData;
 import net.kineticraft.lostcity.cutscenes.CutsceneAction;
 import net.kineticraft.lostcity.cutscenes.CutsceneStage;
 import net.kineticraft.lostcity.guis.GUI;
@@ -23,7 +24,8 @@ public class GUIStageEditor extends GUI {
     @Override
     public void addItems() {
         for (CutsceneAction action : stage.getActions()) {
-            addItem(action.getIcon(), ChatColor.YELLOW + action.getClass().getSimpleName(), "")
+            ActionData data = action.getData();
+            addItem(data.value(), (byte) data.meta(), ChatColor.YELLOW + action.getClass().getSimpleName(), "")
                     .leftClick(ce -> new CutsceneActionEditor(ce.getPlayer(), action))
                     .rightClick(ce -> {
                         stage.getActions().remove(action);
@@ -32,8 +34,8 @@ public class GUIStageEditor extends GUI {
         }
 
         toRight(3);
-        addItem(Material.SPONGE, ChatColor.YELLOW + "Ticks", "Click here to set the tick duration of this stage")
-                .anyClick(ce -> {
+        addItem(Material.SPONGE, ChatColor.YELLOW + "Ticks", "Ticks: " + ChatColor.YELLOW + stage.getTicks(),
+                "Click here to set the tick duration of this stage").anyClick(ce -> {
                     ce.getPlayer().sendMessage(ChatColor.YELLOW + "Please enter the tick duration for this stage.");
                     Callbacks.listenForNumber(ce.getPlayer(), 0, 100, stage::setTicks);
                 });

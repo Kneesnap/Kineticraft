@@ -127,8 +127,7 @@ public class Dungeon {
         }
 
         Utils.removeFile(getWorld().getName());
-        Utils.removeFile("plugins/WorldGuard/worlds/" + getWorld().getName());
-
+        // If we migrate back to WorldGuard, make sure to remove the folder.
         Dungeons.getDungeons().remove(this);
     }
 
@@ -155,5 +154,14 @@ public class Dungeon {
      */
     public void removePlayers() {
         getPlayers().forEach(Utils::toSpawn);
+    }
+
+    /**
+     * Remove a player from this dungeon, and announce it.
+     * @param player
+     */
+    public void removePlayer(Player player) {
+        announce(ChatColor.LIGHT_PURPLE + "[Dungeon] " + ChatColor.GRAY + player.getName() + " has left the dungeon.");
+        Utils.toSpawn(player);
     }
 }
