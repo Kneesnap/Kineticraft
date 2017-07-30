@@ -37,6 +37,7 @@ import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -142,10 +143,14 @@ public class Utils {
      * @param location
      */
     public static void teleport(Player player, String locationDescription, Location location) {
+        if (location == null)
+            return;
+
         if (MetadataManager.hasMetadata(player, Metadata.TELEPORTING)) {
             player.sendMessage(ChatColor.RED + "Please wait until your current teleport finishes.");
             return;
         }
+
         KCPlayer p = KCPlayer.getWrapper(player);
 
         double lastDamage = player.getLastDamage();
@@ -245,10 +250,7 @@ public class Utils {
         long ms = System.currentTimeMillis();
         for (String s : input.split(" ")) {
             String code = s.substring(s.length() - 1, s.length());
-            TimeInterval ti = TimeInterval.getByCode(code);
-            if (ti == null)
-                throw new RuntimeException("Unknown time interval '" + code + "'.");
-            ms += Integer.parseInt(input.substring(0, s.length() - 1)) * ti.getInterval() * 1000;
+            ms += Integer.parseInt(input.substring(0, s.length() - 1)) * TimeInterval.getByCode(code).getInterval() * 1000;
         }
         return Date.from(Instant.ofEpochMilli(ms));
     }
@@ -256,10 +258,19 @@ public class Utils {
     /**
      * Convert a location into a friendly string.
      * @param location
-     * @return
+     * @return formatted
      */
     public static String toString(Location location) {
        return "[" + location.getWorld().getName() + "," + location.getX() + "," + location.getY() + "," + location.getZ() + "]";
+    }
+
+    /**
+     * Convert a location into a friendly, clean string.
+     * @param loc
+     * @return clean
+     */
+    public static String toCleanString(Location loc) {
+        return "[" + (loc != null ? loc.getWorld().getName() + "," + loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ() : "null") + "]";
     }
 
     /**
@@ -1106,6 +1117,29 @@ public class Utils {
     }
 
     /**
+     * Get all the blocks between the two supplied blocks. Inclusive.
+     * @param a
+     * @param b
+     * @return blocks
+     */
+    public static List<Block> getBlocksBetween(Block a, Block b) {
+        return getBlocksBetween(a.getLocation(), b.getLocation());
+    }
+
+    /**
+     * Get all the blocks between two locations, inclusive.
+     * @param a
+     * @param b
+     * @return blocks
+     */
+    public static List<Block> getBlocksBetween(Location a, Location b) {
+        List<Block> blocks = new ArrayList<>();
+        looseFor(a.getBlockX(), b.getBlockX(), x -> looseFor(a.getBlockY(), b.getBlockY(), y ->
+                looseFor(a.getBlockZ(), b.getBlockZ(), z -> blocks.add(new Location(a.getWorld(), x, y, z).getBlock()))));
+        return blocks;
+    }
+
+    /**
      * Remove all non-alphanumeric characters from a string.
      * Used to sanitize file names.
      * @param input
@@ -1113,5 +1147,16 @@ public class Utils {
      */
     public static String sanitizeFileName(String input) {
         return input.replaceAll("[^a-zA-Z0-9 -]", "");
+    }
+
+    /**
+     * Execute a for loop automatically picking the max + mins.
+     * @param a
+     * @param b
+     * @param code
+     */
+    public static void looseFor(int a, int b, Consumer<Integer> code) {
+        for (int i = Math.min(a, b); i < Math.max(a, b); i++)
+            code.accept(i);
     }
 }

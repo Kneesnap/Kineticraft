@@ -1,7 +1,8 @@
 package net.kineticraft.lostcity.cutscenes.actions.entity;
 
-import net.kineticraft.lostcity.cutscenes.ActionData;
+import net.kineticraft.lostcity.cutscenes.annotations.ActionData;
 import net.kineticraft.lostcity.cutscenes.CutsceneEvent;
+import net.kineticraft.lostcity.cutscenes.annotations.AllowNull;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -15,7 +16,7 @@ import org.bukkit.entity.Entity;
 @ActionData(Material.PUMPKIN)
 public class ActionEntityTalk extends ActionEntity {
     private String message;
-    private Sound sound;
+    @AllowNull private Sound sound;
     private float pitch = 1F;
 
     @Override
@@ -24,5 +25,10 @@ public class ActionEntityTalk extends ActionEntity {
         event.getStatus().getPlayers().forEach(p -> p.sendMessage(String.format(message, p.getName())));
         Entity e = getEntity(event);
         e.getWorld().playSound(e.getLocation(), sound != null ? sound : getDisplay(event).getTalkSound(), 1F, pitch);
+    }
+
+    @Override
+    public String toString() {
+        return message + ChatColor.GRAY + super.toString();
     }
 }

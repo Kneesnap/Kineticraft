@@ -1,4 +1,4 @@
-package net.kineticraft.lostcity.cutscenes;
+package net.kineticraft.lostcity.cutscenes.annotations;
 
 import org.bukkit.Material;
 

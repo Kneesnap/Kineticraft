@@ -13,6 +13,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -30,6 +31,7 @@ public class Dungeon {
     private DungeonType type;
     private World world;
     private List<Player> originalPlayers;
+    private List<Puzzle> puzzles = new ArrayList<>();
     @Setter private boolean editMode;
 
     public Dungeon(List<Player> players) {
@@ -113,6 +115,7 @@ public class Dungeon {
      */
     public void remove() {
         removePlayers();
+        getPuzzles().forEach(Puzzle::onDungeonRemove);
 
         if (isEditMode()) {
             getWorld().getEntities().stream().filter(e -> e instanceof LivingEntity).forEach(Entity::remove);
@@ -163,5 +166,13 @@ public class Dungeon {
     public void removePlayer(Player player) {
         announce(ChatColor.LIGHT_PURPLE + "[Dungeon] " + ChatColor.GRAY + player.getName() + " has left the dungeon.");
         Utils.toSpawn(player);
+    }
+
+    /**
+     * Register the puzzles in this dungeon.
+     * @param puzzles
+     */
+    protected void registerPuzzles(Puzzle... puzzles) {
+        getPuzzles().addAll(Arrays.asList(puzzles));
     }
 }

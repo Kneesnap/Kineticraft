@@ -13,6 +13,7 @@ import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.mechanics.system.Mechanic;
 import net.kineticraft.lostcity.utils.Dog;
 import net.kineticraft.lostcity.utils.TextBuilder;
+import net.kineticraft.lostcity.utils.TimeInterval;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -34,11 +35,11 @@ public class Voting extends Mechanic {
 
     @Override
     public void onEnable() {
-        Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () ->
-            Bukkit.getOnlinePlayers().stream().map(KCPlayer::getWrapper)
-                    .filter(k -> System.currentTimeMillis() - k.getLastVote() > 24 * 60 * 60 * 1000)
-                    .forEach(p -> p.getPlayer().sendMessage(ChatColor.AQUA + "You have not voted recently, please support us with "
-                            + ChatColor.YELLOW + "/vote" + ChatColor.AQUA + ".")), 0L, 5 * 60 * 20L + 1);
+        Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () -> Bukkit.getOnlinePlayers().stream().map(KCPlayer::getWrapper)
+                .filter(k -> System.currentTimeMillis() - k.getLastVote() > 24 * 60 * 60 * 1000)
+                .forEach(p -> p.getPlayer().sendMessage(ChatColor.AQUA + "You have not voted recently, please support us with "
+                        + ChatColor.YELLOW + "/vote" + ChatColor.AQUA + ".")), 0L, 5 * 60 * 20L + 1);
+        Utils.runCalendarTaskEvery(TimeInterval.MONTH, Voting::resetVotes);
     }
 
     @EventHandler
@@ -51,14 +52,10 @@ public class Voting extends Mechanic {
      * @param username
      */
     public static void handleVote(String username) {
-
         TextBuilder textBuilder = new TextBuilder(username).color(ChatColor.AQUA)
                 .append(" voted and received a reward! Vote ").color(ChatColor.GRAY).append("HERE").underline().bold()
                 .openURL(Configs.getMainConfig().getVoteURL()).color(ChatColor.AQUA);
         Core.broadcast(textBuilder.create());
-
-        if (!getMonthName().equals(Configs.getVoteData().getMonth()))
-            resetVotes(); // A new month! Time to reset the votes.
 
         VoteConfig data = Configs.getVoteData();
         data.setTotalVotes(data.getTotalVotes() + 1); // Increment the total vote count
@@ -153,7 +150,6 @@ public class Voting extends Mechanic {
      */
     public static void resetVotes() {
         VoteConfig data = Configs.getVoteData();
-        data.setMonth(getMonthName()); // Do this before query so if two votes come in quickly it won't run twice.
 
         QueryTools.queryData(players -> {
             players.forEach(p -> {

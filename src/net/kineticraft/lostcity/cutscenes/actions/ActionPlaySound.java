@@ -1,8 +1,9 @@
 package net.kineticraft.lostcity.cutscenes.actions;
 
-import net.kineticraft.lostcity.cutscenes.ActionData;
+import net.kineticraft.lostcity.cutscenes.annotations.ActionData;
 import net.kineticraft.lostcity.cutscenes.CutsceneAction;
 import net.kineticraft.lostcity.cutscenes.CutsceneEvent;
+import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -23,5 +24,10 @@ public class ActionPlaySound extends CutsceneAction {
     public void execute(CutsceneEvent event) {
         for (int times = 0; times < this.times; times++)
             location.getWorld().playSound(location, sound, 1, pitch);
+    }
+
+    @Override
+    public String toString() {
+        return sound + " @ " + Utils.toCleanString(location);
     }
 }

@@ -67,7 +67,6 @@ public class DataHandler extends Mechanic {
         String ip = evt.getAddress().toString().split("/")[1].split(":")[0];
 
         KCPlayer p = KCPlayer.getWrapper(evt.getPlayer());
-        p.setUsername(evt.getPlayer().getName());
         if (evt.getResult() == PlayerLoginEvent.Result.KICK_FULL && p.getRank().isAtLeast(EnumRank.THETA))
             evt.allow();
 

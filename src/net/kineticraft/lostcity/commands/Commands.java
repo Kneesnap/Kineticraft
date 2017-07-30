@@ -100,6 +100,7 @@ public class Commands extends Mechanic {
         addCommand(new CommandVerify());
 
         // Register staff commands
+        addCommand(new CommandBack());
         addCommand(new CommandBackup());
         addCommand(new CommandBright());
         addCommand(new CommandBroadcast());

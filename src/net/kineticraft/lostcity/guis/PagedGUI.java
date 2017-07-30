@@ -109,9 +109,15 @@ public abstract class PagedGUI extends GUI {
                     .anyClick(e -> setPage(playerPage + 1));
         }
 
-        setTitle(this.title + " (" + playerPage + " / " + maxPages() + ")"); // Update the title to show the page.
+        skipSlots(-8);
+        addCustomOverlay();
 
+        setTitle(this.title + " (" + playerPage + " / " + maxPages() + ")"); // Update the title to show the page.
         overlay = false; // We're no longer creating the overlay.
+    }
+
+    protected void addCustomOverlay() {
+
     }
 
     /**

@@ -35,7 +35,7 @@ public enum TimeInterval {
     }
 
     public static TimeInterval getByCode(String code) {
-        return Arrays.stream(values()).filter(ti -> ti.getSuffix().startsWith(code.toLowerCase())).findFirst().orElse(null);
+        return Arrays.stream(values()).filter(ti -> ti.getSuffix().startsWith(code.toLowerCase())).findFirst().orElse(SECOND);
     }
 
     /**

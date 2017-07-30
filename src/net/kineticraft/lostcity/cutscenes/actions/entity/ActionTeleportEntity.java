@@ -1,7 +1,8 @@
 package net.kineticraft.lostcity.cutscenes.actions.entity;
 
-import net.kineticraft.lostcity.cutscenes.ActionData;
+import net.kineticraft.lostcity.cutscenes.annotations.ActionData;
 import net.kineticraft.lostcity.cutscenes.CutsceneEvent;
+import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 
@@ -16,5 +17,10 @@ public class ActionTeleportEntity extends ActionEntity {
     @Override
     public void execute(CutsceneEvent event) {
         getEntity(event).teleport(location);
+    }
+
+    @Override
+    public String toString() {
+        return Utils.toCleanString(location) + super.toString();
     }
 }

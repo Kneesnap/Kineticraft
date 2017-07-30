@@ -35,8 +35,8 @@ public class Chat extends Mechanic {
         if (pw.isMuted()) {
             evt.setCancelled(true);
             evt.getPlayer().sendMessage(ChatColor.RED + "You are muted for "  + pw.getMute().untilExpiry()+ ".");
-            evt.getPlayer().sendMessage(ChatColor.RED + "Reason: " + pw.getMute().getReason());
-            evt.getPlayer().sendMessage(ChatColor.RED + "Source: " + pw.getMute().getSource());
+            evt.getPlayer().sendMessage(ChatColor.RED + "Reason: " + ChatColor.YELLOW + pw.getMute().getReason());
+            evt.getPlayer().sendMessage(ChatColor.RED + "Source: " + ChatColor.YELLOW + pw.getMute().getSource());
             return;
         }
 

@@ -1,6 +1,6 @@
 package net.kineticraft.lostcity.cutscenes.actions.entity;
 
-import net.kineticraft.lostcity.cutscenes.ActionData;
+import net.kineticraft.lostcity.cutscenes.annotations.ActionData;
 import net.kineticraft.lostcity.cutscenes.CutsceneEvent;
 import net.kineticraft.lostcity.data.maps.JsonMap;
 import net.kineticraft.lostcity.utils.Utils;
@@ -21,5 +21,10 @@ public class ActionEntityGear extends ActionEntity {
     public void execute(CutsceneEvent event) {
         LivingEntity e = getLivingEntity(event);
         items.toEnumMap(EquipmentSlot.class).forEach((k, v) -> Utils.setItem(e, k, v));
+    }
+
+    @Override
+    public String toString() {
+        return items.size() + " Items" + super.toString();
     }
 }

@@ -189,12 +189,12 @@ public class Callbacks extends Mechanic {
         listeners.get(player).put(type, new Listener(o -> {
             if (callback != null)
                 callback.accept((T) o);
-            if (gui != null)
+            if (gui != null && GUIManager.getGUI(player) == null)
                 gui.open();
         }, () -> {
             if (failCallback != null)
                 failCallback.run();
-            if (gui != null)
+            if (gui != null && GUIManager.getGUI(player) == null)
                 gui.open();
         }));
     }

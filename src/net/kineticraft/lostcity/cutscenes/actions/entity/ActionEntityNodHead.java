@@ -1,7 +1,7 @@
 package net.kineticraft.lostcity.cutscenes.actions.entity;
 
 import net.kineticraft.lostcity.Core;
-import net.kineticraft.lostcity.cutscenes.ActionData;
+import net.kineticraft.lostcity.cutscenes.annotations.ActionData;
 import net.kineticraft.lostcity.cutscenes.CutsceneEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -30,5 +30,10 @@ public class ActionEntityNodHead extends ActionEntity {
             loc.setPitch(loc.getPitch() + add);
             e.teleport(loc);
         }, tick);
+    }
+
+    @Override
+    public String toString() {
+        return getEntityName();
     }
 }

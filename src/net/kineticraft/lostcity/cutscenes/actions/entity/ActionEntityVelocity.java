@@ -1,8 +1,9 @@
 package net.kineticraft.lostcity.cutscenes.actions.entity;
 
-import net.kineticraft.lostcity.cutscenes.ActionData;
+import net.kineticraft.lostcity.cutscenes.annotations.ActionData;
 import net.kineticraft.lostcity.cutscenes.CutsceneEvent;
 import org.bukkit.Material;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.Vector;
 
 /**
@@ -17,6 +18,12 @@ public class ActionEntityVelocity extends ActionEntity {
 
     @Override
     public void execute(CutsceneEvent event) {
+        toggleAI(event, LivingEntity::isOnGround);
         getEntity(event).setVelocity(new Vector(x, y, z));
+    }
+
+    @Override
+    public String toString() {
+        return toJsonString();
     }
 }

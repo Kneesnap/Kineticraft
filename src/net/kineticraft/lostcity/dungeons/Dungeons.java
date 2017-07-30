@@ -3,6 +3,8 @@ package net.kineticraft.lostcity.dungeons;
 import com.destroystokyo.paper.Title;
 import lombok.Getter;
 import net.kineticraft.lostcity.Core;
+import net.kineticraft.lostcity.dungeons.dungeons.barleyshope.LazerPuzzle;
+import net.kineticraft.lostcity.item.ItemManager;
 import net.kineticraft.lostcity.mechanics.ArmorStands;
 import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
 import net.kineticraft.lostcity.mechanics.system.Restrict;
@@ -19,6 +21,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -43,6 +46,7 @@ public class Dungeons extends Mechanic {
         Core.makeFolder("dungeons");
         Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () ->
             new ArrayList<>(getDungeons()).stream().filter(d -> d.getPlayers().isEmpty()).forEach(Dungeon::remove), 0L, 600L);
+        new LazerPuzzle(new Location(Core.getMainWorld(), 17, 3, 282));
     }
 
     @Override // Remove all dungeons on shutdown.
@@ -58,6 +62,11 @@ public class Dungeons extends Mechanic {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onBlockBreak(BlockBreakEvent evt) { // Prevents block destruction.
+        evt.setCancelled(isDungeon(evt.getBlock().getWorld()) && !Utils.isStaff(evt.getPlayer()));
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
+    public void onBlockPlace(BlockPlaceEvent evt) {
         evt.setCancelled(isDungeon(evt.getBlock().getWorld()) && !Utils.isStaff(evt.getPlayer()));
     }
 
@@ -100,8 +109,9 @@ public class Dungeons extends Mechanic {
      * @param p
      */
     private static void makeCorpse(Player p) {
-        ArmorStand as = ArmorStands.spawnArmorStand(p.getLocation(), "corpse");
+        ArmorStand as = ArmorStands.spawnArmorStand(p.getLocation().subtract(0, 1, 0), "corpse");
         Utils.mirrorItems(p, as);
+        as.setHelmet(ItemManager.makeSkull(p.getName()));
         as.setCustomName(ChatColor.RED + p.getName() + "'s Corpse");
         as.setCustomNameVisible(true);
     }

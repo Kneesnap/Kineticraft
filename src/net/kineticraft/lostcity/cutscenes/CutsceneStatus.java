@@ -43,6 +43,7 @@ public class CutsceneStatus {
         getEntityMap().put("Camera", loc.getWorld().spawnEntity(loc, type));
         Utils.giveInfinitePotion(getCamera(), PotionEffectType.INVISIBILITY);
         getCamera().setAI(false); // Disable the AI of the camera.
+        getCamera().setGravity(false);
         getCamera().setInvulnerable(true); // Disable all damage.
 
         // Mount all viewers to the camera.
@@ -65,11 +66,7 @@ public class CutsceneStatus {
      */
     public void nextStage() {
         if (getCutscene().getStages().hasIndex(getStageId())) {
-            try {
-                getStage().action(this); // Execute this stage.
-            } catch (Exception e) {
-                throw new GeneralException("Failed to execute CutsceneStage.", e);
-            }
+            getStage().action(this); // Execute this stage.
             this.stageId++; // Go to the next stage.
             return;
         }
@@ -107,5 +104,10 @@ public class CutsceneStatus {
         p.setGameMode(GameMode.SURVIVAL);
         Utils.safeTp(p, getStartLocation());
         getPlayers().remove(p);
+    }
+
+    @Override
+    public String toString() {
+        return "[" + getCutscene().getName() + "/" + getStageId() + "]";
     }
 }

@@ -1,8 +1,9 @@
 package net.kineticraft.lostcity.cutscenes.actions;
 
-import net.kineticraft.lostcity.cutscenes.ActionData;
+import net.kineticraft.lostcity.cutscenes.annotations.ActionData;
 import net.kineticraft.lostcity.cutscenes.CutsceneAction;
 import net.kineticraft.lostcity.cutscenes.CutsceneEvent;
+import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
@@ -24,5 +25,9 @@ public class ActionSpawnParticles extends CutsceneAction {
     @Override
     public void execute(CutsceneEvent event) {
         location.getWorld().spawnParticle(effect, location, count, spreadX, spreadY, spreadZ);
+    }
+
+    public String toString() {
+        return effect + " @ " + Utils.toCleanString(location);
     }
 }

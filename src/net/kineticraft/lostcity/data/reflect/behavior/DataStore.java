@@ -68,7 +68,9 @@ public abstract class DataStore<T> {
      * @param value
      * @param setter
      */
-    protected abstract void editItem(GUIItem item, Object value, Consumer<Object> setter);
+    protected void editItem(GUIItem item, Object value, Consumer<Object> setter) {
+        throw new UnsupportedOperationException("Must be implemented by " + getClass().getSimpleName());
+    }
 
     /**
      * Apply the item editor data to an item.

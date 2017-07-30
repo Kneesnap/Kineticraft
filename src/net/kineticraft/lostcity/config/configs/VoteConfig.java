@@ -22,7 +22,6 @@ public class VoteConfig extends JsonConfig {
     private JsonList<PartyReward> party = new JsonList<>();
     private JsonList<ItemStack> normal = new JsonList<>();
     private JsonList<VoteAchievement> achievements = new JsonList<>();
-    private String month; // The mount the votes are currently stored for.
 
     /**
      * Get the number of votes needed until the next party.

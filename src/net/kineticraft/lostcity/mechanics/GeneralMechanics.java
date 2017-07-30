@@ -16,6 +16,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.*;
@@ -49,7 +50,7 @@ public class GeneralMechanics extends Mechanic {
         Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), () -> {
             for (Player p : Core.getOnlinePlayers()) {
                 KCPlayer w = KCPlayer.getWrapper(p);
-                if (w.getEffect() != null)
+                if (w.getEffect() != null && p.getGameMode() != GameMode.SPECTATOR)
                     p.getWorld().spawnParticle(w.getEffect(), p.getLocation(), 10);
             }
         }, 0L, 20L);
@@ -192,5 +193,11 @@ public class GeneralMechanics extends Mechanic {
     @EventHandler(ignoreCancelled = true)
     public void onLightningStrike(LightningStrikeEvent evt) {
         evt.setCancelled(Utils.nextBool());
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    public void onTeleport(PlayerTeleportEvent evt) {
+        if ((!evt.getTo().getWorld().equals(evt.getFrom().getWorld()) || evt.getTo().distance(evt.getFrom()) >= 10) && Utils.isStaff(evt.getPlayer()))
+            KCPlayer.getPlayer(evt.getPlayer()).setLastLocation(evt.getFrom());
     }
 }

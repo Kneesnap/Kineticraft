@@ -1,6 +1,7 @@
 package net.kineticraft.lostcity.cutscenes;
 
 import lombok.Getter;
+import lombok.Setter;
 import net.kineticraft.lostcity.cutscenes.actions.entity.ActionCreateEntity;
 import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.data.lists.JsonList;
@@ -18,6 +19,7 @@ import java.util.List;
 @Getter
 public class Cutscene implements Jsonable {
 
+    @Setter private transient String name;
     private JsonList<CutsceneStage> stages = new JsonList<>();
 
     /**

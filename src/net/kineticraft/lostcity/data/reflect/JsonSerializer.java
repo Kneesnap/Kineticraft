@@ -211,7 +211,13 @@ public class JsonSerializer {
      * @return je
      */
     public static JsonElement addClass(Object object, Class<?> parentClass, JsonElement je) {
-        if (je.isJsonObject() && (parentClass == null || !object.getClass().getName().equals(parentClass.getName())))
+        if (parentClass == null) {
+            parentClass = object.getClass().getSuperclass();
+            if (parentClass.getSimpleName().equals("Object"))
+                return je;
+        }
+
+        if (je.isJsonObject() && !object.getClass().getName().equals(parentClass.getName()))
             je.getAsJsonObject().addProperty("class", object.getClass().getName());
         return je;
     }

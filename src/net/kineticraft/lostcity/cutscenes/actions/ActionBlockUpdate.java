@@ -1,8 +1,9 @@
 package net.kineticraft.lostcity.cutscenes.actions;
 
-import net.kineticraft.lostcity.cutscenes.ActionData;
+import net.kineticraft.lostcity.cutscenes.annotations.ActionData;
 import net.kineticraft.lostcity.cutscenes.CutsceneAction;
 import net.kineticraft.lostcity.cutscenes.CutsceneEvent;
+import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Location;
 import org.bukkit.Material;
 
@@ -12,12 +13,16 @@ import org.bukkit.Material;
  */
 @ActionData(Material.GRASS)
 public class ActionBlockUpdate extends CutsceneAction {
-
     private Location location;
     private Material type = Material.AIR;
 
     @Override
     public void execute(CutsceneEvent event) {
         location.getBlock().setType(type);
+    }
+
+    @Override
+    public String toString() {
+        return Utils.toCleanString(location) + " -> " + type;
     }
 }

@@ -1,7 +1,7 @@
 package net.kineticraft.lostcity.cutscenes.actions.entity;
 
 import net.kineticraft.lostcity.Core;
-import net.kineticraft.lostcity.cutscenes.ActionData;
+import net.kineticraft.lostcity.cutscenes.annotations.ActionData;
 import net.kineticraft.lostcity.cutscenes.CutsceneEvent;
 import net.kineticraft.lostcity.data.lists.JsonList;
 import org.bukkit.Bukkit;
@@ -36,5 +36,10 @@ public class ActionEntityCameraTrack extends ActionEntity {
 
             e.teleport(tempTrack.remove(0));
         }, 0L, 20 / perSecond);
+    }
+
+    @Override
+    public String toString() {
+        return track.size() + " markers" + super.toString();
     }
 }

@@ -32,9 +32,7 @@ public class EnumStore extends DataStore<Enum> {
     @SuppressWarnings("unchecked")
     @Override
     public void editItem(GUIItem item, Object value, Consumer<Object> setter, Class<?> type) {
-        item.leftClick(ce -> new GUIEnumPicker(ce.getPlayer(), (Enum[]) type.getEnumConstants(), val -> {
-            setter.accept(val);
-            ce.getGUI().openPrevious();
-        })).setIcon(Material.GOLD_BLOCK).addLoreAction("Left", "Set Value");
+        item.leftClick(ce -> new GUIEnumPicker(ce.getPlayer(), (Enum[]) type.getEnumConstants(), setter::accept))
+                .setIcon(Material.GOLD_BLOCK).addLoreAction("Left", "Set Value");
     }
 }

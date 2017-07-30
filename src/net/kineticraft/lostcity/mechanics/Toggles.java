@@ -9,12 +9,14 @@ import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.mechanics.system.Mechanic;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import java.util.List;
@@ -34,7 +36,12 @@ public class Toggles extends Mechanic {
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void onEntityDamage(EntityDamageEvent evt) {
-        evt.setCancelled(evt.getEntity() instanceof Player && getToggle((Player) evt.getEntity(), Toggle.GOD));
+        evt.setCancelled(getToggle(evt.getEntity(), Toggle.GOD));
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onEntityTarget(EntityTargetEvent evt) {
+        evt.setCancelled(getToggle(evt.getTarget(), Toggle.GOD));
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -46,7 +53,7 @@ public class Toggles extends Mechanic {
             return; // One or both of the combatants isn't a player.
 
         boolean outgoingFail = !getToggle(attacker, Toggle.PVP);
-        boolean incomingFail = !getToggle((Player) evt.getEntity(), Toggle.PVP);
+        boolean incomingFail = !getToggle(evt.getEntity(), Toggle.PVP);
 
         if (outgoingFail || incomingFail) {
             attacker.sendMessage(ChatColor.RED + (outgoingFail ? "You have PvP disabled. (/togglepvp)"
@@ -70,8 +77,8 @@ public class Toggles extends Mechanic {
      * @param t
      * @return state
      */
-    private static boolean getToggle(Player player, Toggle t) {
-        return KCPlayer.getPlayer(player).getState(t);
+    private static boolean getToggle(Entity player, Toggle t) {
+        return player instanceof Player && KCPlayer.getPlayer((Player) player).getState(t);
     }
 
     private class ToggleCommand extends PlayerCommand {

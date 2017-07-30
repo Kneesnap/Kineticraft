@@ -170,8 +170,13 @@ public abstract class GUI {
      * @param items
      */
     protected void toRight(int items) {
+        int oldIndex = getSlotIndex();
         nextRow();
         setSlotIndex(getSlotIndex() - items);
+        if (getSlotIndex() < oldIndex) {
+            skipSlots(9);
+            toRight(items);
+        }
     }
 
     /**

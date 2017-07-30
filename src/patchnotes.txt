@@ -1,6 +1,13 @@
 &8Changes:
- - Finished cutscene system.
- - Added /reboot.
+ - Improved Cutscene Editor
+ - Worked on Dungeon system.
+ - Dungeon Puzzles
+ - Monthly vote reset is more fair.
+
+&8Staff Changes:
+ - Added /back.
+ - Added ArmorStand system.
 
 &8Bugfixes:
-- Fixed /notes, /edit for offline players.
+ - Fixed /mute.
+ - Fixed calendar tasks.

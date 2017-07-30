@@ -16,10 +16,11 @@ import java.util.stream.Stream;
 @AllArgsConstructor @Getter
 public enum EntityDisplay {
 
+    ZOMBIE("Zombie", Sound.ENTITY_ZOMBIE_AMBIENT),
     CREEPER("Creeper", Sound.ENTITY_CREEPER_HURT),
     VILLAGER("Villager", Sound.ENTITY_VILLAGER_AMBIENT),
     PLAYER("Steve", Sound.ENTITY_VILLAGER_TRADING),
-    DEFAULT("Alex", null);
+    UNKNOWN("Alex", null);
 
     private final String skullName;
     private final Sound talkSound;
@@ -46,6 +47,6 @@ public enum EntityDisplay {
      * @return display.
      */
     public static EntityDisplay getByType(EntityType type) {
-        return Stream.of(values()).filter(d -> d.getType() == type).findFirst().orElse(DEFAULT);
+        return Stream.of(values()).filter(d -> d.getType() == type).findFirst().orElse(UNKNOWN);
     }
 }

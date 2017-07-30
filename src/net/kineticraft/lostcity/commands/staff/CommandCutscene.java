@@ -1,6 +1,5 @@
 package net.kineticraft.lostcity.commands.staff;
 
-import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.StaffCommand;
 import net.kineticraft.lostcity.cutscenes.Cutscene;
 import net.kineticraft.lostcity.cutscenes.Cutscenes;
@@ -20,7 +19,7 @@ import org.bukkit.entity.Player;
 public class CommandCutscene extends StaffCommand {
 
     public CommandCutscene() {
-        super(EnumRank.MOD, "<cutscene> [player]", "Play a cutscene", "cutscene", "play");
+        super("<cutscene> [player]", "Play a cutscene", "cutscene", "play");
         autocomplete(Cutscenes.getCutscenes()::keySet);
         autocompleteOnline();
     }

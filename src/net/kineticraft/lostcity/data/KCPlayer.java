@@ -60,6 +60,7 @@ public class KCPlayer implements Jsonable {
     private int totalVotes;
     private long lastVote;
     private int pendingVotes;
+    private Location lastLocation;
 
     private Mute mute;
     private JsonList<Punishment> punishments = new JsonList<>();
@@ -111,7 +112,7 @@ public class KCPlayer implements Jsonable {
         setMute(new Mute(expiry.getTime(), reason, source.getName()));
         sendMessage(ChatColor.RED + "You have been muted. (" + reason + ")");
         DiscordAPI.sendMessage(DiscordChannel.ORYX, source.getName() + " has muted " + getUsername()
-                + " for " + Utils.formatTimeFull(getPunishExpiry()) + ".");
+                + " for " + Utils.formatTimeFull(expiry.getTime()) + ".");
     }
 
     /**

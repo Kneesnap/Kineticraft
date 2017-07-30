@@ -35,6 +35,12 @@ public class Cutscenes extends ModularMechanic<Cutscene> {
     }
 
     @Override
+    public void load() {
+        super.load();
+        getCutscenes().forEach((k, v) -> v.setName(k));
+    }
+
+    @Override
     public void onDisable() {
         new HashSet<>(getDataMap().values()).forEach(CutsceneStatus::finish); // Cancel existing cutscenes.
         super.onDisable();

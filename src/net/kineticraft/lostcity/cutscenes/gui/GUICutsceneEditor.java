@@ -1,8 +1,10 @@
 package net.kineticraft.lostcity.cutscenes.gui;
 
 import net.kineticraft.lostcity.cutscenes.Cutscene;
+import net.kineticraft.lostcity.cutscenes.CutsceneAction;
 import net.kineticraft.lostcity.cutscenes.CutsceneStage;
 import net.kineticraft.lostcity.guis.GUI;
+import net.kineticraft.lostcity.item.ItemWrapper;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -24,11 +26,14 @@ public class GUICutsceneEditor extends GUI {
     public void addItems() {
         for (int i = 0; i < cutscene.getStages().size(); i++) {
             CutsceneStage stage = cutscene.getStages().get(i);
-            addItem(Material.PAPER, ChatColor.YELLOW + "Stage " + (i + 1), "Actions: " + ChatColor.YELLOW + stage.getActions().size(), "")
+            ItemWrapper iw = addItem(Material.PAPER, ChatColor.YELLOW + "Stage " + (i + 1),
+                    "Actions: " + ChatColor.YELLOW + stage.getActions().size(), "")
                     .leftClick(ce -> new GUIStageEditor(ce.getPlayer(), stage)).rightClick(ce -> {
                         cutscene.getStages().remove(stage);
                         reconstruct();
-            }).addLoreAction("Left", "Edit Stage").addLoreAction("Right", "Remove Stage");
+                    });
+            stage.getActions().stream().map(CutsceneAction::getName).forEach(iw::addLore);
+            iw.addLoreAction("Left", "Edit Stage").addLoreAction("Right", "Remove Stage");
         }
 
         toRight(1);
