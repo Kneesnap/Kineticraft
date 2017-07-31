@@ -1,7 +1,6 @@
 package net.kineticraft.lostcity.cutscenes.actions.entity;
 
 import net.kineticraft.lostcity.cutscenes.annotations.ActionData;
-import net.kineticraft.lostcity.cutscenes.CutsceneEvent;
 import org.bukkit.EntityEffect;
 import org.bukkit.Material;
 
@@ -14,8 +13,8 @@ public class ActionEntityAnimation extends ActionEntity {
     private EntityEffect effect = EntityEffect.HURT;
 
     @Override
-    public void execute(CutsceneEvent event) {
-        getEntity(event).playEffect(effect);
+    public void execute() {
+        getEntity().playEffect(effect);
     }
 
     @Override

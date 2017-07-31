@@ -1,10 +1,9 @@
-package net.kineticraft.lostcity.commands.player;
+package net.kineticraft.lostcity.dungeons.commmands;
 
 import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.dungeons.Dungeon;
 import net.kineticraft.lostcity.dungeons.Dungeons;
-import net.kineticraft.lostcity.mechanics.system.BuildType;
-import net.kineticraft.lostcity.mechanics.system.Restrict;
+import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -13,7 +12,6 @@ import org.bukkit.entity.Player;
  * Exit the dungeon you are currently in.
  * Created by Kneesnap on 7/28/2017.
  */
-@Restrict(BuildType.PRODUCTION)
 public class CommandDQuit extends PlayerCommand {
     public CommandDQuit() {
         super("", "Exit the dungeon you are currently in.", "dquit");
@@ -29,6 +27,7 @@ public class CommandDQuit extends PlayerCommand {
             return;
         }
 
+        MetadataManager.updateCooldownSilently((Player) sender, "dquit", 2);
         d.removePlayer(p);
     }
 }

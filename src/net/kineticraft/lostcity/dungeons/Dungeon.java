@@ -4,10 +4,12 @@ import com.destroystokyo.paper.Title;
 import lombok.Getter;
 import lombok.Setter;
 import net.kineticraft.lostcity.Core;
+import net.kineticraft.lostcity.dungeons.puzzle.Puzzle;
 import net.kineticraft.lostcity.utils.TextBuilder;
 import net.kineticraft.lostcity.utils.Utils;
 import net.kineticraft.lostcity.utils.ZipUtil;
 import org.bukkit.*;
+import org.bukkit.block.CommandBlock;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -20,9 +22,6 @@ import java.util.stream.Stream;
 
 /**
  * A base for a dungeon.
- * TODO: Command block commands. (They should also run normal KC commands.)
- * TODO: Dungeon bosses.
- * TODO: Dungeon commands.
  * Created by Kneesnap on 7/11/2017.
  */
 @Getter
@@ -39,7 +38,7 @@ public class Dungeon {
     }
 
     /**
-     * Setup the dungeon asynchronously.
+     * Setup the dungeon files.
      */
     public void setup(DungeonType type) {
         assert getType() == null; // Make sure we haven't setup yet.
@@ -74,7 +73,7 @@ public class Dungeon {
         getWorld().setDifficulty(Difficulty.HARD);
 
         getOriginalPlayers().forEach(p -> {
-            Utils.toSpawn(p);
+            Utils.safeTp(p, getWorld().getSpawnLocation());
             p.setFallDistance(0);
             p.sendTitle(new Title(new TextBuilder(getType().getName()).color(getType().getColor()).create(),
                     new TextBuilder("Objective: " + getType().getEntryMessage()).color(ChatColor.GRAY).create()));
@@ -84,6 +83,8 @@ public class Dungeon {
                 p.sendMessage(ChatColor.GRAY + " -- Any changes you make will be saved upon exit. Be careful.");
             }
         });
+
+        getPuzzles().forEach(p -> p.setDungeon(this));
     }
 
     /**
@@ -130,7 +131,7 @@ public class Dungeon {
         }
 
         Utils.removeFile(getWorld().getName());
-        // If we migrate back to WorldGuard, make sure to remove the folder.
+        // TODO If we migrate back to WorldGuard, make sure to remove the folder.
         Dungeons.getDungeons().remove(this);
     }
 
@@ -174,5 +175,27 @@ public class Dungeon {
      */
     protected void registerPuzzles(Puzzle... puzzles) {
         getPuzzles().addAll(Arrays.asList(puzzles));
+    }
+
+    /**
+     * Fire a trigger for all of the puzzles in this dungeon.
+     * @param trigger
+     * @param block
+     */
+    public void triggerPuzzles(String trigger, CommandBlock block) {
+        getPuzzles().forEach(p -> p.fireTrigger(trigger, block));
+    }
+
+    /**
+     * Clone a location and fix it so the world is correct.
+     * @param loc
+     * @return fixed
+     */
+    public Location fixLocation(Location loc) {
+        if (loc == null)
+            return null;
+        Location fixed = loc.clone();
+        fixed.setWorld(getWorld());
+        return fixed;
     }
 }

@@ -2,7 +2,6 @@ package net.kineticraft.lostcity.cutscenes.actions.entity;
 
 import lombok.Getter;
 import net.kineticraft.lostcity.cutscenes.annotations.ActionData;
-import net.kineticraft.lostcity.cutscenes.CutsceneEvent;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -17,12 +16,12 @@ import org.bukkit.entity.LivingEntity;
  */
 @ActionData(Material.EGG)
 public class ActionCreateEntity extends ActionEntity {
-    private Location location;
+    private Location location = null;
     @Getter private EntityType entityType = EntityType.ZOMBIE;
 
     @Override
-    public void execute(CutsceneEvent event) {
-        assert getEntity(event) == null;
+    public void execute() {
+        assert getEntity() == null;
 
         Entity e = location.getWorld().spawnEntity(location, getEntityType());
         e.setCustomName(ChatColor.GREEN + getEntityName());
@@ -34,7 +33,7 @@ public class ActionCreateEntity extends ActionEntity {
             le.setInvulnerable(true);
         }
 
-        event.getStatus().getEntityMap().put(getEntityName(), e);
+        getEvent().getStatus().getEntityMap().put(getEntityName(), e);
     }
 
     @Override

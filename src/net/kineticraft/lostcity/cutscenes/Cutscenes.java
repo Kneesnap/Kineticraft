@@ -1,9 +1,13 @@
 package net.kineticraft.lostcity.cutscenes;
 
 import lombok.Getter;
+import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.cutscenes.actions.*;
 import net.kineticraft.lostcity.cutscenes.actions.entity.*;
+import net.kineticraft.lostcity.cutscenes.commands.CommandCutscene;
+import net.kineticraft.lostcity.cutscenes.commands.CommandCutsceneEditor;
 import net.kineticraft.lostcity.data.maps.JsonMap;
+import net.kineticraft.lostcity.events.CommandRegisterEvent;
 import net.kineticraft.lostcity.mechanics.system.Restrict;
 import net.kineticraft.lostcity.mechanics.system.BuildType;
 import net.kineticraft.lostcity.mechanics.system.MechanicManager;
@@ -19,7 +23,6 @@ import java.util.stream.Stream;
 
 /**
  * Manages Cutscenes.
- * TODO: Locations should get their world from the world the cutscene starts in.
  * TODO: Show players in cutscene at startLocation.
  * QUEST TODO Create a particle exclamation mark for quest NPCs.
  * Created by Kneesnap on 6/1/2017.
@@ -51,6 +54,11 @@ public class Cutscenes extends ModularMechanic<Cutscene> {
         CutsceneStatus state = getState(player);
         if (state != null)
             state.finish(player);
+    }
+
+    @EventHandler
+    public void onCommandRegister(CommandRegisterEvent evt) {
+        evt.register(new CommandCutscene(), new CommandCutsceneEditor());
     }
 
     @EventHandler(ignoreCancelled = true) // Prevent dismounting from the camera mount.
@@ -105,6 +113,20 @@ public class Cutscenes extends ModularMechanic<Cutscene> {
     public static JsonMap<Cutscene> getCutscenes() {
         Cutscenes instance = MechanicManager.getInstance(Cutscenes.class);
         return instance != null ? instance.getMap() : new JsonMap<>();
+    }
+
+    /**
+     * Play a cutscene for all the given players.
+     * @param players
+     * @param cutscene
+     */
+    public static void playCutscene(List<Player> players, String cutscene) {
+        Cutscene c = getCutscenes().get(cutscene);
+        if (c != null) {
+            c.play(players);
+        } else {
+            Core.warn("Cutscene '" + cutscene + "' not found.");
+        }
     }
 
     // Register all CutsceneActions.

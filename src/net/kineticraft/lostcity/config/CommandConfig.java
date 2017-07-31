@@ -1,8 +1,7 @@
-package net.kineticraft.lostcity.commands.staff;
+package net.kineticraft.lostcity.config;
 
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.StaffCommand;
-import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.config.Configs.ConfigType;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;

@@ -6,16 +6,14 @@ import net.kineticraft.lostcity.mechanics.system.Mechanic;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.player.PlayerChatTabCompleteEvent;
-import org.bukkit.event.player.PlayerRegisterChannelEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.bukkit.potion.PotionEffect;
 
@@ -88,5 +86,15 @@ public class Restrictions extends Mechanic {
     @EventHandler
     public void onRespawn(PlayerRespawnEvent evt) {
         evt.getPlayer().sendMessage(DISABLE_TEXT);
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onPlayerMove(PlayerMoveEvent evt) {
+        int max = (int) evt.getTo().getWorld().getWorldBorder().getSize() / 2;
+        Location to = evt.getTo();
+        if (Math.abs(to.getX()) > max || Math.abs(to.getZ()) > max)  {
+            evt.setCancelled(true);
+            evt.getPlayer().sendMessage(ChatColor.RED + "Cannot leave world.");
+        }
     }
 }

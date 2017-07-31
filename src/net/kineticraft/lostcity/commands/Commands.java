@@ -3,7 +3,6 @@ package net.kineticraft.lostcity.commands;
 import lombok.Getter;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
-import net.kineticraft.lostcity.commands.discord.*;
 import net.kineticraft.lostcity.commands.misc.*;
 import net.kineticraft.lostcity.commands.player.*;
 import net.kineticraft.lostcity.commands.staff.*;
@@ -11,7 +10,9 @@ import net.kineticraft.lostcity.commands.trigger.*;
 import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.config.Configs.ConfigType;
 import net.kineticraft.lostcity.discord.DiscordSender;
+import net.kineticraft.lostcity.dungeons.commmands.CommandInvoke;
 import net.kineticraft.lostcity.events.CommandRegisterEvent;
+import net.kineticraft.lostcity.guis.CommandGUIs;
 import net.kineticraft.lostcity.guis.GUIType;
 import net.kineticraft.lostcity.item.ItemType;
 import net.kineticraft.lostcity.mechanics.Chat;
@@ -29,7 +30,6 @@ import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.event.server.TabCompleteEvent;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -66,7 +66,6 @@ public class Commands extends Mechanic {
         // Register player commands
         addCommand(new CommandCondense());
         addCommand(new CommandDelHome());
-        addCommand(new CommandDQuit());
         addCommand(new CommandEmote());
         addCommand(new CommandExtinguish());
         addCommand(new CommandHelp());
@@ -104,12 +103,8 @@ public class Commands extends Mechanic {
         addCommand(new CommandBackup());
         addCommand(new CommandBright());
         addCommand(new CommandBroadcast());
-        addCommand(new CommandConfig());
-        addCommand(new CommandCutscene());
-        addCommand(new CommandCutsceneEditor());
         addCommand(new CommandDeathTeleport());
         addCommand(new CommandEdit());
-        addCommand(new CommandFly());
         addCommand(new CommandGUIs());
         addCommand(new CommandKick());
         addCommand(new CommandInvoke());
@@ -139,15 +134,11 @@ public class Commands extends Mechanic {
         addCommand(new CommandTriggerAccept());
         addCommand(new CommandTriggerDecline());
 
-        // Register discord commands
-        addCommand(new CommandDiscordVerify());
-        addCommand(new CommandServerVote());
-
         // Tell plugins its time to register their commands.
         Bukkit.getPluginManager().callEvent(new CommandRegisterEvent());
 
-        // Sort commands alphabetically:
-        getCommands().sort(Comparator.comparing(Command::getName));
+        getCommands().sort(Comparator.comparing(Command::getName)); // Sort commands alphabetically
+        getCommands().stream().filter(Command::allowCommandBlocks).forEach(BukkitCommandWrapper::new); // Register as a bukkit command.
     }
 
     /**
@@ -213,8 +204,8 @@ public class Commands extends Mechanic {
 
         input = input.substring(type.getPrefix().length()); // Remove the prefix.
         input = Chat.filterMessage(input); // Apply filter.
-        List<String> split = new ArrayList<>(Arrays.asList(input.split(" "))); // remove() won't work with just asList
-        String cmd = split.get(0);
+        String[] args = input.split(" ");
+        String cmd = args[0];
         Command command = getCommand(type, cmd);
         if (command == null)
             return false; // Not a command.
@@ -222,11 +213,7 @@ public class Commands extends Mechanic {
         if (sender instanceof DiscordSender) // Log all discord sent commands.
             Core.alertStaff(ChatColor.GREEN + sender.getName() + ": " + ChatColor.GRAY + type.getPrefix() + input);
 
-        split.remove(0); // Remove the command from args.
-        String[] args = split.toArray(new String[split.size()]);
-
-        // Don't run this async. Can happen with chat commands.
-        Bukkit.getScheduler().runTask(Core.getInstance(), () -> runCommand(command, sender, cmd, args));
+        runCommand(command, sender, cmd, Utils.shift(args));
         return true;
     }
 
@@ -236,7 +223,7 @@ public class Commands extends Mechanic {
         } catch (Exception e) {
             e.printStackTrace();
             Core.warn("Error executing " + cmd.getName() + " as '" + sender.getName() + "'");
-            sender.sendMessage(ChatColor.RED + "There was an error while running this command.");
+            sender.sendMessage(ChatColor.RED + "There was an internal error while running this command.");
         }
     }
 
@@ -282,8 +269,6 @@ public class Commands extends Mechanic {
         Player p = evt.getPlayer();
         String input = evt.getMessage();
 
-        evt.setCancelled(handleCommand(p, CommandType.SLASH, input) || handleCommand(p, CommandType.TRIGGER, input)); // Don't show 'unknown command....'
-
         if (input.startsWith("/ ")) {
             sendStaffChat(p, input.substring(2));
             evt.setCancelled(true);
@@ -292,6 +277,8 @@ public class Commands extends Mechanic {
 
         if (!input.startsWith("/trigger ")) // Alert staff of commands used, if the command isn't /trigger.
             Core.alertStaff(p.getName() + ": " + ChatColor.GRAY + input);
+
+        evt.setCancelled(handleCommand(p, CommandType.SLASH, input) || handleCommand(p, CommandType.TRIGGER, input)); // Don't show 'unknown command....'
     }
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)

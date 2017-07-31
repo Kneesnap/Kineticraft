@@ -1,8 +1,6 @@
 package net.kineticraft.lostcity.cutscenes.actions.entity;
 
-
 import net.kineticraft.lostcity.cutscenes.annotations.ActionData;
-import net.kineticraft.lostcity.cutscenes.CutsceneEvent;
 import org.bukkit.Material;
 
 /**
@@ -12,8 +10,8 @@ import org.bukkit.Material;
 @ActionData(Material.LAVA_BUCKET)
 public class ActionRemoveEntity extends ActionEntity {
     @Override
-    public void execute(CutsceneEvent event) {
-        event.getStatus().removeEntity(getEntityName());
+    public void execute() {
+        getEvent().getStatus().removeEntity(getEntityName());
     }
 
     @Override

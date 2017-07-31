@@ -25,11 +25,13 @@ public class CutsceneStage implements Jsonable {
         Bukkit.getScheduler().runTaskLater(Core.getInstance(), status::nextStage, getTicks());
         getActions().stream().filter(CutsceneAction::isValid).forEach(a -> {
             try {
-                a.execute(event);
+                a.setEvent(event);
+                a.execute();
             } catch (Exception e) {
                 e.printStackTrace();
                 Core.warn("Failed to run action '" + a.getClass().getSimpleName() + "' on " + status);
             }
+            a.setEvent(null);
         });
     }
 }

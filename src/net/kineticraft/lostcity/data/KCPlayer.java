@@ -343,6 +343,11 @@ public class KCPlayer implements Jsonable {
         if (!getToggles().remove(toggle))
             getToggles().add(toggle); // Add the toggle if we did not remove it.
         sendMessage(Utils.formatToggle(Utils.capitalize(toggle.name()), getState(toggle)));
+
+        boolean newState = getState(toggle);
+
+        if (toggle == Toggle.FLIGHT)
+            getPlayer().setAllowFlight(newState);
     }
 
     /**

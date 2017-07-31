@@ -1,100 +1,120 @@
 package net.kineticraft.lostcity.dungeons.dungeons.barleyshope;
 
 import lombok.Getter;
-import net.kineticraft.lostcity.dungeons.Puzzle;
+import net.kineticraft.lostcity.Core;
+import net.kineticraft.lostcity.dungeons.puzzle.Puzzle;
+import net.kineticraft.lostcity.dungeons.puzzle.PuzzleTrigger;
 import net.kineticraft.lostcity.utils.Utils;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.material.Directional;
+import org.bukkit.block.CommandBlock;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Lazer Puzzle.
- * TODO: Prevent infinity.
- * TODO: Don't allow modification of track after lazer activates.
- * TODO: Center lazer
- * TODO: Fix repeater activation.
+ * A simple lazer puzzle.
  * Created by Kneesnap on 7/29/2017.
  */
 @Getter
 public class LazerPuzzle extends Puzzle {
     private BukkitTask traceTask;
-    private List<Location> particles = new ArrayList<>();
     private static final double PER_BLOCK = 5;
 
-    public LazerPuzzle(Location end) {
-        super(end.subtract(0, 1, 0));
-        addTimerTask(() -> particles.forEach(this::drawLazer), 10L);
+    public LazerPuzzle() {
+        super(new Location(null, -113, 12, 44));
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public void onBlockClick(Block bk, boolean rightClick) {
+        if (!canTrigger())
+            return;
+
+        int y = getRedstoneBlock().getLocation().getBlockY() + 2;
+        Block above = bk.getRelative(BlockFace.UP);
+        if (isPuzzle(bk, y - 1, Material.WOOL) && above.getType() == Material.AIR && !rightClick) {
+            above.setType(Material.DIODE_BLOCK_OFF);
+            above.setData((byte) 0);
+        }
+
+        // Remove the next
+        if (isPuzzle(bk, y, Material.DIODE_BLOCK_OFF) && rightClick) {
+            int next = bk.getData() + 1;
+            if (next > 3) {
+                bk.setType(Material.AIR);
+            } else {
+                bk.setData((byte) next);
+            }
+        }
+    }
+
+    @PuzzleTrigger
+    public void fireLazer(CommandBlock block) {
+        Block bk = block.getBlock();
+
+        BlockFace[] direction = new BlockFace[] {Utils.getDirection(bk)};
+        Location lazer = bk.getLocation().add(.5, .15, .5);
+
+        // Shoot the lazer.
+        traceTask = addTimerTask(() -> {
+            lazer.getWorld().spawnParticle(Particle.REDSTONE, lazer, 1, 0, 0, 0, 0); // Draw trail.
+
+            Block last = lazer.getBlock();
+            BlockFace d = direction[0]; //
+            lazer.add(d.getModX() / PER_BLOCK, 0, d.getModZ() / PER_BLOCK); // Move the lazer along its path.
+            Block b = lazer.getBlock();
+
+            if (!last.equals(b)) {
+                if (b.getType() == Material.AIR)
+                    return;
+
+                if (b.getType() == Material.DIODE_BLOCK_OFF) { // Change direction.
+                    BlockFace newDirection = Utils.getDirection(b);
+                    if (newDirection != d && newDirection.getOppositeFace() != d) { // Power must enter sideways.
+                        lazer.add(d.getModX() * 0.5, 0, d.getModZ() * 0.5); // Center lazer.
+                        setRepeater(b, Material.DIODE_BLOCK_ON, (long) PER_BLOCK);
+                        direction[0] = newDirection; // Update direction.
+                        return;
+                    }
+                }
+
+                // We've hit a wall.
+                traceTask.cancel(); // Stop trying to trace the lazer.
+                traceTask = null;
+                if (b.getType() == Material.BEACON) // This wall is actually the goal block.
+                    complete();
+            }
+        }, 1L);
     }
 
     /**
-     * Get the beacon at the end of the puzzle.
-     * @return endBlock
+     * Loosely determines if a block is a part of the puzzle, and the correct Y level.
+     * @param bk
+     * @param yLevel
+     * @param type
+     * @return isPuzzle
      */
-    public Block getEndBeacon() {
-        return getPlaceBlock().getLocation().clone().add(0, 1, 0).getBlock();
+    private boolean isPuzzle(Block bk, int yLevel, Material type) {
+        Location l = bk.getLocation();
+        return l.distance(getRedstoneBlock().getLocation()) <= 50 && l.getBlockY() == yLevel && bk.getType() == type;
+    }
+
+    @SuppressWarnings("deprecation")
+    private void setRepeater(Block bk, Material mat, long reset) {
+        List<Player> players = getDungeon().getPlayers();
+        players.forEach(p -> p.sendBlockChange(bk.getLocation(), mat, bk.getData()));
+        if (reset > 0)
+            Bukkit.getScheduler().runTaskLater(Core.getInstance(), () -> setRepeater(bk, bk.getType(), -1), reset);
     }
 
     @Override
-    public void onButtonPress(Block bk) {
-        Location start = bk.getLocation();
-        Location end = getEndBeacon().getLocation();
-        if (bk.getType() != Material.DISPENSER || start.getBlockY() != end.getBlockY() || start.distance(end) >= 50 || isTracing() || isComplete())
-            return;
-
-        BlockFace[] direction = new BlockFace[] {getDirection(bk)};
-        Location lazer = bk.getRelative(direction[0]).getLocation().add(.5, .15,.5);
-
-        traceTask = addTimerTask(() -> {
-            Block b = lazer.getBlock(); // Get the block the lazer is currently in.
-            if (b.getType() != Material.AIR) { // If we've hit a block.
-                if (b.getType() == Material.DIODE_BLOCK_OFF) { // Change direction.
-                    direction[0] = getDirection(b);
-                    byte d = b.getData();
-                    b.setType(Material.DIODE_BLOCK_ON);
-                    b.setData(d);
-                } else if (b.getType() != Material.DIODE_BLOCK_ON){ // We've hit a wall.
-                    traceTask.cancel(); // Stop trying to trace the lazer.
-                    traceTask = null;
-
-                    if (b.getType() == Material.BEACON) { // This wall is actually the goal block.
-                        complete();
-                    } else { // Reset board.
-                        getParticles().clear();
-                        Utils.getBlocksBetween(getEndBeacon(), bk).stream().filter(r -> r.getType() == Material.DIODE_BLOCK_ON)
-                                .forEach(r -> r.setType(Material.DIODE_BLOCK_OFF)); // Reset repeaters.
-                    }
-                    return;
-                }
-            } else {
-                particles.add(lazer.clone());
-                drawLazer(lazer);
-            }
-
-            BlockFace d = direction[0]; // Move the lazer along its path.
-            lazer.add(d.getModX() / PER_BLOCK, 0, d.getModZ() / PER_BLOCK);
-        }, 2L);
-    }
-
-    private BlockFace getDirection(Block bk) {
-        return ((Directional) bk.getState().getData()).getFacing();
-    }
-
-    private void drawLazer(Location loc) {
-        loc.getWorld().spawnParticle(Particle.REDSTONE, loc, 1, 0, 0, 0, 0);
-    }
-
-    /**
-     * Are we currently tracing the redstone path?
-     * @return isTracing
-     */
-    public boolean isTracing() {
-        return traceTask != null;
+    protected boolean canTrigger() {
+        return super.canTrigger() && traceTask == null;
     }
 }

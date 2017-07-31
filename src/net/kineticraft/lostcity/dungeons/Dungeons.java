@@ -3,18 +3,22 @@ package net.kineticraft.lostcity.dungeons;
 import com.destroystokyo.paper.Title;
 import lombok.Getter;
 import net.kineticraft.lostcity.Core;
-import net.kineticraft.lostcity.dungeons.dungeons.barleyshope.LazerPuzzle;
+import net.kineticraft.lostcity.dungeons.commmands.CommandDQuit;
+import net.kineticraft.lostcity.dungeons.commmands.CommandDPlay;
+import net.kineticraft.lostcity.dungeons.commmands.CommandInvoke;
+import net.kineticraft.lostcity.dungeons.commmands.CommandPuzzleTrigger;
+import net.kineticraft.lostcity.events.CommandRegisterEvent;
 import net.kineticraft.lostcity.item.ItemManager;
 import net.kineticraft.lostcity.mechanics.ArmorStands;
 import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
 import net.kineticraft.lostcity.mechanics.system.Restrict;
 import net.kineticraft.lostcity.mechanics.system.BuildType;
 import net.kineticraft.lostcity.mechanics.system.Mechanic;
-import net.kineticraft.lostcity.utils.ReflectionUtil;
 import net.kineticraft.lostcity.utils.ServerUtils;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.block.Block;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -22,6 +26,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -34,6 +39,7 @@ import java.util.stream.Collectors;
 
 /**
  * Runs the Dungeons of the game.
+ * TODO: Dungeon bosses.
  * Created by Kneesnap on 7/11/2017.
  */
 @Restrict(BuildType.PRODUCTION)
@@ -46,7 +52,6 @@ public class Dungeons extends Mechanic {
         Core.makeFolder("dungeons");
         Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () ->
             new ArrayList<>(getDungeons()).stream().filter(d -> d.getPlayers().isEmpty()).forEach(Dungeon::remove), 0L, 600L);
-        new LazerPuzzle(new Location(Core.getMainWorld(), 17, 3, 282));
     }
 
     @Override // Remove all dungeons on shutdown.
@@ -58,6 +63,16 @@ public class Dungeons extends Mechanic {
     public void onQuit(Player player) {
         if (isDungeon(player))
             getDungeon(player).removePlayer(player);
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onMonsterSpawn(CreatureSpawnEvent evt) {
+        evt.setCancelled(isDungeon(evt.getLocation()) && evt.getSpawnReason() != CreatureSpawnEvent.SpawnReason.CUSTOM);
+    }
+
+    @EventHandler
+    public void onCommandRegister(CommandRegisterEvent evt) {
+        evt.register(new CommandDPlay(), new CommandDQuit(), new CommandPuzzleTrigger(), new CommandInvoke());
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
@@ -79,7 +94,8 @@ public class Dungeons extends Mechanic {
 
     @EventHandler(ignoreCancelled = true)
     public void onAttemptExit(PlayerTeleportEvent evt) {
-        if (!isDungeon(evt.getFrom()) || isDungeon(evt.getTo()))
+        Player p = evt.getPlayer();
+        if (!isDungeon(evt.getFrom()) || isDungeon(evt.getTo()) || p.getGameMode() == GameMode.SPECTATOR || MetadataManager.hasCooldown(p, "dquit"))
             return;
         evt.setCancelled(true);
         evt.getPlayer().sendMessage(ChatColor.RED + "You may not teleport out of a dungeon. Use /dquit if you'd like to exit.");
@@ -109,7 +125,7 @@ public class Dungeons extends Mechanic {
      * @param p
      */
     private static void makeCorpse(Player p) {
-        ArmorStand as = ArmorStands.spawnArmorStand(p.getLocation().subtract(0, 1, 0), "corpse");
+        ArmorStand as = ArmorStands.spawnArmorStand(p.getLocation(), "corpse");
         Utils.mirrorItems(p, as);
         as.setHelmet(ItemManager.makeSkull(p.getName()));
         as.setCustomName(ChatColor.RED + p.getName() + "'s Corpse");
@@ -162,6 +178,15 @@ public class Dungeons extends Mechanic {
     }
 
     /**
+     * Get the dungeon that a given block is placed in.
+     * @param block
+     * @return dungeon
+     */
+    public static Dungeon getDungeon(Block block) {
+        return getDungeon(block.getWorld());
+    }
+
+    /**
      * Get the dungeon that this entity or player is currently in.
      * @param e
      * @return dungeon
@@ -195,7 +220,7 @@ public class Dungeons extends Mechanic {
         if (edit) // Only let staff into edit mode.
             players = players.stream().filter(p -> Utils.getRank(p).isStaff()).collect(Collectors.toList());
 
-        Dungeon dungeon = ReflectionUtil.construct(type.getDungeonClass(), players);
+        Dungeon dungeon = type.getConstruct().apply(players);
         dungeon.setEditMode(edit);
         dungeon.setup(type);
         getDungeons().add(dungeon);

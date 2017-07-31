@@ -5,11 +5,14 @@ import lombok.Getter;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.data.KCPlayer;
+import net.kineticraft.lostcity.dungeons.dungeons.barleyshope.BarleysHope;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.io.File;
+import java.util.List;
+import java.util.function.Function;
 
 /**
  * A registry of our dungeons.
@@ -18,9 +21,9 @@ import java.io.File;
 @AllArgsConstructor @Getter
 public enum DungeonType {
 
-    BARLEYS_HOPE(Dungeon.class, "Barley's Hope", "Save Mr. Barley!", "Mr. Barley has been saved");
+    BARLEYS_HOPE(BarleysHope::new, "Barley's Hope", "Save Mr. Barley!", "Mr. Barley has been saved");
 
-    private final Class<? extends Dungeon> dungeonClass;
+    private final Function<List<Player>, Dungeon> construct;
     private final String name;
     private final String entryMessage;
     private final String finishMessage;

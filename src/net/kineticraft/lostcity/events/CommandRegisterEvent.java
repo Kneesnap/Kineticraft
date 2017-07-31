@@ -1,5 +1,6 @@
 package net.kineticraft.lostcity.events;
 
+import lombok.Getter;
 import net.kineticraft.lostcity.commands.Command;
 import net.kineticraft.lostcity.commands.Commands;
 import org.bukkit.event.Event;
@@ -12,8 +13,7 @@ import java.util.stream.Stream;
  * Created by Kneesnap on 7/22/2017.
  */
 public class CommandRegisterEvent extends Event {
-
-    private static final HandlerList handlers = new HandlerList();
+    @Getter private static final HandlerList handlerList = new HandlerList();
 
     /**
      * Register commands.
@@ -23,8 +23,7 @@ public class CommandRegisterEvent extends Event {
         Stream.of(c).forEach(Commands::addCommand);
     }
 
-    @Override
     public HandlerList getHandlers() {
-        return handlers;
+        return getHandlerList();
     }
 }

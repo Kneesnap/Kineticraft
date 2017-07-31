@@ -2,7 +2,6 @@ package net.kineticraft.lostcity.cutscenes.actions.entity;
 
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.cutscenes.annotations.ActionData;
-import net.kineticraft.lostcity.cutscenes.CutsceneEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -18,9 +17,9 @@ public class ActionEntityShakeHead extends ActionEntity {
     private int nods = 3;
 
     @Override
-    public void execute(CutsceneEvent event) {
+    public void execute() {
         for (int i = 0; i <= nods * 2; i++)
-            turn(getEntity(event), i);
+            turn(getEntity(), i);
     }
 
     private void turn(Entity e, int tick) {

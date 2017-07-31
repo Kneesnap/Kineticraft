@@ -1,5 +1,6 @@
 package net.kineticraft.lostcity.events;
 
+import lombok.Getter;
 import net.kineticraft.lostcity.mechanics.system.Mechanic;
 import net.kineticraft.lostcity.mechanics.system.MechanicManager;
 import org.bukkit.event.Event;
@@ -12,8 +13,7 @@ import java.util.stream.Stream;
  * Created by Kneesnap on 7/22/2017.
  */
 public class MechanicRegisterEvent extends Event {
-
-    private static final HandlerList handlers = new HandlerList();
+    @Getter private static final HandlerList handlerList = new HandlerList();
 
     /**
      * Register mechanic(s).
@@ -33,6 +33,6 @@ public class MechanicRegisterEvent extends Event {
 
     @Override
     public HandlerList getHandlers() {
-        return handlers;
+        return getHandlerList();
     }
 }

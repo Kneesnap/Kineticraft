@@ -3,9 +3,9 @@ package net.kineticraft.lostcity.mechanics;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.kineticraft.lostcity.EnumRank;
-import net.kineticraft.lostcity.commands.Commands;
 import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.data.KCPlayer;
+import net.kineticraft.lostcity.events.CommandRegisterEvent;
 import net.kineticraft.lostcity.mechanics.system.Mechanic;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -28,10 +28,10 @@ import java.util.stream.Collectors;
  */
 public class Toggles extends Mechanic {
 
-    @Override
-    public void onEnable() {
+    @EventHandler
+    public void onCommandRegister(CommandRegisterEvent evt) {
         for (Toggle t : Toggle.values())
-            Commands.addCommand(new ToggleCommand(t));
+            evt.register(new ToggleCommand(t));
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
@@ -108,6 +108,7 @@ public class Toggles extends Mechanic {
     public enum Toggle {
         PVP("pvp status"),
         CENSOR("chat filter"),
+        FLIGHT(EnumRank.MEDIA, "flight"),
         GOD(EnumRank.TRIAL, "god mode");
 
         private final EnumRank minRank;

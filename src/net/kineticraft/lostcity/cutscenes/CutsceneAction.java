@@ -1,20 +1,24 @@
 package net.kineticraft.lostcity.cutscenes;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import net.kineticraft.lostcity.cutscenes.annotations.ActionData;
 import net.kineticraft.lostcity.cutscenes.annotations.AllowNull;
 import net.kineticraft.lostcity.cutscenes.gui.CutsceneActionEditor;
 import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.data.reflect.JsonSerializer;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.World;
 
 /**
  * Represents an action taken during a cutscene stage.
  * Created by Kneesnap on 7/22/2017.
  */
-@AllArgsConstructor @Getter
+@Getter @Setter
 public abstract class CutsceneAction implements Jsonable {
+
+    private transient CutsceneEvent event;
 
     /**
      * Get annotated action data of this action.
@@ -26,9 +30,8 @@ public abstract class CutsceneAction implements Jsonable {
 
     /**
      * Execute this action.
-     * @param event
      */
-    public abstract void execute(CutsceneEvent event);
+    public abstract void execute();
 
     /**
      * Returns if this action is valid. An action is valid if all the required fields are not null.
@@ -65,5 +68,33 @@ public abstract class CutsceneAction implements Jsonable {
     @Override
     public String toString() {
         return toJsonString();
+    }
+
+    /**
+     * Create a duplicate Location with the correct world.
+     * @return fixed
+     */
+    protected Location fixLocation(Location old) {
+        return fixLocation(old, getWorld());
+    }
+
+    /**
+     * Create a duplicate location with a set world.
+     * @param old
+     * @param world
+     * @return fixed
+     */
+    protected Location fixLocation(Location old, World world) {
+        Location fixed = old.clone();
+        fixed.setWorld(world);
+        return fixed;
+    }
+
+    /**
+     * Get the world this cutscene is taking place in.
+     * @return world
+     */
+    protected World getWorld() {
+        return getEvent().getStatus().getCamera().getWorld();
     }
 }

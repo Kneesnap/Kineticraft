@@ -1,13 +1,11 @@
-package net.kineticraft.lostcity.commands.discord;
+package net.kineticraft.lostcity.discord;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.dv8tion.jda.core.entities.*;
 import net.kineticraft.lostcity.Core;
+import net.kineticraft.lostcity.commands.DiscordCommand;
 import net.kineticraft.lostcity.EnumRank;
-import net.kineticraft.lostcity.discord.DiscordSender;
-import net.kineticraft.lostcity.discord.DiscordAPI;
-import net.kineticraft.lostcity.discord.DiscordChannel;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;

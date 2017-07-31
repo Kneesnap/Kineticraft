@@ -1,8 +1,7 @@
-package net.kineticraft.lostcity.commands.discord;
+package net.kineticraft.lostcity.discord;
 
-import net.kineticraft.lostcity.discord.DiscordSender;
+import net.kineticraft.lostcity.commands.DiscordCommand;
 import net.kineticraft.lostcity.data.KCPlayer;
-import net.kineticraft.lostcity.discord.DiscordAPI;
 import net.kineticraft.lostcity.mechanics.Callbacks;
 import net.kineticraft.lostcity.mechanics.DataHandler;
 import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;

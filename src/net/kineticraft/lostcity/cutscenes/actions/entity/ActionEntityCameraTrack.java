@@ -2,11 +2,11 @@ package net.kineticraft.lostcity.cutscenes.actions.entity;
 
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.cutscenes.annotations.ActionData;
-import net.kineticraft.lostcity.cutscenes.CutsceneEvent;
 import net.kineticraft.lostcity.data.lists.JsonList;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -25,8 +25,9 @@ public class ActionEntityCameraTrack extends ActionEntity {
     private transient List<Location> tempTrack;
 
     @Override
-    public void execute(CutsceneEvent event) {
-        Entity e = getEntity(event);
+    public void execute() {
+        Entity e = getEntity();
+        World w = getWorld();
         tempTrack = new ArrayList<>(track.getValues());
         task = Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () -> {
             if (tempTrack.isEmpty()) {
@@ -34,7 +35,7 @@ public class ActionEntityCameraTrack extends ActionEntity {
                 return;
             }
 
-            e.teleport(tempTrack.remove(0));
+            e.teleport(fixLocation(tempTrack.remove(0), w));
         }, 0L, 20 / perSecond);
     }
 

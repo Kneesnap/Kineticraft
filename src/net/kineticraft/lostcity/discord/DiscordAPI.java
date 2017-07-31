@@ -6,6 +6,7 @@ import net.dv8tion.jda.core.entities.impl.MemberImpl;
 import net.dv8tion.jda.core.managers.GuildController;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.config.Configs;
+import net.kineticraft.lostcity.events.CommandRegisterEvent;
 import net.kineticraft.lostcity.mechanics.system.Mechanic;
 import net.kineticraft.lostcity.utils.ServerUtils;
 import org.bukkit.Bukkit;
@@ -37,6 +38,11 @@ public class DiscordAPI extends Mechanic {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true) // Announce chat to discord.
     public void onChat(AsyncPlayerChatEvent evt) {
         sendGame(String.format(evt.getFormat(), "**" + evt.getPlayer().getName() + "**", evt.getMessage()));
+    }
+
+    @EventHandler
+    public void onCommandRegister(CommandRegisterEvent evt) {
+        evt.register(new CommandDiscordVerify(), new CommandServerVote());
     }
 
     /**

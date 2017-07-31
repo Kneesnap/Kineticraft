@@ -1,11 +1,9 @@
-package net.kineticraft.lostcity.commands.staff;
+package net.kineticraft.lostcity.cutscenes.commands;
 
 import net.kineticraft.lostcity.commands.StaffCommand;
 import net.kineticraft.lostcity.cutscenes.Cutscene;
 import net.kineticraft.lostcity.cutscenes.Cutscenes;
 import net.kineticraft.lostcity.cutscenes.gui.GUICutsceneEditor;
-import net.kineticraft.lostcity.mechanics.system.BuildType;
-import net.kineticraft.lostcity.mechanics.system.Restrict;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -14,7 +12,6 @@ import org.bukkit.entity.Player;
  * Create or edit cutscenes.
  * Created by Kneesnap on 7/28/2017.
  */
-@Restrict(BuildType.PRODUCTION)
 public class CommandCutsceneEditor extends StaffCommand {
     public CommandCutsceneEditor() {
         super("<cutscene>", "Edit a cutscene.", "csedit");

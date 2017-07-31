@@ -1,9 +1,7 @@
-package net.kineticraft.lostcity.commands.staff;
+package net.kineticraft.lostcity.guis;
 
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.StaffCommand;
-import net.kineticraft.lostcity.guis.GUIType;
-import net.kineticraft.lostcity.guis.GUIManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -30,8 +28,7 @@ public class CommandGUIs extends StaffCommand {
     @Override
     protected void showUsage(CommandSender sender) {
         super.showUsage(sender);
-        sender.sendMessage(Arrays.stream(GUIType.values()).map(GUIType::name)
-                .collect(Collectors.joining(ChatColor.RED + ", " + ChatColor.YELLOW,
-                        ChatColor.RED + "Menus: " + ChatColor.YELLOW, "")));
+        sender.sendMessage(ChatColor.RED + "Menus: " + ChatColor.YELLOW + Arrays.stream(GUIType.values())
+                .map(GUIType::name).collect(Collectors.joining(ChatColor.RED + ", " + ChatColor.YELLOW)));
     }
 }

@@ -1,5 +1,6 @@
 package net.kineticraft.lostcity.commands;
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 
@@ -14,7 +15,22 @@ public abstract class BlockCommand extends Command {
     }
 
     @Override
+    protected void onCommand(CommandSender sender, String[] args) {
+        onCommand((BlockCommandSender) sender, args);
+    }
+
+    protected abstract void onCommand(BlockCommandSender sender, String[] args);
+
+    @Override
     public boolean canUse(CommandSender sender, boolean showMessage) {
-        return sender instanceof BlockCommandSender;
+        boolean passBlock = sender instanceof BlockCommandSender;
+        if (!passBlock && showMessage)
+            sender.sendMessage(ChatColor.RED + "This command can only be in a command block.");
+        return passBlock;
+    }
+
+    @Override // Command blocks can use this command.
+    public final boolean allowCommandBlocks() {
+        return true;
     }
 }

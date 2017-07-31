@@ -3,6 +3,7 @@ package net.kineticraft.lostcity.utils;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import lombok.Cleanup;
+import lombok.SneakyThrows;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.discord.DiscordSender;
@@ -14,9 +15,11 @@ import net.kineticraft.lostcity.item.ItemType;
 import net.kineticraft.lostcity.item.ItemWrapper;
 import net.kineticraft.lostcity.mechanics.metadata.Metadata;
 import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
+import org.apache.commons.io.FileUtils;
 import org.bukkit.*;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.*;
@@ -25,6 +28,7 @@ import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
+import org.bukkit.material.Directional;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
@@ -911,11 +915,11 @@ public class Utils {
      * Delete a file relative to the server path.
      * @param path
      */
-    @SuppressWarnings("ResultOfMethodCallIgnored")
+    @SneakyThrows
     public static void removeFile(String path) {
         File f = new File(path);
         if (f.exists())
-            f.delete();
+            FileUtils.forceDelete(f);
     }
 
     /**
@@ -1158,5 +1162,14 @@ public class Utils {
     public static void looseFor(int a, int b, Consumer<Integer> code) {
         for (int i = Math.min(a, b); i < Math.max(a, b); i++)
             code.accept(i);
+    }
+
+    /**
+     * Get the direction a block is facing.
+     * @param bk
+     * @return facing
+     */
+    public static BlockFace getDirection(Block bk) {
+        return bk.getState().getData() instanceof Directional ? ((Directional) bk.getState().getData()).getFacing() : BlockFace.SELF;
     }
 }

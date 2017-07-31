@@ -1,4 +1,4 @@
-package net.kineticraft.lostcity.commands.discord;
+package net.kineticraft.lostcity.commands;
 
 import lombok.Getter;
 import lombok.Setter;

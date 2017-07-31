@@ -191,7 +191,10 @@ public class Core extends JavaPlugin {
      */
     public static boolean isApplicableBuild(Object object) {
         Class<?> cls = (object instanceof Class) ? (Class<?>) object : object.getClass();
-        return !cls.isAnnotationPresent(Restrict.class)
+        boolean a = !cls.isAnnotationPresent(Restrict.class)
                 || !Arrays.asList(cls.getAnnotation(Restrict.class).value()).contains(ServerUtils.getType());
+        if (!a && cls != null)
+            logInfo("Not registering " + cls.getSimpleName() + ".");
+        return a;
     }
 }

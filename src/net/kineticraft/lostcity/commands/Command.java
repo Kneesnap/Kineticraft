@@ -303,4 +303,12 @@ public abstract class Command {
     protected void autocompleteOnline(int arg) {
         autocomplete(arg, p -> Bukkit.getOnlinePlayers().stream().map(Player::getName).collect(Collectors.toList()));
     }
+
+    /**
+     * Are command blocks able to use this command?
+     * @return allowed
+     */
+    public boolean allowCommandBlocks() {
+        return false;
+    }
 }

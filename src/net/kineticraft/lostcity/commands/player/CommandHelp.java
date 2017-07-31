@@ -63,7 +63,7 @@ public class CommandHelp extends PlayerCommand {
         List<String> list = Commands.getCommands().stream().filter(c -> c.canUse(sender, false) && c.getHelp() != null)
                 .map(cmd ->  ChatColor.GRAY + cmd.getCommandPrefix() + cmd.getName() + ": " + ChatColor.WHITE + cmd.getHelp())
                 .collect(Collectors.toList());
-        list.addAll(Configs.getRawConfig(Configs.ConfigType.HELP).getLines());
+        Configs.getRawConfig(Configs.ConfigType.HELP).getLines().stream().filter(s -> s.length() > 0).forEach(list::add);
         return list.stream().sorted(Comparator.comparing(String::toString)).collect(Collectors.toList());
     }
 }

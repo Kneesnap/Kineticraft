@@ -17,7 +17,6 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.commands.CommandType;
 import net.kineticraft.lostcity.commands.Commands;
-import net.kineticraft.lostcity.commands.discord.CommandServerVote;
 import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.utils.Utils;

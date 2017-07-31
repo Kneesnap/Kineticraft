@@ -2,7 +2,6 @@ package net.kineticraft.lostcity.cutscenes.actions;
 
 import net.kineticraft.lostcity.cutscenes.annotations.ActionData;
 import net.kineticraft.lostcity.cutscenes.CutsceneAction;
-import net.kineticraft.lostcity.cutscenes.CutsceneEvent;
 import org.bukkit.Material;
 
 /**
@@ -11,11 +10,11 @@ import org.bukkit.Material;
  */
 @ActionData(Material.SIGN)
 public class ActionSendMessage extends CutsceneAction {
-    private String message;
+    private String message = "";
 
     @Override
-    public void execute(CutsceneEvent event) {
-        event.getStatus().getPlayers().forEach(p -> p.sendMessage(String.format(message, p.getName())));
+    public void execute() {
+        getEvent().getStatus().getPlayers().forEach(p -> p.sendMessage(String.format(message, p.getName())));
     }
 
     @Override

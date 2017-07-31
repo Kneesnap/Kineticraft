@@ -1,4 +1,4 @@
-package net.kineticraft.lostcity.commands.staff;
+package net.kineticraft.lostcity.cutscenes.commands;
 
 import net.kineticraft.lostcity.commands.StaffCommand;
 import net.kineticraft.lostcity.cutscenes.Cutscene;

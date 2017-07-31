@@ -1,7 +1,6 @@
 package net.kineticraft.lostcity.cutscenes.actions.entity;
 
 import net.kineticraft.lostcity.cutscenes.annotations.ActionData;
-import net.kineticraft.lostcity.cutscenes.CutsceneEvent;
 import net.kineticraft.lostcity.cutscenes.annotations.AllowNull;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -17,8 +16,8 @@ public class ActionUpdateEntity extends ActionEntity {
     private boolean showName;
 
     @Override
-    public void execute(CutsceneEvent event) {
-        Entity e = getEntity(event);
+    public void execute() {
+        Entity e = getEntity();
         if (customName != null)
             e.setCustomName(ChatColor.DARK_GREEN + customName);
         e.setCustomNameVisible(showName);

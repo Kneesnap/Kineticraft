@@ -103,7 +103,6 @@ public class MechanicManager implements Listener {
             return;
         MechanicManager.getMechanics().add(m);
         Bukkit.getPluginManager().registerEvents(m, Core.getInstance());
-        m.onEnable();
     }
 
     /**
@@ -116,7 +115,7 @@ public class MechanicManager implements Listener {
         // Register all mechanics here, in order of startup:
         registerDefault();
         Bukkit.getPluginManager().callEvent(new MechanicRegisterEvent()); // Tell other plugins to register their mechanics.
-
+        getMechanics().forEach(Mechanic::onEnable);
         Core.logInfo("Mechanics Registered.");
     }
 

@@ -2,7 +2,10 @@
  - Improved Cutscene Editor
  - Worked on Dungeon system.
  - Dungeon Puzzles
- - Monthly vote reset is more fair.
+ - Monthly vote reset is more precise.
+ - Backend Organization.
+
+
 
 &8Staff Changes:
  - Added /back.

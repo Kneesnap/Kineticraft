@@ -3,8 +3,10 @@ package net.kineticraft.lostcity.config;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.kineticraft.lostcity.config.configs.*;
+import net.kineticraft.lostcity.events.CommandRegisterEvent;
 import net.kineticraft.lostcity.mechanics.system.Mechanic;
 import net.kineticraft.lostcity.utils.ReflectionUtil;
+import org.bukkit.event.EventHandler;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,6 +19,11 @@ import java.util.Map;
 public class Configs extends Mechanic {
 
     private static Map<ConfigType, Config> configs = new HashMap<>();
+
+    @EventHandler
+    public void onCommandRegister(CommandRegisterEvent evt) {
+        evt.register(new CommandConfig());
+    }
 
     /**
      * Gets the given config data.

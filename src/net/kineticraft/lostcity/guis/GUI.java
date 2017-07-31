@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.data.KCPlayer;
+import net.kineticraft.lostcity.events.CommandRegisterEvent;
 import net.kineticraft.lostcity.item.ItemManager;
 import net.kineticraft.lostcity.item.ItemWrapper;
 import net.kineticraft.lostcity.item.display.GUIItem;
@@ -14,6 +15,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -56,6 +58,11 @@ public abstract class GUI {
         } else {
             player.sendMessage(ChatColor.RED + "This GUI is disabled on this build-type.");
         }
+    }
+
+    @EventHandler
+    public void onCommandRegister(CommandRegisterEvent evt) {
+        evt.register(new CommandGUIs());
     }
 
     /**
@@ -358,8 +365,10 @@ public abstract class GUI {
     public void setTitle(String newTitle) {
 
         // Runs a tick later so when this is called before the menu is open it still works.
-        Bukkit.getScheduler().runTask(Core.getInstance(), () -> PacketUtil.updateWindowTitle(getPlayer(), newTitle,
-                getInventory().getSize()));
+        Bukkit.getScheduler().runTask(Core.getInstance(), () -> {
+            if (GUIManager.getGUI(getPlayer()) == this)
+                PacketUtil.updateWindowTitle(getPlayer(), newTitle, getInventory().getSize());
+        });
     }
 
     /**
