@@ -1,4 +1,4 @@
-package net.kineticraft.lostcity.dungeons.commmands;
+package net.kineticraft.lostcity.dungeons.commands;
 
 import net.kineticraft.lostcity.dungeons.Dungeons;
 import org.bukkit.block.CommandBlock;
@@ -16,5 +16,10 @@ public class CommandPuzzleTrigger extends DungeonCommand {
     @Override
     protected void onCommand(BlockCommandSender sender, String[] args) {
         Dungeons.getDungeon(sender.getBlock()).triggerPuzzles(args[0], (CommandBlock) sender.getBlock().getState());
+    }
+
+    @Override
+    protected boolean deleteOnExecute() {
+        return false;
     }
 }

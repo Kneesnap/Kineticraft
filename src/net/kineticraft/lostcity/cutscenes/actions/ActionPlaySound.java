@@ -1,5 +1,6 @@
 package net.kineticraft.lostcity.cutscenes.actions;
 
+import lombok.AllArgsConstructor;
 import net.kineticraft.lostcity.cutscenes.annotations.ActionData;
 import net.kineticraft.lostcity.cutscenes.CutsceneAction;
 import net.kineticraft.lostcity.utils.Utils;
@@ -11,12 +12,16 @@ import org.bukkit.Sound;
  * Play a sound at a location.
  * Created by Kneesnap on 7/22/2017.
  */
-@ActionData(Material.NOTE_BLOCK)
+@ActionData(Material.NOTE_BLOCK) @AllArgsConstructor
 public class ActionPlaySound extends CutsceneAction {
     private Location location = null;
     private Sound sound = Sound.ENTITY_PLAYER_LEVELUP;
     private float pitch = 1F;
     private int times = 1;
+
+    public ActionPlaySound() {
+
+    }
 
     @Override
     public void execute() {

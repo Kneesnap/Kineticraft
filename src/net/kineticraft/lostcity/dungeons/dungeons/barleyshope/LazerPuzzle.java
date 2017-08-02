@@ -27,7 +27,7 @@ public class LazerPuzzle extends Puzzle {
     private static final double PER_BLOCK = 5;
 
     public LazerPuzzle() {
-        super(new Location(null, -113, 12, 44));
+        super(new Location(null, 0, 0, 0), BlockFace.NORTH);
     }
 
     @SuppressWarnings("deprecation")
@@ -36,7 +36,7 @@ public class LazerPuzzle extends Puzzle {
         if (!canTrigger())
             return;
 
-        int y = getRedstoneBlock().getLocation().getBlockY() + 2;
+        int y = getGateLocation().getBlockY();
         Block above = bk.getRelative(BlockFace.UP);
         if (isPuzzle(bk, y - 1, Material.WOOL) && above.getType() == Material.AIR && !rightClick) {
             above.setType(Material.DIODE_BLOCK_OFF);
@@ -102,7 +102,7 @@ public class LazerPuzzle extends Puzzle {
      */
     private boolean isPuzzle(Block bk, int yLevel, Material type) {
         Location l = bk.getLocation();
-        return l.distance(getRedstoneBlock().getLocation()) <= 50 && l.getBlockY() == yLevel && bk.getType() == type;
+        return l.distance(getGateLocation()) <= 50 && l.getBlockY() == yLevel && bk.getType() == type;
     }
 
     @SuppressWarnings("deprecation")

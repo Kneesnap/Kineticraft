@@ -109,20 +109,21 @@ public class Punishments extends Mechanic {
     @AllArgsConstructor @Getter
     public enum PunishmentType {
 
-        SPAM("Spamming", 1, Material.PORK),
-        HARASSMENT("Harassment", 1, Material.LAVA_BUCKET),
-        ADVERTISING("Advertising", 1, Material.IRON_DOOR),
-        AUTO_RELOG("Auto Relogger", 1, Material.IRON_INGOT),
-        SLURS("Slurs", 3, Material.REDSTONE),
-        TOXICITY("Toxicity", 3, Material.REDSTONE_BLOCK),
-        THREATS("Threats", 3, Material.GOLD_SWORD),
-        ADULT("Adult Content", 3, Material.EXP_BOTTLE),
-        HACKING("General Hacks", 9, Material.PAINTING),
-        FLYING("Flying", 9, Material.ELYTRA),
-        XRAY("Xraying", 9, Material.DIAMOND),
-        GRIEF("Griefing (Minor)", 5, Material.FLINT_AND_STEEL),
-        GRIEF_LARGE("Griefing (Major)", 20, Material.TNT),
-        ALT_ACCOUNT("Ban Evasion", -1, Material.SEEDS);
+        SPAM("Spamming", 2, Material.PORK),
+        HARASSMENT("Harassment", 2, Material.LAVA_BUCKET),
+        ADVERTISING("Advertising", 2, Material.BOOK_AND_QUILL),
+        AUTO_RELOG("Auto Relogger", 2, Material.IRON_DOOR),
+        TOXICITY("Toxicity", 3, Material.POISONOUS_POTATO),
+        SLURS("Slurs", 7, Material.GOLD_HOE),
+        THREATS("Threats", 7, Material.IRON_SWORD),
+        ADULT("Adult Content", 7, Material.BED),
+        HACKING("General Hacks", 10, Material.PAINTING),
+        FLYING("Flying", 10, Material.ELYTRA),
+        XRAY("Xraying", 10, Material.DIAMOND),
+        GRIEF("Griefing (Minor)", 9, Material.FLINT_AND_STEEL),
+        GRIEF_LARGE("Griefing (Major)", 30, Material.TNT),
+        ALT_ACCOUNT("Ban Evasion", -1, Material.ARMOR_STAND),
+        PERMANENT("The Ban Hammer has spoken!", -1, Material.GOLD_AXE);
 
         private final String display;
         private final int punishLength;
@@ -134,7 +135,7 @@ public class Punishments extends Mechanic {
          * @return initial
          */
         public int getInitialTime() {
-            return getPunishLength() == -1 ? -1 : 8;
+            return getPunishLength() == -1 ? -1 : 24;
         }
     }
 }

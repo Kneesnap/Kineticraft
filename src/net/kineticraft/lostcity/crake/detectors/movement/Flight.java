@@ -9,7 +9,6 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -17,7 +16,6 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * A rudementary flight detector.
@@ -73,8 +71,7 @@ public class Flight extends Detector {
      */
     private static boolean checkNearby(Location loc, Material... mat) {
         List<Material> types = Arrays.asList(mat);
-        return Stream.of(BlockFace.SELF, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.EAST)
-                .map(bf -> loc.getBlock().getRelative(bf).getType()).anyMatch(types::contains);
+        return Utils.FACES.stream().map(bf -> loc.getBlock().getRelative(bf).getType()).anyMatch(types::contains);
     }
 
     /**

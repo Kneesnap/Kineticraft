@@ -1,4 +1,4 @@
-package net.kineticraft.lostcity.dungeons.commmands;
+package net.kineticraft.lostcity.dungeons.commands;
 
 import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.dungeons.Dungeon;

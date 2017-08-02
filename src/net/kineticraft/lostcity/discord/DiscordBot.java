@@ -96,8 +96,7 @@ public class DiscordBot extends ListenerAdapter {
      * @param callback
      */
     public void sendMessage(MessageChannel channel, String original, Consumer<Message> callback) {
-
-        if (channel == null)
+        if (channel == null || original == null)
             return;
 
         if (!DiscordAPI.isAlive()) {

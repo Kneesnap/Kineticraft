@@ -2,6 +2,10 @@ package net.kineticraft.lostcity.utils;
 
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import com.xxmicloxx.NoteBlockAPI.NBSDecoder;
+import com.xxmicloxx.NoteBlockAPI.RadioSongPlayer;
+import com.xxmicloxx.NoteBlockAPI.Song;
+import com.xxmicloxx.NoteBlockAPI.SongPlayer;
 import lombok.Cleanup;
 import lombok.SneakyThrows;
 import net.kineticraft.lostcity.Core;
@@ -49,6 +53,8 @@ import java.util.stream.Collectors;
  * Created by Kneesnap on 5/29/2017.
  */
 public class Utils {
+
+    public static List<BlockFace> FACES = Arrays.asList(BlockFace.SELF, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST);
 
     /**
      * Gets an enum value from the given class. Returns null if not found.
@@ -1171,5 +1177,18 @@ public class Utils {
      */
     public static BlockFace getDirection(Block bk) {
         return bk.getState().getData() instanceof Directional ? ((Directional) bk.getState().getData()).getFacing() : BlockFace.SELF;
+    }
+
+    /**
+     * Play a .nbs sound file to the given players.
+     * @param players
+     * @param sound
+     */
+    public static void playSound(List<Player> players, String sound) {
+        Song s = NBSDecoder.parse(Core.getFile("audio/" + sound + ".nbs"));
+        SongPlayer player = new RadioSongPlayer(s);
+        player.setAutoDestroy(true);
+        players.forEach(player::addPlayer);
+        player.setPlaying(true);
     }
 }

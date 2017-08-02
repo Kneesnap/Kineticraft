@@ -54,7 +54,7 @@ public class KCPlayer implements Jsonable {
     private Particle effect;
     private boolean vanished;
     private String nickname;
-    private int secondsPlayed;
+    private long secondsPlayed;
     private int lastBuild;
     private int monthlyVotes;
     private int totalVotes;
@@ -180,19 +180,20 @@ public class KCPlayer implements Jsonable {
     public long getPunishExpiry() {
         int hours;
         List<Punishment> p = getPunishments().stream().filter(Punishment::isValid).collect(Collectors.toList());
-        Punishment punishment = p.isEmpty() ? null : p.get(p.size() - 1);
+        if (p.isEmpty())
+            return 0; // If there are no punishments, they're clean.
 
+        Punishment punishment = p.get(p.size() - 1);
+        PunishmentType type = punishment.getType();
         switch (p.size()) {
-            case 0:
-                return 0;
             case 1:
-                hours = punishment.getType().getInitialTime();
+                hours = type.getInitialTime();
                 break;
             case 2:
-                hours = punishment.getType().getPunishLength() * 24;
+                hours = type.getPunishLength() * 24;
                 break;
             case 3:
-                hours = ((punishment.getType().getPunishLength() * 2) + 1) * 24;
+                hours = ((type.getPunishLength() * 2) + 1) * 24;
                 break;
             default:
                 return -1;
@@ -310,7 +311,7 @@ public class KCPlayer implements Jsonable {
         Voting.giveRewards(player); // Give vote rewards, if any.
         player.setOp(getRank().isAtLeast(EnumRank.BUILDER)); // Grant or remove OP status if the player is of high enough level.
 
-        // Update things.
+        // Updates data.
         setUsername(player.getName());
         setLastIP(player.getAddress().toString().split("/")[1].split(":")[0]);
 

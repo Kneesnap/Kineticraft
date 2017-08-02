@@ -10,7 +10,7 @@ import net.kineticraft.lostcity.commands.trigger.*;
 import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.config.Configs.ConfigType;
 import net.kineticraft.lostcity.discord.DiscordSender;
-import net.kineticraft.lostcity.dungeons.commmands.CommandInvoke;
+import net.kineticraft.lostcity.dungeons.commands.CommandInvoke;
 import net.kineticraft.lostcity.events.CommandRegisterEvent;
 import net.kineticraft.lostcity.guis.CommandGUIs;
 import net.kineticraft.lostcity.guis.GUIType;
@@ -138,7 +138,6 @@ public class Commands extends Mechanic {
         Bukkit.getPluginManager().callEvent(new CommandRegisterEvent());
 
         getCommands().sort(Comparator.comparing(Command::getName)); // Sort commands alphabetically
-        getCommands().stream().filter(Command::allowCommandBlocks).forEach(BukkitCommandWrapper::new); // Register as a bukkit command.
     }
 
     /**
@@ -283,7 +282,8 @@ public class Commands extends Mechanic {
 
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onServerCommand(ServerCommandEvent evt) {
-        evt.setCancelled(handleCommand(evt.getSender(), CommandType.SLASH, CommandType.SLASH.getPrefix() + evt.getCommand())); // Handle console commands.
+        evt.setCancelled(handleCommand(evt.getSender(), CommandType.SLASH, CommandType.SLASH.getPrefix() + evt.getCommand()) // Handle console commands.
+                || handleCommand(evt.getSender(), CommandType.COMMAND_BLOCK, evt.getCommand())); // Command Block commands.
 
         if (evt.getCommand().startsWith("/ ")) {
             sendStaffChat(evt.getSender(), evt.getCommand().substring(2));

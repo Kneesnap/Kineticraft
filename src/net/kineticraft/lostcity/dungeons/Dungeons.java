@@ -3,12 +3,13 @@ package net.kineticraft.lostcity.dungeons;
 import com.destroystokyo.paper.Title;
 import lombok.Getter;
 import net.kineticraft.lostcity.Core;
-import net.kineticraft.lostcity.dungeons.commmands.CommandDQuit;
-import net.kineticraft.lostcity.dungeons.commmands.CommandDPlay;
-import net.kineticraft.lostcity.dungeons.commmands.CommandInvoke;
-import net.kineticraft.lostcity.dungeons.commmands.CommandPuzzleTrigger;
+import net.kineticraft.lostcity.dungeons.commands.CommandDQuit;
+import net.kineticraft.lostcity.dungeons.commands.CommandDPlay;
+import net.kineticraft.lostcity.dungeons.commands.CommandInvoke;
+import net.kineticraft.lostcity.dungeons.commands.CommandPuzzleTrigger;
 import net.kineticraft.lostcity.events.CommandRegisterEvent;
 import net.kineticraft.lostcity.item.ItemManager;
+import net.kineticraft.lostcity.item.ItemWrapper;
 import net.kineticraft.lostcity.mechanics.ArmorStands;
 import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
 import net.kineticraft.lostcity.mechanics.system.Restrict;
@@ -19,6 +20,8 @@ import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.Hopper;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -28,13 +31,17 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -83,6 +90,27 @@ public class Dungeons extends Mechanic {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onBlockPlace(BlockPlaceEvent evt) {
         evt.setCancelled(isDungeon(evt.getBlock().getWorld()) && !Utils.isStaff(evt.getPlayer()));
+    }
+
+    @EventHandler(ignoreCancelled = true) // Handles special items entering hoppers.
+    public void onHopperPickup(InventoryPickupItemEvent evt) {
+        if (!(evt.getInventory().getHolder() instanceof Hopper))
+            return; // Verify the inventory the item is going to enter is a hopper.
+
+        Hopper hp = (Hopper) evt.getInventory().getHolder();
+        Matcher mName = Pattern.compile("Custom ID: <(\\w+)>").matcher(hp.getInventory().getName());
+        if (!mName.find())
+            return; // If it doesn't have a Custom item ID defined, don't handle it.
+
+        ItemWrapper iw = ItemManager.constructItem(evt.getItem().getItemStack());
+        evt.setCancelled(true);
+
+        if (mName.group(1).equalsIgnoreCase(iw.getTagString("id"))) { // We've found the right item! Consume it.
+            evt.getItem().remove();
+            hp.getBlock().getRelative(BlockFace.DOWN).setType(Material.REDSTONE_BLOCK);
+        } else { // This item isn't acceptable, spit it back out.
+            evt.getItem().setVelocity(new Vector(0, .2F, 0));
+        }
     }
 
     @EventHandler

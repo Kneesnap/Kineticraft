@@ -39,7 +39,7 @@ public class CommandRankup extends PlayerCommand {
         int secondsNeeded = nextRank.getHoursNeeded() * 60 * 60;
 
         if (secondsNeeded > player.getSecondsPlayed()) {
-            int time = (secondsNeeded - player.getSecondsPlayed()) * 1000;
+            long time = (secondsNeeded - player.getSecondsPlayed()) * 1000;
             sender.sendMessage(ChatColor.RED + "You must play " + Utils.formatTime(time) + " more first.");
             return;
         }

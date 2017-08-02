@@ -32,7 +32,7 @@ public class Core extends JavaPlugin {
     @Getter
     private static Core instance;
 
-    private static final String[] FOLDERS = new String[] {"players", "messages"};
+    private static final String[] FOLDERS = new String[] {"players", "messages", "audio"};
     private static final List<String> DEVS = Arrays.asList("a1adbca1-6fc5-42eb-97c7-87259634ecc3",
             "8228fe1c-c02e-4c25-b24f-a005f08f8595");
 

@@ -10,6 +10,9 @@ import net.kineticraft.lostcity.data.reflect.JsonSerializer;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
+
+import java.util.List;
 
 /**
  * Represents an action taken during a cutscene stage.
@@ -96,5 +99,13 @@ public abstract class CutsceneAction implements Jsonable {
      */
     protected World getWorld() {
         return getEvent().getStatus().getCamera().getWorld();
+    }
+
+    /**
+     * Get the players watching this cutscene.
+     * @return players
+     */
+    protected List<Player> getPlayers() {
+        return getEvent().getStatus().getPlayers();
     }
 }

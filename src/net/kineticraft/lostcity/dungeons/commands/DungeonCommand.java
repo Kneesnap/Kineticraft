@@ -1,8 +1,9 @@
-package net.kineticraft.lostcity.dungeons.commmands;
+package net.kineticraft.lostcity.dungeons.commands;
 
 import net.kineticraft.lostcity.commands.BlockCommand;
 import net.kineticraft.lostcity.dungeons.Dungeons;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 
@@ -18,11 +19,23 @@ public abstract class DungeonCommand extends BlockCommand {
 
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
-        if (!Dungeons.isDungeon(((BlockCommandSender) sender).getBlock().getWorld())) {
+        BlockCommandSender bcs = (BlockCommandSender) sender;
+        if (!Dungeons.isDungeon(bcs.getBlock().getWorld())) {
             sender.sendMessage(ChatColor.RED + "This command can only be run in a dungeon.");
             return;
         }
 
         super.onCommand(sender, args);
+
+        if (deleteOnExecute())
+            bcs.getBlock().setType(Material.AIR);
+    }
+
+    /**
+     * Should this command block be deleted after it runs its command?
+     * @return shouldDelete
+     */
+    protected boolean deleteOnExecute() {
+        return true;
     }
 }

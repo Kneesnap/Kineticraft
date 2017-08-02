@@ -6,8 +6,8 @@ import net.kineticraft.lostcity.dungeons.Dungeon;
 import net.kineticraft.lostcity.dungeons.Dungeons;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.CommandBlock;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -28,15 +28,17 @@ import java.util.stream.Stream;
  */
 @Getter
 public abstract class Puzzle implements Listener {
-    private Location endLocation;
+    private Location gateLocation;
+    private BlockFace gateFace;
     private boolean complete;
     private List<BukkitTask> tasks = new ArrayList<>();
     private Dungeon dungeon;
 
     private static final Map<Class<? extends Puzzle>, Map<String, Method>> triggers = new HashMap<>();
 
-    public Puzzle(Location place) {
-        this.endLocation = place;
+    public Puzzle(Location place, BlockFace gateFace) {
+        this.gateLocation = place;
+        this.gateFace = gateFace;
         Bukkit.getPluginManager().registerEvents(this, Core.getInstance());
     }
 
@@ -46,7 +48,7 @@ public abstract class Puzzle implements Listener {
      */
     public void setDungeon(Dungeon d) {
         this.dungeon = d;
-        this.endLocation = fixLocation(this.endLocation);
+        this.gateLocation = fixLocation(this.gateLocation);
     }
 
     /**
@@ -59,18 +61,10 @@ public abstract class Puzzle implements Listener {
     }
 
     /**
-     * Get the block marked as the block where the redstone block should be placed after completion.
-     * @return endBlock
-     */
-    public Block getRedstoneBlock() {
-        return getEndLocation().getBlock();
-    }
-
-    /**
      * Complete this puzzle.
      */
     public void complete() {
-        //TODO: Play Jingle.
+        getDungeon().playCutscene(new PuzzleDoorCutscene(getGateLocation(), getGateFace()));
         complete = true;
         Bukkit.getScheduler().runTaskLater(Core.getInstance(), this::onComplete, 20L);
     }
@@ -81,7 +75,6 @@ public abstract class Puzzle implements Listener {
     protected void onComplete() {
         getTasks().stream().filter(t -> Bukkit.getScheduler().isCurrentlyRunning(t.getTaskId())
                 || Bukkit.getScheduler().isQueued(t.getTaskId())).forEach(BukkitTask::cancel);
-        getRedstoneBlock().setType(Material.REDSTONE_BLOCK);
     }
 
     /**

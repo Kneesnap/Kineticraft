@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * Represents a single cinematic cutscene.
@@ -67,5 +68,29 @@ public class Cutscene implements Jsonable {
                 if (clazz.isAssignableFrom(a.getClass()))
                     actions.add((T) a);
         return actions;
+    }
+
+    /**
+     * Add a stage composed of the given actions.
+     * @param actions
+     * @return stage
+     */
+    protected CutsceneStage addStage(CutsceneAction... actions) {
+        CutsceneStage stage = new CutsceneStage();
+        Stream.of(actions).forEach(stage::addAction);
+        getStages().add(stage);
+        return stage;
+    }
+
+    /**
+     * Add a stage composed of the given actions.
+     * @param ticks
+     * @param actions
+     * @return stage
+     */
+    protected CutsceneStage addStage(int ticks, CutsceneAction... actions) {
+        CutsceneStage stage = addStage(actions);
+        stage.setTicks(ticks);
+        return stage;
     }
 }

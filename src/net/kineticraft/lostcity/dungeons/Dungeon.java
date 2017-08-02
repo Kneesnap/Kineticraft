@@ -4,6 +4,8 @@ import com.destroystokyo.paper.Title;
 import lombok.Getter;
 import lombok.Setter;
 import net.kineticraft.lostcity.Core;
+import net.kineticraft.lostcity.cutscenes.Cutscene;
+import net.kineticraft.lostcity.cutscenes.Cutscenes;
 import net.kineticraft.lostcity.dungeons.puzzle.Puzzle;
 import net.kineticraft.lostcity.utils.TextBuilder;
 import net.kineticraft.lostcity.utils.Utils;
@@ -70,7 +72,7 @@ public class Dungeon {
         this.world = Bukkit.getServer().createWorld(creator);
         getWorld().setAutoSave(false);
         getWorld().setKeepSpawnInMemory(false);
-        getWorld().setDifficulty(Difficulty.HARD);
+        getWorld().setDifficulty(Difficulty.EASY);
 
         getOriginalPlayers().forEach(p -> {
             Utils.safeTp(p, getWorld().getSpawnLocation());
@@ -197,5 +199,13 @@ public class Dungeon {
         Location fixed = loc.clone();
         fixed.setWorld(getWorld());
         return fixed;
+    }
+
+    /**
+     * Play a cutscene for all players in the dungeon.
+     * @param c
+     */
+    public void playCutscene(Cutscene c) {
+        c.play(getPlayers());
     }
 }
