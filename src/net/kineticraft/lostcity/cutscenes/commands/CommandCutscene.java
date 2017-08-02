@@ -3,8 +3,6 @@ package net.kineticraft.lostcity.cutscenes.commands;
 import net.kineticraft.lostcity.commands.StaffCommand;
 import net.kineticraft.lostcity.cutscenes.Cutscene;
 import net.kineticraft.lostcity.cutscenes.Cutscenes;
-import net.kineticraft.lostcity.mechanics.system.BuildType;
-import net.kineticraft.lostcity.mechanics.system.Restrict;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -15,7 +13,6 @@ import org.bukkit.entity.Player;
  * Start a cutscene.
  * Created by Kneesnap on 7/22/2017.
  */
-@Restrict(BuildType.PRODUCTION)
 public class CommandCutscene extends StaffCommand {
 
     public CommandCutscene() {

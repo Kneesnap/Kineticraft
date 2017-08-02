@@ -20,6 +20,12 @@ public class Configs extends Mechanic {
 
     private static Map<ConfigType, Config> configs = new HashMap<>();
 
+    public Configs() {
+        // This isn't in onEnable because it has to run before all other mechanics get registered.
+        for (ConfigType type : ConfigType.values())
+            configs.put(type, type.createConfig());
+    }
+
     @EventHandler
     public void onCommandRegister(CommandRegisterEvent evt) {
         evt.register(new CommandConfig());
@@ -75,13 +81,6 @@ public class Configs extends Mechanic {
      */
     public static TextConfig getTextConfig(ConfigType type) {
         return (TextConfig) getConfig(type);
-    }
-
-    @Override
-    public void onEnable() {
-        // Loads configs on startup.
-        for (ConfigType type : ConfigType.values())
-            configs.put(type, type.createConfig());
     }
 
     @Override
