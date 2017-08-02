@@ -10,7 +10,6 @@ import net.kineticraft.lostcity.commands.trigger.*;
 import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.config.Configs.ConfigType;
 import net.kineticraft.lostcity.discord.DiscordSender;
-import net.kineticraft.lostcity.dungeons.commands.CommandInvoke;
 import net.kineticraft.lostcity.events.CommandRegisterEvent;
 import net.kineticraft.lostcity.guis.CommandGUIs;
 import net.kineticraft.lostcity.guis.GUIType;
@@ -107,7 +106,6 @@ public class Commands extends Mechanic {
         addCommand(new CommandEdit());
         addCommand(new CommandGUIs());
         addCommand(new CommandKick());
-        addCommand(new CommandInvoke());
         addCommand(new CommandMined());
         addCommand(new CommandMute());
         addCommand(new CommandNear());
