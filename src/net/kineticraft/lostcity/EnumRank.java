@@ -28,7 +28,7 @@ public enum EnumRank {
     VOTER("VOTR", ChatColor.LIGHT_PURPLE, ChatColor.LIGHT_PURPLE), // We don't actually set players to this rank.
     MEDIA("∈", ChatColor.DARK_PURPLE, ChatColor.LIGHT_PURPLE),
 
-    TRIAL("JR MOD", ChatColor.DARK_GRAY, ChatColor.DARK_GRAY),
+    TRIAL("JR MOD", ChatColor.GREEN, ChatColor.GREEN),
     BUILDER("BLD", ChatColor.GOLD, ChatColor.YELLOW),
     MOD("MOD", ChatColor.DARK_GREEN, ChatColor.GREEN),
     ADMIN("ADMN", ChatColor.DARK_RED,  ChatColor.RED),

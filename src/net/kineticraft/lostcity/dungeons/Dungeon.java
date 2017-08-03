@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 
 /**
  * A base for a dungeon.
+ * TODO: Fix dungeon zipping.
  * Created by Kneesnap on 7/11/2017.
  */
 @Getter
@@ -73,6 +74,7 @@ public class Dungeon {
         getWorld().setAutoSave(false);
         getWorld().setKeepSpawnInMemory(false);
         getWorld().setDifficulty(Difficulty.EASY);
+        getWorld().setTime(15000); // Set it to night.
 
         getOriginalPlayers().forEach(p -> {
             Utils.safeTp(p, getWorld().getSpawnLocation());
@@ -117,6 +119,7 @@ public class Dungeon {
      * Remove this dungeon.
      */
     public void remove() {
+        Core.logInfo("Removing dungeon " + getWorld().getName() + ".");
         removePlayers();
         getPuzzles().forEach(Puzzle::onDungeonRemove);
 
@@ -133,7 +136,7 @@ public class Dungeon {
         }
 
         Utils.removeFile(getWorld().getName());
-        // TODO If we migrate back to WorldGuard, make sure to remove the folder.
+        Utils.removeFile("plugins/WorldGuard/worlds/" + getWorld().getName());
         Dungeons.getDungeons().remove(this);
     }
 
@@ -199,6 +202,31 @@ public class Dungeon {
         Location fixed = loc.clone();
         fixed.setWorld(getWorld());
         return fixed;
+    }
+
+    /**
+     * Return an asset name shared with each dungeon as "d[dungeon_number]_name"
+     * @param name
+     * @return instance
+     */
+    public String getInstance(String name) {
+        return "d" + (getType().ordinal() - 1) + "_" + name;
+    }
+
+    /**
+     * Spawn a dungeon boss.
+     * @param type
+     */
+    public void spawnBoss(BossType type) {
+        type.spawnBoss(this);
+    }
+
+    /**
+     * Play a cutscene for all players in the dungeon.
+     * @param cutscene
+     */
+    public void playCutscene(String cutscene) {
+        playCutscene(Cutscenes.getCutscenes().get(getInstance(cutscene)));
     }
 
     /**

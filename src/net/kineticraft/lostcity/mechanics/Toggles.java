@@ -28,6 +28,11 @@ import java.util.stream.Collectors;
  */
 public class Toggles extends Mechanic {
 
+    @Override
+    public void onJoin(Player p) {
+        KCPlayer.getPlayer(p).updateToggles(); // Update toggles on player join.
+    }
+
     @EventHandler
     public void onCommandRegister(CommandRegisterEvent evt) {
         for (Toggle t : Toggle.values())
@@ -82,7 +87,6 @@ public class Toggles extends Mechanic {
     }
 
     private class ToggleCommand extends PlayerCommand {
-
         private Toggle toggle;
 
         public ToggleCommand(Toggle t) {
@@ -108,7 +112,7 @@ public class Toggles extends Mechanic {
     public enum Toggle {
         PVP("pvp status"),
         CENSOR("chat filter"),
-        FLIGHT(EnumRank.MEDIA, "flight"),
+        FLY(EnumRank.MEDIA, "flight"),
         GOD(EnumRank.TRIAL, "god mode");
 
         private final EnumRank minRank;

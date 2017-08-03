@@ -24,6 +24,7 @@ import org.bukkit.*;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.*;
@@ -46,6 +47,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -200,6 +202,15 @@ public class Utils {
 
                 tpTime[0]--;
         }, 0L, 20L);
+    }
+
+    /**
+     * Get a friendly string of how much time it will take until this date is reached.
+     * @param date
+     * @return formatted
+     */
+    public static String formatDate(Date date) {
+        return formatTimeFull(date.getTime() - System.currentTimeMillis());
     }
 
     /**
@@ -512,7 +523,7 @@ public class Utils {
      */
     public static EnumRank getRank(CommandSender sender) {
         return hasWrapper(sender) ? KCPlayer.getWrapper(sender).getRank()
-                : (sender instanceof ConsoleCommandSender ? EnumRank.DEV : EnumRank.MU);
+                : (sender instanceof ConsoleCommandSender || sender instanceof BlockCommandSender ? EnumRank.DEV : EnumRank.MU);
     }
 
     /**
@@ -1190,5 +1201,51 @@ public class Utils {
         player.setAutoDestroy(true);
         players.forEach(player::addPlayer);
         player.setPlaying(true);
+    }
+
+    /**
+     * Get the closest entity to a given location.
+     * @param loc
+     * @param radius
+     * @return closest
+     */
+    public static Entity getNearestEntity(Location loc, int radius) {
+        return getNearestEntity(loc, radius, e -> true);
+    }
+
+    /**
+     * Get the nearest entity meeting special conditions to a location.
+     * @param loc
+     * @param radius
+     * @param p
+     * @return closest
+     */
+    public static Entity getNearestEntity(Location loc, int radius, Predicate<Entity> p) {
+        Entity res = null;
+        List<Entity> possible = loc.getWorld().getNearbyEntities(loc, radius, radius, radius).stream().filter(p).collect(Collectors.toList());
+        for (Entity e : possible)
+            if (res == null || e.getLocation().distance(loc) < res.getLocation().distance(loc))
+                res = e;
+        return res;
+    }
+
+    /**
+     * Get the nearest living entity to a location.
+     * @param loc
+     * @param radius
+     * @return closest
+     */
+    public static LivingEntity getNearestLivingEntity(Location loc, int radius) {
+        return (LivingEntity) getNearestEntity(loc, radius, e -> e instanceof LivingEntity);
+    }
+
+    /**
+     * Get the nearest player to a location.
+     * @param loc
+     * @param radius
+     * @return closest
+     */
+    public static Player getNearestPlayer(Location loc, int radius) {
+        return (Player) getNearestEntity(loc, radius, e -> e instanceof Player);
     }
 }

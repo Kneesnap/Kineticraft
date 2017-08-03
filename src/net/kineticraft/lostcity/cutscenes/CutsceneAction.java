@@ -10,6 +10,7 @@ import net.kineticraft.lostcity.data.reflect.JsonSerializer;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -107,5 +108,13 @@ public abstract class CutsceneAction implements Jsonable {
      */
     protected List<Player> getPlayers() {
         return getEvent().getStatus().getPlayers();
+    }
+
+    /**
+     * Get the camera entity.
+     * @return camera
+     */
+    protected LivingEntity getCamera() {
+        return getEvent().getStatus().getCamera();
     }
 }

@@ -135,6 +135,7 @@ public class Cutscenes extends ModularMechanic<Cutscene> {
                 ActionEntityNodHead.class, ActionEntityPathfind.class, ActionEntityShakeHead.class, ActionEntityTalk.class,
                 ActionEntityVelocity.class, ActionRemoveEntity.class, ActionTeleportEntity.class, ActionUpdateEntity.class,
                 ActionBlockUpdate.class, ActionCameraFilter.class, ActionPlaySound.class, ActionSendMessage.class,
-                ActionSpawnParticles.class, ActionPlayNBS.class, ActionArmorStandPose.class, ActionPotionEffect.class).forEach(getActions()::add);
+                ActionSpawnParticles.class, ActionPlayNBS.class, ActionArmorStandPose.class, ActionPotionEffect.class,
+                ActionLoadEntity.class).forEach(getActions()::add);
     }
 }

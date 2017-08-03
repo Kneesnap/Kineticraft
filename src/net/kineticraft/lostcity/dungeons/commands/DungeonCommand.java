@@ -1,6 +1,7 @@
 package net.kineticraft.lostcity.dungeons.commands;
 
 import net.kineticraft.lostcity.commands.BlockCommand;
+import net.kineticraft.lostcity.dungeons.Dungeon;
 import net.kineticraft.lostcity.dungeons.Dungeons;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -26,8 +27,7 @@ public abstract class DungeonCommand extends BlockCommand {
         }
 
         super.onCommand(sender, args);
-
-        if (deleteOnExecute())
+        if (deleteOnExecute()) // Delete this command-block on execute.
             bcs.getBlock().setType(Material.AIR);
     }
 
@@ -37,5 +37,14 @@ public abstract class DungeonCommand extends BlockCommand {
      */
     protected boolean deleteOnExecute() {
         return true;
+    }
+
+    /**
+     * Get the dungeon this command block is in.
+     * @param bcs
+     * @return dungeon
+     */
+    protected Dungeon getDungeon(BlockCommandSender bcs) {
+        return Dungeons.getDungeon(bcs.getBlock());
     }
 }

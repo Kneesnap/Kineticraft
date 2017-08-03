@@ -1,7 +1,5 @@
 package net.kineticraft.lostcity.dungeons.commands;
 
-import net.kineticraft.lostcity.cutscenes.Cutscenes;
-import net.kineticraft.lostcity.dungeons.Dungeons;
 import org.bukkit.command.BlockCommandSender;
 
 /**
@@ -16,6 +14,6 @@ public class CommandDPlay extends DungeonCommand {
 
     @Override
     protected void onCommand(BlockCommandSender sender, String[] args) {
-        Cutscenes.playCutscene(Dungeons.getDungeon(sender.getBlock()).getPlayers(), args[0]);
+        getDungeon(sender).playCutscene(args[0]);
     }
 }

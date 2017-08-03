@@ -3,10 +3,7 @@ package net.kineticraft.lostcity.dungeons;
 import com.destroystokyo.paper.Title;
 import lombok.Getter;
 import net.kineticraft.lostcity.Core;
-import net.kineticraft.lostcity.dungeons.commands.CommandDQuit;
-import net.kineticraft.lostcity.dungeons.commands.CommandDPlay;
-import net.kineticraft.lostcity.dungeons.commands.CommandInvoke;
-import net.kineticraft.lostcity.dungeons.commands.CommandPuzzleTrigger;
+import net.kineticraft.lostcity.dungeons.commands.*;
 import net.kineticraft.lostcity.events.CommandRegisterEvent;
 import net.kineticraft.lostcity.item.ItemManager;
 import net.kineticraft.lostcity.item.ItemWrapper;
@@ -46,7 +43,6 @@ import java.util.stream.Collectors;
 
 /**
  * Runs the Dungeons of the game.
- * TODO: Dungeon bosses.
  * Created by Kneesnap on 7/11/2017.
  */
 @Restrict(BuildType.PRODUCTION)
@@ -79,7 +75,7 @@ public class Dungeons extends Mechanic {
 
     @EventHandler
     public void onCommandRegister(CommandRegisterEvent evt) {
-        evt.register(new CommandDPlay(), new CommandDQuit(), new CommandPuzzleTrigger(), new CommandInvoke());
+        evt.register(new CommandDPlay(), new CommandDQuit(), new CommandPuzzleTrigger(), new CommandInvoke(), new CommandDBoss());
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)

@@ -132,9 +132,7 @@ public class Commands extends Mechanic {
         addCommand(new CommandTriggerAccept());
         addCommand(new CommandTriggerDecline());
 
-        // Tell plugins its time to register their commands.
-        Bukkit.getPluginManager().callEvent(new CommandRegisterEvent());
-
+        Bukkit.getPluginManager().callEvent(new CommandRegisterEvent()); // Broadcast its time to register commands.
         getCommands().sort(Comparator.comparing(Command::getName)); // Sort commands alphabetically
     }
 

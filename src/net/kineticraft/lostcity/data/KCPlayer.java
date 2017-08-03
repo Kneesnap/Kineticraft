@@ -34,7 +34,6 @@ import java.util.stream.Collectors;
 
 /**
  * PlayerData - Allows for loading and saving of player data.
- *
  * Created May 26th, 2017.
  * @author Kneesnap
  */
@@ -112,7 +111,7 @@ public class KCPlayer implements Jsonable {
         setMute(new Mute(expiry.getTime(), reason, source.getName()));
         sendMessage(ChatColor.RED + "You have been muted. (" + reason + ")");
         DiscordAPI.sendMessage(DiscordChannel.ORYX, source.getName() + " has muted " + getUsername()
-                + " for " + Utils.formatTimeFull(expiry.getTime()) + ".");
+                + " for " + Utils.formatDate(expiry) + ".");
     }
 
     /**
@@ -198,7 +197,7 @@ public class KCPlayer implements Jsonable {
             default:
                 return -1;
         }
-        return hours > -1 ? punishment.getTimestamp() + (hours * 60 * 60 * 1000) - System.currentTimeMillis() : -1;
+        return hours > -1 ? punishment.getTimestamp() + (hours * 60 * 60 * 1000) + 1000 - System.currentTimeMillis() : -1;
     }
 
     /**
@@ -314,6 +313,7 @@ public class KCPlayer implements Jsonable {
         // Updates data.
         setUsername(player.getName());
         setLastIP(player.getAddress().toString().split("/")[1].split(":")[0]);
+        player.addAttachment(Core.getInstance(), "OpenInv.*", getRank().isStaff());
 
         Bukkit.getScheduler().runTaskLater(Core.getInstance(), () -> {
             if (!getMail().isEmpty())
@@ -324,7 +324,6 @@ public class KCPlayer implements Jsonable {
                 player.sendMessage(TextUtils.centerChat(l + " You have new mail! Claim it with /mailbox. " + l));
             }
         }, 20L);
-
     }
 
     /**
@@ -344,11 +343,19 @@ public class KCPlayer implements Jsonable {
         if (!getToggles().remove(toggle))
             getToggles().add(toggle); // Add the toggle if we did not remove it.
         sendMessage(Utils.formatToggle(Utils.capitalize(toggle.name()), getState(toggle)));
+        updateToggles();
+    }
 
-        boolean newState = getState(toggle);
+    /**
+     * Update toggles.
+     */
+    public void updateToggles() {
+        if (!isOnline())
+            return;
 
-        if (toggle == Toggle.FLIGHT)
-            getPlayer().setAllowFlight(newState);
+        Player p = getPlayer();
+        if (p.getGameMode() == GameMode.SURVIVAL)
+            p.setAllowFlight(getState(Toggle.FLY));
     }
 
     /**

@@ -10,6 +10,7 @@ import net.kineticraft.lostcity.cutscenes.Cutscenes;
 import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.discord.DiscordAPI;
 import net.kineticraft.lostcity.dungeons.Dungeons;
+import net.kineticraft.lostcity.entity.Entities;
 import net.kineticraft.lostcity.events.MechanicRegisterEvent;
 import net.kineticraft.lostcity.guis.GUIManager;
 import net.kineticraft.lostcity.item.Items;
@@ -64,6 +65,7 @@ public class MechanicManager implements Listener {
         addMechanic(Items.class);
         addMechanic(Chat.class);
         addMechanic(CompassMechanics.class);
+        addMechanic(Entities.class);
         addMechanic(Dungeons.class);
         addMechanic(FarmLimiter.class);
         addMechanic(ArmorStands.class);
