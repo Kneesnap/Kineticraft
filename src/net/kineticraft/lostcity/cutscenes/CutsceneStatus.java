@@ -46,6 +46,8 @@ public class CutsceneStatus {
         getCamera().setAI(false); // Disable the AI of the camera.
         getCamera().setGravity(false);
         getCamera().setInvulnerable(true); // Disable all damage.
+        if (type == EntityType.ARMOR_STAND)
+            ((ArmorStand) getCamera()).setVisible(false);
 
         // Mount all viewers to the camera.
         getPlayers().forEach(p -> {

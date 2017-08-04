@@ -1,16 +1,6 @@
 &8Changes:
- - Improved Cutscene Editor
- - Worked on Dungeon system.
- - Dungeon Puzzles
- - Monthly vote reset is more precise.
- - Backend Organization.
- - Punishment formula tweaked.
- - Improved /stats.
-
-&8Staff Changes:
- - Added /back.
- - Added ArmorStand system.
+ - Support 1.12.1
 
 &8Bugfixes:
- - Fixed /mute.
- - Fixed calendar tasks.
+ - Dungeon edit-mode.
+ - Concurrent dungeon removal.

@@ -7,15 +7,15 @@ import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.cutscenes.Cutscene;
 import net.kineticraft.lostcity.cutscenes.Cutscenes;
 import net.kineticraft.lostcity.dungeons.puzzle.Puzzle;
+import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
 import net.kineticraft.lostcity.utils.TextBuilder;
 import net.kineticraft.lostcity.utils.Utils;
 import net.kineticraft.lostcity.utils.ZipUtil;
 import org.bukkit.*;
 import org.bukkit.block.CommandBlock;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -48,13 +48,11 @@ public class Dungeon {
         this.type = type;
 
         getOriginalPlayers().forEach(p ->
-                p.sendMessage(ChatColor.GRAY + "Loading Dungeon: '" + ChatColor.UNDERLINE + getType().getDisplayName()
-                        + ChatColor.GRAY + "' -- Please wait..."));
+                p.sendMessage(ChatColor.GRAY + "Loading Dungeon: '" + getType().getDisplayName() + ChatColor.GRAY + "' -- Please wait..."));
 
-        String worldName = "DUNGEON_" + System.currentTimeMillis() + "/";
+        String worldName = "DUNGEON_" + System.currentTimeMillis() + File.separator;
         Bukkit.getScheduler().runTaskAsynchronously(Core.getInstance(), () -> {
             Core.logInfo("Loading dungeon " + getType().name() + " as " + worldName + ".");
-
             ZipUtil.unzip(getType().getWorld(), worldName);
             Utils.removeFile(worldName + "uid.dat");
             Utils.removeFile(worldName + "players");
@@ -80,7 +78,7 @@ public class Dungeon {
             Utils.safeTp(p, getWorld().getSpawnLocation());
             p.setFallDistance(0);
             p.sendTitle(new Title(new TextBuilder(getType().getName()).color(getType().getColor()).create(),
-                    new TextBuilder("Objective: " + getType().getEntryMessage()).color(ChatColor.GRAY).create()));
+                    new TextBuilder("Objective: ").color(ChatColor.GRAY).append(getType().getEntryMessage()).create()));
 
             if (isEditMode()) {
                 p.sendMessage(ChatColor.GREEN + "This dungeon is in EDIT MODE.");
@@ -97,6 +95,14 @@ public class Dungeon {
      */
     public void announce(String message) {
         getPlayers().forEach(p -> p.sendMessage(message));
+    }
+
+    /**
+     * Send a dungeon message to all players in the dungeon.
+     * @param message
+     */
+    public void alert(String message) {
+        announce(ChatColor.LIGHT_PURPLE + "[Dungeon] " + ChatColor.GRAY + message);
     }
 
     /**
@@ -124,7 +130,7 @@ public class Dungeon {
         getPuzzles().forEach(Puzzle::onDungeonRemove);
 
         if (isEditMode()) {
-            getWorld().getEntities().stream().filter(e -> e instanceof LivingEntity).forEach(Entity::remove);
+            getWorld().getEntities().stream().filter(e -> e instanceof Monster || e instanceof Item || e instanceof Animals).forEach(Entity::remove);
             Stream.of(getWorld().getLoadedChunks()).forEach(Chunk::unload);
         }
 
@@ -170,7 +176,8 @@ public class Dungeon {
      * @param player
      */
     public void removePlayer(Player player) {
-        announce(ChatColor.LIGHT_PURPLE + "[Dungeon] " + ChatColor.GRAY + player.getName() + " has left the dungeon.");
+        MetadataManager.updateCooldownSilently(player, "dquit", 2);
+        alert(player.getName() + " has left the dungeon.");
         Utils.toSpawn(player);
     }
 

@@ -64,24 +64,33 @@ public abstract class Puzzle implements Listener {
      * Complete this puzzle.
      */
     public void complete() {
-        getDungeon().playCutscene(new PuzzleDoorCutscene(getGateLocation(), getGateFace()));
         complete = true;
-        Bukkit.getScheduler().runTaskLater(Core.getInstance(), this::onComplete, 20L);
+
+        Bukkit.getScheduler().runTaskLater(Core.getInstance(), () -> { // Cosmetic delay.
+            getDungeon().playCutscene(new PuzzleDoorCutscene(getGateLocation(), getGateFace()));
+            Bukkit.getScheduler().runTaskLater(Core.getInstance(), this::onComplete, 20L);
+        }, 35L);
     }
 
     /**
      * Called when this puzzle is completed.
      */
     protected void onComplete() {
-        getTasks().stream().filter(t -> Bukkit.getScheduler().isCurrentlyRunning(t.getTaskId())
-                || Bukkit.getScheduler().isQueued(t.getTaskId())).forEach(BukkitTask::cancel);
+        removeTasks();
     }
 
     /**
      * Called when the dungeon is removed.
      */
     public void onDungeonRemove() {
+        removeTasks();
         PlayerInteractEvent.getHandlerList().unregister(this);
+    }
+
+    protected void removeTasks() {
+        getTasks().stream().filter(t -> Bukkit.getScheduler().isCurrentlyRunning(t.getTaskId())
+                || Bukkit.getScheduler().isQueued(t.getTaskId())).forEach(BukkitTask::cancel);
+        getTasks().clear();
     }
 
     /**
@@ -89,7 +98,7 @@ public abstract class Puzzle implements Listener {
      * @param bk
      * @param isRightClick
      */
-    public void onBlockClick(Block bk, boolean isRightClick) {
+    public void onBlockClick(PlayerInteractEvent evt, Block bk, boolean isRightClick) {
 
     }
 
@@ -99,7 +108,7 @@ public abstract class Puzzle implements Listener {
             return;
 
         if (evt.hasBlock())
-            onBlockClick(evt.getClickedBlock(), evt.getAction() == Action.RIGHT_CLICK_BLOCK);
+            onBlockClick(evt, evt.getClickedBlock(), evt.getAction() == Action.RIGHT_CLICK_BLOCK);
     }
 
     /**
@@ -147,7 +156,7 @@ public abstract class Puzzle implements Listener {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Core.warn("Failed to exit puzzle trigger '" + trigger + "' in " + getClass().getSimpleName() + ".");
+            Core.warn("Failed to execute puzzle trigger '" + trigger + "' in " + getClass().getSimpleName() + ".");
         }
     }
 

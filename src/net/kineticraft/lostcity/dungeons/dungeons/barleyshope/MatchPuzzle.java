@@ -8,6 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.CommandBlock;
+import org.bukkit.material.Wool;
 
 import java.util.Arrays;
 import java.util.List;
@@ -18,18 +19,18 @@ import java.util.List;
  */
 @SuppressWarnings("deprecation")
 public class MatchPuzzle extends Puzzle {
-    private static final List<DyeColor> COLORS = Arrays.asList(DyeColor.YELLOW, DyeColor.LIGHT_BLUE, DyeColor.RED, DyeColor.GREEN);
+    private static final List<DyeColor> COLORS = Arrays.asList(DyeColor.YELLOW, DyeColor.RED, DyeColor.GREEN);
 
     public MatchPuzzle() {
-        super(null, BlockFace.NORTH);
+        super(new Location(null, -5, 9, -48), BlockFace.NORTH);
     }
 
     @SuppressWarnings("SuspiciousMethodCalls")
     @PuzzleTrigger
     public void changeColor(CommandBlock block) {
         Block wool = block.getBlock().getRelative(BlockFace.UP);
-        int index = COLORS.indexOf(wool.getData()) + 1;
-        wool.setData((byte) (index >= COLORS.size() ? 0 : index));
+        int index = COLORS.indexOf(((Wool) wool.getState().getData()).getColor()) + 1;
+        wool.setData(COLORS.get(index >= COLORS.size() ? 0 : index).getWoolData());
         scanBoard();
     }
 
@@ -37,13 +38,13 @@ public class MatchPuzzle extends Puzzle {
      * Scan the board to check if it's correct.
      */
     private void scanBoard() {
-        for (int x = -58; x < -52; x++) {
-            for (int z = 259; z < 267; z++) {
-                Block b = new Location(getDungeon().getWorld(), x, 9, z).getBlock();
+        for (int x = -8; x < -2; x++) {
+            for (int z = -40; z < -32; z++) {
+                Block b = new Location(getDungeon().getWorld(), x, 10, z).getBlock();
                 if (b.getType() == Material.WOOL && b.getData() != b.getLocation().add(0, -2, 0).getBlock().getData())
                     return;
             }
         }
-        complete(); // All of the board mataches.
+        complete(); // All of the board matches.
     }
 }

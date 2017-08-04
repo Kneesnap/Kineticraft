@@ -8,6 +8,7 @@ import org.bukkit.Material;
 
 /**
  * Play noteblock sound files.
+ * TODO: Allow repeat
  * Created by Kneesnap on 8/1/2017.
  */
 @ActionData(Material.JUKEBOX) @AllArgsConstructor

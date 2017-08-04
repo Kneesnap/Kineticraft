@@ -4,6 +4,7 @@ import lombok.Getter;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.dungeons.puzzle.Puzzle;
 import net.kineticraft.lostcity.dungeons.puzzle.PuzzleTrigger;
+import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -13,12 +14,14 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.CommandBlock;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.List;
 
 /**
  * A simple lazer puzzle.
+ * TODO: Prevent infinite loops.
  * Created by Kneesnap on 7/29/2017.
  */
 @Getter
@@ -27,36 +30,37 @@ public class LazerPuzzle extends Puzzle {
     private static final double PER_BLOCK = 5;
 
     public LazerPuzzle() {
-        super(new Location(null, 0, 0, 0), BlockFace.NORTH);
+        super(new Location(null, -76, 9, 55), BlockFace.SOUTH);
     }
 
     @SuppressWarnings("deprecation")
     @Override
-    public void onBlockClick(Block bk, boolean rightClick) {
-        if (!canTrigger())
+    public void onBlockClick(PlayerInteractEvent evt, Block bk, boolean rightClick) {
+        if (!canTrigger() || MetadataManager.updateCooldownSilently(evt.getPlayer(), "lazerBk", 2))
             return;
 
         int y = getGateLocation().getBlockY();
         Block above = bk.getRelative(BlockFace.UP);
-        if (isPuzzle(bk, y - 1, Material.WOOL) && above.getType() == Material.AIR && !rightClick) {
+        if (isPuzzle(bk, y, Material.WOOL) && above.getType() == Material.AIR) {
             above.setType(Material.DIODE_BLOCK_OFF);
             above.setData((byte) 0);
         }
 
         // Remove the next
-        if (isPuzzle(bk, y, Material.DIODE_BLOCK_OFF) && rightClick) {
-            int next = bk.getData() + 1;
-            if (next > 3) {
+        if (isPuzzle(bk, y + 1, Material.DIODE_BLOCK_OFF)) {
+            if (!rightClick) {
                 bk.setType(Material.AIR);
-            } else {
-                bk.setData((byte) next);
+                return;
             }
+
+            bk.setData((byte) (bk.getData() >= 3 ? 0 : bk.getData() + 1));
+            evt.setCancelled(true);
         }
     }
 
     @PuzzleTrigger
     public void fireLazer(CommandBlock block) {
-        Block bk = block.getBlock();
+        Block bk = block.getBlock().getRelative(BlockFace.UP);
 
         BlockFace[] direction = new BlockFace[] {Utils.getDirection(bk)};
         Location lazer = bk.getLocation().add(.5, .15, .5);
@@ -88,7 +92,7 @@ public class LazerPuzzle extends Puzzle {
                 traceTask.cancel(); // Stop trying to trace the lazer.
                 traceTask = null;
                 if (b.getType() == Material.BEACON) // This wall is actually the goal block.
-                    complete();
+                    complete(); //TODO: Activate beacon.
             }
         }, 1L);
     }

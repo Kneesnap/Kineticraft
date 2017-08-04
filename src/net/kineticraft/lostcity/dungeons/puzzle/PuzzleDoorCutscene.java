@@ -28,23 +28,20 @@ public class PuzzleDoorCutscene extends Cutscene {
 
         addStage(40, new ActionTeleportEntity(getCameraPosition()));
 
-        for (int y = 0; y < 5; y++) {
-            Location l = this.gate.clone().add(0, y + 1, 0);
-            addStage(10, new GenericAction(ce -> {
-               Block b = l.getBlock();
-               Utils.FACES.stream().map(b::getRelative).forEach(bk -> bk.setType(Material.AIR));
-            }), new ActionPlaySound(l, Sound.BLOCK_GRAVEL_BREAK, (float) Math.max(0.8, (.7 + y) / 10), 1));
+        for (int y = 0; y < 4; y++) {
+            Block b = this.gate.clone().add(0, y + 2, 0).getBlock();
+            addStage(10, new GenericAction(ce -> Utils.FACES.stream().map(b::getRelative).forEach(bk -> bk.setType(Material.AIR))),
+                    new ActionPlaySound(b.getLocation(), Sound.BLOCK_GRAVEL_BREAK, (float) Math.max(0.8, (.7 + y) / 10), 1));
         }
 
-        addStage(80, new ActionPlayNBS("solve"),
-                new ActionBlockUpdate(this.gate.clone().add(0, -1, 0), Material.REDSTONE_BLOCK));
+        addStage(90, new ActionPlayNBS("solve"), new ActionBlockUpdate(this.gate, Material.REDSTONE_BLOCK));
     }
 
     private Location getCameraPosition() {
         Location camera = gate.clone();
         camera.add(face.getModX() * -4, 2, face.getModZ() * -4);
         camera.setPitch(10);
-        camera.setYaw(face.ordinal() * 90);
+        camera.setYaw(face.getOppositeFace().ordinal() * 90);
         return camera;
     }
 }

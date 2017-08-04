@@ -41,7 +41,7 @@ public enum DungeonType {
      * @return displayName
      */
     public String getDisplayName() {
-        return getRank().getColor() + Utils.capitalize(name());
+        return getRank().getColor().toString() + ChatColor.UNDERLINE + Utils.capitalize(name());
     }
 
     /**

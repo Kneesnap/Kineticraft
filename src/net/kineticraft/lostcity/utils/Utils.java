@@ -672,12 +672,16 @@ public class Utils {
 
     /**
      * Get players nearby an entity. Async-Safe.
+     * Does not include the calling entity.
      * @param entity
      * @param radius
      * @return players
      */
     public static List<Player> getNearbyPlayers(Entity entity, int radius) {
-        return getNearbyPlayers(entity.getLocation(), radius);
+        List<Player> players = getNearbyPlayers(entity.getLocation(), radius);
+        if (entity instanceof Player)
+            players.remove(entity);
+        return players;
     }
 
     /**
@@ -687,8 +691,8 @@ public class Utils {
      * @return players
      */
     public static List<Player> getNearbyPlayers(Location loc, int radius) {
-        return getNearbyEntities(loc, radius).stream().filter(e -> e instanceof Player).map(e -> (Player) e)
-                .collect(Collectors.toList());
+        return new ArrayList<>(getNearbyEntities(loc, radius).stream().filter(e -> e instanceof Player).map(e -> (Player) e)
+                .collect(Collectors.toList()));
     }
 
     /**
