@@ -8,12 +8,12 @@ import org.bukkit.Material;
 
 /**
  * Play noteblock sound files.
- * TODO: Allow repeat
  * Created by Kneesnap on 8/1/2017.
  */
 @ActionData(Material.JUKEBOX) @AllArgsConstructor
 public class ActionPlayNBS extends CutsceneAction {
     private String soundFile;
+    private boolean repeat;
 
     public ActionPlayNBS() {
 
@@ -21,7 +21,7 @@ public class ActionPlayNBS extends CutsceneAction {
 
     @Override
     public void execute() {
-        Utils.playSound(getEvent().getStatus().getPlayers(), soundFile);
+        Utils.playSound(getEvent().getStatus().getPlayers(), soundFile, repeat);
     }
 
     @Override

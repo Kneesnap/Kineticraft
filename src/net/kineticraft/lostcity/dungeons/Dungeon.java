@@ -7,7 +7,6 @@ import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.cutscenes.Cutscene;
 import net.kineticraft.lostcity.cutscenes.Cutscenes;
 import net.kineticraft.lostcity.dungeons.puzzle.Puzzle;
-import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
 import net.kineticraft.lostcity.utils.TextBuilder;
 import net.kineticraft.lostcity.utils.Utils;
 import net.kineticraft.lostcity.utils.ZipUtil;
@@ -24,7 +23,6 @@ import java.util.stream.Stream;
 
 /**
  * A base for a dungeon.
- * TODO: Fix dungeon zipping.
  * Created by Kneesnap on 7/11/2017.
  */
 @Getter
@@ -176,7 +174,6 @@ public class Dungeon {
      * @param player
      */
     public void removePlayer(Player player) {
-        MetadataManager.updateCooldownSilently(player, "dquit", 2);
         alert(player.getName() + " has left the dungeon.");
         Utils.toSpawn(player);
     }

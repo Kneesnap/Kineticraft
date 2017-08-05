@@ -2,11 +2,9 @@ package net.kineticraft.lostcity.utils;
 
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import com.xxmicloxx.NoteBlockAPI.NBSDecoder;
-import com.xxmicloxx.NoteBlockAPI.RadioSongPlayer;
-import com.xxmicloxx.NoteBlockAPI.Song;
-import com.xxmicloxx.NoteBlockAPI.SongPlayer;
+import com.xxmicloxx.NoteBlockAPI.*;
 import lombok.Cleanup;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
@@ -57,6 +55,7 @@ import java.util.stream.Collectors;
 public class Utils {
 
     public static List<BlockFace> FACES = Arrays.asList(BlockFace.SELF, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST);
+    @Getter private static Set<SongPlayer> repeat = new HashSet<>();
 
     /**
      * Gets an enum value from the given class. Returns null if not found.
@@ -1198,13 +1197,33 @@ public class Utils {
      * Play a .nbs sound file to the given players.
      * @param players
      * @param sound
+     * @param repeat
      */
-    public static void playSound(List<Player> players, String sound) {
+    public static void playSound(List<Player> players, String sound, boolean repeat) {
         Song s = NBSDecoder.parse(Core.getFile("audio/" + sound + ".nbs"));
         SongPlayer player = new RadioSongPlayer(s);
-        player.setAutoDestroy(true);
+        player.setAutoDestroy(!repeat);
         players.forEach(player::addPlayer);
         player.setPlaying(true);
+        if (repeat)
+            getRepeat().add(player);
+    }
+
+    /**
+     * Stop all NBS sounds for a player.
+     * @param player
+     */
+    public static void stopNBS(Player player) {
+        NoteBlockPlayerMain main = NoteBlockPlayerMain.plugin;
+        if (!main.playingSongs.containsKey(player.getName()))
+            return;
+
+        main.playingSongs.get(player.getName()).forEach(sp -> {
+            sp.setFadeTarget((byte) 0); // We want to fade to 0 volume.
+            sp.setFadeDone(0); // Reset the current fade.
+            sp.setAutoDestroy(true); // Automatically destroy this when it finishes.
+            getRepeat().remove(sp); // Don't repeat this sound anymore.
+        });
     }
 
     /**
@@ -1251,5 +1270,15 @@ public class Utils {
      */
     public static Player getNearestPlayer(Location loc, int radius) {
         return (Player) getNearestEntity(loc, radius, e -> e instanceof Player);
+    }
+
+    /**
+     * Get the nearest living entity to an entity.
+     * @param en
+     * @param radius
+     * @return entity
+     */
+    public static LivingEntity getNearestLivingEntity(Entity en, int radius) {
+        return (LivingEntity) getNearestEntity(en.getLocation(), radius, e -> e instanceof LivingEntity && !e.equals(en));
     }
 }

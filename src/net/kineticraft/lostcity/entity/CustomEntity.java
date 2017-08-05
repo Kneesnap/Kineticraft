@@ -4,9 +4,14 @@ import lombok.Getter;
 import net.citizensnpcs.npc.CitizensNPC;
 import net.kineticraft.lostcity.entity.attacks.CustomAttack;
 import net.kineticraft.lostcity.entity.traits.TraitCustomAttacks;
+import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +26,8 @@ import static net.citizensnpcs.api.npc.NPC.*;
 public class CustomEntity {
     private CitizensNPC NPC;
     private List<CustomAttack> attacks = new ArrayList<>();
+    private static final EquipmentSlot[] ORDER = new EquipmentSlot[] {EquipmentSlot.HAND, EquipmentSlot.HEAD,
+            EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
 
     public CustomEntity(Location loc, EntityType type, String name) {
         this.NPC = (CitizensNPC) Entities.spawnNPC(type, name);
@@ -50,5 +57,35 @@ public class CustomEntity {
      */
     public void onDeath() {
 
+    }
+
+    /**
+     * Set a piece of equipped gear.
+     * @param slot
+     * @param item
+     */
+    public void setGear(EquipmentSlot slot, ItemStack item) {
+        Utils.setItem((LivingEntity) getBukkit(), slot, item);
+    }
+
+    /**
+     * Set all equipped gear.
+     * Items should be in order: Hand, Helmet, Chestplate, Leggings, Boots
+     * @param gear
+     */
+    public void setGear(ItemStack... gear) {
+        for (int i = 0; i < gear.length; i++)
+            setGear(ORDER[i], gear[i]);
+    }
+
+    /**
+     * Set all equipped gear.
+     * @param mat
+     */
+    public void setGear(Material... mat) {
+        ItemStack[] gear = new ItemStack[mat.length];
+        for (int i = 0; i < mat.length; i++)
+            gear[i] = new ItemStack(mat[i]);
+        setGear(gear);
     }
 }

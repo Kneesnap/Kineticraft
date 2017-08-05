@@ -34,7 +34,7 @@ public class PuzzleDoorCutscene extends Cutscene {
                     new ActionPlaySound(b.getLocation(), Sound.BLOCK_GRAVEL_BREAK, (float) Math.max(0.8, (.7 + y) / 10), 1));
         }
 
-        addStage(90, new ActionPlayNBS("solve"), new ActionBlockUpdate(this.gate, Material.REDSTONE_BLOCK));
+        addStage(90, new ActionPlayNBS("solve", false), new ActionBlockUpdate(this.gate, Material.REDSTONE_BLOCK));
     }
 
     private Location getCameraPosition() {

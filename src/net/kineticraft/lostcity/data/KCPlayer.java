@@ -350,12 +350,7 @@ public class KCPlayer implements Jsonable {
      * Update toggles.
      */
     public void updateToggles() {
-        if (!isOnline())
-            return;
 
-        Player p = getPlayer();
-        if (p.getGameMode() == GameMode.SURVIVAL)
-            p.setAllowFlight(getState(Toggle.FLY));
     }
 
     /**

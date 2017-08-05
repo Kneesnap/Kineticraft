@@ -112,7 +112,6 @@ public class Toggles extends Mechanic {
     public enum Toggle {
         PVP("pvp status"),
         CENSOR("chat filter"),
-        FLY(EnumRank.MEDIA, "flight"),
         GOD(EnumRank.TRIAL, "god mode");
 
         private final EnumRank minRank;

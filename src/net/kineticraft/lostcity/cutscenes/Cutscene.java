@@ -5,6 +5,7 @@ import lombok.Setter;
 import net.kineticraft.lostcity.cutscenes.actions.entity.ActionCreateEntity;
 import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.data.lists.JsonList;
+import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 
@@ -36,6 +37,7 @@ public class Cutscene implements Jsonable {
      * @param players
      */
     public void play(List<Player> players) {
+        players.forEach(Utils::stopNBS); // Kill any nbs sounds playing.
         CutsceneStatus status = new CutsceneStatus(this, players);
         status.nextStage(); // Start the cutscene.
     }
