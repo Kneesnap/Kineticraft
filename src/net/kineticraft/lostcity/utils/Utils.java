@@ -277,11 +277,11 @@ public class Utils {
 
     /**
      * Convert a location into a friendly string.
-     * @param location
+     * @param l
      * @return formatted
      */
-    public static String toString(Location location) {
-       return "[" + location.getWorld().getName() + "," + location.getX() + "," + location.getY() + "," + location.getZ() + "]";
+    public static String toString(Location l) {
+       return "[" + (l.getWorld() != null ? l.getWorld().getName() : null) + "," + l.getX() + "," + l.getY() + "," + l.getZ() + "]";
     }
 
     /**
@@ -290,7 +290,8 @@ public class Utils {
      * @return clean
      */
     public static String toCleanString(Location loc) {
-        return "[" + (loc != null ? loc.getWorld().getName() + "," + loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ() : "null") + "]";
+        return "[" + (loc != null ? (loc.getWorld() != null ? loc.getWorld().getName() : null)
+                + "," + loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ() : "null") + "]";
     }
 
     /**

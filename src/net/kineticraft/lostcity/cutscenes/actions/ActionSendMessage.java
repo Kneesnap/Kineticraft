@@ -14,7 +14,7 @@ public class ActionSendMessage extends CutsceneAction {
 
     @Override
     public void execute() {
-        getPlayers().forEach(p -> p.sendMessage(String.format(message, p.getName())));
+        getPlayers().forEach(p -> p.sendMessage(formatString(message, p)));
     }
 
     @Override

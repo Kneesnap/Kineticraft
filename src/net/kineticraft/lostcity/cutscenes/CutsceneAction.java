@@ -125,4 +125,15 @@ public abstract class CutsceneAction implements Jsonable {
     protected LivingEntity getCamera() {
         return getEvent().getStatus().getCamera();
     }
+
+    /**
+     * Format a string sent to a player.
+     * @param message
+     * @param p
+     * @return formatted.
+     */
+    protected String formatString(String message, Player p) {
+        return ChatColor.translateAlternateColorCodes('&',
+                String.format(message, ChatColor.YELLOW + p.getName() + ChatColor.GREEN));
+    }
 }

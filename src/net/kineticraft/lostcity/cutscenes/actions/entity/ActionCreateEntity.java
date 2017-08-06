@@ -6,6 +6,7 @@ import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Ageable;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -23,7 +24,7 @@ public class ActionCreateEntity extends ActionEntity {
     public void execute() {
         assert getEntity() == null;
 
-        Entity e = location.getWorld().spawnEntity(location, getEntityType());
+        Entity e = getWorld().spawnEntity(fixLocation(location), getEntityType());
         e.setCustomName(ChatColor.GREEN + getEntityName());
         e.setSilent(true);
 
@@ -32,6 +33,9 @@ public class ActionCreateEntity extends ActionEntity {
             le.setAI(false);
             le.setInvulnerable(true);
         }
+
+        if (e instanceof Ageable)
+            ((Ageable) e).setAdult();
 
         getEvent().getStatus().getEntityMap().put(getEntityName(), e);
     }

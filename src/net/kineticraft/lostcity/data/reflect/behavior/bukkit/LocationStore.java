@@ -36,8 +36,8 @@ public class LocationStore extends SpecialStore<Location> {
     @Override
     public Location getField(JsonData data, String key, Field field) {
         data = data.getData(key);
-        return data.has("world") ? new Location(Bukkit.getWorld(data.getString("world")), data.getDouble("x"),
-                data.getDouble("y"), data.getDouble("z"), data.getFloat("yaw"), data.getFloat("pitch")) : null;
+        return new Location(data.has("world") ? Bukkit.getWorld(data.getString("world")) : null, data.getDouble("x"),
+                data.getDouble("y"), data.getDouble("z"), data.getFloat("yaw"), data.getFloat("pitch"));
     }
 
     @Override
