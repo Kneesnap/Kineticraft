@@ -177,14 +177,6 @@ public class Core extends JavaPlugin {
     }
 
     /**
-     * Return the plugin's class loader.
-     * @return classLoader
-     */
-    public ClassLoader getClazzLoader() {
-        return getClassLoader();
-    }
-
-    /**
      * Return whether a passed object can be registered on this build.
      * @param object - An object or class that may be disabled on a given build type.
      * @return applicable

@@ -19,10 +19,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Hopper;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.HumanEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -31,6 +28,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.potion.PotionEffect;
@@ -95,6 +93,11 @@ public class Dungeons extends Mechanic {
         evt.setCancelled(isDungeon(evt.getPlayer()) && !canEdit(evt.getPlayer()));
     }
 
+    @EventHandler(ignoreCancelled = true) // Prevent messing with item frames.
+    public void onItemFrame(PlayerInteractEntityEvent evt) {
+        evt.setCancelled(evt.getRightClicked() instanceof ItemFrame && isDungeon(evt.getRightClicked()) && !canEdit(evt.getPlayer()));
+    }
+
     @EventHandler(ignoreCancelled = true) // Handles special items entering hoppers.
     public void onHopperPickup(InventoryPickupItemEvent evt) {
         if (!(evt.getInventory().getHolder() instanceof Hopper))
@@ -135,6 +138,7 @@ public class Dungeons extends Mechanic {
         if (!isDungeon(evt.getEntity()))
             return;
 
+        evt.setKeepInventory(true); // Don't lose items in a dungeon.
         Player p = evt.getEntity();
         makeCorpse(p);
         p.setHealth(p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()); // Restore to max health.
@@ -154,7 +158,7 @@ public class Dungeons extends Mechanic {
      * @param p
      */
     private static void makeCorpse(Player p) {
-        ArmorStand as = ArmorStands.spawnArmorStand(p.getLocation(), "corpse");
+        ArmorStand as = ArmorStands.spawnArmorStand(p.getLocation().subtract(0, 0.75, 0), "corpse");
         Utils.mirrorItems(p, as);
         as.setHelmet(ItemManager.makeSkull(p.getName()));
         as.setCustomName(ChatColor.RED + p.getName() + "'s Corpse");

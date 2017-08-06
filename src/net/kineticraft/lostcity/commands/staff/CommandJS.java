@@ -26,7 +26,6 @@ public class CommandJS extends StaffCommand {
     public CommandJS() {
         super(EnumRank.DEV, "<expression>", "Evaluate a JavaScript expression.", "js");
         setDangerous(true);
-        engine = new ScriptEngineManager().getEngineByName("nashorn");
         initJS();
     }
 
@@ -50,12 +49,13 @@ public class CommandJS extends StaffCommand {
      */
     private void initJS() {
 
-        // Allow JS to load java classes. TODO: This doesn't work.
+        // Allow JS to load java classes.
         Thread currentThread = Thread.currentThread();
         ClassLoader previousClassLoader = currentThread.getContextClassLoader();
-        currentThread.setContextClassLoader(Core.getInstance().getClazzLoader());
+        currentThread.setContextClassLoader(Core.getInstance().getClass().getClassLoader());
 
         try {
+            this.engine = new ScriptEngineManager().getEngineByName("JavaScript");
             // Make the 'eval' command behave exactly as the eval used here does.
             engine.put("engine", engine);
             engine.eval(new InputStreamReader(Core.getInstance().getResource("boot.js")));

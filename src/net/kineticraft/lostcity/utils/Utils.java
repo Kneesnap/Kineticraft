@@ -1221,8 +1221,9 @@ public class Utils {
         main.playingSongs.get(player.getName()).forEach(sp -> {
             sp.setFadeTarget((byte) 0); // We want to fade to 0 volume.
             sp.setFadeDone(0); // Reset the current fade.
-            sp.setAutoDestroy(true); // Automatically destroy this when it finishes.
+            sp.setFadeDuration(30); // Should take 30 ticks to destroy.
             getRepeat().remove(sp); // Don't repeat this sound anymore.
+            Bukkit.getScheduler().runTaskLater(Core.getInstance(), sp::destroy, 30L);
         });
     }
 
@@ -1280,5 +1281,15 @@ public class Utils {
      */
     public static LivingEntity getNearestLivingEntity(Entity en, int radius) {
         return (LivingEntity) getNearestEntity(en.getLocation(), radius, e -> e instanceof LivingEntity && !e.equals(en));
+    }
+
+    /**
+     * Get the nearest player to an entity.
+     * @param en
+     * @param radius
+     * @return nearest
+     */
+    public static Player getNearestPlayer(Entity en, int radius) {
+        return (Player) getNearestEntity(en.getLocation(), radius, e -> e instanceof Player && !e.equals(en));
     }
 }
