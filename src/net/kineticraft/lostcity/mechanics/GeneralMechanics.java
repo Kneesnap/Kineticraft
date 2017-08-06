@@ -100,14 +100,10 @@ public class GeneralMechanics extends Mechanic {
         Bukkit.getScoreboardManager().getMainScoreboard().getTeams().forEach(Team::unregister);
     }
 
-    @EventHandler
+    @EventHandler // Handle repeating songs.
     public void onSongEnd(SongEndEvent evt) {
-        if (!Utils.getRepeat().contains(evt.getSongPlayer()))
-            return;
-
-        // Repeat the song.
-        evt.getSongPlayer().setTick((short) 0);
-        evt.getSongPlayer().setPlaying(true);
+        if (Utils.getRepeat().contains(evt.getSongPlayer()))
+            Utils.repeatNBS(evt.getSongPlayer());
     }
 
     @Override

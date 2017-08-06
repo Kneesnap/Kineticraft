@@ -120,28 +120,41 @@ public class Dungeon {
     }
 
     /**
+     * Remove this dungeon if there are no players left.
+     */
+    public void tryRemove() {
+        if (getPlayers().isEmpty())
+            remove();
+    }
+
+    /**
      * Remove this dungeon.
      */
     public void remove() {
+        if (getWorld() == null)
+            return; // Don't unload dungeon twice.
+
+        // Remove players and unload puzzles.
         Core.logInfo("Removing dungeon " + getWorld().getName() + ".");
         removePlayers();
         getPuzzles().forEach(Puzzle::onDungeonRemove);
 
+        // Handle saving.
         if (isEditMode()) {
             getWorld().getEntities().stream().filter(e -> e instanceof Monster || e instanceof Item || e instanceof Animals).forEach(Entity::remove);
             Stream.of(getWorld().getLoadedChunks()).forEach(Chunk::unload);
         }
 
-        Bukkit.unloadWorld(getWorld(), isEditMode());
-
-        if (isEditMode()) {
+        Bukkit.unloadWorld(getWorld(), isEditMode()); // Unload the world.
+        if (isEditMode()) { // Zip up and save the world.
             Core.alertStaff("Saving modified " + getType().name() + " dungeon.");
             ZipUtil.zip(getWorld().getWorldFolder(), getType().getWorld().getPath());
         }
 
-        Utils.removeFile(getWorld().getName());
-        Utils.removeFile("plugins/WorldGuard/worlds/" + getWorld().getName());
-        Dungeons.getDungeons().remove(this);
+        Utils.removeFile(getWorld().getName()); // Delete the world folder.
+        Utils.removeFile("plugins/WorldGuard/worlds/" + getWorld().getName()); // Delete WorldGuard residue.
+        Dungeons.getDungeons().remove(this); // Remove this dungeon.
+        this.world = null; // Mark this dungeon as unloaded.
     }
 
     /**
@@ -153,13 +166,12 @@ public class Dungeon {
 
         Title t = new Title(new TextBuilder("Dungeon Complete!").color(ChatColor.GRAY).create(),
                 new TextBuilder(getType().getName()).color(getType().getColor()).create());
-        getPlayers().forEach(p -> p.sendTitle(t));
+        getPlayers().forEach(p -> p.sendTitle(t)); // Send titles.
 
-        Core.broadcast(getType().getColor().toString() + ChatColor.UNDERLINE
-                + getType().getFinishMessage() + getType().getColor() + " by a group of players.");
-        Core.broadcast(ChatColor.GRAY + "Group: " + getPlayers().stream().map(Entity::getName).collect(Collectors.joining(", ")));
-
-        Bukkit.getScheduler().runTaskLater(Core.getInstance(), this::removePlayers, 400L);
+        Core.broadcast(ChatColor.GOLD + getType().getFinishMessage() + " by a group of players."); // Announce victory
+        Core.broadcast(ChatColor.GRAY + "Group: " + ChatColor.UNDERLINE
+                + getPlayers().stream().map(Entity::getName).collect(Collectors.joining(", ")));
+        Bukkit.getScheduler().runTaskLater(Core.getInstance(), this::removePlayers, 400L); // Teleport players out.
     }
 
     /**
@@ -174,8 +186,16 @@ public class Dungeon {
      * @param player
      */
     public void removePlayer(Player player) {
-        alert(player.getName() + " has left the dungeon.");
         Utils.toSpawn(player);
+        onLeave(player);
+    }
+
+    /**
+     * Calls when a player leaves the dungeon.
+     * @param player
+     */
+    public void onLeave(Player player) {
+        alert(player.getName() + " has left the dungeon.");
     }
 
     /**
@@ -214,7 +234,7 @@ public class Dungeon {
      * @return instance
      */
     public String getInstance(String name) {
-        return "d" + (getType().ordinal() - 1) + "_" + name;
+        return "d" + (getType().ordinal() + 1) + "_" + name;
     }
 
     /**

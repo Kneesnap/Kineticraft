@@ -21,7 +21,7 @@ public class ActionPlayNBS extends CutsceneAction {
 
     @Override
     public void execute() {
-        Utils.playSound(getEvent().getStatus().getPlayers(), soundFile, repeat);
+        Utils.playNBS(getEvent().getStatus().getPlayers(), soundFile, repeat);
     }
 
     @Override

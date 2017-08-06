@@ -41,7 +41,7 @@ public class LazerPuzzle extends Puzzle {
 
         int y = getGateLocation().getBlockY();
         Block above = bk.getRelative(BlockFace.UP);
-        if (isPuzzle(bk, y, Material.WOOL) && above.getType() == Material.AIR) {
+        if (isPuzzle(bk, y, Material.WOOL) && above.getType() == Material.AIR && rightClick) {
             above.setType(Material.DIODE_BLOCK_OFF);
             above.setData((byte) 0);
         }
@@ -92,7 +92,7 @@ public class LazerPuzzle extends Puzzle {
                 traceTask.cancel(); // Stop trying to trace the lazer.
                 traceTask = null;
                 if (b.getType() == Material.BEACON) // This wall is actually the goal block.
-                    complete(); //TODO: Activate beacon.
+                    complete();
             }
         }, 1L);
     }

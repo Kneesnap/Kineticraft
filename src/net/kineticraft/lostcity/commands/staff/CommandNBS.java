@@ -27,6 +27,6 @@ public class CommandNBS extends StaffCommand {
             return;
         }
 
-        Utils.playSound(Arrays.asList(p), args[0], args.length > 1 && args[1].equalsIgnoreCase("repeat"));
+        Utils.playNBS(Arrays.asList(p), args[0], isArg(args, 1, "repeat"));
     }
 }

@@ -25,6 +25,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
@@ -53,8 +54,7 @@ public class Dungeons extends Mechanic {
     @Override
     public void onEnable() {
         Core.makeFolder("dungeons");
-        Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () ->
-            new ArrayList<>(getDungeons()).stream().filter(d -> d.getPlayers().isEmpty()).forEach(Dungeon::remove), 0L, 600L);
+        Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () -> new ArrayList<>(getDungeons()).forEach(Dungeon::tryRemove), 0L, 600L);
     }
 
     @Override // Remove all dungeons on shutdown.
@@ -75,27 +75,32 @@ public class Dungeons extends Mechanic {
 
     @EventHandler
     public void onCommandRegister(CommandRegisterEvent evt) {
-        evt.register(new CommandDPlay(), new CommandPuzzleTrigger(), new CommandInvoke(), new CommandDBoss());
+        evt.register(new CommandDPlay(), new CommandPuzzleTrigger(), new CommandInvoke(), new CommandDBoss(), new CommandDMusic());
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onBlockBreak(BlockBreakEvent evt) { // Prevents block destruction.
-        evt.setCancelled(isDungeon(evt.getBlock().getWorld()) && !canEdit(evt.getPlayer()));
+        evt.setCancelled(preventEdit(evt.getPlayer()));
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onBlockPlace(BlockPlaceEvent evt) {
-        evt.setCancelled(isDungeon(evt.getBlock().getWorld()) && !canEdit(evt.getPlayer()));
+        evt.setCancelled(preventEdit(evt.getPlayer()));
     }
 
-    @EventHandler(ignoreCancelled = true)
+    @EventHandler(ignoreCancelled = true) // Prevent opening inventories bound to blocks.
     public void onInventoryOpen(InventoryOpenEvent evt) {
-        evt.setCancelled(isDungeon(evt.getPlayer()) && !canEdit(evt.getPlayer()));
+        evt.setCancelled(evt.getInventory().getHolder() != null && preventEdit(evt.getPlayer()));
     }
 
     @EventHandler(ignoreCancelled = true) // Prevent messing with item frames.
     public void onItemFrame(PlayerInteractEntityEvent evt) {
-        evt.setCancelled(evt.getRightClicked() instanceof ItemFrame && isDungeon(evt.getRightClicked()) && !canEdit(evt.getPlayer()));
+        evt.setCancelled(evt.getRightClicked() instanceof ItemFrame && preventEdit(evt.getPlayer()));
+    }
+
+    @EventHandler(ignoreCancelled = true) // Prevent hitting item frames.
+    public void onItemFrameAttack(EntityDamageByEntityEvent evt) {
+        evt.setCancelled(evt.getEntity() instanceof ItemFrame && preventEdit(evt.getDamager()));
     }
 
     @EventHandler(ignoreCancelled = true) // Handles special items entering hoppers.
@@ -128,9 +133,8 @@ public class Dungeons extends Mechanic {
 
     @EventHandler(ignoreCancelled = true)
     public void onAttemptExit(PlayerTeleportEvent evt) {
-        Player p = evt.getPlayer();
-        if (isDungeon(evt.getFrom()) && !isDungeon(evt.getTo()) && p.getGameMode() != GameMode.SPECTATOR)
-            getDungeon(p).alert(p.getName() + " has left the dungeon.");
+        if (isDungeon(evt.getFrom()) && !isDungeon(evt.getTo()))
+            getDungeon(evt.getFrom().getWorld()).onLeave(evt.getPlayer());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true) // Handle dungeon death.
@@ -235,15 +239,22 @@ public class Dungeons extends Mechanic {
      * @param edit
      */
     public static void startDungeon(Player player, DungeonType type, boolean edit) {
-        if (!type.hasUnlocked(player))
+        if (!type.hasUnlocked(player)) // Prevent players from going into dungeons they have not unlocked yet.
             return;
 
-        if (MetadataManager.updateCooldownSilently(player, "dungeon", 50))
+        if (MetadataManager.updateCooldownSilently(player, "dungeon", 50)) // Prevent starting two dungeons as once.
             return;
 
-        if (ServerUtils.getTicksToReboot() <= 20 * 60 * 30 && !Utils.isStaff(player)) {
-            player.sendMessage(ChatColor.RED + "The server is rebooting in less than 30 minutes, dungeons may not be started now.");
-            return;
+        if (!Utils.isStaff(player)) {
+            if (ServerUtils.getTicksToReboot() <= 20 * 60 * 30) {
+                player.sendMessage(ChatColor.RED + "The server is rebooting in less than 30 minutes, dungeons may not be started now.");
+                return;
+            }
+
+            if (getDungeons().size() >= 5) {
+                player.sendMessage(ChatColor.RED + "The maximum number of dungeons are open. Try again later.");
+                return;
+            }
         }
 
         List<Player> players = Utils.getNearbyPlayers(player, 7);
@@ -264,7 +275,17 @@ public class Dungeons extends Mechanic {
      * @param player
      * @return canEdit
      */
-    private static boolean canEdit(HumanEntity player) {
-        return Utils.isStaff(player) && player.getGameMode() == GameMode.CREATIVE;
+    private static boolean canEdit(Entity player) {
+        return Utils.isStaff(player)
+                && (!(player instanceof HumanEntity) || ((HumanEntity) player).getGameMode() == GameMode.CREATIVE);
+    }
+
+    /**
+     * Return if we should block an entity making changes to a world.
+     * @param ent
+     * @return shouldPrevent
+     */
+    private static boolean preventEdit(Entity ent) {
+        return isDungeon(ent) && !canEdit(ent);
     }
 }

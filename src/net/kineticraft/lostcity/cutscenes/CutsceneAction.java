@@ -57,7 +57,15 @@ public abstract class CutsceneAction implements Jsonable {
      * @return name
      */
     public String getName() {
-        return (isValid() ? ChatColor.YELLOW : ChatColor.RED) + getClass().getSimpleName();
+        return getColor() + getClass().getSimpleName();
+    }
+
+    /**
+     * Return the color of this action, based on if it's valid or not.
+     * @return color
+     */
+    public ChatColor getColor() {
+        return isValid() ? ChatColor.YELLOW : ChatColor.RED;
     }
 
     /**

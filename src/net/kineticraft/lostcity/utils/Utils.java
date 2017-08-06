@@ -1170,7 +1170,7 @@ public class Utils {
      * @return sanitized
      */
     public static String sanitizeFileName(String input) {
-        return input.replaceAll("[^a-zA-Z0-9 -]", "");
+        return input.replaceAll("[^a-zA-Z0-9 -_]", "");
     }
 
     /**
@@ -1194,12 +1194,24 @@ public class Utils {
     }
 
     /**
+     * Repeat the song a SongPlayer is playing.
+     * @param mp
+     */
+    public static void repeatNBS(SongPlayer mp) {
+        getRepeat().remove(mp); // We won't refer to this again.
+        List<Player> players = mp.getPlayerList().stream().map(Bukkit::getPlayer).filter(Objects::nonNull).collect(Collectors.toList());
+        playNBS(players, mp.getSong().getPath().getName().split("\\.nbs")[0], true);
+    }
+
+    /**
      * Play a .nbs sound file to the given players.
      * @param players
      * @param sound
      * @param repeat
      */
-    public static void playSound(List<Player> players, String sound, boolean repeat) {
+    public static void playNBS(List<Player> players, String sound, boolean repeat) {
+        if (players.isEmpty())
+            return; // Don't play the song to nobody.
         Song s = NBSDecoder.parse(Core.getFile("audio/" + sound + ".nbs"));
         SongPlayer player = new RadioSongPlayer(s);
         player.setAutoDestroy(!repeat);
@@ -1221,9 +1233,9 @@ public class Utils {
         main.playingSongs.get(player.getName()).forEach(sp -> {
             sp.setFadeTarget((byte) 0); // We want to fade to 0 volume.
             sp.setFadeDone(0); // Reset the current fade.
-            sp.setFadeDuration(30); // Should take 30 ticks to destroy.
+            sp.setFadeDuration(30); // Should take 30 iterations to destroy. (Depends on song TPS, not server TPS.)
             getRepeat().remove(sp); // Don't repeat this sound anymore.
-            Bukkit.getScheduler().runTaskLater(Core.getInstance(), sp::destroy, 30L);
+            Bukkit.getScheduler().runTaskLater(Core.getInstance(), sp::destroy, 60L); // Completely disable sound.
         });
     }
 
