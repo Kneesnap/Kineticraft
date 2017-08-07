@@ -1,5 +1,6 @@
 package net.kineticraft.lostcity.mechanics;
 
+import com.xxmicloxx.NoteBlockAPI.NoteBlockPlayerMain;
 import com.xxmicloxx.NoteBlockAPI.SongEndEvent;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.config.Configs;
@@ -104,6 +105,11 @@ public class GeneralMechanics extends Mechanic {
     public void onSongEnd(SongEndEvent evt) {
         if (Utils.getRepeat().contains(evt.getSongPlayer()))
             Utils.repeatNBS(evt.getSongPlayer());
+    }
+
+    @Override
+    public void onQuit(Player player) {
+        NoteBlockPlayerMain.stopPlaying(player);
     }
 
     @Override

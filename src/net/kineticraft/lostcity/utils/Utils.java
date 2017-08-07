@@ -1213,6 +1213,7 @@ public class Utils {
     public static void playNBS(List<Player> players, String sound, boolean repeat) {
         if (players.isEmpty())
             return; // Don't play the song to nobody.
+        players.forEach(NoteBlockPlayerMain::stopPlaying);
         Song s = NBSDecoder.parse(Core.getFile("audio/" + sound + ".nbs"));
         SongPlayer player = new RadioSongPlayer(s);
         player.setAutoDestroy(!repeat);
@@ -1304,5 +1305,18 @@ public class Utils {
      */
     public static Player getNearestPlayer(Entity en, int radius) {
         return (Player) getNearestEntity(en.getLocation(), radius, e -> e instanceof Player && !e.equals(en));
+    }
+
+    /**
+     * Scramble the order of the letters in a string.
+     * @param string
+     * @return scrambled
+     */
+    public static String scramble(String string) {
+        String scrambled = "";
+        List<String> split = new ArrayList<>(Arrays.asList(string.split("")));
+        while(!split.isEmpty())
+            scrambled += split.remove(Utils.randInt(0, split.size() - 1));
+        return scrambled;
     }
 }

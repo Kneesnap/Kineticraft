@@ -141,10 +141,11 @@ public class Dungeon {
 
         // Handle saving.
         if (isEditMode()) {
-            getWorld().getEntities().stream().filter(e -> e instanceof Monster || e instanceof Item || e instanceof Animals).forEach(Entity::remove);
+            getWorld().getEntities().stream().filter(e -> e instanceof Monster || e instanceof Item).forEach(Entity::remove);
             Stream.of(getWorld().getLoadedChunks()).forEach(Chunk::unload);
         }
 
+        getWorld().save(); // Save data such as Spawn Location
         Bukkit.unloadWorld(getWorld(), isEditMode()); // Unload the world.
         if (isEditMode()) { // Zip up and save the world.
             Core.alertStaff("Saving modified " + getType().name() + " dungeon.");

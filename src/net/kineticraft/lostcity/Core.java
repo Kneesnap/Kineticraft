@@ -64,6 +64,7 @@ public class Core extends JavaPlugin {
      * @param baseComponents
      */
     public static void broadcast(BaseComponent... baseComponents) {
+        Bukkit.getConsoleSender().sendMessage(TextUtils.toLegacy(baseComponents));
         Bukkit.broadcast(baseComponents);
         DiscordAPI.sendGame(TextUtils.toLegacy(baseComponents));
     }

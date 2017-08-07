@@ -25,6 +25,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
@@ -70,7 +71,7 @@ public class Dungeons extends Mechanic {
 
     @EventHandler(ignoreCancelled = true)
     public void onMonsterSpawn(CreatureSpawnEvent evt) {
-        evt.setCancelled(isDungeon(evt.getLocation()) && evt.getSpawnReason() != CreatureSpawnEvent.SpawnReason.CUSTOM);
+        evt.setCancelled(isDungeon(evt.getLocation()) && evt.getSpawnReason() != SpawnReason.CUSTOM && evt.getSpawnReason() != SpawnReason.DEFAULT);
     }
 
     @EventHandler
@@ -162,7 +163,7 @@ public class Dungeons extends Mechanic {
      * @param p
      */
     private static void makeCorpse(Player p) {
-        ArmorStand as = ArmorStands.spawnArmorStand(p.getLocation().subtract(0, 0.75, 0), "corpse");
+        ArmorStand as = ArmorStands.spawnArmorStand(p.getLocation().subtract(0, 0.5, 0), "corpse");
         Utils.mirrorItems(p, as);
         as.setHelmet(ItemManager.makeSkull(p.getName()));
         as.setCustomName(ChatColor.RED + p.getName() + "'s Corpse");

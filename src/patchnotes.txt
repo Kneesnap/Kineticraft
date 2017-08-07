@@ -1,6 +1,6 @@
 &8Changes:
- - Support 1.12.1
+ - Added Idiot-Mode.
+ - Dungeon 1 is nearly complete.
 
 &8Bugfixes:
- - Dungeon edit-mode.
- - Concurrent dungeon removal.
+ - Fixed JS classloader.

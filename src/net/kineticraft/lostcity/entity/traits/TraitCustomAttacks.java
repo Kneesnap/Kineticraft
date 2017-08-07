@@ -24,9 +24,20 @@ public class TraitCustomAttacks extends Trait {
 
     @Override
     public void run() {
+        if (!getEntity().getLiving().hasAI())
+            return; // Pause AI.
+
         waitTime--;
         if (waitTime <= 0)
             performAttack();
+    }
+
+    /**
+     * Called when the attacks change.
+     */
+    public void resetAttacks() {
+        waitTime = 0;
+        currentAttack = 0;
     }
 
     private void performAttack() {

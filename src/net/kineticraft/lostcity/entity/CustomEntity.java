@@ -14,6 +14,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static net.citizensnpcs.api.npc.NPC.*;
@@ -25,6 +26,7 @@ import static net.citizensnpcs.api.npc.NPC.*;
 @Getter
 public class CustomEntity {
     private CitizensNPC NPC;
+    private TraitCustomAttacks trait = new TraitCustomAttacks(this);
     private List<CustomAttack> attacks = new ArrayList<>();
     private static final EquipmentSlot[] ORDER = new EquipmentSlot[] {EquipmentSlot.HAND, EquipmentSlot.HEAD,
             EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET};
@@ -33,7 +35,8 @@ public class CustomEntity {
         this.NPC = (CitizensNPC) Entities.spawnNPC(type, name);
         getNPC().spawn(loc);
         getNPC().data().set(SHOULD_SAVE_METADATA, false); // Don't save this NPC.
-        getNPC().addTrait(new TraitCustomAttacks(this));
+        getNPC().data().set(DEFAULT_PROTECTED_METADATA, false); // Don't be invulnerable.
+        getNPC().addTrait(trait);
     }
 
     /**
@@ -57,6 +60,21 @@ public class CustomEntity {
      */
     public void onDeath() {
 
+    }
+
+    /**
+     * Called when this entity is damaged.
+     */
+    public void onDamage() {
+
+    }
+
+    /**
+     * Get this entity as a bukkit LivingEntity.
+     * @return livingEntity
+     */
+    public LivingEntity getLiving() {
+        return (LivingEntity) getBukkit();
     }
 
     /**
@@ -87,5 +105,15 @@ public class CustomEntity {
         for (int i = 0; i < mat.length; i++)
             gear[i] = new ItemStack(mat[i]);
         setGear(gear);
+    }
+
+    /**
+     * Update the attacks of this entity.
+     * @param attacks
+     */
+    protected void setAttacks(CustomAttack... attacks) {
+        getTrait().resetAttacks();
+        getAttacks().clear();
+        Arrays.asList(attacks).forEach(getAttacks()::add);
     }
 }

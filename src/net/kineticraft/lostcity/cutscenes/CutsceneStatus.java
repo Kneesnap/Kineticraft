@@ -51,6 +51,7 @@ public class CutsceneStatus {
 
         // Mount all viewers to the camera.
         getPlayers().forEach(p -> {
+            p.teleport(getCamera()); // Prevents weird audio de-sync.
             p.setGameMode(GameMode.SPECTATOR);
             p.setSpectatorTarget(getCamera());
         });

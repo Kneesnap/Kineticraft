@@ -103,7 +103,8 @@ public class Configs extends Mechanic {
         INFO,
         COLORS,
         DUNGEON,
-        VOTE;
+        VOTE,
+        IDIOT;
 
         private final Class<? extends Config> configClass;
 

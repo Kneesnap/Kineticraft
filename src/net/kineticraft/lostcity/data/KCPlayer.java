@@ -52,6 +52,7 @@ public class KCPlayer implements Jsonable {
 
     private Particle effect;
     private boolean vanished;
+    private boolean idiotMode;
     private String nickname;
     private long secondsPlayed;
     private int lastBuild;
@@ -197,7 +198,7 @@ public class KCPlayer implements Jsonable {
             default:
                 return -1;
         }
-        return hours > -1 ? punishment.getTimestamp() + (hours * 60 * 60 * 1000) + 1000 - System.currentTimeMillis() : -1;
+        return hours > -1 ? punishment.getTimestamp() + (hours * 60 * 60 * 1000) - System.currentTimeMillis() : -1;
     }
 
     /**

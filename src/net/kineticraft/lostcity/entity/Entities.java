@@ -3,15 +3,18 @@ package net.kineticraft.lostcity.entity;
 import lombok.Getter;
 import net.citizensnpcs.api.CitizensAPI;
 import net.citizensnpcs.api.npc.NPC;
+import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.mechanics.system.BuildType;
 import net.kineticraft.lostcity.mechanics.system.Mechanic;
 import net.kineticraft.lostcity.mechanics.system.Restrict;
 import net.kineticraft.lostcity.utils.ReflectionUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 
 import java.util.ArrayList;
@@ -32,6 +35,13 @@ public class Entities extends Mechanic {
             ce.onDeath();
             entities.remove(ce);
         }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    public void onEntityDamage(EntityDamageEvent evt) {
+        CustomEntity ce = getCustom(evt.getEntity());
+        if (ce != null)
+            Bukkit.getScheduler().runTask(Core.getInstance(), ce::onDamage);
     }
 
     public static <T extends CustomEntity> T spawnEntity(Class<T> clazz, Location loc) {
