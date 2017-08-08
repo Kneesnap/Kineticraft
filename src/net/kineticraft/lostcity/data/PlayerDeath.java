@@ -37,7 +37,6 @@ public class PlayerDeath implements Jsonable {
      */
     @SuppressWarnings("unchecked")
     public void restore(Player player) {
-        player.teleport(getLocation());
         player.setLevel(getXpLost());
         Utils.giveItems(player, JsonSerializer.fromJson(JsonList.class, getInventory(), ItemStack.class));
         player.sendMessage(ChatColor.GOLD + "Death point restored.");

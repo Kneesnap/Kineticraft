@@ -2,7 +2,9 @@ package net.kineticraft.lostcity.utils;
 
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import com.xxmicloxx.NoteBlockAPI.*;
 import lombok.Cleanup;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
@@ -20,6 +22,7 @@ import org.bukkit.*;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.*;
@@ -42,6 +45,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
@@ -49,6 +53,9 @@ import java.util.stream.Collectors;
  * Created by Kneesnap on 5/29/2017.
  */
 public class Utils {
+
+    public static List<BlockFace> FACES = Arrays.asList(BlockFace.SELF, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST);
+    @Getter private static Set<SongPlayer> repeat = new HashSet<>();
 
     /**
      * Gets an enum value from the given class. Returns null if not found.
@@ -197,6 +204,15 @@ public class Utils {
     }
 
     /**
+     * Get a friendly string of how much time it will take until this date is reached.
+     * @param date
+     * @return formatted
+     */
+    public static String formatDate(Date date) {
+        return formatTimeFull(date.getTime() - System.currentTimeMillis());
+    }
+
+    /**
      * Turn milliseconds into a user friendly string.
      * @param time
      * @return formatted
@@ -261,11 +277,11 @@ public class Utils {
 
     /**
      * Convert a location into a friendly string.
-     * @param location
+     * @param l
      * @return formatted
      */
-    public static String toString(Location location) {
-       return "[" + location.getWorld().getName() + "," + location.getX() + "," + location.getY() + "," + location.getZ() + "]";
+    public static String toString(Location l) {
+       return "[" + (l.getWorld() != null ? l.getWorld().getName() : null) + "," + l.getX() + "," + l.getY() + "," + l.getZ() + "]";
     }
 
     /**
@@ -274,7 +290,8 @@ public class Utils {
      * @return clean
      */
     public static String toCleanString(Location loc) {
-        return "[" + (loc != null ? loc.getWorld().getName() + "," + loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ() : "null") + "]";
+        return "[" + (loc != null ? (loc.getWorld() != null ? loc.getWorld().getName() : null)
+                + "," + loc.getBlockX() + "," + loc.getBlockY() + "," + loc.getBlockZ() : "null") + "]";
     }
 
     /**
@@ -506,7 +523,7 @@ public class Utils {
      */
     public static EnumRank getRank(CommandSender sender) {
         return hasWrapper(sender) ? KCPlayer.getWrapper(sender).getRank()
-                : (sender instanceof ConsoleCommandSender ? EnumRank.DEV : EnumRank.MU);
+                : (sender instanceof ConsoleCommandSender || sender instanceof BlockCommandSender ? EnumRank.DEV : EnumRank.MU);
     }
 
     /**
@@ -655,12 +672,16 @@ public class Utils {
 
     /**
      * Get players nearby an entity. Async-Safe.
+     * Does not include the calling entity.
      * @param entity
      * @param radius
      * @return players
      */
     public static List<Player> getNearbyPlayers(Entity entity, int radius) {
-        return getNearbyPlayers(entity.getLocation(), radius);
+        List<Player> players = getNearbyPlayers(entity.getLocation(), radius);
+        if (entity instanceof Player)
+            players.remove(entity);
+        return players;
     }
 
     /**
@@ -670,8 +691,8 @@ public class Utils {
      * @return players
      */
     public static List<Player> getNearbyPlayers(Location loc, int radius) {
-        return getNearbyEntities(loc, radius).stream().filter(e -> e instanceof Player).map(e -> (Player) e)
-                .collect(Collectors.toList());
+        return new ArrayList<>(getNearbyEntities(loc, radius).stream().filter(e -> e instanceof Player).map(e -> (Player) e)
+                .collect(Collectors.toList()));
     }
 
     /**
@@ -1150,7 +1171,7 @@ public class Utils {
      * @return sanitized
      */
     public static String sanitizeFileName(String input) {
-        return input.replaceAll("[^a-zA-Z0-9 -]", "");
+        return input.replaceAll("[^a-zA-Z0-9 -_]", "");
     }
 
     /**
@@ -1171,5 +1192,131 @@ public class Utils {
      */
     public static BlockFace getDirection(Block bk) {
         return bk.getState().getData() instanceof Directional ? ((Directional) bk.getState().getData()).getFacing() : BlockFace.SELF;
+    }
+
+    /**
+     * Repeat the song a SongPlayer is playing.
+     * @param mp
+     */
+    public static void repeatNBS(SongPlayer mp) {
+        getRepeat().remove(mp); // We won't refer to this again.
+        List<Player> players = mp.getPlayerList().stream().map(Bukkit::getPlayer).filter(Objects::nonNull).collect(Collectors.toList());
+        playNBS(players, mp.getSong().getPath().getName().split("\\.nbs")[0], true);
+    }
+
+    /**
+     * Play a .nbs sound file to the given players.
+     * @param players
+     * @param sound
+     * @param repeat
+     */
+    public static void playNBS(List<Player> players, String sound, boolean repeat) {
+        if (players.isEmpty())
+            return; // Don't play the song to nobody.
+        players.forEach(NoteBlockPlayerMain::stopPlaying);
+        Song s = NBSDecoder.parse(Core.getFile("audio/" + sound + ".nbs"));
+        SongPlayer player = new RadioSongPlayer(s);
+        player.setAutoDestroy(!repeat);
+        players.forEach(player::addPlayer);
+        player.setPlaying(true);
+        if (repeat)
+            getRepeat().add(player);
+    }
+
+    /**
+     * Stop all NBS sounds for a player.
+     * @param player
+     */
+    public static void stopNBS(Player player) {
+        NoteBlockPlayerMain main = NoteBlockPlayerMain.plugin;
+        if (!main.playingSongs.containsKey(player.getName()))
+            return;
+
+        main.playingSongs.get(player.getName()).forEach(sp -> {
+            sp.setFadeTarget((byte) 0); // We want to fade to 0 volume.
+            sp.setFadeDone(0); // Reset the current fade.
+            sp.setFadeDuration(30); // Should take 30 iterations to destroy. (Depends on song TPS, not server TPS.)
+            getRepeat().remove(sp); // Don't repeat this sound anymore.
+            Bukkit.getScheduler().runTaskLater(Core.getInstance(), sp::destroy, 60L); // Completely disable sound.
+        });
+    }
+
+    /**
+     * Get the closest entity to a given location.
+     * @param loc
+     * @param radius
+     * @return closest
+     */
+    public static Entity getNearestEntity(Location loc, int radius) {
+        return getNearestEntity(loc, radius, e -> true);
+    }
+
+    /**
+     * Get the nearest entity meeting special conditions to a location.
+     * @param loc
+     * @param radius
+     * @param p
+     * @return closest
+     */
+    public static Entity getNearestEntity(Location loc, int radius, Predicate<Entity> p) {
+        Entity res = null;
+        List<Entity> possible = loc.getWorld().getNearbyEntities(loc, radius, radius, radius).stream().filter(p).collect(Collectors.toList());
+        for (Entity e : possible)
+            if (res == null || e.getLocation().distance(loc) < res.getLocation().distance(loc))
+                res = e;
+        return res;
+    }
+
+    /**
+     * Get the nearest living entity to a location.
+     * @param loc
+     * @param radius
+     * @return closest
+     */
+    public static LivingEntity getNearestLivingEntity(Location loc, int radius) {
+        return (LivingEntity) getNearestEntity(loc, radius, e -> e instanceof LivingEntity);
+    }
+
+    /**
+     * Get the nearest player to a location.
+     * @param loc
+     * @param radius
+     * @return closest
+     */
+    public static Player getNearestPlayer(Location loc, int radius) {
+        return (Player) getNearestEntity(loc, radius, e -> e instanceof Player);
+    }
+
+    /**
+     * Get the nearest living entity to an entity.
+     * @param en
+     * @param radius
+     * @return entity
+     */
+    public static LivingEntity getNearestLivingEntity(Entity en, int radius) {
+        return (LivingEntity) getNearestEntity(en.getLocation(), radius, e -> e instanceof LivingEntity && !e.equals(en));
+    }
+
+    /**
+     * Get the nearest player to an entity.
+     * @param en
+     * @param radius
+     * @return nearest
+     */
+    public static Player getNearestPlayer(Entity en, int radius) {
+        return (Player) getNearestEntity(en.getLocation(), radius, e -> e instanceof Player && !e.equals(en));
+    }
+
+    /**
+     * Scramble the order of the letters in a string.
+     * @param string
+     * @return scrambled
+     */
+    public static String scramble(String string) {
+        String scrambled = "";
+        List<String> split = new ArrayList<>(Arrays.asList(string.split("")));
+        while(!split.isEmpty())
+            scrambled += split.remove(Utils.randInt(0, split.size() - 1));
+        return scrambled;
     }
 }

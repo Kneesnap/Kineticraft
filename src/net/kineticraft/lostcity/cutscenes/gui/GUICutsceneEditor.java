@@ -1,7 +1,6 @@
 package net.kineticraft.lostcity.cutscenes.gui;
 
 import net.kineticraft.lostcity.cutscenes.Cutscene;
-import net.kineticraft.lostcity.cutscenes.CutsceneAction;
 import net.kineticraft.lostcity.cutscenes.CutsceneStage;
 import net.kineticraft.lostcity.guis.GUI;
 import net.kineticraft.lostcity.item.ItemWrapper;
@@ -32,7 +31,7 @@ public class GUICutsceneEditor extends GUI {
                         cutscene.getStages().remove(stage);
                         reconstruct();
                     });
-            stage.getActions().stream().map(CutsceneAction::getName).forEach(iw::addLore);
+            stage.getActions().stream().map(a -> a.getName() + " (" + a + a.getColor() + ")").forEach(iw::addLore);
             iw.addLoreAction("Left", "Edit Stage").addLoreAction("Right", "Remove Stage");
         }
 

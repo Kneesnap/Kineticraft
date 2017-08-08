@@ -10,6 +10,10 @@ import net.kineticraft.lostcity.data.reflect.JsonSerializer;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+
+import java.util.List;
 
 /**
  * Represents an action taken during a cutscene stage.
@@ -53,7 +57,15 @@ public abstract class CutsceneAction implements Jsonable {
      * @return name
      */
     public String getName() {
-        return (isValid() ? ChatColor.YELLOW : ChatColor.RED) + getClass().getSimpleName();
+        return getColor() + getClass().getSimpleName();
+    }
+
+    /**
+     * Return the color of this action, based on if it's valid or not.
+     * @return color
+     */
+    public ChatColor getColor() {
+        return isValid() ? ChatColor.YELLOW : ChatColor.RED;
     }
 
     /**
@@ -96,5 +108,32 @@ public abstract class CutsceneAction implements Jsonable {
      */
     protected World getWorld() {
         return getEvent().getStatus().getCamera().getWorld();
+    }
+
+    /**
+     * Get the players watching this cutscene.
+     * @return players
+     */
+    protected List<Player> getPlayers() {
+        return getEvent().getStatus().getPlayers();
+    }
+
+    /**
+     * Get the camera entity.
+     * @return camera
+     */
+    protected LivingEntity getCamera() {
+        return getEvent().getStatus().getCamera();
+    }
+
+    /**
+     * Format a string sent to a player.
+     * @param message
+     * @param p
+     * @return formatted.
+     */
+    protected String formatString(String message, Player p) {
+        return ChatColor.translateAlternateColorCodes('&',
+                String.format(message, ChatColor.YELLOW + p.getName() + ChatColor.GREEN));
     }
 }

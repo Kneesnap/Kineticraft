@@ -20,8 +20,8 @@ public class ActionEntityTalk extends ActionEntity {
     @Override
     public void execute() {
         String message = ChatColor.DARK_GREEN + getEntityName() + ": " + ChatColor.GREEN + this.message;
-        getEvent().getStatus().getPlayers().forEach(p -> p.sendMessage(String.format(message, p.getName())));
-        getWorld().playSound(getEntity().getLocation(), sound != null ? sound : getDisplay().getTalkSound(), 1F, pitch);
+        getPlayers().forEach(p -> p.sendMessage(formatString(message, p)));
+        getWorld().playSound(getCamera().getLocation(), sound != null ? sound : getDisplay().getTalkSound(), 1F, pitch);
     }
 
     @Override

@@ -15,17 +15,18 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 
 /**
  * Handles chat formatting.
- *
  * Created by Kneesnap on 5/29/2017.
  */
 public class Chat extends Mechanic {
 
     private static final Pattern URL_PATTERN = Pattern.compile("((?:(?:https?)://)?[-\\w_\\.]{2,})\\.([a-zA-Z]{2,3}(?:/\\S+)?)");
     private static final List<ChatColor> STAFF_ONLY = Arrays.asList(ChatColor.BLACK, ChatColor.MAGIC);
+    private static final List<Function<String, String>> IDIOT_FILTERS = new ArrayList<>();
 
     @EventHandler(priority = EventPriority.LOW) // Filter should happen after commands.
     public void onChat(AsyncPlayerChatEvent evt) {
@@ -47,6 +48,12 @@ public class Chat extends Mechanic {
         new ArrayList<>(evt.getRecipients()).stream()
                 .filter(p -> KCPlayer.getWrapper(p).getIgnored().containsIgnoreCase(evt.getPlayer().getName()))
                 .forEach(evt.getRecipients()::remove);
+    }
+
+    @EventHandler
+    public void idiotMode(AsyncPlayerChatEvent evt) {
+        if (KCPlayer.getPlayer(evt.getPlayer()).isIdiotMode() && Utils.nextBool())
+            evt.setMessage(Utils.randElement(IDIOT_FILTERS).apply(evt.getMessage()));
     }
 
     /**
@@ -128,5 +135,25 @@ public class Chat extends Mechanic {
                 message = message.replaceAll(ChatColor.COLOR_CHAR + String.valueOf(c.getChar()), "");
 
         return message;
+    }
+
+    static {
+        final String[] WORDS = new String[] {"huehuehue", "snarff", "hurr", "durr", "hodor", "derp", "herp", "ROARK", "SNEE"};
+
+        IDIOT_FILTERS.addAll(Arrays.asList(s -> {
+            // Scramble random words.
+            String[] sp = s.split(" ");
+            for (int i = 0; i < sp.length; i++)
+                if (Utils.nextBool())
+                    sp[i] = Utils.scramble(sp[i]);
+            return String.join(" ", sp);
+        }, s -> {
+            // Replace random words with nonsense.
+            String[] sp = s.split(" ");
+            for (int i = 0; i < sp.length; i++)
+                if (Utils.nextBool())
+                    sp[i] = Utils.randElement(WORDS);
+            return String.join(" ", sp);
+        }, s -> Utils.randElement(Configs.getTextConfig(Configs.ConfigType.IDIOT).getLines())));
     }
 }

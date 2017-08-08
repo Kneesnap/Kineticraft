@@ -12,6 +12,7 @@ import net.kineticraft.lostcity.utils.ServerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import java.util.*;
@@ -43,6 +44,11 @@ public class DiscordAPI extends Mechanic {
     @EventHandler
     public void onCommandRegister(CommandRegisterEvent evt) {
         evt.register(new CommandDiscordVerify(), new CommandServerVote());
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    public void onDeath(PlayerDeathEvent evt) {
+        sendGame(evt.getDeathMessage());
     }
 
     /**

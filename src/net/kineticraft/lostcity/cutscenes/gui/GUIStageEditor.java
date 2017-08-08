@@ -40,7 +40,6 @@ public class GUIStageEditor extends GUI {
         }
 
         nextRow();
-
         addItem(Material.SPONGE, ChatColor.YELLOW + "Ticks", "Ticks: " + ChatColor.YELLOW + stage.getTicks(),
                 "Click here to set the tick duration of this stage").anyClick(ce -> {
                     ce.getPlayer().sendMessage(ChatColor.YELLOW + "Please enter the tick duration for this stage.");

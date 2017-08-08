@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 @AllArgsConstructor @Getter
 public enum EntityDisplay {
 
-    ZOMBIE("Zombie", Sound.ENTITY_ZOMBIE_AMBIENT),
+    ZOMBIE("Zombie", Sound.ENTITY_ZOMBIE_HURT),
     CREEPER("Creeper", Sound.ENTITY_CREEPER_HURT),
     VILLAGER("Villager", Sound.ENTITY_VILLAGER_AMBIENT),
     PLAYER("Steve", Sound.ENTITY_VILLAGER_TRADING),

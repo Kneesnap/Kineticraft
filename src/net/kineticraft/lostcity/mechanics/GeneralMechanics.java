@@ -1,5 +1,7 @@
 package net.kineticraft.lostcity.mechanics;
 
+import com.xxmicloxx.NoteBlockAPI.NoteBlockPlayerMain;
+import com.xxmicloxx.NoteBlockAPI.SongEndEvent;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.data.KCPlayer;
@@ -31,7 +33,6 @@ import java.util.stream.Collectors;
 
 /**
  * GeneralMechanics - Small general mechanics.
- *
  * Created by Kneesnap on 5/29/2017.
  */
 public class GeneralMechanics extends Mechanic {
@@ -98,6 +99,17 @@ public class GeneralMechanics extends Mechanic {
 
         // Remove all existing teams. Since they are dynamically generated this makes sure we don't have problems.
         Bukkit.getScoreboardManager().getMainScoreboard().getTeams().forEach(Team::unregister);
+    }
+
+    @EventHandler // Handle repeating songs.
+    public void onSongEnd(SongEndEvent evt) {
+        if (Utils.getRepeat().contains(evt.getSongPlayer()))
+            Utils.repeatNBS(evt.getSongPlayer());
+    }
+
+    @Override
+    public void onQuit(Player player) {
+        NoteBlockPlayerMain.stopPlaying(player);
     }
 
     @Override

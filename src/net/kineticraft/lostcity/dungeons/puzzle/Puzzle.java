@@ -6,8 +6,8 @@ import net.kineticraft.lostcity.dungeons.Dungeon;
 import net.kineticraft.lostcity.dungeons.Dungeons;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.CommandBlock;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -28,15 +28,17 @@ import java.util.stream.Stream;
  */
 @Getter
 public abstract class Puzzle implements Listener {
-    private Location endLocation;
+    private Location gateLocation;
+    private BlockFace gateFace;
     private boolean complete;
     private List<BukkitTask> tasks = new ArrayList<>();
     private Dungeon dungeon;
 
     private static final Map<Class<? extends Puzzle>, Map<String, Method>> triggers = new HashMap<>();
 
-    public Puzzle(Location place) {
-        this.endLocation = place;
+    public Puzzle(Location place, BlockFace gateFace) {
+        this.gateLocation = place;
+        this.gateFace = gateFace;
         Bukkit.getPluginManager().registerEvents(this, Core.getInstance());
     }
 
@@ -46,7 +48,7 @@ public abstract class Puzzle implements Listener {
      */
     public void setDungeon(Dungeon d) {
         this.dungeon = d;
-        this.endLocation = fixLocation(this.endLocation);
+        this.gateLocation = fixLocation(this.gateLocation);
     }
 
     /**
@@ -59,36 +61,36 @@ public abstract class Puzzle implements Listener {
     }
 
     /**
-     * Get the block marked as the block where the redstone block should be placed after completion.
-     * @return endBlock
-     */
-    public Block getRedstoneBlock() {
-        return getEndLocation().getBlock();
-    }
-
-    /**
      * Complete this puzzle.
      */
     public void complete() {
-        //TODO: Play Jingle.
         complete = true;
-        Bukkit.getScheduler().runTaskLater(Core.getInstance(), this::onComplete, 20L);
+
+        Bukkit.getScheduler().runTaskLater(Core.getInstance(), () -> { // Cosmetic delay.
+            getDungeon().playCutscene(new PuzzleDoorCutscene(getGateLocation(), getGateFace()));
+            Bukkit.getScheduler().runTaskLater(Core.getInstance(), this::onComplete, 20L);
+        }, 35L);
     }
 
     /**
      * Called when this puzzle is completed.
      */
     protected void onComplete() {
-        getTasks().stream().filter(t -> Bukkit.getScheduler().isCurrentlyRunning(t.getTaskId())
-                || Bukkit.getScheduler().isQueued(t.getTaskId())).forEach(BukkitTask::cancel);
-        getRedstoneBlock().setType(Material.REDSTONE_BLOCK);
+        removeTasks();
     }
 
     /**
      * Called when the dungeon is removed.
      */
     public void onDungeonRemove() {
+        removeTasks();
         PlayerInteractEvent.getHandlerList().unregister(this);
+    }
+
+    protected void removeTasks() {
+        getTasks().stream().filter(t -> Bukkit.getScheduler().isCurrentlyRunning(t.getTaskId())
+                || Bukkit.getScheduler().isQueued(t.getTaskId())).forEach(BukkitTask::cancel);
+        getTasks().clear();
     }
 
     /**
@@ -96,7 +98,7 @@ public abstract class Puzzle implements Listener {
      * @param bk
      * @param isRightClick
      */
-    public void onBlockClick(Block bk, boolean isRightClick) {
+    public void onBlockClick(PlayerInteractEvent evt, Block bk, boolean isRightClick) {
 
     }
 
@@ -106,7 +108,7 @@ public abstract class Puzzle implements Listener {
             return;
 
         if (evt.hasBlock())
-            onBlockClick(evt.getClickedBlock(), evt.getAction() == Action.RIGHT_CLICK_BLOCK);
+            onBlockClick(evt, evt.getClickedBlock(), evt.getAction() == Action.RIGHT_CLICK_BLOCK);
     }
 
     /**
@@ -154,7 +156,7 @@ public abstract class Puzzle implements Listener {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Core.warn("Failed to exit puzzle trigger '" + trigger + "' in " + getClass().getSimpleName() + ".");
+            Core.warn("Failed to execute puzzle trigger '" + trigger + "' in " + getClass().getSimpleName() + ".");
         }
     }
 

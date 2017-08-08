@@ -1,7 +1,8 @@
 package net.kineticraft.lostcity.cutscenes;
 
 import lombok.Getter;
-import net.kineticraft.lostcity.utils.GeneralException;
+import net.kineticraft.lostcity.mechanics.metadata.Metadata;
+import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -45,9 +46,12 @@ public class CutsceneStatus {
         getCamera().setAI(false); // Disable the AI of the camera.
         getCamera().setGravity(false);
         getCamera().setInvulnerable(true); // Disable all damage.
+        if (type == EntityType.ARMOR_STAND)
+            ((ArmorStand) getCamera()).setVisible(false);
 
         // Mount all viewers to the camera.
         getPlayers().forEach(p -> {
+            p.teleport(getCamera()); // Prevents weird audio de-sync.
             p.setGameMode(GameMode.SPECTATOR);
             p.setSpectatorTarget(getCamera());
         });
@@ -88,7 +92,8 @@ public class CutsceneStatus {
      */
     public void removeEntity(String name) {
         Entity e = getEntityMap().remove(name);
-        e.remove();
+        if (!MetadataManager.hasMetadata(e, Metadata.CUTSCENE_KEEP))
+            e.remove();
     }
 
     public LivingEntity getCamera() {

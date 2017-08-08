@@ -178,6 +178,17 @@ public abstract class Command {
     }
 
     /**
+     * Check if the given index of an argument list matches a given string.
+     * @param args
+     * @param arg
+     * @param check
+     * @return matches
+     */
+    protected static boolean isArg(String[] args, int arg, String check) {
+        return args.length > arg && args[arg].equalsIgnoreCase(check);
+    }
+
+    /**
      * Remove the first few arguments from an array.
      * @param args
      * @param toSkip - Number of args to skip

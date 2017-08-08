@@ -25,6 +25,7 @@ public enum Metadata {
     NO_MODIFY(false),
 
     // Entities
+    CUTSCENE_KEEP(false),
     NORMAL_SPEED(.1F), // Normal Walkspeed.
     PLAYER_DAMAGE(0D);
 

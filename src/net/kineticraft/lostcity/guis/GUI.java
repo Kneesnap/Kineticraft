@@ -162,7 +162,8 @@ public abstract class GUI {
      * Skips to the next row in the GUI.
      */
     protected void nextRow() {
-        setSlotIndex((((getSlotIndex() - 1) / ROW_SIZE) + 1) * ROW_SIZE);
+        if (getSlotIndex() % 9 != 0)
+            setSlotIndex((((getSlotIndex() - 1) / ROW_SIZE) + 1) * ROW_SIZE);
     }
 
     /**
@@ -297,9 +298,13 @@ public abstract class GUI {
 
     /**
      * Display the items in the GUI.
+     * Does not display any items that overflow out of the GUI.
      */
     protected void showItems() {
-        itemMap.forEach((k, v) -> getInventory().setItem(k, v.generateItem()));
+        itemMap.forEach((k, v) -> {
+            if (k < getInventory().getSize())
+                getInventory().setItem(k, v.generateItem());
+        });
     }
 
     /**

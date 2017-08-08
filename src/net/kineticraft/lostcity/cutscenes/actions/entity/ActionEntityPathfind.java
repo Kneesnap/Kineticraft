@@ -22,17 +22,19 @@ public class ActionEntityPathfind extends ActionEntity {
         getLivingEntity().getAttribute(Attribute.GENERIC_FOLLOW_RANGE).setBaseValue(50);
 
         // Create the goal this entity should walk to.
+        Location target = fixLocation(this.target);
         ArmorStand goal = (ArmorStand) target.getWorld().spawnEntity(target, EntityType.ARMOR_STAND);
         goal.setInvulnerable(true);
         goal.setVisible(false);
 
         // Navigate to the goal.
-        Location target = fixLocation(this.target);
         toggleAI(e -> {
             ((Creature) e).setTarget(goal);
             boolean done = e.getLocation().distance(target) < .25D || !e.isValid();
-            if (done)
+            if (done) {
+                e.teleport(goal);
                 goal.remove();
+            }
             return done;
         });
     }

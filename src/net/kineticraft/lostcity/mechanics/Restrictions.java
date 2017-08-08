@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 
 /**
  * Restrictions - Contains basic restrictions / alerts about slightly questionable player behaviour.
- *
  * Created by Kneesnap on 6/2/2017.
  */
 public class Restrictions extends Mechanic {
@@ -73,7 +72,7 @@ public class Restrictions extends Mechanic {
 
     @EventHandler(ignoreCancelled = true) // Prevent players from teleporting using gm3.
     public void onTeleport(PlayerTeleportEvent evt) {
-        evt.setCancelled(evt.getCause() == PlayerTeleportEvent.TeleportCause.SPECTATE && !Utils.getRank(evt.getPlayer()).isStaff());
+        evt.setCancelled(evt.getCause() == PlayerTeleportEvent.TeleportCause.SPECTATE && !Utils.isStaff(evt.getPlayer()));
     }
 
     @Override

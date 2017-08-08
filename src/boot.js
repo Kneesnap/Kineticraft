@@ -3,10 +3,11 @@ var eval = function(code) {
 }
 
 // Setup basic global server shortcuts.
-var Kineticraft = Packages.net.kineticraft.lostcity;
-var plugin = Kineticraft.Core.instance;
-var Core = plugin;
-var Bukkit = Packages.org.bukkit.Bukkit;
+var org = Packages.org
+var net = Packages.net
+var Core = net.kineticraft.lostcity.Core;
+var plugin = Core.instance;
+var Bukkit = org.bukkit.Bukkit;
 var server = Bukkit.server; // Setup 'server' keyword
 
 // Basic IO.
@@ -32,5 +33,5 @@ var setInterval = function (callback, intervalMS) {
 }
 
 var toNMS = function (item) {
-    return Packages.org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack.asNMSCopy(item);
+    return org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack.asNMSCopy(item);
 }

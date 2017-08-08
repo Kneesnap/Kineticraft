@@ -34,7 +34,6 @@ import java.util.stream.Collectors;
 
 /**
  * PlayerData - Allows for loading and saving of player data.
- *
  * Created May 26th, 2017.
  * @author Kneesnap
  */
@@ -53,8 +52,9 @@ public class KCPlayer implements Jsonable {
 
     private Particle effect;
     private boolean vanished;
+    private boolean idiotMode;
     private String nickname;
-    private int secondsPlayed;
+    private long secondsPlayed;
     private int lastBuild;
     private int monthlyVotes;
     private int totalVotes;
@@ -112,7 +112,7 @@ public class KCPlayer implements Jsonable {
         setMute(new Mute(expiry.getTime(), reason, source.getName()));
         sendMessage(ChatColor.RED + "You have been muted. (" + reason + ")");
         DiscordAPI.sendMessage(DiscordChannel.ORYX, source.getName() + " has muted " + getUsername()
-                + " for " + Utils.formatTimeFull(expiry.getTime()) + ".");
+                + " for " + Utils.formatDate(expiry) + ".");
     }
 
     /**
@@ -180,19 +180,20 @@ public class KCPlayer implements Jsonable {
     public long getPunishExpiry() {
         int hours;
         List<Punishment> p = getPunishments().stream().filter(Punishment::isValid).collect(Collectors.toList());
-        Punishment punishment = p.isEmpty() ? null : p.get(p.size() - 1);
+        if (p.isEmpty())
+            return 0; // If there are no punishments, they're clean.
 
+        Punishment punishment = p.get(p.size() - 1);
+        PunishmentType type = punishment.getType();
         switch (p.size()) {
-            case 0:
-                return 0;
             case 1:
-                hours = punishment.getType().getInitialTime();
+                hours = type.getInitialTime();
                 break;
             case 2:
-                hours = punishment.getType().getPunishLength() * 24;
+                hours = type.getPunishLength() * 24;
                 break;
             case 3:
-                hours = ((punishment.getType().getPunishLength() * 2) + 1) * 24;
+                hours = ((type.getPunishLength() * 2) + 1) * 24;
                 break;
             default:
                 return -1;
@@ -310,9 +311,10 @@ public class KCPlayer implements Jsonable {
         Voting.giveRewards(player); // Give vote rewards, if any.
         player.setOp(getRank().isAtLeast(EnumRank.BUILDER)); // Grant or remove OP status if the player is of high enough level.
 
-        // Update things.
+        // Updates data.
         setUsername(player.getName());
         setLastIP(player.getAddress().toString().split("/")[1].split(":")[0]);
+        player.addAttachment(Core.getInstance(), "OpenInv.*", getRank().isStaff());
 
         Bukkit.getScheduler().runTaskLater(Core.getInstance(), () -> {
             if (!getMail().isEmpty())
@@ -323,7 +325,6 @@ public class KCPlayer implements Jsonable {
                 player.sendMessage(TextUtils.centerChat(l + " You have new mail! Claim it with /mailbox. " + l));
             }
         }, 20L);
-
     }
 
     /**
@@ -343,11 +344,14 @@ public class KCPlayer implements Jsonable {
         if (!getToggles().remove(toggle))
             getToggles().add(toggle); // Add the toggle if we did not remove it.
         sendMessage(Utils.formatToggle(Utils.capitalize(toggle.name()), getState(toggle)));
+        updateToggles();
+    }
 
-        boolean newState = getState(toggle);
+    /**
+     * Update toggles.
+     */
+    public void updateToggles() {
 
-        if (toggle == Toggle.FLIGHT)
-            getPlayer().setAllowFlight(newState);
     }
 
     /**

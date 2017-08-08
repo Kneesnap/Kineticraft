@@ -70,11 +70,9 @@ public class CompassMechanics extends Mechanic {
      * @param player
      */
     private static void updateCompass(Player player) {
-        Bukkit.getScheduler().runTask(Core.getInstance(), () -> {
-                Location loc = KCPlayer.getWrapper(player).getSelectedDeath();
-                if (loc != null)
-                    player.setCompassTarget(loc);
-            });
+        Location loc = KCPlayer.getWrapper(player).getSelectedDeath();
+        if (loc != null)
+            Bukkit.getScheduler().runTask(Core.getInstance(), () -> player.setCompassTarget(loc));
     }
 
     @Override

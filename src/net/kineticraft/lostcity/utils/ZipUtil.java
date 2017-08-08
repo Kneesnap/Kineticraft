@@ -1,10 +1,9 @@
 package net.kineticraft.lostcity.utils;
 
 import lombok.SneakyThrows;
+import org.apache.commons.io.IOUtils;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.zip.*;
 
 /**
@@ -84,72 +83,31 @@ public class ZipUtil {
     }
 
     /**
-     * Compress a file or directory.
-     * @param file
-     * @param outputName
+     * Compress a directory to a zip file.
+     * Adapted From: https://stackoverflow.com/questions/23318383/compress-directory-into-a-zipfile-with-commons-io
+     * @param source
+     * @param outputFile
      */
     @SneakyThrows
-    public static void zip(File file, String outputName) {
-        if (file.isDirectory()) {
-            zipDirectory(file, outputName);
-            return;
-        }
-
-        //create ZipOutputStream to write to the zip file
-        FileOutputStream fos = new FileOutputStream(outputName);
-        ZipOutputStream zos = new ZipOutputStream(fos);
-        //add a new Zip Entry to the ZipOutputStream
-        ZipEntry ze = new ZipEntry(file.getName());
-        zos.putNextEntry(ze);
-        //read the file and write to ZipOutputStream
-        FileInputStream fis = new FileInputStream(file);
-        byte[] buffer = new byte[1024];
-        int len;
-        while ((len = fis.read(buffer)) > 0)
-            zos.write(buffer, 0, len);
-
-        //Close the zip entry to write to zip file
-        zos.closeEntry();
+    public static void zip(File source, String outputFile) {
+        ZipOutputStream zipFile = new ZipOutputStream(new FileOutputStream(outputFile));
+        compressDirectory(source, source, zipFile);
+        IOUtils.closeQuietly(zipFile);
     }
 
-    /**
-     * Compress the contents of a directory to a zip file.
-     * @param dir
-     * @param zipDirName
-     */
     @SneakyThrows
-    private static void zipDirectory(File dir, String zipDirName) {
-        List<String> files = new ArrayList<>();
-        populateFilesList(dir, files);
-
-        FileOutputStream fos = new FileOutputStream(zipDirName);
-        ZipOutputStream zos = new ZipOutputStream(fos);
-        for(String filePath : files){ // Zip files one by one.
-            //for ZipEntry we need to keep only relative file path, so we used substring on absolute path
-            ZipEntry ze = new ZipEntry(filePath.substring(dir.getAbsolutePath().length()+1, filePath.length()));
-            zos.putNextEntry(ze);
-            //read the file and write to ZipOutputStream
-            FileInputStream fis = new FileInputStream(filePath);
-            byte[] buffer = new byte[1024];
-            int len;
-            while ((len = fis.read(buffer)) > 0)
-                zos.write(buffer, 0, len);
-            zos.closeEntry();
-        }
-    }
-
-    /**
-     * This method populates all the files in a directory to a List
-     * @param dir
-     * @throws IOException
-     */
-    @SuppressWarnings("ConstantConditions")
-    private static void populateFilesList(File dir, List<String> paths) throws IOException {
-        for(File file : dir.listFiles()){
-            if(file.isFile()){
-                paths.add(file.getAbsolutePath());
+    private static void compressDirectory(File origin, File source, ZipOutputStream out) {
+        for (File file : source.listFiles()) {
+            String name = file.getPath().substring(origin.getPath().length() + 1);
+            if (file.isDirectory()) {
+                out.putNextEntry(new ZipEntry(name + "/"));
+                compressDirectory(origin, file, out);
             } else {
-                populateFilesList(file, paths);
+                ZipEntry entry = new ZipEntry(name);
+                out.putNextEntry(entry);
+                FileInputStream in = new FileInputStream(file);
+                IOUtils.copy(in, out);
+                IOUtils.closeQuietly(in);
             }
         }
     }

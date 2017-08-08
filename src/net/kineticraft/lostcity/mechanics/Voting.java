@@ -28,7 +28,6 @@ import java.util.stream.Collectors;
 
 /**
  * Handles players voting for the server.
- *
  * Created by Kneesnap on 6/3/2017.
  */
 public class Voting extends Mechanic {

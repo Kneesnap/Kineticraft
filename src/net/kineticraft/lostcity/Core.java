@@ -32,7 +32,7 @@ public class Core extends JavaPlugin {
     @Getter
     private static Core instance;
 
-    private static final String[] FOLDERS = new String[] {"players", "messages"};
+    private static final String[] FOLDERS = new String[] {"players", "messages", "audio"};
     private static final List<String> DEVS = Arrays.asList("a1adbca1-6fc5-42eb-97c7-87259634ecc3",
             "8228fe1c-c02e-4c25-b24f-a005f08f8595");
 
@@ -64,6 +64,7 @@ public class Core extends JavaPlugin {
      * @param baseComponents
      */
     public static void broadcast(BaseComponent... baseComponents) {
+        Bukkit.getConsoleSender().sendMessage(TextUtils.toLegacy(baseComponents));
         Bukkit.broadcast(baseComponents);
         DiscordAPI.sendGame(TextUtils.toLegacy(baseComponents));
     }
@@ -174,14 +175,6 @@ public class Core extends JavaPlugin {
      */
     public static InputStream loadResource(String fileName) {
         return getInstance().getResource(fileName);
-    }
-
-    /**
-     * Return the plugin's class loader.
-     * @return classLoader
-     */
-    public ClassLoader getClazzLoader() {
-        return getClassLoader();
     }
 
     /**

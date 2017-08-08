@@ -34,4 +34,12 @@ public class CutsceneStage implements Jsonable {
             a.setEvent(null);
         });
     }
+
+    /**
+     * Add a cutscene action.
+     * @param a
+     */
+    public void addAction(CutsceneAction a) {
+        getActions().add(a);
+    }
 }
