@@ -9,3 +9,4 @@ They are accessible from spawn.
 
 &8Bugfixes:
  - AFK math problem is more obvious.
+ - Monsters that pickup items will drop them on death.

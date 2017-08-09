@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 
 /**
  * Data Handler - Manages loading and unloading of player data.
- *
  * Created by Kneesnap on 5/29/2017.
  */
 public class DataHandler extends Mechanic {
@@ -67,7 +66,8 @@ public class DataHandler extends Mechanic {
         String ip = evt.getAddress().toString().split("/")[1].split(":")[0];
 
         KCPlayer p = KCPlayer.getWrapper(evt.getPlayer());
-        if (evt.getResult() == PlayerLoginEvent.Result.KICK_FULL && p.getRank().isAtLeast(EnumRank.THETA))
+        if ((evt.getResult() == PlayerLoginEvent.Result.KICK_FULL && p.getRank().isAtLeast(EnumRank.THETA))
+                || (evt.getResult() == PlayerLoginEvent.Result.KICK_WHITELIST && p.getRank().isStaff()))
             evt.allow();
 
         if (evt.getResult() != PlayerLoginEvent.Result.ALLOWED) {
