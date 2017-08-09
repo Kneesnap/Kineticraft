@@ -23,8 +23,8 @@ public class GUIJsonEditor extends GUI {
     private Jsonable data;
     private BiConsumer<Player, Jsonable> onFinish;
 
-    protected GUIJsonEditor(Player player, int rows) {
-        super(player, "JSON Editor", rows);
+    protected GUIJsonEditor(Player player) {
+        super(player, "JSON Editor");
     }
 
     public GUIJsonEditor(Player player, Jsonable data) {
@@ -32,7 +32,7 @@ public class GUIJsonEditor extends GUI {
     }
 
     public GUIJsonEditor(Player player, Jsonable data, BiConsumer<Player, Jsonable> onFinish) {
-        this(player, fitSize(JsonSerializer.getFields(data), 1));
+        this(player);
         this.data = data;
         this.onFinish = onFinish;
     }

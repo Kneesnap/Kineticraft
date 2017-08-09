@@ -23,10 +23,7 @@ import java.util.function.Consumer;
 public class GUIEditVoteRewards extends GUI {
 
     public GUIEditVoteRewards(Player player) {
-        super(player, "Vote Rewards", 2
-                + fitSize(Configs.getVoteData().getParty(), 1)
-                + fitSize(Configs.getVoteData().getAchievements(), 1)
-                + fitSize(Configs.getVoteData().getNormal(), 1));
+        super(player, "Vote Rewards");
     }
 
     @Override

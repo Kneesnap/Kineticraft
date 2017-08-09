@@ -19,7 +19,7 @@ public class GUIActionPicker extends GUI {
     private Consumer<CutsceneAction> onPick;
 
     public GUIActionPicker(Player player, Consumer<CutsceneAction> onPick) {
-        super(player, "Action Picker", fitSize(Cutscenes.getActions(), 1));
+        super(player, "Action Picker");
         this.onPick = onPick;
     }
 

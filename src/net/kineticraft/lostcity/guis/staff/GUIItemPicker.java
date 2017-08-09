@@ -18,7 +18,7 @@ public class GUIItemPicker extends PagedGUI {
     private List<ItemStack> items;
 
     public GUIItemPicker(Player player, List<ItemStack> items, Consumer<ItemStack> onPick) {
-        super(player, "Item Selector", fitSize(items));
+        super(player, "Item Selector");
         this.onPick = onPick;
         this.items = items;
     }

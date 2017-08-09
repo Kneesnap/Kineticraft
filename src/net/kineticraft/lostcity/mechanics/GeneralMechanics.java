@@ -57,20 +57,23 @@ public class GeneralMechanics extends Mechanic {
         }, 0L, 20L);
 
         Bukkit.getScheduler().runTaskLater(Core.getInstance(), () -> {
-                    int newSize = Utils.readSize("patchnotes.txt");
-                    if (newSize != Configs.getMainConfig().getLastNotesSize()) {
-                        int newPatch = Configs.getMainConfig().getBuild() + 1;
+            if (Bukkit.hasWhitelist())
+                return; // Don't deploy while the whitelist is active.
 
-                        Configs.getMainConfig().setBuild(newPatch);
-                        Configs.getMainConfig().setLastNotesSize(newSize);
-                        Configs.getMainConfig().saveToDisk();
+            int newSize = Utils.readSize("patchnotes.txt");
+            if (newSize != Configs.getMainConfig().getLastNotesSize()) {
+                int newPatch = Configs.getMainConfig().getBuild() + 1;
 
-                        DiscordAPI.sendMessage(DiscordChannel.ANNOUNCEMENTS,
-                                "@everyone Patch #" + newPatch + " has been deployed.\n\n"
+                Configs.getMainConfig().setBuild(newPatch);
+                Configs.getMainConfig().setLastNotesSize(newSize);
+                Configs.getMainConfig().saveToDisk();
+
+                DiscordAPI.sendMessage(DiscordChannel.ANNOUNCEMENTS,
+                        "@everyone Patch #" + newPatch + " has been deployed.\n\n"
                                 + TextUtils.fromMarkup(Utils.readLines("patchnotes.txt").stream()
                                 .collect(Collectors.joining("\n"))).toLegacy());
-                    }
-                }, 50L);
+            }
+        }, 50L);
 
         // Don't allow players on top of the nether.
         Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () -> {

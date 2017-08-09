@@ -18,7 +18,7 @@ public class GUIStageEditor extends GUI {
     private CutsceneStage stage;
 
     public GUIStageEditor(Player player, CutsceneStage stage) {
-        super(player, "Stage Editor", fitSize(stage.getActions()) + 1);
+        super(player, "Stage Editor");
         this.stage = stage;
     }
 

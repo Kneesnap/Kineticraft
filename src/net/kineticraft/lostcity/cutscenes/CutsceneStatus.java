@@ -92,8 +92,32 @@ public class CutsceneStatus {
      */
     public void removeEntity(String name) {
         Entity e = getEntityMap().remove(name);
-        if (!MetadataManager.hasMetadata(e, Metadata.CUTSCENE_KEEP))
-            e.remove();
+        boolean remove = !MetadataManager.hasMetadata(e, Metadata.CUTSCENE_KEEP);
+
+        if (remove) {
+            e.remove(); // Delete the entity, if it should be removed.
+        } else {
+            if (e instanceof LivingEntity) {// Otherwise, activate its AI.
+                LivingEntity le = (LivingEntity) e;
+                le.setAI(true);
+                le.setInvulnerable(false);
+            }
+        }
+    }
+
+    /**
+     * Set this entity as a prop for this cutscene.
+     * @param name
+     * @param ent
+     */
+    public void setEntity(String name, Entity ent) {
+        getEntityMap().put(name, ent);
+
+        if (ent instanceof LivingEntity) {
+            LivingEntity le = (LivingEntity) ent;
+            le.setAI(false);
+            le.setInvulnerable(true);
+        }
     }
 
     public LivingEntity getCamera() {

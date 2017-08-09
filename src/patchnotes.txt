@@ -1,6 +1,5 @@
-&8Changes:
- - Added Idiot-Mode.
- - Dungeon 1 is nearly complete.
+&8Backend Changes:
+ - GUIs automatically determine size.
 
 &8Bugfixes:
- - Fixed JS classloader.
+ - Fixed error preventing KC plugin from loading.

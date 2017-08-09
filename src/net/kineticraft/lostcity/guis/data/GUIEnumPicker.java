@@ -20,7 +20,7 @@ public class GUIEnumPicker<E extends Enum<E>> extends PagedGUI {
     private Consumer<E> onPick;
 
     public GUIEnumPicker(Player player, E[] values, Consumer<E> onPick) {
-        super(player, "Please Select:", fitSize(values, 1));
+        super(player, "Please Select:");
         this.values = values;
         this.onPick = onPick;
     }
