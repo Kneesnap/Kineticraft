@@ -17,7 +17,7 @@ public class GUIMapEditor<K, V> extends GUIJsonEditor {
     private SaveableMap<K, V> map;
 
     public GUIMapEditor(Player player, SaveableMap<K, V> map) {
-        super(player, fitSize(map.keySet(), 1));
+        super(player);
         this.map = map;
     }
 

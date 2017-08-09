@@ -87,8 +87,10 @@ public class JsonSerializer {
      */
     @SuppressWarnings("unchecked")
     public static <T> T fromJson(Class<T> load, JsonElement data, Object... args) {
-        if (data.isJsonObject() && data.getAsJsonObject().has("class"))
+        if (data.isJsonObject() && data.getAsJsonObject().has("class")) {
             load = (Class<T>) ReflectionUtil.getClass(data.getAsJsonObject().get("class").getAsString());
+            data.getAsJsonObject().remove("class"); // Prevent infinite loop.
+        }
 
         assert load != null;
         try {
@@ -114,7 +116,6 @@ public class JsonSerializer {
 
     /**
      * Load fields of a class from serialized json.
-     *
      * @param refresh - The object we'd like to refresh the variables of.
      * @param data - The json data to load from.
      */

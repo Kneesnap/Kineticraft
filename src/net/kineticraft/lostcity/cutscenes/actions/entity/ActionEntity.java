@@ -4,6 +4,7 @@ import lombok.Getter;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.cutscenes.CutsceneAction;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.scheduler.BukkitTask;
@@ -38,11 +39,11 @@ public abstract class ActionEntity extends CutsceneAction {
     }
 
     /**
-     * Get the mob display for the mob from this event.
+     * Get the mob display for the mob from this event, based on the actual entity in the world.
      * @return display
      */
     public EntityDisplay getDisplay() {
-        return EntityDisplay.getByType(getEvent().getStatus().getCutscene().getType(getEntityName()));
+        return EntityDisplay.getByType(getEvent().getStatus().getEntityMap().get(getEntityName()).getType());
     }
 
     /**
@@ -73,6 +74,6 @@ public abstract class ActionEntity extends CutsceneAction {
 
     @Override
     public String toString() {
-        return " (" + getEntityName() + ")";
+        return ChatColor.GRAY + " (" + getEntityName() + ")";
     }
 }

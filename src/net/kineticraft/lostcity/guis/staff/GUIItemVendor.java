@@ -9,17 +9,17 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
  * Spawn any simple item.
- *
  * Created by Kneesnap on 6/12/2017.
  */
 public class GUIItemVendor extends PagedGUI {
 
     public GUIItemVendor(Player player) {
-        super(player, "Item Vendor", fitSize(getItems()));
+        super(player, "Item Vendor");
     }
 
     @Override
@@ -31,7 +31,7 @@ public class GUIItemVendor extends PagedGUI {
 
 
     private static List<ItemStack> getItems() {
-        return Arrays.stream(ItemType.values()).map(ItemType::makeSimple).filter(i -> i != null)
+        return Arrays.stream(ItemType.values()).map(ItemType::makeSimple).filter(Objects::nonNull)
                 .map(ItemWrapper::generateItem).collect(Collectors.toList());
     }
 }

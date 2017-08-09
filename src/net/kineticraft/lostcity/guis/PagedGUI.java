@@ -25,10 +25,10 @@ public abstract class PagedGUI extends GUI {
     private List<Map<Integer, GUIItem>> pages = new ArrayList<>(); // Pages of items.
     private boolean overlay; // Are we writing the overlay?
 
-    private static int MAX_ROWS = 5; // The max number of rows per page.
+    private static final int MAX_ROWS = 5; // The max number of rows per page.
 
-    public PagedGUI(Player player, String title, int rows) {
-        super(player, title, Math.min(MAX_ROWS, rows) + 1);
+    public PagedGUI(Player player, String title) {
+        super(player, title, MAX_ROWS);
         this.title = title;
     }
 
@@ -60,7 +60,7 @@ public abstract class PagedGUI extends GUI {
         if (pages.isEmpty())
             pages.add(new HashMap<>());
 
-        if (getSlotIndex() >= getInventory().getSize() - 9)
+        if (getSlotIndex() >= MAX_ROWS * ROW_SIZE)
             newPage(); // We've reached the overlay, start writing items to the next page.
 
         pages.get(writePage).put(getSlotIndex(), item);
@@ -93,15 +93,12 @@ public abstract class PagedGUI extends GUI {
     @Override
     public void addItems() {
         overlay = true; // We're creating the overlay.
-
-        toBottom();
-
+        toBottom(); // Go to the bottom of the GUI.
         if (playerPage > 1) // Add previous page button.
             addItem(Material.EMPTY_MAP, ChatColor.GRAY + "Previous Page",
                     "Click here to return to the previous page.").anyClick( e -> setPage(playerPage - 1));
 
         fillGlass(DyeColor.GRAY);
-
         if (playerPage < maxPages()) {
             // Add "Next Page" Button
             skipSlots(-1); // Go back an item.

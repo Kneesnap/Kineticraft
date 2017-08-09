@@ -11,13 +11,12 @@ import org.bukkit.entity.Player;
 
 /**
  * GUI that lets donors control their effects.
- *
  * Created by Kneesnap on 6/11/2017.
  */
 public class GUIDonor extends GUI {
 
     public GUIDonor(Player player) {
-        super(player, "Donor Menu", 1);
+        super(player, "Donor Menu");
     }
 
     @Override
@@ -68,7 +67,6 @@ public class GUIDonor extends GUI {
         addItem(Material.STICK, ChatColor.GREEN + "Particles", "Click here to show particles.").opens(GUIType.PARTICLES);
     }
 
-    //!Arrays.stream(EnumRank.values()).filter(r -> r.getRankSymbol().equals(icon)).findAny().isPresent()
     private boolean isAllowed(String icon) {
         return !Configs.getMainConfig().getFilter().keySet().contains(icon);
     }

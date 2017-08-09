@@ -14,11 +14,18 @@ import org.bukkit.entity.Entity;
  */
 @ActionData(Material.BUCKET)
 public class ActionLoadEntity extends ActionEntity {
+    private String displayName; // The display name.
+
     @Override
     public void execute() {
         Entity ent = Utils.getNearbyEntities(getCamera().getLocation(), 100).stream()
-                .filter(e -> Utils.containsIgnoreCase(e.getName(), getEntityName())).findAny().orElse(null);
+                .filter(e -> Utils.containsIgnoreCase(e.getName(), displayName)).findAny().orElse(null);
         MetadataManager.setMetadata(ent, Metadata.CUTSCENE_KEEP, true);
-        getEvent().getStatus().getEntityMap().put(getEntityName(), ent);
+        getEvent().getStatus().setEntity(getEntityName(), ent);
+    }
+
+    @Override
+    public String toString() {
+        return displayName + super.toString();
     }
 }

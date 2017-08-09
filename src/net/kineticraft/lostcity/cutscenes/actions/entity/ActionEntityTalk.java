@@ -26,6 +26,6 @@ public class ActionEntityTalk extends ActionEntity {
 
     @Override
     public String toString() {
-        return message + ChatColor.GRAY + super.toString();
+        return message + super.toString();
     }
 }

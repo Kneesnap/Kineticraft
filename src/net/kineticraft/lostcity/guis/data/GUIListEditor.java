@@ -2,8 +2,6 @@ package net.kineticraft.lostcity.guis.data;
 
 import net.kineticraft.lostcity.data.lists.SaveableList;
 import net.kineticraft.lostcity.item.display.GUIItem;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.function.Consumer;
@@ -17,7 +15,7 @@ public class GUIListEditor<T> extends GUIJsonEditor {
     private SaveableList<T> list;
 
     public GUIListEditor(Player player, SaveableList<T> list) {
-        super(player, fitSize(list, 2));
+        super(player);
         this.list = list;
     }
 

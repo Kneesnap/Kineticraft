@@ -46,6 +46,10 @@ public abstract class GUI {
     private static final List<InventoryAction> IGNORE = Arrays.asList(InventoryAction.COLLECT_TO_CURSOR,
             InventoryAction.DROP_ONE_SLOT, InventoryAction.DROP_ALL_SLOT, InventoryAction.NOTHING, InventoryAction.UNKNOWN);
 
+    public GUI(Player player, String title) {
+        this(player, title, 1);
+    }
+
     public GUI(Player player, String title, int rows) {
         this.player = player;
         this.inventory = Bukkit.createInventory(null, rows * ROW_SIZE, title);
@@ -129,7 +133,6 @@ public abstract class GUI {
      * @return this
      */
     protected GUIItem addItem(GUIItem item) {
-        assert getSlotIndex() < getInventory().getSize();
         itemMap.put(getSlotIndex(), item);
         nextSlot();
         return item;
@@ -285,10 +288,46 @@ public abstract class GUI {
      * Recreate this GUI from scratch.
      */
     public void reconstruct() {
+        // Apply the items and click code.
         clear(); // Remove existing items.
         addItems(); // Add all items
+
+        // Reconstruct the window if needed.
+        Inventory old = getInventory();
+        System.out.println("A: " + getMaxSlot() + ", " + getInventory().getSize());
+        if (getMaxSlot() >= getInventory().getSize())
+            remakeInventory();
+        System.out.println("B: " + getMaxSlot() + ", " + getInventory().getSize());
+
+        // Apply our items to the inventory.
         showItems(); // Show them to the player. (Seperate method so we can allow editting the item after it's added.)
         getPlayer().updateInventory(); // Show the items to the player.
+        if (!old.equals(getInventory())) // The inventory has updated, open the new one for the player.
+            getPlayer().openInventory(getInventory());
+    }
+
+    /**
+     * Remake the Bukkit inventory object with the correct parameters.
+     */
+    protected void remakeInventory() {
+        makeInventory(getInventory().getTitle(), (int) Math.ceil((getMaxSlot() + 1) / 9D));
+    }
+
+    /**
+     * Make the inventory for this GUI with the given parameters.
+     * @param title
+     * @param rows
+     */
+    protected void makeInventory(String title, int rows) {
+        this.inventory = Bukkit.createInventory(null, rows * ROW_SIZE, title);
+    }
+
+    /**
+     * Get the maximum inventory slot index used in this item Map.
+     * @return maxSlot
+     */
+    protected int getMaxSlot() {
+        return getItemMap().keySet().stream().mapToInt(Integer::intValue).max().orElse(0);
     }
 
     /**
@@ -301,10 +340,7 @@ public abstract class GUI {
      * Does not display any items that overflow out of the GUI.
      */
     protected void showItems() {
-        itemMap.forEach((k, v) -> {
-            if (k < getInventory().getSize())
-                getInventory().setItem(k, v.generateItem());
-        });
+        itemMap.forEach((k, v) -> getInventory().setItem(k, v.generateItem()));
     }
 
     /**
@@ -368,7 +404,6 @@ public abstract class GUI {
      * @param newTitle
      */
     public void setTitle(String newTitle) {
-
         // Runs a tick later so when this is called before the menu is open it still works.
         Bukkit.getScheduler().runTask(Core.getInstance(), () -> {
             if (GUIManager.getGUI(getPlayer()) == this)

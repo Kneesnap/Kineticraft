@@ -17,7 +17,7 @@ public class GUICutsceneEditor extends GUI {
     private Cutscene cutscene;
 
     public GUICutsceneEditor(Player player, Cutscene c) {
-        super(player, "Cutscene Editor", fitSize(c.getStages(), 1));
+        super(player, "Cutscene Editor");
         this.cutscene = c;
     }
 

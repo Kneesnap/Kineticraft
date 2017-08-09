@@ -12,7 +12,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 
 /**
- * Create an entity.
+ * Create an entity cutscene prop.
  * Created by Kneesnap on 7/22/2017.
  */
 @ActionData(Material.EGG)
@@ -23,21 +23,13 @@ public class ActionCreateEntity extends ActionEntity {
     @Override
     public void execute() {
         assert getEntity() == null;
-
         Entity e = getWorld().spawnEntity(fixLocation(location), getEntityType());
         e.setCustomName(ChatColor.GREEN + getEntityName());
         e.setSilent(true);
 
-        if (e instanceof LivingEntity) {
-            LivingEntity le = (LivingEntity) e;
-            le.setAI(false);
-            le.setInvulnerable(true);
-        }
-
         if (e instanceof Ageable)
             ((Ageable) e).setAdult();
-
-        getEvent().getStatus().getEntityMap().put(getEntityName(), e);
+        getEvent().getStatus().setEntity(getEntityName(), e);
     }
 
     @Override
