@@ -1,5 +1,11 @@
-&8Backend Changes:
- - GUIs automatically determine size.
+&8Changes:
+ - Dungeon #1 Release
+ - Staff cannot be /ignore'd
+
+&8&lDungeons:
+Dungeons are mini adventures run with command-blocks.
+It's recommended to play with sound and headphones.
+They are accessible from spawn.
 
 &8Bugfixes:
- - Fixed error preventing KC plugin from loading.
+ - AFK math problem is more obvious.

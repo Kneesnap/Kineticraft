@@ -218,7 +218,6 @@ public class Callbacks extends Mechanic {
 
     /**
      * Cancel any listener of the given type.
-     *
      * @param player
      * @param type
      */

@@ -47,8 +47,7 @@ public class LocationStore extends SpecialStore<Location> {
             item.leftClick(ce -> {
                 if (!ce.getEvent().isShiftClick())
                     ce.getPlayer().teleport(loc);
-            }).addLore("Location: " + ChatColor.GOLD + Utils.toString(loc), "")
-                    .addLoreAction("Left", "Teleport");
+            }).addLore("Location: " + ChatColor.GOLD + Utils.toString(loc), "").addLoreAction("Left", "Teleport");
         }
         item.shiftClick(ce -> setter.accept(ce.getPlayer().getLocation()))
                 .setIcon(Material.ELYTRA).addLoreAction("Shift", "Set Location");

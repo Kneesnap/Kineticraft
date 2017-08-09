@@ -14,7 +14,6 @@ import java.util.Map;
 
 /**
  * A GUI that has support for multiple pages.
- *
  * Created by Kneesnap on 6/9/2017.
  */
 public abstract class PagedGUI extends GUI {
@@ -28,7 +27,7 @@ public abstract class PagedGUI extends GUI {
     private static final int MAX_ROWS = 5; // The max number of rows per page.
 
     public PagedGUI(Player player, String title) {
-        super(player, title, MAX_ROWS);
+        super(player, title, MAX_ROWS + 1);
         this.title = title;
     }
 
@@ -93,7 +92,7 @@ public abstract class PagedGUI extends GUI {
     @Override
     public void addItems() {
         overlay = true; // We're creating the overlay.
-        toBottom(); // Go to the bottom of the GUI.
+        toBottom();
         if (playerPage > 1) // Add previous page button.
             addItem(Material.EMPTY_MAP, ChatColor.GRAY + "Previous Page",
                     "Click here to return to the previous page.").anyClick( e -> setPage(playerPage - 1));

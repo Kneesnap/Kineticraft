@@ -1007,6 +1007,7 @@ public class Utils {
         if (e.getWorld() != safe.getWorld()) // If teleporting cross-dimensionally we'll need to teleport them again.
             e.teleport(safe);
         e.teleport(safe);
+        e.setFallDistance(0);
     }
 
     /**
@@ -1318,5 +1319,37 @@ public class Utils {
         while(!split.isEmpty())
             scrambled += split.remove(Utils.randInt(0, split.size() - 1));
         return scrambled;
+    }
+
+    /**
+     * Get the direction "to" is relative to "from".
+     * @param from
+     * @param to
+     * @return direction
+     */
+    public static BlockFace getDirection(Location from, Location to) {
+        double dis = 0;
+        BlockFace ret = BlockFace.SELF;
+        for (BlockFace face : FACES) {
+            if (face == BlockFace.SELF)
+                continue;
+
+            Location sub = to.clone().subtract(from.getX(), from.getY(), from.getZ());
+            double tDis = (sub.getX() * face.getModX()) + (sub.getZ() * face.getModZ());
+            if (tDis >= dis) {
+                dis = tDis;
+                ret = face;
+            }
+        }
+        return ret;
+    }
+
+    /**
+     * Get the yaw for when you are facing this direction.
+     * @param face
+     * @return yaw
+     */
+    public static float toYaw(BlockFace face) {
+        return face.getOppositeFace().ordinal() * 90;
     }
 }

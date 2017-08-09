@@ -2,9 +2,11 @@ package net.kineticraft.lostcity.dungeons;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import net.kineticraft.lostcity.data.lists.QueueList;
 import net.kineticraft.lostcity.entity.CustomEntity;
 import net.kineticraft.lostcity.entity.attacks.CustomAttack;
+import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
@@ -19,6 +21,7 @@ import org.bukkit.entity.LivingEntity;
 public class DungeonBoss extends CustomEntity {
     private boolean finalBoss;
     private QueueList<BossStage> stages = new QueueList<>();
+    @Setter private BossType type;
 
     public DungeonBoss(Location loc, EntityType type, String name, boolean finalBoss) {
         super(loc, type, name);
@@ -29,14 +32,15 @@ public class DungeonBoss extends CustomEntity {
 
     @Override
     public void onDeath() {
-        getDungeon().playCutscene("complete");
+        if (isFinalBoss())
+            getDungeon().playCutscene("complete");
     }
 
     @Override
     public void onDamage() {
         BossStage stage = getStages().getValueSafe(1);
         LivingEntity le = getLiving();
-        if (stage == null || stage.getHealthPercent() * le.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() >= le.getHealth())
+        if (stage == null || stage.getHealthPercent() * le.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() < le.getHealth())
             return; // If there isn't a stage queued after this.
         getStages().pop(); // Remove the current stage.
         updateStage(); // Update stage.
@@ -45,8 +49,16 @@ public class DungeonBoss extends CustomEntity {
     protected void updateStage() {
         BossStage newStage = getStages().peek();
         setAttacks(newStage.getAttacks());
-        if (newStage.getOnActivate() != null)
-            newStage.getOnActivate().run();
+        say(newStage.getMessage());
+    }
+
+    /**
+     * Have this boss say something in dungeon chat.
+     * @param message
+     */
+    public void say(String message) {
+        if (message != null)
+            getDungeon().announce(ChatColor.DARK_GREEN + Utils.capitalize(getType().name()) + ": " + ChatColor.GREEN + message);
     }
 
     /**
@@ -71,14 +83,14 @@ public class DungeonBoss extends CustomEntity {
      * @param healthPercent - The health percentage
      * @param attacks
      */
-    protected void addStage(double healthPercent, Runnable onChance, CustomAttack... attacks) {
-        getStages().add(new BossStage(healthPercent, attacks, onChance));
+    protected void addStage(double healthPercent, String message, CustomAttack... attacks) {
+        getStages().add(new BossStage(healthPercent, attacks, message));
     }
 
     @AllArgsConstructor @Getter
     private class BossStage {
         private double healthPercent;
         private CustomAttack[] attacks;
-        private Runnable onActivate;
+        private String message;
     }
 }

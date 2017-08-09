@@ -45,9 +45,10 @@ public class Chat extends Mechanic {
         evt.setFormat(KCPlayer.getWrapper(evt.getPlayer()).getDisplayPrefix() + " %s:" + ChatColor.WHITE + " %s");
 
         // Handle ignored players.
-        new ArrayList<>(evt.getRecipients()).stream()
-                .filter(p -> KCPlayer.getWrapper(p).getIgnored().containsIgnoreCase(evt.getPlayer().getName()))
-                .forEach(evt.getRecipients()::remove);
+        if (!pw.getRank().isStaff())
+            new ArrayList<>(evt.getRecipients()).stream()
+                    .filter(p -> KCPlayer.getWrapper(p).getIgnored().containsIgnoreCase(evt.getPlayer().getName()))
+                    .forEach(evt.getRecipients()::remove);
     }
 
     @EventHandler

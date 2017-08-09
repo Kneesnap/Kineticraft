@@ -30,10 +30,12 @@ public abstract class CustomAttack {
      */
     public void handleAttack(Entity attacker) {
         this.source = attacker;
+        System.out.println("Targets (" + getRadius() + "): " + attacker.getNearbyEntities(getRadius(), getRadius(), getRadius()).size());
         List<LivingEntity> targets = attacker.getNearbyEntities(getRadius(), getRadius(), getRadius()).stream()
                 .filter(e -> e instanceof LivingEntity).map(e -> (LivingEntity) e).filter(this::canAttack)
                 .collect(Collectors.toList());
         showDisplay(targets);
+        System.out.println("Attacking " + targets.size() + " (" + getClass().getSimpleName() + ")");
         targets.forEach(this::attack);
     }
 
@@ -57,7 +59,7 @@ public abstract class CustomAttack {
      * @return isInRange
      */
     public boolean inRange(LivingEntity target) {
-        return source.getLocation().distanceSquared(target.getLocation()) <= getRadius();
+        return source.getLocation().distance(target.getLocation()) <= getRadius();
     }
 
     /**

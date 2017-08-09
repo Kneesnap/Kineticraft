@@ -14,21 +14,21 @@ import org.bukkit.entity.LivingEntity;
 import java.util.List;
 
 /**
- * Frilda - The fire witch zombie boss
- * TODO: Maybe have the attack system be based on chance.
+ * Frilda - The fire witch zombie boss.
  * Created by Kneesnap on 8/2/2017.
  */
 public class Frilda extends DungeonBoss {
     public Frilda(Dungeon d) {
-        super(new Location(d.getWorld(), -5, 11, 56), EntityType.ZOMBIE, "Frilda", true);
+        super(new Location(d.getWorld(), -5, 11, 56, 90, 0), EntityType.ZOMBIE, "Frilda", true);
         setGear(Material.STONE_SWORD, Material.LEATHER_HELMET, Material.LEATHER_CHESTPLATE, Material.LEATHER_LEGGINGS, Material.LEATHER_BOOTS);
-        addStage(new MeleeAttack(5, 1)); // TODO: Fireball.
-        addStage(.3, () -> getDungeon().playCutscene("powerup"), new MeleeAttack(7, 1.5), new AttackFlameWheel());
+        addStage(new MeleeAttack(5, 2.5)); // TODO: Fireball.
+        addStage(.65, "Argh! How dare you! You're going to regret this!",
+                new MeleeAttack(6, 3.5), new AttackFlameWheel());
     }
 
     private class AttackFlameWheel extends CustomAttack {
         public AttackFlameWheel() {
-            super(12, 3.5, 80);
+            super(9, 6, 45);
         }
 
         @Override

@@ -16,7 +16,7 @@ public class ParticleUtils {
      * @param radius
      */
     public static void makeCircle(Particle particle, Location center, double radius) {
-        int amount = (int) (radius * 2);
+        int amount = 100;
         for(int i = 0; i < amount; i++) {
             double angle = i * ((2 * Math.PI) / amount);
             double x = center.getX() + (radius * Math.cos(angle));

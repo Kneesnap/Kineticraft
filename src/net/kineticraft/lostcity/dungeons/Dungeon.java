@@ -73,10 +73,13 @@ public class Dungeon {
         getWorld().setTime(15000); // Set it to night.
 
         getOriginalPlayers().forEach(p -> {
-            Utils.safeTp(p, getWorld().getSpawnLocation());
+            Location l = getWorld().getSpawnLocation();
+            l.setYaw(90);
+            Utils.safeTp(p, l);
             p.setFallDistance(0);
             p.sendTitle(new Title(new TextBuilder(getType().getName()).color(getType().getColor()).create(),
-                    new TextBuilder("Objective: ").color(ChatColor.GRAY).append(getType().getEntryMessage()).create()));
+                    new TextBuilder("Objective: ").color(ChatColor.GRAY).append(getType().getEntryMessage()).create(),
+                    20, 75, 20));
 
             if (isEditMode()) {
                 p.sendMessage(ChatColor.GREEN + "This dungeon is in EDIT MODE.");
