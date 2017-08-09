@@ -57,7 +57,7 @@ public abstract class CustomAttack {
      * @return isInRange
      */
     public boolean inRange(LivingEntity target) {
-        return source.getLocation().distanceSquared(target.getLocation()) <= getRadius();
+        return source.getLocation().distance(target.getLocation()) <= getRadius();
     }
 
     /**

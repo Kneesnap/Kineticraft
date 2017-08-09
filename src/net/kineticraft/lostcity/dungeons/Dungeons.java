@@ -33,6 +33,7 @@ import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
@@ -104,6 +105,11 @@ public class Dungeons extends Mechanic {
         evt.setCancelled(evt.getEntity() instanceof ItemFrame && preventEdit(evt.getDamager()));
     }
 
+    @EventHandler(ignoreCancelled = true) // Prevent rain and snow in dungeons.
+    public void onWeather(WeatherChangeEvent evt) {
+        evt.setCancelled(isDungeon(evt.getWorld()) && evt.toWeatherState());
+    }
+
     @EventHandler(ignoreCancelled = true) // Handles special items entering hoppers.
     public void onHopperPickup(InventoryPickupItemEvent evt) {
         if (!(evt.getInventory().getHolder() instanceof Hopper))
@@ -151,9 +157,9 @@ public class Dungeons extends Mechanic {
         p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 50, 2)); // Give blindness.
         p.sendTitle(new Title(ChatColor.RED + "Dungeon Failed"));
         getDungeon(p).announce(ChatColor.LIGHT_PURPLE + "[Dungeon] " + ChatColor.GRAY + p.getName() + " has been eliminated.");
-        // TODO: Sound
+        Utils.stopNBS(p); //Disable music.
         Bukkit.getScheduler().runTaskLater(Core.getInstance(), () -> {
-            Utils.toSpawn(p);
+            Utils.toSpawn(p); // Teleport to spawn.
             p.setGameMode(GameMode.SURVIVAL);
         }, 50L);
     }

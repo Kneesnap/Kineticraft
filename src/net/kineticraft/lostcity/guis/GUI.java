@@ -294,10 +294,8 @@ public abstract class GUI {
 
         // Reconstruct the window if needed.
         Inventory old = getInventory();
-        System.out.println("A: " + getMaxSlot() + ", " + getInventory().getSize());
         if (getMaxSlot() >= getInventory().getSize())
             remakeInventory();
-        System.out.println("B: " + getMaxSlot() + ", " + getInventory().getSize());
 
         // Apply our items to the inventory.
         showItems(); // Show them to the player. (Seperate method so we can allow editting the item after it's added.)

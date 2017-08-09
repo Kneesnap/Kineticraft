@@ -1,5 +1,6 @@
 package net.kineticraft.lostcity.mechanics;
 
+import com.destroystokyo.paper.Title;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.config.Configs;
@@ -18,13 +19,12 @@ import org.bukkit.scheduler.BukkitTask;
 
 /**
  * Prevents players from AFKing.
- *
  * Created by Kneesnap on 6/11/2017.
  */
 public class AFK extends Mechanic {
 
     public void onEnable() {
-        Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () -> {
+        Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () ->
             Bukkit.getOnlinePlayers().stream().filter(AFK::isAFK).forEach(p -> {
                 BukkitTask kickTask = Bukkit.getScheduler().runTaskLater(Core.getInstance(), () ->
                     Callbacks.cancel(p, Callbacks.ListenerType.CHAT), 35 * 20L);
@@ -33,9 +33,10 @@ public class AFK extends Mechanic {
                 int numB = Utils.nextInt(20);
                 String op  = Utils.randChance(2) ? "+" : "-";
                 int answer = op.equals("+") ? numA + numB : numA - numB;
+                String problem = ChatColor.YELLOW.toString() + numA + " " + op + " " + numB + " = ?";
 
-                p.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "AFK CHECK: " + ChatColor.YELLOW + numA
-                        + " " + op + " " + numB + " = ?");
+                p.sendTitle(new Title(ChatColor.RED + "AFK CHECK", problem, 20, 100, 20));
+                p.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "AFK CHECK: " + problem);
 
                 Runnable fail = () -> {
                     if (!p.isOnline())
@@ -56,8 +57,7 @@ public class AFK extends Mechanic {
                         p.kickPlayer(ChatColor.RED + "Incorrect answer.");
                     }
                 }, fail);
-            });
-        }, 0L, 30 * 20L);
+            }), 0L, 30 * 20L);
     }
 
     @Override

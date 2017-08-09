@@ -21,7 +21,10 @@ public class ActionTeleportEntity extends ActionEntity {
 
     @Override
     public void execute() {
-        getEntity().teleport(fixLocation(location));
+        Location l = fixLocation(location);
+        getEntity().teleport(l);
+        if (getEntity().equals(getCamera()))
+            getPlayers().forEach(p -> p.teleport(l));
     }
 
     @Override

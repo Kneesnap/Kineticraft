@@ -1,9 +1,11 @@
 package net.kineticraft.lostcity.cutscenes;
 
 import lombok.Getter;
+import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.mechanics.metadata.Metadata;
 import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
 import net.kineticraft.lostcity.utils.Utils;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.*;
@@ -53,7 +55,7 @@ public class CutsceneStatus {
         getPlayers().forEach(p -> {
             p.teleport(getCamera()); // Prevents weird audio de-sync.
             p.setGameMode(GameMode.SPECTATOR);
-            p.setSpectatorTarget(getCamera());
+            Bukkit.getScheduler().runTask(Core.getInstance(), () -> p.setSpectatorTarget(getCamera()));
         });
     }
 

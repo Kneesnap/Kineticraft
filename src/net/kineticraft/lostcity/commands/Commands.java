@@ -211,7 +211,11 @@ public class Commands extends Mechanic {
         if (sender instanceof DiscordSender) // Log all discord sent commands.
             Core.alertStaff(ChatColor.GREEN + sender.getName() + ": " + ChatColor.GRAY + type.getPrefix() + input);
 
-        runCommand(command, sender, cmd, Utils.shift(args));
+        if (Bukkit.isPrimaryThread()) {
+            runCommand(command, sender, cmd, Utils.shift(args));
+        } else {
+            Bukkit.getScheduler().runTask(Core.getInstance(), () -> runCommand(command, sender, cmd, Utils.shift(args)));
+        }
         return true;
     }
 

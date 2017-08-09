@@ -11,6 +11,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 
 import java.util.Arrays;
 import java.util.List;
@@ -53,6 +54,11 @@ public class FarmLimiter extends Mechanic {
         Entity a = evt.getDamager();
         if (a instanceof Player || (a instanceof Projectile && ((Projectile) a).getShooter() instanceof Player))
             addPlayerDamage(e, evt.getDamage()); // Count all damage dealt by players.
+    }
+
+    @EventHandler(ignoreCancelled = true) // Prevent items that entities pickup from being lost on death.
+    public void onItemPickup(EntityPickupItemEvent evt) {
+        addPlayerDamage(evt.getEntity(), evt.getEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
     }
 
     /**

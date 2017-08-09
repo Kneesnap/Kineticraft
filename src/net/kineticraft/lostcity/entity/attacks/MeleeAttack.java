@@ -11,7 +11,7 @@ import java.util.List;
 public class MeleeAttack extends CustomAttack {
 
     public MeleeAttack(double damage, double radius) {
-        super(damage, radius, 2);
+        super(damage, radius, 5);
     }
 
     @Override

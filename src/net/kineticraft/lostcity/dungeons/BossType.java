@@ -3,6 +3,7 @@ package net.kineticraft.lostcity.dungeons;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.kineticraft.lostcity.dungeons.dungeons.barleyshope.Frilda;
+import net.kineticraft.lostcity.entity.Entities;
 
 import java.util.function.Function;
 
@@ -22,6 +23,8 @@ public enum BossType {
      * @return boss
      */
     public DungeonBoss spawnBoss(Dungeon d) {
-        return construct.apply(d);
+        DungeonBoss db = construct.apply(d);
+        db.setType(this);
+        return Entities.addEntity(db);
     }
 }

@@ -20,15 +20,15 @@ public class GUIParticles extends GUI {
     public void addItems() {
         Particle effect = getWrapper().getEffect();
 
-        for (Particle p : getParticles()) {
-            addItem(Material.REDSTONE, ChatColor.GREEN + Utils.capitalize(p.name()),
-                    "Click here to activate this particle effect.")
-                    .anyClick(e -> {
-                        getPlayer().sendMessage(ChatColor.GREEN + "Activated " + Utils.capitalize(p.name()) + ".");
-                        getWrapper().setEffect(p);
-                        reconstruct();
-                    }).setGlowing(p == effect);
-        }
+        for (Particle p : getParticles())
+            if (p != Particle.MOB_APPEARANCE)
+                addItem(Material.REDSTONE, ChatColor.GREEN + Utils.capitalize(p.name()),
+                        "Click here to activate this particle effect.")
+                        .anyClick(e -> {
+                            getPlayer().sendMessage(ChatColor.GREEN + "Activated " + Utils.capitalize(p.name()) + ".");
+                            getWrapper().setEffect(p);
+                            reconstruct();
+                        }).setGlowing(p == effect);
 
         toRight(2);
 
