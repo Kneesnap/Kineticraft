@@ -313,10 +313,24 @@ public abstract class ItemWrapper {
         return nms.hasTag() && nms.getTag().hasKey("type") && type.name().equals(nms.getTag().getString("type"));
     }
 
+    /**
+     * Get the ItemType for a bukkit ItemStack.
+     * @param item
+     * @return type
+     */
     public static ItemType getType(org.bukkit.inventory.ItemStack item) {
         ItemStack nms = CraftItemStack.asNMSCopy(item);
         return nms != null && nms.hasTag() && nms.getTag().hasKey("type")
                 ? ItemType.valueOf(nms.getTag().getString("type")) : null;
+    }
+
+    /**
+     * Return whether or not the supplied item has a type.
+     * @param item
+     * @return isCustom
+     */
+    public static boolean isCustom(org.bukkit.inventory.ItemStack item) {
+        return getType(item) != null;
     }
 
     /**

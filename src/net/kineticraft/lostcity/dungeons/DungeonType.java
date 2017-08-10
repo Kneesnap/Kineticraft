@@ -27,6 +27,11 @@ public enum DungeonType {
     private final String name;
     private final String entryMessage;
     private final String finishMessage;
+    private final boolean released;
+
+    DungeonType(Function<List<Player>, Dungeon> construct, String name, String entry, String finish) {
+        this(construct, name, entry, finish, true);
+    }
 
     /**
      * Get the color of this dungeon's name.

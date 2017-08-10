@@ -5,6 +5,7 @@ import lombok.Getter;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.dungeons.commands.*;
 import net.kineticraft.lostcity.events.CommandRegisterEvent;
+import net.kineticraft.lostcity.events.PlayerChangeRegionEvent;
 import net.kineticraft.lostcity.item.ItemManager;
 import net.kineticraft.lostcity.item.ItemWrapper;
 import net.kineticraft.lostcity.mechanics.ArmorStands;
@@ -31,7 +32,6 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 import org.bukkit.potion.PotionEffect;
@@ -131,11 +131,13 @@ public class Dungeons extends Mechanic {
         }
     }
 
-    @EventHandler
-    public void onEnter(PlayerMoveEvent evt) {
-        String to = Utils.getRegion(evt.getTo());
-        if (!to.equals(Utils.getRegion(evt.getFrom())) && to.startsWith("dungeon_"))
-             Dungeons.startDungeon(evt.getPlayer(), DungeonType.valueOf(to.substring("dungeon_".length()).toUpperCase()), false);
+    @EventHandler // Invoke a dungeon when a player enters a WorldGuard region.
+    public void onEnter(PlayerChangeRegionEvent evt) {
+        if (!evt.getRegionTo().startsWith("dungeon_"))
+            return;
+        int dungeonId = Integer.parseInt(evt.getRegionTo().split("_")[1]);
+        DungeonType type = dungeonId <= DungeonType.values().length ? DungeonType.values()[dungeonId - 1] : null;
+        Dungeons.startDungeon(evt.getPlayer(), type, false);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -246,6 +248,11 @@ public class Dungeons extends Mechanic {
      * @param edit
      */
     public static void startDungeon(Player player, DungeonType type, boolean edit) {
+        if (type == null || !type.isReleased()) {
+            player.sendMessage(ChatColor.RED + "This dungeon has not released yet.");
+            return;
+        }
+
         if (!type.hasUnlocked(player)) // Prevent players from going into dungeons they have not unlocked yet.
             return;
 

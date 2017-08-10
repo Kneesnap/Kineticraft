@@ -17,9 +17,10 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.*;
 
+import java.util.List;
+
 /**
  * Custom Item Event System
- *
  * Created by Kneesnap on 6/11/2017.
  */
 public class Items extends Mechanic {
@@ -55,8 +56,9 @@ public class Items extends Mechanic {
         if (!(evt.getInventory() instanceof MerchantInventory) || evt.getRawSlot() != 2)
             return;
 
+        List<ItemStack> ig = ((MerchantInventory) evt.getInventory()).getSelectedRecipe().getIngredients();
         for (int i = 0; i < evt.getInventory().getSize() - 1; i++)
-            if (ItemWrapper.getType(evt.getInventory().getItem(i)) != null)
-                evt.setCancelled(true);
+            if (ItemWrapper.isCustom(evt.getInventory().getItem(i)) && !ItemWrapper.isCustom(ig.get(i)))
+                evt.setCancelled(true); // Don't allow the trade to go through if it's using a custom item where none is needed.
     }
 }

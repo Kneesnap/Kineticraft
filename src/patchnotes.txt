@@ -1,6 +1,7 @@
 &8Changes:
  - Dungeon #1 Release
  - Staff cannot be /ignore'd
+ - Improved Crake.
 
 &8&lDungeons:
 Dungeons are mini adventures run with command-blocks.
@@ -10,3 +11,5 @@ They are accessible from spawn.
 &8Bugfixes:
  - AFK math problem is more obvious.
  - Monsters that pickup items will drop them on death.
+ - Callbacks don't close chat window.
+ - Fixed Ozzy's Armor Stand trade.

@@ -107,12 +107,10 @@ public class KCPlayer implements Jsonable {
      * @param reason
      */
     public void mute(CommandSender source, Date expiry, String reason) {
-        Dog.PUPPER_PATROL.say(ChatColor.RED + getUsername() + ChatColor.WHITE + " has been muted by "
-                + ChatColor.AQUA + source.getName() + ChatColor.WHITE + ".");
+        Dog.PUPPER_PATROL.say(ChatColor.RED + getUsername() + ChatColor.WHITE + " has been muted by " + ChatColor.AQUA + source.getName() + ChatColor.WHITE + ".");
         setMute(new Mute(expiry.getTime(), reason, source.getName()));
         sendMessage(ChatColor.RED + "You have been muted. (" + reason + ")");
-        DiscordAPI.sendMessage(DiscordChannel.ORYX, source.getName() + " has muted " + getUsername()
-                + " for " + Utils.formatDate(expiry) + ".");
+        DiscordAPI.sendMessage(DiscordChannel.ORYX, source.getName() + " has muted " + getUsername() + " for " + Utils.formatDate(expiry) + ".");
     }
 
     /**
@@ -150,15 +148,15 @@ public class KCPlayer implements Jsonable {
                 + ChatColor.WHITE + ".");
 
         getPunishments().add(new Punishment(type, punisher.getName()));
-        Dog.OFFICER_BORKLEY.say("Arf Arf! Expires: " + ChatColor.YELLOW + Utils.formatTimeFull(getPunishExpiry())
-                + ChatColor.WHITE + ".");
+        String expiry = Utils.formatTimeFull(getPunishExpiry());
+        Dog.OFFICER_BORKLEY.say("Arf Arf! Expires: " + ChatColor.YELLOW + expiry + ChatColor.WHITE + ".");
 
         if (isOnline())
             getPlayer().kickPlayer(ChatColor.RED + "Oh no! You've been punished for " + ChatColor.YELLOW
                     + type.getDisplay() + ChatColor.RED + "...");
         writeData();
         DiscordAPI.sendMessage(DiscordChannel.ORYX, punisher.getName() + " has punished " + getUsername()
-                + " for " + type.getDisplay() + " (" + Utils.formatTimeFull(getPunishExpiry()) + ")");
+                + " for " + type.getDisplay() + " (" + expiry + ")");
     }
 
     /**
@@ -325,6 +323,14 @@ public class KCPlayer implements Jsonable {
                 player.sendMessage(TextUtils.centerChat(l + " You have new mail! Claim it with /mailbox. " + l));
             }
         }, 20L);
+    }
+
+    /**
+     * Update this player, and save this data to disk.
+     */
+    public void updateSave() {
+        updatePlayer();
+        writeData();
     }
 
     /**

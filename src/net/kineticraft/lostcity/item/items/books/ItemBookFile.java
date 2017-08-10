@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 
 /**
  * Represents a book loaded from a text file.
- *
  * Created by Kneesnap on 6/30/2017.
  */
 @Getter @Setter

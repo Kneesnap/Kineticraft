@@ -27,9 +27,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.*;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.inventory.EntityEquipment;
-import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemStack;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.*;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.material.Directional;
 import org.bukkit.potion.PotionEffect;
@@ -1351,5 +1350,15 @@ public class Utils {
      */
     public static float toYaw(BlockFace face) {
         return face.getOppositeFace().ordinal() * 90;
+    }
+
+    /**
+     * Returns whether or not the player has an open inventory, excluding their own.
+     * @param player
+     * @return hasOpen
+     */
+    public static boolean hasOpenInventory(Player player) {
+        InventoryType type = player.getOpenInventory().getType();
+        return type != InventoryType.CREATIVE && type != InventoryType.CRAFTING; // Crafting = Survival, while Workbench = Crafting Table.
     }
 }

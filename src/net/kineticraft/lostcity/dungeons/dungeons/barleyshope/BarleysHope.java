@@ -12,6 +12,6 @@ import java.util.List;
 public class BarleysHope extends Dungeon {
     public BarleysHope(List<Player> players) {
         super(players);
-        registerPuzzles(new MatchPuzzle(), new LazerPuzzle());
+        registerPuzzles(new MatchPuzzle(), new GatherPuzzle(), new LazerPuzzle());
     }
 }

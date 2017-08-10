@@ -6,6 +6,7 @@ import net.kineticraft.lostcity.guis.GUI;
 import net.kineticraft.lostcity.guis.GUIManager;
 import net.kineticraft.lostcity.mechanics.system.Mechanic;
 import net.kineticraft.lostcity.utils.TextBuilder;
+import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
@@ -15,6 +16,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.inventory.CraftingInventory;
+import org.bukkit.inventory.PlayerInventory;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -183,7 +186,8 @@ public class Callbacks extends Mechanic {
         if (gui != null) // Don't allow the previous GUI to open, since we're giving input.
             gui.setParent(true);
 
-        player.closeInventory(); // Close the player's open inventory, if any.
+        if (Utils.hasOpenInventory(player))
+            player.closeInventory(); // Close the player's open inventory, if any.
 
         listeners.putIfAbsent(player, new HashMap<>());
         listeners.get(player).put(type, new Listener(o -> {

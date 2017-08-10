@@ -9,6 +9,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -18,7 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * A rudementary flight detector.
+ * A rudimentary flight detector.
  * Based on Archelaus' fly detector.
  * Detects descent and ascent.
  * Created by Kneesnap on 7/10/2017.
@@ -45,8 +46,6 @@ public class Flight extends Detector {
                 yDif == 0 && !checkNearby(evt.getFrom(), Material.WATER_LILY, Material.CARPET), // Hover.
                 yDif > ascentMax, // If they sharply ascend.
                 yDif == -.125D); // Glide (Unsure if this works.)
-
-
     }
 
     /**
@@ -58,9 +57,19 @@ public class Flight extends Detector {
         for (int x = -1; x <= 1; x++)
             for (int y = -1; y <= 0; y++)
                 for (int z = -1; z <= 1; z++)
-                    if (bk.getLocation().clone().add(x, y, z).getBlock().getType().isSolid())
+                    if (isSolid(bk.getLocation().clone().add(x, y, z).getBlock()))
                         return false;
         return true;
+    }
+
+    /**
+     * Is the given block considered solid for flight-checks?
+     * @param bk
+     * @return solid
+     */
+    private static boolean isSolid(Block bk) {
+        Material type = bk.getType();
+        return type.isSolid() || type == Material.CHORUS_PLANT;
     }
 
     /**
@@ -77,13 +86,16 @@ public class Flight extends Detector {
     /**
      * Is the player in a state or situation that we should deem them not flying?
      * @param player
-     * @return
+     * @return immune
      */
     private static boolean isImmune(Player player) {
         return player.getGameMode() != GameMode.SURVIVAL
-                || Utils.getRank(player).isAtLeast(EnumRank.MEDIA)
-                || player.isGliding()
-                || player.hasPotionEffect(PotionEffectType.LEVITATION)
-                || player.getVehicle() != null;
+                || Utils.getRank(player).isAtLeast(EnumRank.MEDIA) // Don't bypass this check.
+                || player.isGliding() // Not using Elytra
+                || player.hasPotionEffect(PotionEffectType.LEVITATION) // Doesn't have a levitation potion
+                || player.getVehicle() != null // Not in a vehicle
+                || player.getVelocity().getY() > 0 // Not being launched up
+                || player.getNearbyEntities(1, 2, 1).stream().anyMatch(e -> e.getType() == EntityType.BOAT) // Not standing on a boat.
+                || player.getLocation().getBlock().isLiquid(); // Not in water.
     }
 }
