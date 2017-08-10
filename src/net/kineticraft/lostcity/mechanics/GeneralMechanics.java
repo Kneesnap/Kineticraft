@@ -3,12 +3,15 @@ package net.kineticraft.lostcity.mechanics;
 import com.xxmicloxx.NoteBlockAPI.NoteBlockPlayerMain;
 import com.xxmicloxx.NoteBlockAPI.SongEndEvent;
 import net.kineticraft.lostcity.Core;
+import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.discord.DiscordAPI;
 import net.kineticraft.lostcity.discord.DiscordChannel;
+import net.kineticraft.lostcity.events.PlayerChangeRegionEvent;
 import net.kineticraft.lostcity.item.ItemManager;
 import net.kineticraft.lostcity.mechanics.system.Mechanic;
+import net.kineticraft.lostcity.utils.ServerUtils;
 import net.kineticraft.lostcity.utils.TextUtils;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.*;
@@ -27,7 +30,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Team;
 
 import java.util.stream.Collectors;
 
@@ -57,7 +59,7 @@ public class GeneralMechanics extends Mechanic {
         }, 0L, 20L);
 
         Bukkit.getScheduler().runTaskLater(Core.getInstance(), () -> {
-            if (Bukkit.hasWhitelist())
+            if (Bukkit.hasWhitelist() && !ServerUtils.isDevServer())
                 return; // Don't deploy while the whitelist is active.
 
             int newSize = Utils.readSize("patchnotes.txt");
@@ -100,8 +102,7 @@ public class GeneralMechanics extends Mechanic {
             idObjective = Bukkit.getScoreboardManager().getMainScoreboard().registerNewObjective("id", "dummy");
         idObjective.setDisplaySlot(DisplaySlot.PLAYER_LIST);
 
-        // Remove all existing teams. Since they are dynamically generated this makes sure we don't have problems.
-        Bukkit.getScoreboardManager().getMainScoreboard().getTeams().forEach(Team::unregister);
+        EnumRank.createTeams(); // Create all the rank teams, in order.
     }
 
     @EventHandler // Handle repeating songs.
@@ -214,5 +215,12 @@ public class GeneralMechanics extends Mechanic {
     public void onTeleport(PlayerTeleportEvent evt) {
         if ((!evt.getTo().getWorld().equals(evt.getFrom().getWorld()) || evt.getTo().distance(evt.getFrom()) >= 10) && Utils.isStaff(evt.getPlayer()))
             KCPlayer.getPlayer(evt.getPlayer()).setLastLocation(evt.getFrom());
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    public void onMove(PlayerMoveEvent evt) {
+        PlayerChangeRegionEvent change = new PlayerChangeRegionEvent(evt);
+        if (!change.getRegionFrom().equals(change.getRegionTo()))
+           Bukkit.getPluginManager().callEvent(change);
     }
 }

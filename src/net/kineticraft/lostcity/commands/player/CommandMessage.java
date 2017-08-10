@@ -2,6 +2,7 @@ package net.kineticraft.lostcity.commands.player;
 
 import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.data.KCPlayer;
+import net.kineticraft.lostcity.mechanics.AFK;
 import net.kineticraft.lostcity.mechanics.Chat;
 import net.kineticraft.lostcity.mechanics.metadata.Metadata;
 import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
@@ -32,6 +33,9 @@ public class CommandMessage extends PlayerCommand {
 
         if (!Utils.isVisible(sender, receiver))
             return;
+
+        if (receiver instanceof Player && AFK.isAFK((Player) receiver))
+            sender.sendMessage(ChatColor.GRAY + "This player is AFK, and may not receive your message.");
 
         // Send display to sender
         String rName = Utils.getSenderName(receiver);

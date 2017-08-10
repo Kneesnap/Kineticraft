@@ -28,7 +28,7 @@ public class CommandEdit extends StaffCommand {
 
     public CommandEdit() {
         super(EnumRank.MOD, "<player|config> <data>", "Edit json data.", "edit");
-        providers.add(new JsonProvider<>("player", KCPlayer::getWrapper, KCPlayer::updatePlayer));
+        providers.add(new JsonProvider<>("player", KCPlayer::getWrapper, KCPlayer::updateSave));
         providers.add(new JsonProvider<>("config", c -> (JsonConfig) Configs.getConfig(c), JsonConfig::saveToDisk));
     }
 

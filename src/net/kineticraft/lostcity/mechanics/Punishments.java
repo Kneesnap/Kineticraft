@@ -20,7 +20,6 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Punishments - Port of our old JS punishment system.
@@ -31,13 +30,25 @@ public class Punishments extends Mechanic {
     @Override
     public void onEnable() {
         Utils.runCalendarTaskEvery(TimeInterval.WEEK, () -> {
-            Map<String, Integer> banCount = new HashMap<>();
+            Map<String, Map<PunishmentType, Integer>> banCount = new HashMap<>();
             KCPlayer.getPlayerMap().values().forEach(p -> p.getPunishments().stream() // Generate ban report.
-                    .filter(pu -> (System.currentTimeMillis() - pu.getTimestamp()) / 1000 <= TimeInterval.WEEK.getInterval())
-                    .forEach(pu -> banCount.put(pu.getSource(), banCount.getOrDefault(pu.getSource(), 0) + 1)));
+                    .filter(Punishment::isValid) // Make sure the punishment is still valid.
+                    .filter(pu -> (System.currentTimeMillis() - pu.getTimestamp()) / 1000 <= TimeInterval.WEEK.getInterval()) // Make sure the punishment was in the past week.
+                    .forEach(pu -> {
+                        banCount.putIfAbsent(pu.getSource(), new HashMap<>());
+                        Map<PunishmentType, Integer> count = banCount.get(pu.getSource());
+                        count.put(pu.getType(), count.getOrDefault(pu.getType(), 0) + 1);
+                    }));
 
-            DiscordAPI.sendMessage(DiscordChannel.ORYX, "Weekly Ban Report:\n" // Broadcast ban report to discord.
-                    + banCount.entrySet().stream().map(e -> e.getKey() + ": " + e.getValue()).collect(Collectors.joining("\n")));
+            String fullReport = "Weekly Ban Report:\n";
+            for (String staff : banCount.keySet()) {
+                Map<PunishmentType, Integer> countMap = banCount.get(staff);
+                fullReport += staff + ": " + countMap.values().stream().mapToInt(Integer::intValue).sum();
+                for (PunishmentType type : countMap.keySet())
+                    fullReport += " - " + Utils.capitalize(type.name()) + ": " + countMap.get(type);
+            }
+
+            DiscordAPI.sendMessage(DiscordChannel.ORYX, fullReport);
         });
     }
 

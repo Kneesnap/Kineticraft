@@ -9,7 +9,6 @@ import org.bukkit.Sound;
 
 /**
  * Send a server message with a given personality.
- *
  * Created by Kneesnap on 6/17/2017.
  */
 @AllArgsConstructor @Getter

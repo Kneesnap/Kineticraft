@@ -9,7 +9,6 @@ import org.bukkit.inventory.ItemStack;
 
 /**
  * PatchBook - Show changelog.
- *
  * Created by Kneesnap on 6/30/2017.
  */
 public class ItemPatchBook extends ItemBookFile {

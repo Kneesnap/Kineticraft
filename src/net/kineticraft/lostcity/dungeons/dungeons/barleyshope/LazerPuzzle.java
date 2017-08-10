@@ -13,11 +13,8 @@ import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.CommandBlock;
-import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.scheduler.BukkitTask;
-
-import java.util.List;
 
 /**
  * A simple lazer puzzle.
@@ -27,7 +24,7 @@ import java.util.List;
 @Getter
 public class LazerPuzzle extends Puzzle {
     private BukkitTask traceTask;
-    private static final double PER_BLOCK = 5;
+    private static final int PER_BLOCK = 5;
 
     public LazerPuzzle() {
         super(new Location(null, -76, 9, 55), BlockFace.SOUTH);
@@ -82,7 +79,7 @@ public class LazerPuzzle extends Puzzle {
                     BlockFace newDirection = Utils.getDirection(b);
                     if (newDirection != d && newDirection.getOppositeFace() != d) { // Power must enter sideways.
                         lazer.add(d.getModX() * 0.5, 0, d.getModZ() * 0.5); // Center lazer.
-                        setRepeater(b, Material.DIODE_BLOCK_ON, (long) PER_BLOCK);
+                        activateRepeater(b);
                         direction[0] = newDirection; // Update direction.
                         return;
                     }
@@ -110,11 +107,9 @@ public class LazerPuzzle extends Puzzle {
     }
 
     @SuppressWarnings("deprecation")
-    private void setRepeater(Block bk, Material mat, long reset) {
-        List<Player> players = getDungeon().getPlayers();
-        players.forEach(p -> p.sendBlockChange(bk.getLocation(), mat, bk.getData()));
-        if (reset > 0)
-            Bukkit.getScheduler().runTaskLater(Core.getInstance(), () -> setRepeater(bk, bk.getType(), -1), reset);
+    private void activateRepeater(Block bk) {
+        setFakeBlock(bk, Material.DIODE_BLOCK_ON);
+        Bukkit.getScheduler().runTaskLater(Core.getInstance(), () -> setFakeBlock(bk, null), PER_BLOCK);
     }
 
     @Override

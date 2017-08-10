@@ -33,8 +33,10 @@ public class CompassMechanics extends Mechanic {
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent evt) {
-        Bukkit.getLogger().info(evt.getEntity().getName() + " died at " + Utils.toString(evt.getEntity().getLocation()));
-        KCPlayer.getWrapper(evt.getEntity()).getDeaths().add(new PlayerDeath(evt), 3);
+        Core.logInfo(evt.getEntity().getName() + " died at " + Utils.toString(evt.getEntity().getLocation()));
+        KCPlayer p = KCPlayer.getWrapper(evt.getEntity());
+        p.getDeaths().add(new PlayerDeath(evt), 3);
+        p.setLastLocation(evt.getEntity().getLocation());
     }
 
     @EventHandler

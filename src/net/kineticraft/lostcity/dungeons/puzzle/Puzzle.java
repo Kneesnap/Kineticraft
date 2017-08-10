@@ -6,9 +6,12 @@ import net.kineticraft.lostcity.dungeons.Dungeon;
 import net.kineticraft.lostcity.dungeons.Dungeons;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.CommandBlock;
+import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -24,6 +27,7 @@ import java.util.stream.Stream;
 
 /**
  * A base dungeon puzzle.
+ * TODO: Fake blocks should resend their state when the player interacts with them, or comes nearby. (Maybe update it every 10 seconds instead of coming nearby)
  * Created by Kneesnap on 7/29/2017.
  */
 @Getter
@@ -49,6 +53,7 @@ public abstract class Puzzle implements Listener {
     public void setDungeon(Dungeon d) {
         this.dungeon = d;
         this.gateLocation = fixLocation(this.gateLocation);
+        onInit();
     }
 
     /**
@@ -70,6 +75,13 @@ public abstract class Puzzle implements Listener {
             getDungeon().playCutscene(new PuzzleDoorCutscene(getGateLocation(), getGateFace()));
             Bukkit.getScheduler().runTaskLater(Core.getInstance(), this::onComplete, 20L);
         }, 35L);
+    }
+
+    /**
+     * Called when this puzzle is initalized, players have just been teleported into the dungeon.
+     */
+    protected void onInit() {
+
     }
 
     /**
@@ -104,11 +116,26 @@ public abstract class Puzzle implements Listener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent evt) {
-        if (Dungeons.getDungeon(evt.getPlayer()) != getDungeon())
-            return;
-
-        if (evt.hasBlock())
+        if (shouldHandleEvent(evt.getPlayer()) && evt.hasBlock())
             onBlockClick(evt, evt.getClickedBlock(), evt.getAction() == Action.RIGHT_CLICK_BLOCK);
+    }
+
+    /**
+     * Should we handle an event for the dungeon instance of the given entity?
+     * @param e
+     * @return shouldHandle
+     */
+    protected boolean shouldHandleEvent(Entity e) {
+        return shouldHandleEvent(e.getWorld());
+    }
+
+    /**
+     * Should we handle an event that takes place in a given world?
+     * @param w
+     * @return shouldHandle
+     */
+    protected boolean shouldHandleEvent(World w) {
+        return getDungeon() != null && Dungeons.getDungeon(w) == getDungeon();
     }
 
     /**
@@ -123,6 +150,12 @@ public abstract class Puzzle implements Listener {
         return task;
     }
 
+    @PuzzleTrigger
+    public void finish(CommandBlock cmd) {
+        if (cmd.getLocation().distance(getGateLocation()) <= 10)
+            complete();
+    }
+
     /**
      * Execute a trigger for this puzzle.
      *
@@ -132,12 +165,8 @@ public abstract class Puzzle implements Listener {
      * @param trigger
      */
     public void fireTrigger(String trigger, CommandBlock block) {
-        if (!triggers.containsKey(getClass())) { // Get and cache the trigger map.
-            Map<String, Method> map = new HashMap<>();
-            Stream.of(getClass().getDeclaredMethods()).filter(m -> m.isAnnotationPresent(PuzzleTrigger.class))
-                    .forEach(m -> map.put(m.getName(), m));
-            triggers.put(getClass(), map);
-        }
+        if (!triggers.containsKey(getClass())) // Get and cache the trigger map.
+            addTriggers(getClass());
 
         Map<String, Method> t = triggers.get(getClass());
         if (!t.containsKey(trigger))
@@ -157,6 +186,52 @@ public abstract class Puzzle implements Listener {
         } catch (Exception e) {
             e.printStackTrace();
             Core.warn("Failed to execute puzzle trigger '" + trigger + "' in " + getClass().getSimpleName() + ".");
+        }
+    }
+
+    private void addTriggers(Class<?> cls) {
+        triggers.putIfAbsent(getClass(), new HashMap<>());
+        Map<String, Method> map = triggers.get(getClass());
+        Stream.of(cls.getDeclaredMethods()).filter(m -> m.isAnnotationPresent(PuzzleTrigger.class)).forEach(m -> map.putIfAbsent(m.getName(), m)); // Add all triggers from this class.
+        if (cls.getSuperclass() != null) // Add the triggers from the parent class.
+            addTriggers(cls.getSuperclass());
+    }
+
+    /**
+     * Stop showing the fake block material to players.
+     * @param bk
+     */
+    protected void resetFakeBlock(Block bk) {
+        setFakeBlock(bk, null);
+    }
+
+    /**
+     * Show a fake block to all the players in the dungeon. Respects metadata, and null will reset the type.
+     * @param bk
+     * @param type
+     */
+    @SuppressWarnings("deprecation")
+    protected void setFakeBlock(Block bk, Material type) {
+        getDungeon().getPlayers().forEach(p -> p.sendBlockChange(bk.getLocation(), type != null ? type : bk.getType(), bk.getData()));
+    }
+
+    /**
+     * Packet-replace all the blocks near a given location.
+     * @param loc
+     * @param from
+     * @param to
+     * @param radius
+     */
+    protected void replaceNear(Location loc, Material from, Material to, int radius) {
+        loc = fixLocation(loc.clone());
+        for (int x = -radius; x <= radius; x++) {
+            for (int y = -radius; y <= radius; y++) {
+                for (int z = -radius; z <= radius; z++) {
+                    Block bk = loc.clone().add(x, y, z).getBlock();
+                    if (bk.getType() == from)
+                        setFakeBlock(bk, to);
+                }
+            }
         }
     }
 

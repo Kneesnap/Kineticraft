@@ -4,7 +4,6 @@ import com.destroystokyo.paper.Title;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.config.Configs;
-import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
 import net.kineticraft.lostcity.mechanics.system.Mechanic;
 import net.kineticraft.lostcity.utils.Utils;
@@ -25,7 +24,7 @@ public class AFK extends Mechanic {
 
     public void onEnable() {
         Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () ->
-            Bukkit.getOnlinePlayers().stream().filter(AFK::isAFK).forEach(p -> {
+            Bukkit.getOnlinePlayers().stream().filter(p -> !Utils.getRank(p).isAtLeast(EnumRank.MEDIA)).filter(AFK::isAFK).forEach(p -> {
                 BukkitTask kickTask = Bukkit.getScheduler().runTaskLater(Core.getInstance(), () ->
                     Callbacks.cancel(p, Callbacks.ListenerType.CHAT), 35 * 20L);
 
@@ -81,8 +80,7 @@ public class AFK extends Mechanic {
      * @return isAfk
      */
     public static boolean isAFK(Player player) {
-        return !KCPlayer.getWrapper(player).getRank().isAtLeast(EnumRank.MEDIA)
-                && !MetadataManager.hasCooldown(player, "active");
+        return !MetadataManager.hasCooldown(player, "active");
     }
 
     /**

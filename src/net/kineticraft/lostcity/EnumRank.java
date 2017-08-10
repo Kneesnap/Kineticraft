@@ -100,15 +100,35 @@ public enum EnumRank {
         return Arrays.stream(values()).filter(rank -> rank.name().equalsIgnoreCase(name)).findAny().orElse(null);
     }
 
-    public Team getTeam() { // Adding zz makes it alphebetically last (showing last) on the tablist. Order by rank importance.
-        String teamName = isAtLeast(THETA) ? "zz" + (ordinal() - THETA.ordinal() + 1) + Utils.capitalize(name()) : "Default";
+    private String getTeamName() { // Letters are added alphabetically to sort ranks by priority on the tab-list.
+        return (isAtLeast(THETA) ? (char) (97 + ordinal()) + Utils.capitalize(name()) : "aDefault");
+    }
 
-        Team t = Bukkit.getScoreboardManager().getMainScoreboard().getTeam(teamName);
-        if (t == null)
-            t = Bukkit.getScoreboardManager().getMainScoreboard().registerNewTeam(teamName);
+    /**
+     * Get the scoreboard team for this rank.
+     * @return team
+     */
+    public Team getTeam() {
+        return Bukkit.getScoreboardManager().getMainScoreboard().getTeam(getTeamName());
+    }
 
+    /**
+     * Create the scoreboard team for this rank.
+     */
+    protected void createTeam() {
+        if (getTeam() != null)
+            return; // This team, already exists.
+        Team t = Bukkit.getScoreboardManager().getMainScoreboard().registerNewTeam(getTeamName());
         t.setColor(getNameColor());
         t.setPrefix(getNameColor().toString());
-        return t;
+    }
+
+    /**
+     * Create the teams in order for each rank.
+     */
+    public static void createTeams() {
+        // Remove all existing teams. Since they are dynamically generated this makes sure we don't have problems.
+        Bukkit.getScoreboardManager().getMainScoreboard().getTeams().forEach(Team::unregister);
+        Arrays.asList(values()).forEach(EnumRank::createTeam); // Create the team for each rank.
     }
 }
