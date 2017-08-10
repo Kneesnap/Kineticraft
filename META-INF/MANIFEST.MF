@@ -1,6 +1,3 @@
 Manifest-Version: 1.0
-Class-Path: ./lib/JDA.jar ./lib/kotlin-reflect.jar ./lib/kotlin-stdlib
- -jre7-sources.jar ./lib/kotlin-stdlib-jre7.jar ./lib/kotlin-stdlib-jr
- e8-sources.jar ./lib/kotlin-stdlib-jre8.jar ./lib/kotlin-stdlib-sourc
- es.jar ./lib/kotlin-stdlib.jar ./lib/kotlin-test.jar
+Class-Path: ./lib/JDA.jar
 
