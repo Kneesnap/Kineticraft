@@ -36,7 +36,7 @@ public class ItemManager {
      * @param lore
      * @return item
      */
-    public static ItemStack createItem(Material material,  String name, String... lore) {
+    public static ItemStack createItem(Material material, String name, String... lore) {
         return createItem(material, (short) 0, name, lore);
     }
 

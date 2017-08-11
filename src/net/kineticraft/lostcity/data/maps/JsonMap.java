@@ -39,11 +39,21 @@ public class JsonMap<T> extends SaveableMap<String, T> {
      * Convert this Json map to a map indexed by enums.
      * @param enumClass
      * @param <E>
-     * @return
+     * @return enumMap
      */
     public <E extends Enum<E>> Map<E, T> toEnumMap(Class<E> enumClass) {
         Map<E, T> map = new HashMap<>();
         forEach((k, v) -> map.put(Utils.getEnum(k, enumClass), get(k)));
         return map;
+    }
+
+    /**
+     * Get a value by its enum key.
+     * @param key
+     * @param <E>
+     * @return value
+     */
+    public <E extends Enum<E>> T getValue(E key) {
+        return get(key.name());
     }
 }

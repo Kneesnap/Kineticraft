@@ -13,12 +13,14 @@ import org.bukkit.Particle;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.CommandBlock;
+import org.bukkit.entity.EntityType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.scheduler.BukkitTask;
 
 /**
  * A simple lazer puzzle.
  * TODO: Prevent infinite loops.
+ * TODO: Use sign locations.
  * Created by Kneesnap on 7/29/2017.
  */
 @Getter
@@ -67,8 +69,8 @@ public class LazerPuzzle extends Puzzle {
             lazer.getWorld().spawnParticle(Particle.REDSTONE, lazer, 1, 0, 0, 0, 0); // Draw trail.
 
             Block last = lazer.getBlock();
-            BlockFace d = direction[0]; //
-            lazer.add(d.getModX() / PER_BLOCK, 0, d.getModZ() / PER_BLOCK); // Move the lazer along its path.
+            BlockFace d = direction[0];
+            lazer.add(d.getModX() / ((double) PER_BLOCK), 0, d.getModZ() / ((double) PER_BLOCK)); // Move the lazer along its path.
             Block b = lazer.getBlock();
 
             if (!last.equals(b)) {
@@ -88,8 +90,11 @@ public class LazerPuzzle extends Puzzle {
                 // We've hit a wall.
                 traceTask.cancel(); // Stop trying to trace the lazer.
                 traceTask = null;
-                if (b.getType() == Material.BEACON) // This wall is actually the goal block.
+                if (b.getType() == Material.BEACON) {// This wall is actually the goal block.
                     complete();
+                } else { // They failed.
+                    b.getWorld().spawnEntity(b.getLocation().add(0, 1, 0), EntityType.ZOMBIE);
+                }
             }
         }, 1L);
     }

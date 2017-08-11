@@ -54,6 +54,7 @@ import java.util.stream.Collectors;
 public class Utils {
 
     public static List<BlockFace> FACES = Arrays.asList(BlockFace.SELF, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST);
+    public static List<BlockFace> CUBE_FACES = Arrays.asList(BlockFace.SELF, BlockFace.NORTH, BlockFace.SOUTH, BlockFace.EAST, BlockFace.WEST, BlockFace.UP, BlockFace.DOWN);
     @Getter private static Set<SongPlayer> repeat = new HashSet<>();
 
     /**
