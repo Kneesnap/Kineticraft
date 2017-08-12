@@ -81,7 +81,6 @@ public class Dungeon {
             Utils.safeTp(p, l);
             p.setFallDistance(0);
 
-            onJoin(p);
             p.sendTitle(new Title(new TextBuilder(getType().getName()).color(getType().getColor()).create(),
                     new TextBuilder("Objective: ").color(ChatColor.GRAY).append(getType().getEntryMessage()).create(),
                     20, 6, 20));
@@ -144,7 +143,7 @@ public class Dungeon {
      * @return survivalPlayers
      */
     public List<Player> getSurvivalPlayers() {
-        return getPlayers().stream().filter(p -> p.getGameMode() != GameMode.SPECTATOR).collect(Collectors.toList());
+        return getPlayers().stream().filter(p -> !isHidden(p)).collect(Collectors.toList());
     }
 
     /**
@@ -199,7 +198,7 @@ public class Dungeon {
 
         Core.broadcast(ChatColor.GOLD + getType().getFinishMessage() + " by a group of players."); // Announce victory
         Core.broadcast(ChatColor.GRAY + "Group: " + ChatColor.UNDERLINE
-                + getPlayers().stream().map(Entity::getName).collect(Collectors.joining(", ")));
+                + getSurvivalPlayers().stream().map(Entity::getName).collect(Collectors.joining(", ")));
         Bukkit.getScheduler().runTaskLater(Core.getInstance(), this::giveItem, 200L);
         Bukkit.getScheduler().runTaskLater(Core.getInstance(), this::removePlayers, 400L); // Teleport players out.
     }
@@ -226,6 +225,8 @@ public class Dungeon {
      * @param player
      */
     public void onJoin(Player player) {
+        if (isHidden(player))
+            return;
         alert(player.getName() + " joined the dungeon.");
         Utils.giveItem(player, new ItemStack(Material.STONE_SWORD));
     }
@@ -251,9 +252,19 @@ public class Dungeon {
      * @param player
      */
     public void onLeave(Player player) {
-        alert(player.getName() + " has left the dungeon.");
+        if (!isHidden(player))
+            alert(player.getName() + " has left the dungeon.");
         NoteBlockPlayerMain.stopPlaying(player);
         getOriginalPlayers().remove(player);
+    }
+
+    /**
+     * Returns if the player in question is hidden.
+     * @param player
+     * @return isHidden
+     */
+    public boolean isHidden(Player player) {
+        return player.getGameMode() == GameMode.SPECTATOR;
     }
 
     /**
@@ -317,6 +328,7 @@ public class Dungeon {
      */
     public void playCutscene(Cutscene c) {
         c.play(getSurvivalPlayers());
+        getSurvivalPlayers().forEach(p -> p.setFoodLevel(20)); // Set everyone back to max food. (Balancing)
     }
 
     /**

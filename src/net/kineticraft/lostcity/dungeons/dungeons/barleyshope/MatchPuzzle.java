@@ -21,10 +21,6 @@ import java.util.List;
 public class MatchPuzzle extends Puzzle {
     private static final List<DyeColor> COLORS = Arrays.asList(DyeColor.YELLOW, DyeColor.RED, DyeColor.GREEN);
 
-    public MatchPuzzle() {
-        super(new Location(null, -5, 9, -48), BlockFace.NORTH);
-    }
-
     @SuppressWarnings("SuspiciousMethodCalls")
     @PuzzleTrigger
     public void changeColor(CommandBlock block) {

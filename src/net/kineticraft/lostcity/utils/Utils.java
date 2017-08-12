@@ -1202,7 +1202,8 @@ public class Utils {
     public static void repeatNBS(SongPlayer mp) {
         getRepeat().remove(mp); // We won't refer to this again.
         List<Player> players = mp.getPlayerList().stream().map(Bukkit::getPlayer).filter(Objects::nonNull).collect(Collectors.toList());
-        playNBS(players, mp.getSong().getPath().getName().split("\\.nbs")[0], true);
+        Bukkit.getScheduler().runTaskLater(Core.getInstance(), () ->
+                playNBS(players, mp.getSong().getPath().getName().split("\\.nbs")[0], true), 2L);
     }
 
     /**
@@ -1286,6 +1287,16 @@ public class Utils {
      */
     public static Player getNearestPlayer(Location loc, int radius) {
         return (Player) getNearestEntity(loc, radius, e -> e instanceof Player);
+    }
+
+    /**
+     * Get the nearest player to a location that is in survival mode.
+     * @param en
+     * @param radius
+     * @return closest
+     */
+    public static Player getNearestSurvivalPlayer(Entity en, int radius) {
+        return (Player) getNearestEntity(en.getLocation(), radius, e -> e instanceof Player && !e.equals(en) && ((Player) e).getGameMode() == GameMode.SURVIVAL);
     }
 
     /**

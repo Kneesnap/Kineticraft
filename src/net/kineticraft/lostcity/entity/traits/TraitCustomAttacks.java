@@ -41,7 +41,7 @@ public class TraitCustomAttacks extends Trait {
     }
 
     private void performAttack() {
-        LivingEntity le = Utils.getNearestPlayer(getEntity().getBukkit(), 50);
+        LivingEntity le = Utils.getNearestSurvivalPlayer(getEntity().getBukkit(), 50);
         getNPC().getNavigator().setTarget(le, true); // Force target a player.
 
         if (entity.getAttacks().isEmpty())

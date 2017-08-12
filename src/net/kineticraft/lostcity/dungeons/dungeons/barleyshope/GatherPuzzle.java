@@ -20,10 +20,6 @@ import org.bukkit.block.CommandBlock;
 public class GatherPuzzle extends Puzzle {
     private int buttons = 6;
 
-    public GatherPuzzle() {
-        super(new Location(null, -59, 9, -78), BlockFace.WEST);
-    }
-
     @Override
     protected void onInit() {
         replaceNear(new Location(null, -47, 14, -78), Material.REDSTONE_TORCH_ON, Material.REDSTONE_TORCH_OFF, 10);
