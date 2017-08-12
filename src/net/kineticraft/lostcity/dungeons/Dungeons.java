@@ -11,8 +11,6 @@ import net.kineticraft.lostcity.item.ItemManager;
 import net.kineticraft.lostcity.item.ItemWrapper;
 import net.kineticraft.lostcity.mechanics.ArmorStands;
 import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
-import net.kineticraft.lostcity.mechanics.system.Restrict;
-import net.kineticraft.lostcity.mechanics.system.BuildType;
 import net.kineticraft.lostcity.mechanics.system.Mechanic;
 import net.kineticraft.lostcity.utils.ServerUtils;
 import net.kineticraft.lostcity.utils.Utils;
@@ -49,7 +47,6 @@ import java.util.stream.Collectors;
  * Runs the Dungeons of the game.
  * Created by Kneesnap on 7/11/2017.
  */
-@Restrict(BuildType.PRODUCTION)
 public class Dungeons extends Mechanic {
 
     @Getter private static List<Dungeon> dungeons = new ArrayList<>();

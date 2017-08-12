@@ -6,9 +6,7 @@ import net.citizensnpcs.api.event.NPCDamageByEntityEvent;
 import net.citizensnpcs.api.event.NPCDeathEvent;
 import net.citizensnpcs.api.npc.NPC;
 import net.kineticraft.lostcity.Core;
-import net.kineticraft.lostcity.mechanics.system.BuildType;
 import net.kineticraft.lostcity.mechanics.system.Mechanic;
-import net.kineticraft.lostcity.mechanics.system.Restrict;
 import net.kineticraft.lostcity.utils.ReflectionUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -24,7 +22,7 @@ import java.util.List;
  * Handles entities spawned with Citizens.
  * Created by Kneesnap on 8/2/2017.
  */
-@Restrict(BuildType.PRODUCTION) @Getter
+@Getter
 public class Entities extends Mechanic {
     private static List<CustomEntity> entities = new ArrayList<>();
 
