@@ -127,6 +127,7 @@ public class Commands extends Mechanic {
         addCommand(new CommandVoteParty());
         addCommand(new CommandJS());
         addCommand(new CommandReloadData());
+        addCommand(new CommandEntityCount());
 
         // Register trigger commands
         addCommand(new CommandTPATrigger());
