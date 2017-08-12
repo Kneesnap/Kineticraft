@@ -38,8 +38,9 @@ public class CommandEntityCount extends StaffCommand {
         EntityType type = args.length > 2 ? typeFromString(args[2]) : null;
 
         sender.sendMessage(ChatColor.GRAY + "Searching in radius: " + ChatColor.GREEN + radius +
+                ChatColor.GRAY + " in context: " + ChatColor.GREEN + (global ? "GLOBAL" : "LOCAL") +
                 ChatColor.GRAY + " for type: " + ChatColor.GREEN + (type == null ? "ALL" : type) +
-                ChatColor.GRAY + " in context: " + ChatColor.GREEN + (global ? "GLOBAL" : "LOCAL") + ".");
+                ChatColor.GRAY + ".");
 
         List<Pair<String, Integer>> results;
 
@@ -47,13 +48,13 @@ public class CommandEntityCount extends StaffCommand {
             results = Bukkit.getOnlinePlayers().stream()
                     .map(p -> new Pair<>(p.getName(), countNear(p.getLocation(), radius, type).values().stream().reduce(Integer::sum).orElse(null)))
                     .filter(p -> p.snd != null)
-                    .sorted(Comparator.comparing(p -> p.snd))
+                    .sorted(Comparator.comparing(p -> -p.snd))
                     .collect(Collectors.toList());
         } else {
             Map<EntityType, Integer> near = countNear(pSender.getLocation(), radius, type);
             results = near.keySet().stream()
                     .map(p -> new Pair<>(p.getEntityClass().getSimpleName(), near.get(p)))
-                    .sorted(Comparator.comparing(p -> p.snd))
+                    .sorted(Comparator.comparing(p -> -p.snd))
                     .collect(Collectors.toList());
         }
 
