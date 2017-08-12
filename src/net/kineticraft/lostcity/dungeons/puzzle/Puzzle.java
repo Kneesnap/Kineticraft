@@ -4,6 +4,7 @@ import lombok.Getter;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.dungeons.Dungeon;
 import net.kineticraft.lostcity.dungeons.Dungeons;
+import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -27,23 +28,18 @@ import java.util.stream.Stream;
 
 /**
  * A base dungeon puzzle.
- * TODO: Fake blocks should resend their state when the player interacts with them, or comes nearby. (Maybe update it every 10 seconds instead of coming nearby)
- * TODO: Use sign locations.
  * Created by Kneesnap on 7/29/2017.
  */
 @Getter
 public abstract class Puzzle implements Listener {
-    private Location gateLocation;
-    private BlockFace gateFace;
     private boolean complete;
     private List<BukkitTask> tasks = new ArrayList<>();
+    private Map<Block, Material> fakeBlocks = new HashMap<>();
     private Dungeon dungeon;
 
     private static final Map<Class<? extends Puzzle>, Map<String, Method>> triggers = new HashMap<>();
 
-    public Puzzle(Location place, BlockFace gateFace) {
-        this.gateLocation = place;
-        this.gateFace = gateFace;
+    public Puzzle() {
         Bukkit.getPluginManager().registerEvents(this, Core.getInstance());
     }
 
@@ -53,8 +49,23 @@ public abstract class Puzzle implements Listener {
      */
     public void setDungeon(Dungeon d) {
         this.dungeon = d;
-        this.gateLocation = fixLocation(this.gateLocation);
         onInit();
+    }
+
+    /**
+     * Get the location of the gate that opens when this puzzle is completed.
+     * @return gateLocation.
+     */
+    public Location getGateLocation() {
+        return getBlock("pz" + (getDungeon().getPuzzles().indexOf(this) + 1)).getLocation();
+    }
+
+    /**
+     * Get the direction the player should face during the completion cutscene for this puzzle
+     * @return gateFace
+     */
+    public BlockFace getGateFace() {
+        return Utils.getDirection(getGateLocation().getBlock());
     }
 
     /**
@@ -73,14 +84,14 @@ public abstract class Puzzle implements Listener {
         complete = true;
 
         Bukkit.getScheduler().runTaskLater(Core.getInstance(), () -> { // Cosmetic delay.
-            getGateLocation().getBlock().setType(Material.REDSTONE_BLOCK);
             getDungeon().playCutscene(new PuzzleDoorCutscene(getGateLocation(), getGateFace()));
+            getGateLocation().getBlock().setType(Material.REDSTONE_BLOCK);
             Bukkit.getScheduler().runTaskLater(Core.getInstance(), this::onComplete, 20L);
         }, 35L);
     }
 
     /**
-     * Called when this puzzle is initalized, players have just been teleported into the dungeon.
+     * Called when this puzzle is initialized, players have just been teleported into the dungeon.
      */
     protected void onInit() {
 
@@ -118,8 +129,22 @@ public abstract class Puzzle implements Listener {
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent evt) {
-        if (shouldHandleEvent(evt.getPlayer()) && evt.hasBlock())
-            onBlockClick(evt, evt.getClickedBlock(), evt.getAction() == Action.RIGHT_CLICK_BLOCK);
+        if (!shouldHandleEvent(evt.getPlayer()) || !evt.hasBlock())
+            return;
+
+        Block bk = evt.getClickedBlock();
+        onBlockClick(evt, bk, evt.getAction() == Action.RIGHT_CLICK_BLOCK);
+        if (getFakeBlocks().containsKey(bk)) { // Make a block's fake material not fail.
+            evt.setCancelled(true);
+            Bukkit.getScheduler().runTask(Core.getInstance(), () -> setFakeBlock(bk, getFakeBlocks().get(bk)));
+        }
+    }
+
+    /**
+     * Update all fake blocks in the dungeon whose illusions may not be solid.
+     */
+    public void updateFakeBlocks() {
+        getFakeBlocks().forEach(this::setFakeBlock);
     }
 
     /**
@@ -214,6 +239,11 @@ public abstract class Puzzle implements Listener {
      */
     @SuppressWarnings("deprecation")
     protected void setFakeBlock(Block bk, Material type) {
+        if (type != null) {
+            getFakeBlocks().put(bk, type);
+        } else {
+            getFakeBlocks().remove(bk);
+        }
         getDungeon().getPlayers().forEach(p -> p.sendBlockChange(bk.getLocation(), type != null ? type : bk.getType(), bk.getData()));
     }
 

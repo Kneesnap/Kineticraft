@@ -4,6 +4,7 @@ import com.destroystokyo.paper.Title;
 import lombok.Getter;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.dungeons.commands.*;
+import net.kineticraft.lostcity.dungeons.puzzle.Puzzle;
 import net.kineticraft.lostcity.events.CommandRegisterEvent;
 import net.kineticraft.lostcity.events.PlayerChangeRegionEvent;
 import net.kineticraft.lostcity.item.ItemManager;
@@ -56,7 +57,16 @@ public class Dungeons extends Mechanic {
     @Override
     public void onEnable() {
         Core.makeFolder("dungeons");
-        Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () -> new ArrayList<>(getDungeons()).forEach(Dungeon::tryRemove), 0L, 300L);
+        Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () -> new ArrayList<>(getDungeons()).forEach(d -> {
+                d.getPuzzles().forEach(Puzzle::updateFakeBlocks); // Update fake blocks
+                d.tryRemove(); // Remove this dungeon if there's nobody left.
+            }), 0L, 300L);
+    }
+
+    @Override
+    public void onQuit(Player player) {
+        if (isDungeon(player))
+            getDungeon(player).removePlayer(player);
     }
 
     @Override // Remove all dungeons on shutdown.
@@ -131,7 +141,7 @@ public class Dungeons extends Mechanic {
             return;
         int dungeonId = Integer.parseInt(evt.getRegionTo().split("_")[1]);
         DungeonType type = dungeonId <= DungeonType.values().length ? DungeonType.values()[dungeonId - 1] : null;
-        Dungeons.startDungeon(evt.getPlayer(), type, false);
+        Dungeons.startDungeon(evt.getPlayer(), type, DungeonUsage.PLAY);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -155,7 +165,7 @@ public class Dungeons extends Mechanic {
         if (!isDungeon(evt.getEntity()))
             return;
 
-        evt.setKeepInventory(true); // Don't lose items in a dungeon.
+        evt.setKeepLevel(true); // Keep XP, but drop inventory. (Since you can't bring anything in)
         Player p = evt.getEntity();
         makeCorpse(p);
         p.setHealth(p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()); // Restore to max health.
@@ -286,16 +296,16 @@ public class Dungeons extends Mechanic {
      * @return canEnter
      */
     private static boolean canEnterDungeon(Player player, DungeonType type) {
-        return (isInventoryEmpty(player) && type.hasUnlocked(player)) || Utils.isStaff(player);
+        return Utils.isStaff(player) || (isInventoryEmpty(player) && type.hasUnlocked(player));
     }
 
     /**
      * Start a dungeon for the given player.
      * @param player
      * @param type
-     * @param edit
+     * @param usage
      */
-    public static void startDungeon(Player player, DungeonType type, boolean edit) {
+    public static void startDungeon(Player player, DungeonType type, DungeonUsage usage) {
         if (type == null || !type.isReleased()) {
             player.sendMessage(ChatColor.RED + "This dungeon has not released yet.");
             return;
@@ -316,14 +326,15 @@ public class Dungeons extends Mechanic {
             }
         }
 
-        List<Player> players = Utils.getNearbyPlayers(player, 7);
+        List<Player> players = new ArrayList<>();
         players.add(player);
-        new ArrayList<>(players).stream().filter(p -> canEnterDungeon(p, type)).forEach(players::remove); // Prevent people without permission.
-        if (edit) // Only let staff into edit mode.
-            players = players.stream().filter(p -> Utils.getRank(p).isStaff()).collect(Collectors.toList());
+        if (usage == DungeonUsage.PLAY) {
+            players.addAll(Utils.getNearbyPlayers(player, 7));
+            new ArrayList<>(players).stream().filter(p -> !canEnterDungeon(p, type)).forEach(players::remove); // Prevent people without permission.
+        }
 
         Dungeon dungeon = type.getConstruct().apply(players);
-        dungeon.setEditMode(edit);
+        dungeon.setEditMode(usage == DungeonUsage.EDIT);
         dungeon.setup(type);
         getDungeons().add(dungeon);
     }
@@ -335,7 +346,7 @@ public class Dungeons extends Mechanic {
      */
     private static boolean canEdit(Entity player) {
         return Utils.isStaff(player)
-                && (!(player instanceof HumanEntity) || ((HumanEntity) player).getGameMode() == GameMode.CREATIVE);
+                && (!(player instanceof HumanEntity) || ((HumanEntity) player).getGameMode() != GameMode.SURVIVAL);
     }
 
     /**

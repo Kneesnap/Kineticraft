@@ -10,6 +10,8 @@ import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 
@@ -28,6 +30,9 @@ public class DungeonBoss extends CustomEntity {
         this.finalBoss = finalBoss;
         getBukkit().setCustomName(ChatColor.RED + name);
         getBukkit().setCustomNameVisible(true);
+        AttributeInstance a = getLiving().getAttribute(Attribute.GENERIC_MAX_HEALTH);
+        a.addModifier(new AttributeModifier("mult", 1, AttributeModifier.Operation.ADD_SCALAR)); // Double boss health.
+        getLiving().setHealth(a.getValue()); // Max out health.
     }
 
     @Override

@@ -17,20 +17,18 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A simple lazer puzzle.
- * TODO: Prevent infinite loops.
- * TODO: Use sign locations.
  * Created by Kneesnap on 7/29/2017.
  */
 @Getter
 public class LazerPuzzle extends Puzzle {
     private BukkitTask traceTask;
     private static final int PER_BLOCK = 5;
-
-    public LazerPuzzle() {
-        super(new Location(null, -76, 9, 55), BlockFace.SOUTH);
-    }
+    private List<Block> repeats = new ArrayList<>();
 
     @SuppressWarnings("deprecation")
     @Override
@@ -59,6 +57,7 @@ public class LazerPuzzle extends Puzzle {
 
     @PuzzleTrigger
     public void fireLazer(CommandBlock block) {
+        getRepeats().clear();
         Block bk = block.getBlock().getRelative(BlockFace.UP);
 
         BlockFace[] direction = new BlockFace[] {Utils.getDirection(bk)};
@@ -77,7 +76,8 @@ public class LazerPuzzle extends Puzzle {
                 if (b.getType() == Material.AIR)
                     return;
 
-                if (b.getType() == Material.DIODE_BLOCK_OFF) { // Change direction.
+                if (b.getType() == Material.DIODE_BLOCK_OFF && !getRepeats().contains(b)) { // Change direction.
+                    getRepeats().add(b); // Don't allow infinite loops.
                     BlockFace newDirection = Utils.getDirection(b);
                     if (newDirection != d && newDirection.getOppositeFace() != d) { // Power must enter sideways.
                         lazer.add(d.getModX() * 0.5, 0, d.getModZ() * 0.5); // Center lazer.
