@@ -56,18 +56,12 @@ public class Dungeons extends Mechanic {
     @Override
     public void onEnable() {
         Core.makeFolder("dungeons");
-        Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () -> new ArrayList<>(getDungeons()).forEach(Dungeon::tryRemove), 0L, 600L);
+        Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () -> new ArrayList<>(getDungeons()).forEach(Dungeon::tryRemove), 0L, 300L);
     }
 
     @Override // Remove all dungeons on shutdown.
     public void onDisable() {
         new ArrayList<>(getDungeons()).forEach(Dungeon::remove);
-    }
-
-    @Override
-    public void onQuit(Player player) {
-        if (isDungeon(player))
-            getDungeon(player).removePlayer(player);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -141,9 +135,19 @@ public class Dungeons extends Mechanic {
     }
 
     @EventHandler(ignoreCancelled = true)
-    public void onAttemptExit(PlayerTeleportEvent evt) {
-        if (isDungeon(evt.getFrom()) && !isDungeon(evt.getTo()))
-            getDungeon(evt.getFrom().getWorld()).onLeave(evt.getPlayer());
+    public void onDungeonChange(PlayerTeleportEvent evt) {
+        if (!isSameDungeon(evt.getFrom(), evt.getTo())) {
+            if (isDungeon(evt.getFrom()))
+                getDungeon(evt.getFrom()).onLeave(evt.getPlayer());
+            if (isDungeon(evt.getTo())) {
+                if (!canEnterDungeon(evt.getPlayer(), getDungeon(evt.getTo()).getType())) {
+                    evt.setCancelled(true);
+                    return;
+                }
+
+                getDungeon(evt.getTo()).onJoin(evt.getPlayer());
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true) // Handle dungeon death.
@@ -158,7 +162,7 @@ public class Dungeons extends Mechanic {
         p.setGameMode(GameMode.SPECTATOR); // Set to spectator.
         p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 50, 2)); // Give blindness.
         p.sendTitle(new Title(ChatColor.RED + "Dungeon Failed"));
-        getDungeon(p).announce(ChatColor.LIGHT_PURPLE + "[Dungeon] " + ChatColor.GRAY + p.getName() + " has been eliminated.");
+        getDungeon(p).alert(p.getName() + " has been eliminated.");
         Utils.stopNBS(p); //Disable music.
         Bukkit.getScheduler().runTaskLater(Core.getInstance(), () -> {
             Utils.toSpawn(p); // Teleport to spawn.
@@ -215,12 +219,31 @@ public class Dungeons extends Mechanic {
     }
 
     /**
+     * Confirms l1 is a dungeon and both of the dungeons match.
+     * @param l1
+     * @param l2
+     * @return dungeon
+     */
+    public static boolean isSameDungeon(Location l1, Location l2) {
+        return (isDungeon(l1) || isDungeon(l2)) && getDungeon(l1) == getDungeon(l2);
+    }
+
+    /**
      * Get the dungeon housed in the given world. Null if not a dungeon.
      * @param world
      * @return dungeon
      */
     public static Dungeon getDungeon(World world) {
         return getDungeons().stream().filter(d -> d.getWorld().equals(world)).findFirst().orElse(null);
+    }
+
+    /**
+     * Get a dungeon by the world of a supplied location.
+     * @param location
+     * @return dungeon
+     */
+    public static Dungeon getDungeon(Location location) {
+        return getDungeon(location.getWorld());
     }
 
     /**
@@ -242,6 +265,31 @@ public class Dungeons extends Mechanic {
     }
 
     /**
+     * Check if a player has an empty inventory.
+     * @param p
+     * @return isEmpty
+     */
+    private static boolean isInventoryEmpty(Player p) {
+        for (int i = 0; i < p.getInventory().getSize(); i++) {
+            if (!Utils.isAir(p.getInventory().getItem(i))) {
+                p.sendMessage(ChatColor.RED + "Your inventory must be empty to enter a dungeon.");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Return if a player can enter a dungeon.
+     * @param player
+     * @param type
+     * @return canEnter
+     */
+    private static boolean canEnterDungeon(Player player, DungeonType type) {
+        return (isInventoryEmpty(player) && type.hasUnlocked(player)) || Utils.isStaff(player);
+    }
+
+    /**
      * Start a dungeon for the given player.
      * @param player
      * @param type
@@ -253,10 +301,7 @@ public class Dungeons extends Mechanic {
             return;
         }
 
-        if (!type.hasUnlocked(player)) // Prevent players from going into dungeons they have not unlocked yet.
-            return;
-
-        if (MetadataManager.updateCooldownSilently(player, "dungeon", 50)) // Prevent starting two dungeons as once.
+        if (!canEnterDungeon(player, type) || MetadataManager.updateCooldownSilently(player, "dungeon", 50))
             return;
 
         if (!Utils.isStaff(player)) {
@@ -273,8 +318,7 @@ public class Dungeons extends Mechanic {
 
         List<Player> players = Utils.getNearbyPlayers(player, 7);
         players.add(player);
-        new ArrayList<>(players).stream().filter(p -> !type.hasUnlocked(player)).forEach(players::remove); // Prevent people without permission.
-
+        new ArrayList<>(players).stream().filter(p -> canEnterDungeon(p, type)).forEach(players::remove); // Prevent people without permission.
         if (edit) // Only let staff into edit mode.
             players = players.stream().filter(p -> Utils.getRank(p).isStaff()).collect(Collectors.toList());
 

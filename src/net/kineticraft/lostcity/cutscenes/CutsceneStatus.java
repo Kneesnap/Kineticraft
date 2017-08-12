@@ -108,6 +108,14 @@ public class CutsceneStatus {
     }
 
     /**
+     * Teleport all players to the camera.
+     */
+    public void bindCamera() {
+        Location l = getCamera().getLocation();
+        getPlayers().forEach(p -> p.teleport(l));
+    }
+
+    /**
      * Set this entity as a prop for this cutscene.
      * @param name
      * @param ent

@@ -24,8 +24,9 @@ public class CutsceneStage implements Jsonable {
         CutsceneEvent event = new CutsceneEvent(status, getTicks());
         Bukkit.getScheduler().runTaskLater(Core.getInstance(), status::nextStage, getTicks());
         getActions().stream().filter(CutsceneAction::isValid).forEach(a -> {
+            a.setEvent(event);
+            status.bindCamera(); // Teleport each player to the camera. Fixes weird audio-loss bug.
             try {
-                a.setEvent(event);
                 a.execute();
             } catch (Exception e) {
                 e.printStackTrace();

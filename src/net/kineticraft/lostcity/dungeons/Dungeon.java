@@ -1,9 +1,11 @@
 package net.kineticraft.lostcity.dungeons;
 
 import com.destroystokyo.paper.Title;
+import com.xxmicloxx.NoteBlockAPI.NoteBlockPlayerMain;
 import lombok.Getter;
 import lombok.Setter;
 import net.kineticraft.lostcity.Core;
+import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.cutscenes.Cutscene;
 import net.kineticraft.lostcity.cutscenes.Cutscenes;
 import net.kineticraft.lostcity.dungeons.puzzle.Puzzle;
@@ -11,13 +13,14 @@ import net.kineticraft.lostcity.utils.TextBuilder;
 import net.kineticraft.lostcity.utils.Utils;
 import net.kineticraft.lostcity.utils.ZipUtil;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.block.CommandBlock;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.*;
+import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -32,6 +35,7 @@ public class Dungeon {
     private World world;
     private List<Player> originalPlayers;
     private List<Puzzle> puzzles = new ArrayList<>();
+    private Map<String, Block> locations = new HashMap<>();
     @Setter private boolean editMode;
 
     public Dungeon(List<Player> players) {
@@ -54,7 +58,6 @@ public class Dungeon {
             ZipUtil.unzip(getType().getWorld(), worldName);
             Utils.removeFile(worldName + "uid.dat");
             Utils.removeFile(worldName + "players");
-
             Bukkit.getScheduler().runTask(Core.getInstance(), () -> initWorld(worldName));
         });
     }
@@ -68,18 +71,20 @@ public class Dungeon {
         creator.generateStructures(false);
         this.world = Bukkit.getServer().createWorld(creator);
         getWorld().setAutoSave(false);
-        getWorld().setKeepSpawnInMemory(false);
         getWorld().setDifficulty(Difficulty.EASY);
         getWorld().setTime(15000); // Set it to night.
 
+        updateLocations();
         getOriginalPlayers().forEach(p -> {
             Location l = getWorld().getSpawnLocation();
             l.setYaw(90);
             Utils.safeTp(p, l);
             p.setFallDistance(0);
+
+            onJoin(p);
             p.sendTitle(new Title(new TextBuilder(getType().getName()).color(getType().getColor()).create(),
                     new TextBuilder("Objective: ").color(ChatColor.GRAY).append(getType().getEntryMessage()).create(),
-                    20, 75, 20));
+                    20, 6, 20));
 
             if (isEditMode()) {
                 p.sendMessage(ChatColor.GREEN + "This dungeon is in EDIT MODE.");
@@ -88,6 +93,26 @@ public class Dungeon {
         });
 
         getPuzzles().forEach(p -> p.setDungeon(this));
+    }
+
+    /**
+     * Reload the locations saved on signs.
+     */
+    public void updateLocations() {
+        getLocations().clear();
+        Arrays.asList(getWorld().getLoadedChunks()).forEach(c -> Arrays.stream(c.getTileEntities())
+                .filter(te -> te instanceof Sign).map(te -> (Sign) te)
+                .filter(s -> s.getLine(0).startsWith("[") && s.getLine(0).endsWith("]"))
+                .forEach(s -> getLocations().put(s.getLine(0).substring(1, s.getLine(0).length() - 1), s.getBlock())));
+    }
+
+    /**
+     * Get a sign location with the given id.
+     * @param name
+     * @return location
+     */
+    public Block getBlock(String name) {
+        return getLocations().get(name);
     }
 
     /**
@@ -119,7 +144,7 @@ public class Dungeon {
      * @return survivalPlayers
      */
     public List<Player> getSurvivalPlayers() {
-        return getPlayers().stream().filter(p -> p.getGameMode() == GameMode.SURVIVAL).collect(Collectors.toList());
+        return getPlayers().stream().filter(p -> p.getGameMode() != GameMode.SPECTATOR).collect(Collectors.toList());
     }
 
     /**
@@ -175,7 +200,34 @@ public class Dungeon {
         Core.broadcast(ChatColor.GOLD + getType().getFinishMessage() + " by a group of players."); // Announce victory
         Core.broadcast(ChatColor.GRAY + "Group: " + ChatColor.UNDERLINE
                 + getPlayers().stream().map(Entity::getName).collect(Collectors.joining(", ")));
+        Bukkit.getScheduler().runTaskLater(Core.getInstance(), this::giveItem, 200L);
         Bukkit.getScheduler().runTaskLater(Core.getInstance(), this::removePlayers, 400L); // Teleport players out.
+    }
+
+    /**
+     * Give the collector's item to everyone who completed the dungeon fully.
+     */
+    protected void giveItem() {
+        ItemStack i = Configs.getMainConfig().getDungeonRewards().getValue(getType());
+        if (Utils.isAir(i))
+            return;
+
+        for (Player p : getPlayers()) {
+            if (getOriginalPlayers().contains(p)) {
+                Utils.giveItem(p, i.clone());
+            } else {
+                p.sendMessage(ChatColor.RED + "You teleported into this dungeon mid-session, and therefore did not receive the reward.");
+            }
+        }
+    }
+
+    /**
+     * Called when a player joins this dungeon.
+     * @param player
+     */
+    public void onJoin(Player player) {
+        alert(player.getName() + " joined the dungeon.");
+        Utils.giveItem(player, new ItemStack(Material.STONE_SWORD));
     }
 
     /**
@@ -200,6 +252,8 @@ public class Dungeon {
      */
     public void onLeave(Player player) {
         alert(player.getName() + " has left the dungeon.");
+        NoteBlockPlayerMain.stopPlaying(player);
+        getOriginalPlayers().remove(player);
     }
 
     /**
@@ -262,6 +316,15 @@ public class Dungeon {
      * @param c
      */
     public void playCutscene(Cutscene c) {
-        c.play(getPlayers());
+        c.play(getSurvivalPlayers());
+    }
+
+    /**
+     * Play a sound to all players in a dungeon.
+     * @param sound
+     * @param pitch
+     */
+    public void playSound(Sound sound, float pitch) {
+        getPlayers().forEach(p -> p.playSound(p.getLocation(), sound, 1F, pitch));
     }
 }

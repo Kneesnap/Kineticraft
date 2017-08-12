@@ -28,6 +28,7 @@ import java.util.stream.Stream;
 /**
  * A base dungeon puzzle.
  * TODO: Fake blocks should resend their state when the player interacts with them, or comes nearby. (Maybe update it every 10 seconds instead of coming nearby)
+ * TODO: Use sign locations.
  * Created by Kneesnap on 7/29/2017.
  */
 @Getter
@@ -72,6 +73,7 @@ public abstract class Puzzle implements Listener {
         complete = true;
 
         Bukkit.getScheduler().runTaskLater(Core.getInstance(), () -> { // Cosmetic delay.
+            getGateLocation().getBlock().setType(Material.REDSTONE_BLOCK);
             getDungeon().playCutscene(new PuzzleDoorCutscene(getGateLocation(), getGateFace()));
             Bukkit.getScheduler().runTaskLater(Core.getInstance(), this::onComplete, 20L);
         }, 35L);
@@ -241,5 +243,22 @@ public abstract class Puzzle implements Listener {
      */
     protected boolean canTrigger() {
         return !isComplete();
+    }
+
+    /**
+     * Returns the world this puzzle takes place in.
+     * @return world
+     */
+    public World getWorld() {
+        return getDungeon() != null ? getDungeon().getWorld() : null;
+    }
+
+    /**
+     * Get a location marked by a sign.
+     * @param name
+     * @return location
+     */
+    protected Block getBlock(String name) {
+        return getDungeon().getBlock(name);
     }
 }

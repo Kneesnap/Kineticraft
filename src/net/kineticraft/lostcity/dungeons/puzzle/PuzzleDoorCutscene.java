@@ -1,7 +1,6 @@
 package net.kineticraft.lostcity.dungeons.puzzle;
 
 import net.kineticraft.lostcity.cutscenes.Cutscene;
-import net.kineticraft.lostcity.cutscenes.actions.ActionBlockUpdate;
 import net.kineticraft.lostcity.cutscenes.actions.ActionPlayNBS;
 import net.kineticraft.lostcity.cutscenes.actions.ActionPlaySound;
 import net.kineticraft.lostcity.cutscenes.actions.GenericAction;
@@ -34,7 +33,7 @@ public class PuzzleDoorCutscene extends Cutscene {
                     new ActionPlaySound(b.getLocation(), Sound.BLOCK_GRAVEL_BREAK, (float) Math.max(0.8, (.7 + y) / 10), 1));
         }
 
-        addStage(90, new ActionPlayNBS("solve", false), new ActionBlockUpdate(this.gate, Material.REDSTONE_BLOCK));
+        addStage(90, new ActionPlayNBS("solve", false));
     }
 
     private Location getCameraPosition() {
