@@ -330,7 +330,7 @@ public class Dungeons extends Mechanic {
         if (!canEnterDungeon(player, type) || MetadataManager.updateCooldownSilently(player, "dungeon", 50))
             return;
 
-        if (!Utils.isStaff(player)) {
+        if (usage == DungeonUsage.PLAY) {
             if (ServerUtils.getTicksToReboot() <= 20 * 60 * 30) {
                 player.sendMessage(ChatColor.RED + "The server is rebooting in less than 30 minutes, dungeons may not be started now.");
                 return;
