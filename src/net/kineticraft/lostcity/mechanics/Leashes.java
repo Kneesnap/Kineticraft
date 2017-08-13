@@ -26,7 +26,7 @@ public class Leashes extends Mechanic {
 
     @EventHandler(ignoreCancelled = true)
     public void onLeash(PlayerInteractEntityEvent evt) {
-        if (!LEASHABLE.contains(evt.getRightClicked().getType()))
+        if (!LEASHABLE.contains(evt.getRightClicked().getType()) || Utils.inSpawn(evt.getRightClicked().getLocation()))
             return;
 
         LivingEntity e = (LivingEntity) evt.getRightClicked();
