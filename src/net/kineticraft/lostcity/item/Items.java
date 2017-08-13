@@ -56,7 +56,11 @@ public class Items extends Mechanic {
         if (!(evt.getInventory() instanceof MerchantInventory) || evt.getRawSlot() != 2)
             return;
 
-        List<ItemStack> ig = ((MerchantInventory) evt.getInventory()).getSelectedRecipe().getIngredients();
+        MerchantInventory mi = (MerchantInventory) evt.getInventory();
+        if (((Merchant) mi.getHolder()).getRecipes().isEmpty())
+            return; // If there are no recipes, ignore this.
+
+        List<ItemStack> ig = mi.getSelectedRecipe().getIngredients();
         for (int i = 0; i < evt.getInventory().getSize() - 1; i++)
             if (ItemWrapper.isCustom(evt.getInventory().getItem(i)) && !ItemWrapper.isCustom(ig.get(i)))
                 evt.setCancelled(true); // Don't allow the trade to go through if it's using a custom item where none is needed.

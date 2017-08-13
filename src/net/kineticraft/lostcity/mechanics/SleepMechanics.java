@@ -47,6 +47,9 @@ public class SleepMechanics extends Mechanic {
 
     @EventHandler
     public void onBedEnter(PlayerBedEnterEvent evt) {
+        if (!evt.getBed().getWorld().equals(Core.getMainWorld()))
+            return;
+
         updateBeds();
 
         if (!MetadataManager.updateCooldownSilently(evt.getPlayer(), "bedSpam", 20 * 60 * 5))

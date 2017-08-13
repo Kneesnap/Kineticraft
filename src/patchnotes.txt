@@ -1,15 +1,10 @@
 &8Changes:
- - Dungeon #1 Release
- - Staff cannot be /ignore'd
- - Improved Crake.
-
-&8&lDungeons:
-Dungeons are mini adventures run with command-blocks.
-It's recommended to play with sound and headphones.
-They are accessible from spawn.
+ - Better corpse placement.
+ - Teleport players to the same place when boss fight starts.
+ - Updated /dungeon
+ - Lazer puzzle is more lenient
 
 &8Bugfixes:
- - AFK math problem is more obvious.
- - Monsters that pickup items will drop them on death.
- - Callbacks don't close chat window.
- - Fixed Ozzy's Armor Stand trade.
+ - Dungeons give food at proper intervals.
+ - Fix some NPEs.
+ - Prevent setting homes in dungeons.

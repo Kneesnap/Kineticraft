@@ -104,9 +104,9 @@ public class Utils {
      * @return safe
      */
     private static boolean isSafe(Location loc) {
-        return !isSolid(loc.getBlock())
-                && !isSolid(loc.clone().add(0, 1, 0).getBlock())
-                && !loc.clone().subtract(0, 1, 0).getBlock().isLiquid();
+        Block bk = loc.getBlock();
+        Block below = bk.getRelative(BlockFace.DOWN);
+        return !isSolid(bk) && !isSolid(bk.getRelative(BlockFace.UP)) && below.getType() != Material.AIR  && !below.isLiquid();
     }
 
     /**

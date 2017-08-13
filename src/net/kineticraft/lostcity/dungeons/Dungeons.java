@@ -147,7 +147,7 @@ public class Dungeons extends Mechanic {
             if (isDungeon(evt.getFrom()))
                 getDungeon(evt.getFrom()).onLeave(evt.getPlayer());
             if (isDungeon(evt.getTo())) {
-                if (!canEnterDungeon(evt.getPlayer(), getDungeon(evt.getTo()).getType())) {
+                if (!canEnterDungeon(evt.getPlayer(), getDungeon(evt.getTo()))) {
                     evt.setCancelled(true);
                     return;
                 }
@@ -181,8 +181,10 @@ public class Dungeons extends Mechanic {
      * Create an armor stand corpse for a dead player.
      * @param p
      */
-    private static void makeCorpse(Player p) {
-        ArmorStand as = ArmorStands.spawnArmorStand(p.getLocation().subtract(0, 0.5, 0), "corpse");
+    public static void makeCorpse(Player p) {
+        Location spawn = Utils.findSafe(p.getLocation()).subtract(0, 1.2, 0);
+        ArmorStand as = ArmorStands.spawnArmorStand(spawn, "corpse");
+        as.setGravity(false);
         Utils.mirrorItems(p, as);
         as.setHelmet(ItemManager.makeSkull(p.getName()));
         as.setCustomName(ChatColor.RED + p.getName() + "'s Corpse");
@@ -241,7 +243,7 @@ public class Dungeons extends Mechanic {
      * @return dungeon
      */
     public static Dungeon getDungeon(World world) {
-        return getDungeons().stream().filter(d -> d.getWorld().equals(world)).findFirst().orElse(null);
+        return world != null ? getDungeons().stream().filter(d -> world.equals(d.getWorld())).findFirst().orElse(null) : null;
     }
 
     /**
@@ -284,6 +286,23 @@ public class Dungeons extends Mechanic {
             }
         }
         return true;
+    }
+
+    /**
+     * Can a player enter a dungeon already in progress?
+     * @param player
+     * @param dungeon
+     * @return canEnterDungeon
+     */
+    private static boolean canEnterDungeon(Player player, Dungeon dungeon) {
+        if (!Utils.isStaff(player)) {
+            if (dungeon.hasFinalBossSpawned()) {
+                player.sendMessage(ChatColor.RED + "You may not enter a dungeon after the final boss spawns.");
+                return false;
+            }
+        }
+
+        return canEnterDungeon(player, dungeon.getType());
     }
 
     /**

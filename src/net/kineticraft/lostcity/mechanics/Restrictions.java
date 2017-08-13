@@ -51,7 +51,7 @@ public class Restrictions extends Mechanic {
                 .collect(Collectors.joining(", "));
         if (evt.getVehicle().getType() == EntityType.BOAT && !evt.getFrom().getBlock().isLiquid() && fly.length() > 0
                 && evt.getTo().getY() > evt.getFrom().getY() && evt.getVehicle().getVelocity().getY() <= 0)
-            Core.alertStaff("[BoatFly] " + ChatColor.GRAY + fly + "may be using BoatFly.");
+            Core.alertStaff("[BoatFly] " + ChatColor.GRAY + fly + " may be using BoatFly.");
     }
 
     @Override // Removes all infinite potion effects. (Players aren't supposed to keep them.)
