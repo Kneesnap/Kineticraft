@@ -26,13 +26,15 @@ public abstract class DungeonCommand extends BlockCommand {
             return;
         }
 
-        if (getDungeon(bcs).isEditMode()) {
+        Dungeon d = getDungeon(bcs);
+        if (d.isEditMode()) {
             sender.sendMessage(ChatColor.RED + "This command cannot be run in edit-mode.");
             return;
         }
 
+        d.feedAll();
         super.onCommand(sender, args);
-        if (deleteOnExecute() && !Dungeons.getDungeon(bcs.getBlock()).isEditMode())
+        if (deleteOnExecute() && !d.isEditMode())
             bcs.getBlock().setType(Material.AIR); // Delete this command-block on execute, provided we aren't in edit-mode.
     }
 

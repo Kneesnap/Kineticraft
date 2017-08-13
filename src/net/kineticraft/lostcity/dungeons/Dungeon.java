@@ -36,6 +36,7 @@ public class Dungeon {
     private List<Player> originalPlayers;
     private List<Puzzle> puzzles = new ArrayList<>();
     private Map<String, Block> locations = new HashMap<>();
+    private List<DungeonBoss> bossesSpawned = new ArrayList<>();
     @Setter private boolean editMode;
 
     public Dungeon(List<Player> players) {
@@ -73,6 +74,7 @@ public class Dungeon {
         getWorld().setAutoSave(false);
         getWorld().setDifficulty(Difficulty.EASY);
         getWorld().setTime(15000); // Set it to night.
+        getWorld().setGameRuleValue("commandBlockOutput", "false"); // Prevent command block output spam.
 
         updateLocations();
         getOriginalPlayers().forEach(p -> {
@@ -227,6 +229,7 @@ public class Dungeon {
     public void onJoin(Player player) {
         if (isHidden(player))
             return;
+        player.getActivePotionEffects().clear(); // No potion-effects should transfer into the dungeon.
         alert(player.getName() + " joined the dungeon.");
         Utils.giveItem(player, new ItemStack(Material.STONE_SWORD));
     }
@@ -311,7 +314,7 @@ public class Dungeon {
      * @param type
      */
     public void spawnBoss(BossType type) {
-        type.spawnBoss(this);
+        getBossesSpawned().add(type.spawnBoss(this));
     }
 
     /**
@@ -327,8 +330,19 @@ public class Dungeon {
      * @param c
      */
     public void playCutscene(Cutscene c) {
+        feedAll();
         c.play(getSurvivalPlayers());
-        getSurvivalPlayers().forEach(p -> p.setFoodLevel(20)); // Set everyone back to max food. (Balancing)
+    }
+
+    /**
+     * Feed all players in the dungeon
+     */
+    public void feedAll() {
+        getPlayers().forEach(p -> {
+            p.setFoodLevel(20);
+            p.setSaturation(2);
+            p.setExhaustion(0);
+        }); // Set everyone back to max food. (Balancing)
     }
 
     /**
@@ -338,5 +352,13 @@ public class Dungeon {
      */
     public void playSound(Sound sound, float pitch) {
         getPlayers().forEach(p -> p.playSound(p.getLocation(), sound, 1F, pitch));
+    }
+
+    /**
+     * Check if the final boss has spawned yet.
+     * @return finalBossSpawned
+     */
+    public boolean hasFinalBossSpawned() {
+        return getBossesSpawned().stream().anyMatch(DungeonBoss::isFinalBoss);
     }
 }

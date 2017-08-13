@@ -8,8 +8,6 @@ import net.kineticraft.lostcity.cutscenes.commands.CommandCutscene;
 import net.kineticraft.lostcity.cutscenes.commands.CommandCutsceneEditor;
 import net.kineticraft.lostcity.data.maps.JsonMap;
 import net.kineticraft.lostcity.events.CommandRegisterEvent;
-import net.kineticraft.lostcity.mechanics.system.Restrict;
-import net.kineticraft.lostcity.mechanics.system.BuildType;
 import net.kineticraft.lostcity.mechanics.system.MechanicManager;
 import net.kineticraft.lostcity.mechanics.system.ModularMechanic;
 import org.bukkit.entity.Entity;
@@ -27,7 +25,6 @@ import java.util.stream.Stream;
  * QUEST TODO Create a particle exclamation mark for quest NPCs.
  * Created by Kneesnap on 6/1/2017.
  */
-@Restrict(BuildType.PRODUCTION)
 public class Cutscenes extends ModularMechanic<Cutscene> {
 
     @Getter private static Map<Player, CutsceneStatus> dataMap = new HashMap<>();
@@ -136,6 +133,6 @@ public class Cutscenes extends ModularMechanic<Cutscene> {
                 ActionEntityVelocity.class, ActionRemoveEntity.class, ActionTeleportEntity.class, ActionUpdateEntity.class,
                 ActionBlockUpdate.class, ActionCameraFilter.class, ActionPlaySound.class, ActionSendMessage.class,
                 ActionSpawnParticles.class, ActionPlayNBS.class, ActionArmorStandPose.class, ActionPotionEffect.class,
-                ActionLoadEntity.class, ActionCompleteDungeon.class).forEach(getActions()::add);
+                ActionLoadEntity.class, ActionCompleteDungeon.class, ActionSetEndLocation.class).forEach(getActions()::add);
     }
 }

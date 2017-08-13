@@ -42,7 +42,7 @@ public class CommandDiscordVerify extends DiscordCommand {
             return;
         }
 
-        discord.sendMessage("Please confirm this verification in-game.");
+        discord.sendMessage("Please confirm this verification in-game.\n(Discord Terms of Service: We store your discord ID upon verification)");
         verify.sendMessage(ChatColor.GREEN + discord.getName() + ChatColor.GOLD + " is trying to verify as you on discord.");
         verify.sendMessage(ChatColor.GOLD + "If you did not do this, hit '" + ChatColor.RED + "CANCEL" + ChatColor.GOLD
                 + "'. Otherwise, click '" + ChatColor.GREEN + "VERIFY" + ChatColor.GOLD + "'.");

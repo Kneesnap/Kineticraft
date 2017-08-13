@@ -1,6 +1,7 @@
 package net.kineticraft.lostcity.cutscenes;
 
 import lombok.Getter;
+import lombok.Setter;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.mechanics.metadata.Metadata;
 import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
@@ -23,7 +24,7 @@ public class CutsceneStatus {
     private Cutscene cutscene;
     private List<Player> players;
     private int stageId = 0;
-    private Location startLocation;
+    @Setter private Location startLocation;
     private Map<String, Entity> entityMap = new HashMap<>();
 
     public CutsceneStatus(Cutscene cutscene, List<Player> players) {

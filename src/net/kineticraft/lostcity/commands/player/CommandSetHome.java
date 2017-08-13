@@ -1,5 +1,6 @@
 package net.kineticraft.lostcity.commands.player;
 
+import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.mechanics.Chat;
@@ -22,7 +23,7 @@ public class CommandSetHome extends PlayerCommand {
         Player player = (Player) sender;
         KCPlayer kcPlayer = KCPlayer.getWrapper(player);
 
-        if (player.getWorld().getEnvironment() != World.Environment.NORMAL) {
+        if (!player.getWorld().equals(Core.getMainWorld())) {
             sender.sendMessage(ChatColor.RED + "You may only set homes in the overworld.");
             return;
         }

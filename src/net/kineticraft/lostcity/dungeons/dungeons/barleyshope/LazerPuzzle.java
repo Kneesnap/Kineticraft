@@ -79,7 +79,7 @@ public class LazerPuzzle extends Puzzle {
                 if (b.getType() == Material.DIODE_BLOCK_OFF && !getRepeats().contains(b)) { // Change direction.
                     getRepeats().add(b); // Don't allow infinite loops.
                     BlockFace newDirection = Utils.getDirection(b);
-                    if (newDirection != d && newDirection.getOppositeFace() != d) { // Power must enter sideways.
+                    if (newDirection.getOppositeFace() != d) { // Cannot activate repeater from the direction it faces.
                         lazer.add(d.getModX() * 0.5, 0, d.getModZ() * 0.5); // Center lazer.
                         activateRepeater(b);
                         direction[0] = newDirection; // Update direction.
