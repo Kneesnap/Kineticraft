@@ -3,10 +3,10 @@ package net.kineticraft.lostcity.commands.player;
 import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.data.QueryTools;
 import net.kineticraft.lostcity.data.KCPlayer;
+import net.kineticraft.lostcity.mechanics.Voting;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,8 +25,7 @@ public class CommandVotes extends PlayerCommand {
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
         QueryTools.queryData(stream -> {
-            List<KCPlayer> list = stream.sorted(Comparator.comparing(KCPlayer::getMonthlyVotes).reversed())
-                    .collect(Collectors.toList());
+            List<KCPlayer> list = stream.sorted(Voting.sortPlayers()).collect(Collectors.toList());
             String bar = ChatColor.GRAY.toString() + ChatColor.STRIKETHROUGH + "----------";
             int show = Math.min(ENTRIES, list.size());
 

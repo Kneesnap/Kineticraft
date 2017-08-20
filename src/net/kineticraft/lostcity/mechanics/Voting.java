@@ -180,17 +180,13 @@ public class Voting extends Mechanic {
         VoteConfig data = Configs.getVoteData();
 
         QueryTools.queryData(players -> {
-            List<KCPlayer> topVoters = players.filter(k -> !k.getRank().isAtLeast(EnumRank.MEDIA))
-                    .sorted(Comparator.comparingInt(KCPlayer::getMonthlyVotes).reversed()).collect(Collectors.toList());
-            List<KCPlayer> sorted = topVoters.stream().filter(k -> k.getMonthlyVotes() == topVoters.get(0).getMonthlyVotes())
-                    .sorted(Comparator.comparingLong(KCPlayer::getLastVote)).collect(Collectors.toList());
-            KCPlayer topVoter = sorted.isEmpty() ? null : sorted.get(0);
+            List<KCPlayer> sorted = players.filter(k -> !k.getRank().isAtLeast(EnumRank.MEDIA)).sorted(sortPlayers()).collect(Collectors.toList());
+            KCPlayer topVoter = sorted.get(0);
 
-            if (topVoter == null || topVoter.getUuid().equals(data.getTopVoter()))
+            if (topVoter == null || topVoter.getUuid().equals(data.getTopVoter()) || topVoter.getMonthlyVotes() == 0)
                 return; // The top voter hasn't changed.
 
             Player oldTop = Bukkit.getPlayer(data.getTopVoter());
-
             data.setTopVoter(topVoter.getUuid());
             Core.announce(ChatColor.YELLOW + topVoter.getUsername() + ChatColor.RED
                     + " is the new top voter! Monthly Votes: " + ChatColor.YELLOW + topVoter.getMonthlyVotes());
@@ -209,6 +205,18 @@ public class Voting extends Mechanic {
 
             data.saveToDisk();
         });
+    }
+
+    /**
+     * Get a comparator for sorting all players.
+     * @return players
+     */
+    public static Comparator<KCPlayer> sortPlayers() {
+        return (x, y) -> {
+            if (x.getMonthlyVotes() == y.getMonthlyVotes())
+                return Long.compare(x.getLastVote(), y.getLastVote());
+            return y.getMonthlyVotes() > x.getMonthlyVotes() ? 1 : -1;
+        };
     }
 
     @AllArgsConstructor @Data

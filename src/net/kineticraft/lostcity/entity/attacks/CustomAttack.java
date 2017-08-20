@@ -32,8 +32,7 @@ public abstract class CustomAttack {
     public void handleAttack(Entity attacker) {
         this.source = attacker;
         List<LivingEntity> targets = attacker.getNearbyEntities(getRadius(), getRadius(), getRadius()).stream()
-                .filter(e -> e instanceof LivingEntity).map(e -> (LivingEntity) e).filter(this::canAttack)
-                .collect(Collectors.toList());
+                .filter(e -> e instanceof LivingEntity).map(e -> (LivingEntity) e).filter(this::canAttack).collect(Collectors.toList());
         showDisplay(targets);
         targets.forEach(this::attack);
     }
@@ -67,6 +66,6 @@ public abstract class CustomAttack {
      * @return canAttack
      */
     public boolean canAttack(LivingEntity target) {
-        return inRange(target) && (target.hasAI() || target instanceof Player);
+        return inRange(target) && target instanceof Player;
     }
 }
