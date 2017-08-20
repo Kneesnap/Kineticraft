@@ -4,7 +4,9 @@ import lombok.SneakyThrows;
 import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.StaffCommand;
+import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.mechanics.system.MechanicManager;
+import net.kineticraft.lostcity.utils.ReflectionUtil;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.command.CommandSender;
 
@@ -62,6 +64,8 @@ public class CommandJS extends StaffCommand {
             engine.eval(new InputStreamReader(Core.getInstance().getResource("boot.js"))); // Run JS startup.
             MechanicManager.getMechanics().forEach(this::bindObject); // Create shortcuts for all mechanics.
             bindClass(Utils.class);
+            bindClass(KCPlayer.class);
+            bindClass(ReflectionUtil.class);
         } catch (ScriptException ex) {
             ex.printStackTrace();
             Core.warn("Failed to initialize JS shortcuts.");

@@ -4,6 +4,7 @@ import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.data.QueryTools;
+import net.kineticraft.lostcity.dungeons.Dungeons;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -46,6 +47,11 @@ public class CommandMailbox extends PlayerCommand {
                     sender.sendMessage(ChatColor.GREEN + "Mailed item to " + k.getUsername() + ".");
                 }, () -> sender.sendMessage(ChatColor.RED + "Player not found."));
             }
+            return;
+        }
+
+        if (Dungeons.isDungeon((Player) sender)) {
+            sender.sendMessage(ChatColor.RED + "This command cannot be run in a dungeon.");
             return;
         }
 

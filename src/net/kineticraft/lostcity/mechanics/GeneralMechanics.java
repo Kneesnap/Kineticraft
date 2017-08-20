@@ -53,8 +53,11 @@ public class GeneralMechanics extends Mechanic {
         Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), () -> {
             for (Player p : Core.getOnlinePlayers()) {
                 KCPlayer w = KCPlayer.getWrapper(p);
-                if (w.getEffect() != null && p.getGameMode() != GameMode.SPECTATOR)
-                    p.getWorld().spawnParticle(w.getEffect(), p.getLocation(), 10);
+                if (w.getEffect() != null && p.getGameMode() != GameMode.SPECTATOR) {
+                    double x = Utils.randDouble(0, .5) - .25D;
+                    double z = Utils.randDouble(0, .5) - .25D;
+                    p.getWorld().spawnParticle(w.getEffect(), p.getEyeLocation().add(0, 1.5, 0), 10, x, -1F, z, .5);
+                }
             }
         }, 0L, 20L);
 

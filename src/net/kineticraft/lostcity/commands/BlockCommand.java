@@ -28,9 +28,4 @@ public abstract class BlockCommand extends Command {
             sender.sendMessage(ChatColor.RED + "This command can only be in a command block.");
         return passBlock;
     }
-
-    @Override // Command blocks can use this command.
-    public final boolean allowCommandBlocks() {
-        return true;
-    }
 }

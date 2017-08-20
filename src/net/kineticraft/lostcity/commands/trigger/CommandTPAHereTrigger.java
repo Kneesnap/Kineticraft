@@ -26,6 +26,9 @@ public class CommandTPAHereTrigger extends TriggerCommand {
 
         Player receiver = other.getPlayer();
         player.sendMessage(ChatColor.GOLD + "Request sent!");
+        if (KCPlayer.getWrapper(receiver).isIgnoring(player))
+            return;
+
         receiver.sendMessage(sender.getDisplayName() + ChatColor.GOLD + " has requested you teleport to them.");
 
         Callbacks.promptConfirm(receiver, () -> {

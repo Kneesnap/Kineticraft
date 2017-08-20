@@ -40,12 +40,12 @@ public class Punishments extends Mechanic {
                         count.put(pu.getType(), count.getOrDefault(pu.getType(), 0) + 1);
                     }));
 
-            String fullReport = "Weekly Ban Report:\n";
+            String fullReport = "Weekly Ban Report:";
             for (String staff : banCount.keySet()) {
                 Map<PunishmentType, Integer> countMap = banCount.get(staff);
-                fullReport += staff + ": " + countMap.values().stream().mapToInt(Integer::intValue).sum();
+                fullReport += "\n" + staff + ": " + countMap.values().stream().mapToInt(Integer::intValue).sum();
                 for (PunishmentType type : countMap.keySet())
-                    fullReport += " - " + Utils.capitalize(type.name()) + ": " + countMap.get(type);
+                    fullReport += "\n - " + Utils.capitalize(type.name()) + ": " + countMap.get(type);
             }
 
             DiscordAPI.sendMessage(DiscordChannel.ORYX, fullReport);
@@ -113,7 +113,7 @@ public class Punishments extends Mechanic {
 
         @Override
         public String toString() {
-            return " - " + getType().getDisplay() + " (" + new Date(getTimestamp()).toString() + ")";
+            return getType().getDisplay() + " (" + new Date(getTimestamp()).toString() + ")";
         }
     }
 

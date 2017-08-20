@@ -180,9 +180,11 @@ public class Voting extends Mechanic {
         VoteConfig data = Configs.getVoteData();
 
         QueryTools.queryData(players -> {
-            KCPlayer topVoter = players.filter(k -> !k.getRank().isAtLeast(EnumRank.MEDIA))
-                    .sorted(Comparator.comparingInt(KCPlayer::getMonthlyVotes).reversed())
-                    .collect(Collectors.toList()).get(0);
+            List<KCPlayer> topVoters = players.filter(k -> !k.getRank().isAtLeast(EnumRank.MEDIA))
+                    .sorted(Comparator.comparingInt(KCPlayer::getMonthlyVotes).reversed()).collect(Collectors.toList());
+            List<KCPlayer> sorted = topVoters.stream().filter(k -> k.getMonthlyVotes() == topVoters.get(0).getMonthlyVotes())
+                    .sorted(Comparator.comparingLong(KCPlayer::getLastVote)).collect(Collectors.toList());
+            KCPlayer topVoter = sorted.isEmpty() ? null : sorted.get(0);
 
             if (topVoter == null || topVoter.getUuid().equals(data.getTopVoter()))
                 return; // The top voter hasn't changed.

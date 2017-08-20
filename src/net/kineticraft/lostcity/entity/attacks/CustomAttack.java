@@ -3,6 +3,7 @@ package net.kineticraft.lostcity.entity.attacks;
 import lombok.Getter;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -66,6 +67,6 @@ public abstract class CustomAttack {
      * @return canAttack
      */
     public boolean canAttack(LivingEntity target) {
-        return inRange(target);
+        return inRange(target) && (target.hasAI() || target instanceof Player);
     }
 }

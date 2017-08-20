@@ -41,9 +41,7 @@ public class FarmLimiter extends Mechanic {
     public void onEntityDeath(EntityDeathEvent evt) {
         LivingEntity e = evt.getEntity();
         EntityType type = evt.getEntityType();
-        boolean limit = (getEntityCount(e) >= 5 && e instanceof Monster)
-                || getPlayerDamage(e) < getDamageNeeded(e)
-                || type == EntityType.PIG_ZOMBIE;
+        boolean limit = getPlayerDamage(e) < getDamageNeeded(e) || type == EntityType.PIG_ZOMBIE;
         if (!IGNORE.contains(type) && limit)
             evt.getDrops().clear();
     }

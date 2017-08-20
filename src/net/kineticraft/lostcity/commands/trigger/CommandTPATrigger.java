@@ -27,6 +27,9 @@ public class CommandTPATrigger extends TriggerCommand {
 
         Player receiver = other.getPlayer();
         player.sendMessage(ChatColor.GOLD + "Request sent!");
+        if (KCPlayer.getWrapper(receiver).isIgnoring(player))
+            return;
+
         receiver.sendMessage(ChatColor.GOLD + "Incoming TPA request from " + sender.getDisplayName());
 
         Callbacks.promptConfirm(receiver, () -> {

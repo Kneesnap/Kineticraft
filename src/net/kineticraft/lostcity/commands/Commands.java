@@ -72,6 +72,7 @@ public class Commands extends Mechanic {
         addCommand(new CommandHome());
         addCommand(new CommandIgnore());
         addCommand(new CommandIgnoreList());
+        addCommand(new CommandKittyCannon());
         addCommand(new CommandList());
         addCommand(new CommandMessage());
         addCommand(new CommandMail());
@@ -106,6 +107,7 @@ public class Commands extends Mechanic {
         addCommand(new CommandEdit());
         addCommand(new CommandFly());
         addCommand(new CommandGUIs());
+        addCommand(new CommandIPSearch());
         addCommand(new CommandKick());
         addCommand(new CommandMined());
         addCommand(new CommandMute());
@@ -136,6 +138,7 @@ public class Commands extends Mechanic {
 
         Bukkit.getPluginManager().callEvent(new CommandRegisterEvent()); // Broadcast its time to register commands.
         getCommands().sort(Comparator.comparing(Command::getName)); // Sort commands alphabetically
+        getCommands().stream().filter(Command::registerBukkit).forEach(BukkitCommandWrapper::new); // For commands that need bukkit registering.
     }
 
     /**
@@ -244,7 +247,7 @@ public class Commands extends Mechanic {
         boolean console = evt.getSender() instanceof ConsoleCommandSender;
 
         Command cmd = getUsable(evt.getSender()).stream()
-                .filter(c -> !c.getCommandPrefix().contains(" ")) // Don't count /trigger
+                .filter(c -> !c.getCommandPrefix().contains(" ") && label.length() >= c.getCommandPrefix().length()) // Don't count /trigger
                 .filter(c -> c.getAlias().contains(console ? label : label.substring(c.getCommandPrefix().length())))
                 .findAny().orElse(null); // Get the command for the input supplied.
 

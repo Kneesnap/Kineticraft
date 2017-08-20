@@ -15,7 +15,6 @@ import java.util.UUID;
  */
 @Setter @Getter
 public class VoteConfig extends JsonConfig {
-
     private int votesPerParty = 50;
     private int totalVotes;
     private UUID topVoter;

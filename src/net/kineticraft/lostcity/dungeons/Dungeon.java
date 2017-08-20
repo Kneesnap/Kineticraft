@@ -137,7 +137,7 @@ public class Dungeon {
      * @return players
      */
     public List<Player> getPlayers() {
-        return getWorld().getPlayers();
+        return getWorld() != null ? getWorld().getPlayers() : new ArrayList<>();
     }
 
     /**
@@ -160,8 +160,10 @@ public class Dungeon {
      * Remove this dungeon.
      */
     public void remove() {
-        if (getWorld() == null)
+        if (getWorld() == null) {
+            Dungeons.getDungeons().remove(this); // Somehow this didn't unload, do it again.
             return; // Don't unload dungeon twice.
+        }
 
         // Remove players and unload puzzles.
         Core.logInfo("Removing dungeon " + getWorld().getName() + ".");
