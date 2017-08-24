@@ -82,6 +82,7 @@ public class Commands extends Mechanic {
         addCommand(new CommandReply());
         addCommand(new CommandRanks());
         addCommand(new CommandRankup());
+        addCommand(new CommandReport());
         addCommand(new CommandRTP());
         addCommand(new CommandSeen());
         addCommand(new CommandSetHome());
