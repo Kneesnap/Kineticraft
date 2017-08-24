@@ -44,7 +44,7 @@ public class CommandSeen extends PlayerCommand {
             if (!p.getPunishments().isEmpty()) {
                 sendValue(sender, "Banned", p.isBanned());
                 sender.sendMessage(ChatColor.GRAY + "Punishments:");
-                p.getPunishments().stream().map(Punishments.Punishment::toString).forEach(sender::sendMessage);
+                p.getPunishments().stream().map(Punishments.Punishment::toString).map(s -> " - " + s).forEach(sender::sendMessage);
             }
 
         }, () -> sender.sendMessage(ChatColor.RED + "Player not found."));

@@ -33,5 +33,5 @@ var setInterval = function (callback, intervalMS) {
 };
 
 var toNMS = function (item) {
-    return org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack.asNMSCopy(item);
-};
+    return new net.kineticraft.lostcity.item.ItemWrapper(item).getNMSCopy();
+}

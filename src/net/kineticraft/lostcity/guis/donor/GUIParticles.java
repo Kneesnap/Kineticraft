@@ -7,11 +7,18 @@ import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 /**
  * Lets donors pick their particles.
  * Created by Kneesnap on 6/11/2017.
  */
 public class GUIParticles extends GUI {
+    private static final List<Particle> BANNED = Arrays.asList(Particle.MOB_APPEARANCE, Particle.EXPLOSION_HUGE, Particle.EXPLOSION_LARGE);
+
     public GUIParticles(Player player) {
         super(player, "Particle Selector");
     }
@@ -19,7 +26,6 @@ public class GUIParticles extends GUI {
     @Override
     public void addItems() {
         Particle effect = getWrapper().getEffect();
-
         for (Particle p : getParticles())
             if (p != Particle.MOB_APPEARANCE)
                 addItem(Material.REDSTONE, ChatColor.GREEN + Utils.capitalize(p.name()),
@@ -33,7 +39,7 @@ public class GUIParticles extends GUI {
         toRight(2);
 
         if (effect != null)
-            addItem(Material.INK_SACK, ChatColor.RED + "Disable Particles", "Click here to disable your active effects.")
+            addItem(Material.INK_SACK, ChatColor.RED + "Disable Particles", "Click here to disable your active effect.")
                     .anyClick(e -> {
                         getWrapper().setEffect(null);
                         getPlayer().sendMessage(ChatColor.RED + "Particles disabled.");
@@ -47,7 +53,7 @@ public class GUIParticles extends GUI {
      * Gets an array of all allowed particles.
      * @return particles
      */
-    private static Particle[] getParticles() {
-        return Particle.values();
+    private static List<Particle> getParticles() {
+        return Stream.of(Particle.values()).filter(p -> !BANNED.contains(p)).collect(Collectors.toList());
     }
 }

@@ -17,6 +17,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -57,10 +58,14 @@ public class Items extends Mechanic {
             return;
 
         MerchantInventory mi = (MerchantInventory) evt.getInventory();
-        if (((Merchant) mi.getHolder()).getRecipes().isEmpty())
-            return; // If there are no recipes, ignore this.
+        List<ItemStack> ig = new ArrayList<>();
+        try {
+            ig = mi.getSelectedRecipe().getIngredients();
+        } catch (Exception e) {
+            for (int i = 0; i < 3; i++) // Interal CraftBukkit throws an error, this avoids it.
+                ig.add(new ItemStack(Material.DIRT));
+        }
 
-        List<ItemStack> ig = mi.getSelectedRecipe().getIngredients();
         for (int i = 0; i < evt.getInventory().getSize() - 1; i++)
             if (ItemWrapper.isCustom(evt.getInventory().getItem(i)) && !ItemWrapper.isCustom(ig.get(i)))
                 evt.setCancelled(true); // Don't allow the trade to go through if it's using a custom item where none is needed.

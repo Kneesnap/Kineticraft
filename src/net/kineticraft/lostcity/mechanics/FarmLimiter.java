@@ -41,9 +41,8 @@ public class FarmLimiter extends Mechanic {
     public void onEntityDeath(EntityDeathEvent evt) {
         LivingEntity e = evt.getEntity();
         EntityType type = evt.getEntityType();
-        boolean limit = (getEntityCount(e) >= 5 && e instanceof Monster)
-                || getPlayerDamage(e) < getDamageNeeded(e)
-                || type == EntityType.PIG_ZOMBIE;
+        double dmg = getPlayerDamage(e);
+        boolean limit = dmg < getDamageNeeded(e) || (type == EntityType.PIG_ZOMBIE && dmg < 100);
         if (!IGNORE.contains(type) && limit)
             evt.getDrops().clear();
     }
@@ -58,7 +57,7 @@ public class FarmLimiter extends Mechanic {
 
     @EventHandler(ignoreCancelled = true) // Prevent items that entities pickup from being lost on death.
     public void onItemPickup(EntityPickupItemEvent evt) {
-        addPlayerDamage(evt.getEntity(), evt.getEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
+        addPlayerDamage(evt.getEntity(), 100);
     }
 
     /**

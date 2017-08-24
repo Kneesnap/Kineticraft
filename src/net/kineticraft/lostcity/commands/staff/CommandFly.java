@@ -1,5 +1,6 @@
 package net.kineticraft.lostcity.commands.staff;
 
+import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.commands.StaffCommand;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.command.CommandSender;
@@ -11,7 +12,7 @@ import org.bukkit.entity.Player;
  */
 public class CommandFly extends StaffCommand {
     public CommandFly() {
-        super("", "Toggle flight-status.", "fly");
+        super(EnumRank.MEDIA, "", "Toggle flight-status.", "fly");
     }
 
     @Override

@@ -131,6 +131,16 @@ public class KCPlayer implements Jsonable {
     }
 
     /**
+     * Punish this player for ban evasion, if they aren't already banned for it.
+     */
+    public void punishEvasion() {
+        for (Punishment p : getPunishments())
+            if (p.isValid() && p.getType() == PunishmentType.ALT_ACCOUNT)
+                return;
+        punish(PunishmentType.ALT_ACCOUNT, Bukkit.getConsoleSender());
+    }
+
+    /**
      * Punish this user.
      * If run a-sync it will run next tick.
      *
@@ -176,7 +186,7 @@ public class KCPlayer implements Jsonable {
      * @return expiry
      */
     public long getPunishExpiry() {
-        int hours;
+        long hours;
         List<Punishment> p = getPunishments().stream().filter(Punishment::isValid).collect(Collectors.toList());
         if (p.isEmpty())
             return 0; // If there are no punishments, they're clean.
@@ -230,7 +240,7 @@ public class KCPlayer implements Jsonable {
     }
 
     /**
-     * Is this player the top voter?
+     * Is this player a top voter?
      * @return topVoter
      */
     public boolean isTopVoter() {
@@ -296,6 +306,14 @@ public class KCPlayer implements Jsonable {
     }
 
     /**
+     * Get the display name of this player.
+     * @return displayName
+     */
+    public String getName() {
+        return getNickname() != null ? getNickname() : getUsername();
+    }
+
+    /**
      * Performs updates on this player such as attempting to give vote rewards, updating player tablist name,
      * and sending the "you have mail" message
      */
@@ -304,13 +322,13 @@ public class KCPlayer implements Jsonable {
             return; // This only applies to online players.
 
         Player player = getPlayer();
-        player.setDisplayName(getNickname() != null ? getNickname() : player.getName());
+        setUsername(player.getName());
+        player.setDisplayName(getName());
         getTemporaryRank().getTeam().addEntry(player.getName());
         Voting.giveRewards(player); // Give vote rewards, if any.
         player.setOp(getRank().isAtLeast(EnumRank.BUILDER)); // Grant or remove OP status if the player is of high enough level.
 
         // Updates data.
-        setUsername(player.getName());
         setLastIP(player.getAddress().toString().split("/")[1].split(":")[0]);
         player.addAttachment(Core.getInstance(), "OpenInv.*", getRank().isStaff());
 

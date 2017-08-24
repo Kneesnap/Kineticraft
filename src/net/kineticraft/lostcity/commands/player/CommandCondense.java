@@ -33,7 +33,7 @@ public class CommandCondense extends PlayerCommand {
             if (Utils.isAir(item))
                 continue;
 
-            ItemStack c = CONDENSE.keySet().stream().filter(itm -> itm.getType() == item.getType()).findAny().orElse(null);
+            ItemStack c = CONDENSE.keySet().stream().filter(item::isSimilar).findAny().orElse(null);
             List<ItemStack> condenseResults = new ArrayList<>();
             if (c != null) {
                 ItemStack add = new ItemStack(CONDENSE.get(c), 0);

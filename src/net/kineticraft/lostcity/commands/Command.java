@@ -316,10 +316,9 @@ public abstract class Command {
     }
 
     /**
-     * Are command blocks able to use this command?
-     * @return allowed
+     * Returns whether or not this command should be registered into the bukkit command map, for whatever reason.
      */
-    public boolean allowCommandBlocks() {
+    public boolean registerBukkit() {
         return false;
     }
 }

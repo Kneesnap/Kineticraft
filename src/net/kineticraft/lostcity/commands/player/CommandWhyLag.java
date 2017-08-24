@@ -41,8 +41,9 @@ public class CommandWhyLag extends PlayerCommand {
 
         if (sender instanceof Player) {
             int ping = PlayerUtils.getCraftPlayer((Player) sender).spigot().getPing();
-            sender.sendMessage(ChatColor.GOLD + "Network Connection: " + TextUtils.colorValue(ping, 500, true)
-                    + "ms (" + (ping > 150 ?  (ping - 150) + "ms too many" : "all good") + ")");
+            if (ping >= 0) // Don't show negative pings.
+                sender.sendMessage(ChatColor.GOLD + "Network Connection: " + TextUtils.colorValue(ping, 500, true)
+                        + "ms (" + (ping > 150 ?  (ping - 150) + "ms too many" : "all good") + ")");
             sender.sendMessage(ChatColor.GREEN + (ping > 150 ? "Your connection is slow."
                     : "You shouldn't be lagging, maybe your FPS (frames per second) is low?"));
         }

@@ -2,17 +2,14 @@ package net.kineticraft.lostcity.guis;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.guis.donor.*;
 import net.kineticraft.lostcity.guis.staff.*;
 import net.kineticraft.lostcity.utils.ReflectionUtil;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 /**
  * A list of all constructable display.
- *
  * Created by Kneesnap on 6/8/2017.
  */
 @AllArgsConstructor @Getter

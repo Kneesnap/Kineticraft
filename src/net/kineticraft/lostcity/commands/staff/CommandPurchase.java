@@ -22,9 +22,13 @@ public class CommandPurchase extends StaffCommand {
 
         QueryTools.getData(args[0], d -> {
             Core.announce("Please thank " + ChatColor.YELLOW + d.getUsername() + ChatColor.RED + " for donating to help keep the server going!");
-            if (!d.getRank().isStaff()) // Don't demote staff :P
+            if (!d.getRank().isAtLeast(EnumRank.MEDIA)) // Don't demote staff :P
                 d.setRank(EnumRank.THETA);
         }, () -> Core.warn("Could not find " + args[0] + " to give donation reward."));
+    }
 
+    @Override // BuyCraft uses dispatchCommand
+    public boolean registerBukkit() {
+        return true;
     }
 }
