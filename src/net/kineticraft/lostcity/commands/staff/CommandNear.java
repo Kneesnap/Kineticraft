@@ -29,7 +29,7 @@ public class CommandNear extends StaffCommand {
         boolean allEntities = args.length > 1 && Boolean.valueOf(args[1]);
         Location origin = ((Player) sender).getLocation();
 
-        List<Entity> results = Utils.getNearbyEntities(((Player) sender).getLocation(), radius).stream()
+        List<Entity> results = Utils.getNearbyEntities(origin, radius).stream()
                 .filter(e -> (e instanceof Player || allEntities) && e != sender).collect(Collectors.toList());
 
         sender.sendMessage(ChatColor.GRAY + "Nearby:");

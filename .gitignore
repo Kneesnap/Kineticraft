@@ -2,3 +2,4 @@ build/
 out/
 .idea/
 **/.idea/
+libs/PaperSpigot*.jar

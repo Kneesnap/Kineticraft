@@ -83,6 +83,7 @@ public class Commands extends Mechanic {
         addCommand(new CommandReply());
         addCommand(new CommandRanks());
         addCommand(new CommandRankup());
+        addCommand(new CommandReport());
         addCommand(new CommandRTP());
         addCommand(new CommandSeen());
         addCommand(new CommandSetHome());
@@ -129,6 +130,7 @@ public class Commands extends Mechanic {
         addCommand(new CommandVoteParty());
         addCommand(new CommandJS());
         addCommand(new CommandReloadData());
+        addCommand(new CommandEntityCount());
 
         // Register trigger commands
         addCommand(new CommandTPATrigger());
