@@ -106,6 +106,7 @@ public class Commands extends Mechanic {
         addCommand(new CommandBroadcast());
         addCommand(new CommandDeathTeleport());
         addCommand(new CommandEdit());
+        addCommand(new CommandEntityCount());
         addCommand(new CommandFly());
         addCommand(new CommandGUIs());
         addCommand(new CommandIPSearch());
@@ -130,7 +131,6 @@ public class Commands extends Mechanic {
         addCommand(new CommandVoteParty());
         addCommand(new CommandJS());
         addCommand(new CommandReloadData());
-        addCommand(new CommandEntityCount());
 
         // Register trigger commands
         addCommand(new CommandTPATrigger());
