@@ -1,18 +1,4 @@
 &8Changes:
- - /ignore ignores tpa requests.
- - Mob drop limiter is less restrictive..
- - Added /kittycannon
- - Improved donor particles
- - Better ban evasion handling.
- - Preparations for Dungeon #2.
- - Top voter tie-breaker is now who voted first.
- - BuyCraft is fully automated.
-
-&8Bugfixes:
- - Oryx report formatting
- - /censor shows nicknames
- - /condense lapis bug
- - Frilda kills Mr Barley
- - Prevent leashing shop villagers.
- - Escape underscores for discord #ingame.
- - Prevent /mailbox in dungeons.
+ - Added /report command.
+ - Added entity counter.
+ - Removed Herobrine.
