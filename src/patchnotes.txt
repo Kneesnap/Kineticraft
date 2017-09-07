@@ -2,3 +2,4 @@
  - Added /report command.
  - Added entity counter.
  - Removed Herobrine.
+ - This is a test.
