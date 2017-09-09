@@ -125,6 +125,7 @@ public class Commands extends Mechanic {
         addCommand(new CommandSetRank());
         addCommand(new CommandSpectator());
         addCommand(new CommandTeleport());
+        addCommand(new CommandToLocation());
         addCommand(new CommandTestVote());
         addCommand(new CommandUnmute());
         addCommand(new CommandVanish());

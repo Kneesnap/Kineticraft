@@ -1,4 +1,5 @@
 &8Changes:
- - Added /report command.
- - Added entity counter.
- - Removed Herobrine.
+ - Made /report command interactive.
+ - Added Report Dog, who assists you through your taddles.
+ - Added /tolocation (staff only).
+ - Added sugar, spice, and everything nice.
