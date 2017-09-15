@@ -90,7 +90,6 @@ public class DiscordAPI extends Mechanic {
 
     /**
      * Return whether or not the bot exists and is connected, and enabled.
-     *
      * @return alive
      */
     public static boolean isAlive() {

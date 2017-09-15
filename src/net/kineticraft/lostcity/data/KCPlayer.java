@@ -52,7 +52,7 @@ public class KCPlayer implements Jsonable {
 
     private Particle effect;
     private boolean vanished;
-    private boolean idiotMode;
+    private long zenMode;
     private String nickname;
     private long secondsPlayed;
     private int lastBuild;

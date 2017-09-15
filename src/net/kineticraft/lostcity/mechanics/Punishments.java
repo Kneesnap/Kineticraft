@@ -40,7 +40,7 @@ public class Punishments extends Mechanic {
                         count.put(pu.getType(), count.getOrDefault(pu.getType(), 0) + 1);
                     }));
 
-            String fullReport = "Weekly Ban Report:";
+            String fullReport = "```\nWeekly Ban Report:";
             for (String staff : banCount.keySet()) {
                 Map<PunishmentType, Integer> countMap = banCount.get(staff);
                 fullReport += "\n" + staff + ": " + countMap.values().stream().mapToInt(Integer::intValue).sum();
@@ -48,7 +48,7 @@ public class Punishments extends Mechanic {
                     fullReport += "\n - " + Utils.capitalize(type.name()) + ": " + countMap.get(type);
             }
 
-            DiscordAPI.sendMessage(DiscordChannel.ORYX, fullReport);
+            DiscordAPI.sendMessage(DiscordChannel.ORYX, fullReport + "```");
         });
     }
 

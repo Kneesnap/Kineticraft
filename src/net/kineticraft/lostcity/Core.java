@@ -186,7 +186,7 @@ public class Core extends JavaPlugin {
         Class<?> cls = (object instanceof Class) ? (Class<?>) object : object.getClass();
         boolean a = !cls.isAnnotationPresent(Restrict.class)
                 || !Arrays.asList(cls.getAnnotation(Restrict.class).value()).contains(ServerUtils.getType());
-        if (!a && cls != null)
+        if (!a)
             logInfo("Not registering " + cls.getSimpleName() + ".");
         return a;
     }

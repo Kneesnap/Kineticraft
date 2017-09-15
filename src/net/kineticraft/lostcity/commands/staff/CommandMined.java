@@ -17,7 +17,8 @@ public class CommandMined extends StaffCommand {
 
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
-        ((Player) sender).chat("/co rollback u:" + args[0] + " r:100 b:diamond_ore t:100d #preview");
+        ((Player) sender).chat("/co rollback u:" + args[0]
+                + " r:100 b:glowing_redstone_ore,redstone_ore,diamond_ore,iron_ore,emerald_ore,gold_ore,lapis_ore,coal_ore t:100d #preview");
         sender.sendMessage(ChatColor.GREEN + "Type '/co cancel' when done.");
     }
 }

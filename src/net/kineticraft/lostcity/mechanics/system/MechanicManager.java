@@ -18,6 +18,7 @@ import net.kineticraft.lostcity.mechanics.*;
 import net.kineticraft.lostcity.mechanics.enchants.Enchants;
 import net.kineticraft.lostcity.mechanics.metadata.Metadata;
 import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
+import net.kineticraft.lostcity.party.Parties;
 import net.kineticraft.lostcity.utils.ReflectionUtil;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
@@ -72,6 +73,7 @@ public class MechanicManager implements Listener {
         addMechanic(Leashes.class);
         addMechanic(Enchants.class);
         addMechanic(Voting.class);
+        addMechanic(Parties.class);
         addMechanic(AFK.class);
         addMechanic(MetadataManager.class);
     }

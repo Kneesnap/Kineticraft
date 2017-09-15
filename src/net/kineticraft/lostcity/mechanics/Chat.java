@@ -24,9 +24,9 @@ import java.util.regex.Pattern;
  */
 public class Chat extends Mechanic {
 
-    private static final Pattern URL_PATTERN = Pattern.compile("((?:(?:https?)://)?[-\\w_\\.]{2,})\\.([a-zA-Z]{2,3}(?:/\\S+)?)");
+    private static final Pattern URL_PATTERN = Pattern.compile("((?:(?:https?)://)?[-\\w_.]{2,})\\.([a-zA-Z]{2,3}(?:/\\S+)?)");
     private static final List<ChatColor> STAFF_ONLY = Arrays.asList(ChatColor.BLACK, ChatColor.MAGIC);
-    private static final List<Function<String, String>> IDIOT_FILTERS = new ArrayList<>();
+    private static final List<Function<String, String>> ZEN_FILTERS = new ArrayList<>();
 
     @EventHandler(priority = EventPriority.LOW) // Filter should happen after commands.
     public void onChat(AsyncPlayerChatEvent evt) {
@@ -53,8 +53,8 @@ public class Chat extends Mechanic {
 
     @EventHandler
     public void idiotMode(AsyncPlayerChatEvent evt) {
-        if (KCPlayer.getPlayer(evt.getPlayer()).isIdiotMode() && Utils.nextBool())
-            evt.setMessage(Utils.randElement(IDIOT_FILTERS).apply(evt.getMessage()));
+        if (System.currentTimeMillis() <= KCPlayer.getPlayer(evt.getPlayer()).getZenMode())
+            evt.setMessage(Utils.randElement(ZEN_FILTERS).apply(evt.getMessage()));
     }
 
     /**
@@ -139,9 +139,9 @@ public class Chat extends Mechanic {
     }
 
     static {
-        final String[] WORDS = new String[] {"huehuehue", "snarff", "hurr", "durr", "hodor", "derp", "herp", "ROARK", "SNEE"};
+        final String[] WORDS = new String[] {"huehue", "snarff", "hurr", "durr", "hodor", "derp", "herp", "ROARK", "SNEE"};
 
-        IDIOT_FILTERS.addAll(Arrays.asList(s -> {
+        ZEN_FILTERS.addAll(Arrays.asList(s -> {
             // Scramble random words.
             String[] sp = s.split(" ");
             for (int i = 0; i < sp.length; i++)

@@ -1,5 +1,9 @@
 &8Changes:
- - Made /report command interactive.
- - Added Report Dog, who assists you through your taddles.
- - Added /tolocation (staff only).
- - Added sugar, spice, and everything nice.
+ - Oryx logs /kick.
+ - Overall bugfixes.
+ - Dungeon #2 code.
+ - Started Party code.
+ - Rebrand idiot-mode as zen-mode.
+ - Added /zen.
+ - Zen-mode applies to all sent messages.
+ - Expand /mined.

@@ -84,12 +84,12 @@ public class DataHandler extends Mechanic {
             if (maybe.isEmpty())
                 return; // Nobody found.
 
-            long banned = maybe.stream().filter(KCPlayer::isBanned).count();
+            List<String> banned = maybe.stream().filter(KCPlayer::isBanned).map(KCPlayer::getUsername).collect(Collectors.toList());
             Core.alertStaff(evt.getPlayer().getName() + " shares the same IP as " + maybe.stream()
                     .map(KCPlayer::getUsername).collect(Collectors.joining(", ")));
 
-            if (banned > 0) {
-                Core.warn(evt.getPlayer().getName() + " shares the same IP as " + banned + " banned players.");
+            if (!banned.isEmpty()) {
+                Core.warn(evt.getPlayer().getName() + " shares the same IP as " + banned + " banned players: " + String.join(", ", banned));
                 if (!evt.getPlayer().hasPlayedBefore()) {
                     KCPlayer.getWrapper(evt.getPlayer()).punish(Punishments.PunishmentType.ALT_ACCOUNT, Bukkit.getConsoleSender());
                     maybe.stream().filter(KCPlayer::isBanned).forEach(KCPlayer::punishEvasion);

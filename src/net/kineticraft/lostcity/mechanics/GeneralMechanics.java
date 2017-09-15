@@ -81,14 +81,9 @@ public class GeneralMechanics extends Mechanic {
         }, 50L);
 
         // Don't allow players on top of the nether.
-        Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () -> {
-            World nether = Bukkit.getWorld(Core.getMainWorld().getName() + "_nether");
-            if (nether == null)
-                return;
-
-            Bukkit.getOnlinePlayers().stream()
-                    .filter(p -> p.getLocation().getBlockY() >= 127)
-                    .filter(p -> nether.equals(p.getWorld()))
+        Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () ->
+                Bukkit.getOnlinePlayers().stream().filter(p -> p.getLocation().getBlockY() >= 127)
+                    .filter(p -> p.getWorld().getEnvironment() == World.Environment.NETHER)
                     .forEach(p -> {
                         Location loc = p.getLocation().clone();
                         loc.setY(124);
@@ -97,8 +92,7 @@ public class GeneralMechanics extends Mechanic {
                         loc.getBlock().setType(Material.AIR);
                         loc.clone().add(0, 1, 0).getBlock().setType(Material.AIR);
                         p.teleport(loc);
-                    });
-        }, 0L, 20L);
+                    }), 0L, 20L);
 
         idObjective = Bukkit.getScoreboardManager().getMainScoreboard().getObjective("id");
         if (idObjective == null)
@@ -133,7 +127,6 @@ public class GeneralMechanics extends Mechanic {
         player.sendMessage(gray + "Type " + ChatColor.YELLOW.toString() + ChatColor.ITALIC
                 + "/info" + gray + " for help getting started.");
         player.sendMessage("");
-
 
         // 50 tick difference.
         Bukkit.getScheduler().runTaskLater(Core.getInstance(), () ->

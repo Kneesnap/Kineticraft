@@ -372,7 +372,7 @@ public class Utils {
      * @param <T>
      * @return element
      */
-    public static <T> T randElement(T[] arr) {
+    public static <T> T randElement(T... arr) {
         return randElement(Arrays.asList(arr));
     }
 
@@ -798,7 +798,7 @@ public class Utils {
     public static boolean isVisible(CommandSender sender, CommandSender receiver) {
         boolean shown = receiver != null && (!(receiver instanceof Player) || !KCPlayer.getWrapper(receiver).isVanished(sender));
         if (!shown)
-            sender.sendMessage(ChatColor.RED + "Player not found.");
+            sender.sendMessage(ChatColor.RED + "Player not found" + (sender instanceof DiscordSender ? " in-game" : "") + ".");
         return shown;
     }
 

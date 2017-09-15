@@ -1,6 +1,8 @@
 package net.kineticraft.lostcity.commands.staff;
 
 import net.kineticraft.lostcity.commands.StaffCommand;
+import net.kineticraft.lostcity.discord.DiscordAPI;
+import net.kineticraft.lostcity.discord.DiscordChannel;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -23,8 +25,9 @@ public class CommandKick extends StaffCommand {
             return;
 
         Player p = Bukkit.getPlayer(args[0]);
-        String reason = String.join(" ", Utils.shift(args));
-        p.kickPlayer(args.length > 1 ? reason : "Kicked by an operator.");
+        String reason = args.length > 1 ? String.join(" ", Utils.shift(args)) : "Kicked by an operator.";
+        p.kickPlayer(reason);
         sender.sendMessage("Kicked " + p.getName() + (reason != null && reason.length() > 0 ? " for " + reason : "") + ".");
+        DiscordAPI.sendMessage(DiscordChannel.ORYX, sender.getName() + " kicked " + p.getName() + " for ``" + reason + "``.");
     }
 }
