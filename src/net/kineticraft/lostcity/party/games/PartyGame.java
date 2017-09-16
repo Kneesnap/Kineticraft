@@ -2,8 +2,9 @@ package net.kineticraft.lostcity.party.games;
 
 import lombok.Getter;
 import net.kineticraft.lostcity.Core;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import net.kineticraft.lostcity.party.Parties;
+import net.kineticraft.lostcity.utils.Utils;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
@@ -18,6 +19,8 @@ import java.util.Set;
 public class PartyGame implements Listener {
     private Set<Player> players;
     private boolean going;
+    private Set<Location> spawnLocations;
+    private Location exitLocation;
 
     public PartyGame() {
         Bukkit.getPluginManager().registerEvents(this, Core.getInstance()); // Register this.
@@ -50,8 +53,16 @@ public class PartyGame implements Listener {
      * @param player
      */
     protected void onLeave(Player player) {
-        //TODO: Teleport player to exit.
-        broadcast(player.getName() + " has left", false);
+
+    }
+
+    /**
+     * Can a player be added to this game?
+     * @param player
+     * @return canAdd
+     */
+    protected boolean canAdd(Player player) {
+        return true;
     }
 
     /**
@@ -60,7 +71,7 @@ public class PartyGame implements Listener {
     public void start() {
         if (isGoing())
             return;
-        //TODO: Start stuff.
+        getPlayers().forEach(this::spawnPlayer);
         onStart();
         going = true;
     }
@@ -71,8 +82,9 @@ public class PartyGame implements Listener {
     public void stop() {
         if (!isGoing())
             return;
-        //TODO: Stop Stuff
+        getPlayers().forEach(p -> p.teleport(getExitLocation()));
         onStop();
+        getPlayers().clear();
         going = false;
     }
 
@@ -82,11 +94,15 @@ public class PartyGame implements Listener {
      */
     public void addPlayer(Player player) {
         if (isPlaying(player)) {
-            player.sendMessage(ChatColor.RED + "You are already playing this game?");
+            player.sendMessage(ChatColor.RED + "You are already playing this game.");
             return;
         }
 
+        if (!canAdd(player))
+            return;
+
         getPlayers().add(player);
+        player.setGameMode(GameMode.SURVIVAL);
         onJoin(player);
     }
 
@@ -98,7 +114,18 @@ public class PartyGame implements Listener {
         if (!isPlaying(player))
             return;
         getPlayers().remove(player);
+        if (getExitLocation() != null)
+            player.teleport(getExitLocation());
+        broadcastPlayers(player.getName() + " has left");
         onLeave(player);
+    }
+
+    /**
+     * Get the party-world.
+     * @return partyWorld
+     */
+    protected World getWorld() {
+        return Parties.getPartyWorld();
     }
 
     /**
@@ -119,6 +146,23 @@ public class PartyGame implements Listener {
     }
 
     /**
+     * Get the prefix that shows for this game for messaging.
+     * @return prefix
+     */
+    protected String getPrefix() {
+        return "[" + getName() + "]";
+    }
+
+    /**
+     * Format a game-message for chat.
+     * @param message
+     * @return formatted
+     */
+    protected String format(String message) {
+        return ChatColor.YELLOW + getPrefix() + " " + ChatColor.BLUE + message;
+    }
+
+    /**
      * Broadcast a party message.
      * @param message
      */
@@ -127,16 +171,55 @@ public class PartyGame implements Listener {
     }
 
     /**
+     * Broadcast a party message to all players in the game.
+     * @param message
+     */
+    protected void broadcastPlayers(String message) {
+        broadcast(message, false);
+    }
+
+    /**
      * Broadcast a party message.
      * @param message - The message to send.
      * @param serverWide - Should this message get sent to everyone, or just people playing this game?
      */
-    protected void broadcast(String message, boolean serverWide) {
-        String fullMsg = ChatColor.YELLOW + "[" + getName() + "] " + ChatColor.BLUE + message;
+    private void broadcast(String message, boolean serverWide) {
+        String fullMsg = format(message);
         if (serverWide) {
             Bukkit.broadcastMessage(fullMsg);
         } else {
             getPlayers().forEach(p -> p.sendMessage(fullMsg));
         }
+    }
+
+    /**
+     * Spawns a player into the game at a random location.
+     * @param player
+     */
+    protected void spawnPlayer(Player player) {
+        Location loc = Utils.randElement(getSpawnLocations());
+        if (loc == null)
+            return;
+        loc.setWorld(Parties.getPartyWorld());
+        player.teleport(loc);
+    }
+
+    /**
+     * Add a spawn location.
+     * @param x
+     * @param y
+     * @param z
+     * @param yaw
+     * @param pitch
+     */
+    protected void addSpawnLocation(double x, double y, double z, float yaw, float pitch) {
+        getSpawnLocations().add(new Location(null, x, y, z, yaw, pitch));
+    }
+
+    /**
+     * Set the exit location for this game.
+     */
+    protected void setExit(double x, double y, double z, float yaw, float pitch) {
+        exitLocation = new Location(Parties.getPartyWorld(), x, y, z, yaw, pitch);
     }
 }

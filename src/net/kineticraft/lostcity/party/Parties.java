@@ -7,6 +7,7 @@ import net.kineticraft.lostcity.events.CommandRegisterEvent;
 import net.kineticraft.lostcity.mechanics.system.BuildType;
 import net.kineticraft.lostcity.mechanics.system.Mechanic;
 import net.kineticraft.lostcity.mechanics.system.Restrict;
+import net.kineticraft.lostcity.party.games.PartyGame;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -18,6 +19,7 @@ import org.bukkit.event.entity.EntityToggleGlideEvent;
 import org.bukkit.event.server.ServerListPingEvent;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * Handles the wondrous Kineticraft Parties.
@@ -32,9 +34,10 @@ public class Parties extends Mechanic {
     public void onEnable() {
         partyWorld = new WorldCreator("party_world").seed(1000000).generateStructures(false).createWorld(); // Load party-world.
 
-        if (isPartyTime())
-            Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () ->
-                Bukkit.broadcastMessage(ChatColor.AQUA + "There is a party going on! Do " + ChatColor.YELLOW + "/party" + ChatColor.AQUA + " to attend!"), 0L, 6000L);
+        Bukkit.getScheduler().runTaskTimer(Core.getInstance(), () -> {
+            if (isPartyTime())
+                Bukkit.broadcastMessage(ChatColor.AQUA + "There is a party going on! Do " + ChatColor.YELLOW + "/party" + ChatColor.AQUA + " to attend!");
+        }, 0L, 6000L);
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -51,8 +54,8 @@ public class Parties extends Mechanic {
     @Override
     public void onJoin(Player player) {
         if (isPartyTime())
-            Bukkit.getScheduler().runTaskLater(Core.getInstance(), ()
-                    -> player.sendMessage(ChatColor.AQUA + "There is a party going on! Do " + ChatColor.YELLOW + "/party" + ChatColor.AQUA + " to attend!"), 100);
+            Bukkit.getScheduler().runTaskLater(Core.getInstance(),
+                    () -> player.sendMessage(ChatColor.AQUA + "There is a party going on! Do " + ChatColor.YELLOW + "/party" + ChatColor.AQUA + " to attend!"), 100);
     }
 
     @EventHandler
@@ -67,6 +70,14 @@ public class Parties extends Mechanic {
         File f = new File("./icons/" + getParty().getName() + ".png");
         if (f.exists())
             evt.setServerIcon(Bukkit.loadServerIcon(f));
+    }
+
+    /**
+     * Get a list of active games.
+     * @return games
+     */
+    public static List<PartyGame> getGames() {
+        throw new UnsupportedOperationException("TODO");
     }
 
     /**
