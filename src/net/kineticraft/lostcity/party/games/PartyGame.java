@@ -308,6 +308,6 @@ public class PartyGame implements Listener {
      * Set the arena bounds for this game.
      */
     protected void setArena(int xMin, int xMax, int zMin, int zMax, int yMin, int yMax) {
-        arena = new Arena(xMin - 1, xMax + 1, zMin - 1, zMax + 1, yMin, yMax, getWorld());
+        arena = new Arena(xMin, xMax, zMin, zMax, yMin, yMax, getWorld());
     }
 }

@@ -734,9 +734,9 @@ public class Utils {
      * @return inArea
      */
     public static boolean inArea(Location l, int x1, int y1, int z1, int x2, int y2, int z2) {
-        return Math.min(x2, Math.max(x1, l.getX())) == l.getX()
-                && Math.min(y2, Math.max(y1, l.getY())) == l.getY()
-                && Math.min(z2, Math.max(z1, l.getZ())) == l.getZ();
+        return Math.min(x2 + 1, Math.max(x1 - 1, l.getX())) == l.getX()
+                && Math.min(y2 + 1, Math.max(y1 - 1, l.getY())) == l.getY()
+                && Math.min(z2 + 1, Math.max(z1 - 1, l.getZ())) == l.getZ();
     }
 
     /**

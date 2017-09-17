@@ -69,7 +69,7 @@ public class Parties extends Mechanic {
     @EventHandler
     public void onSignInteract(PlayerInteractEvent evt) {
         Block b = evt.getClickedBlock();
-        if (evt.getAction() != Action.RIGHT_CLICK_BLOCK || !b.getWorld().equals(evt.getPlayer().getWorld()) || !b.getType().name().contains("SIGN"))
+        if (evt.getAction() != Action.RIGHT_CLICK_BLOCK || !b.getWorld().equals(getPartyWorld()) || !b.getType().name().contains("SIGN"))
             return;
         Sign sign = (Sign) b.getState();
         Matcher m = Pattern.compile("§[0-9a-f]\\[(.+)]").matcher(sign.getLine(0));

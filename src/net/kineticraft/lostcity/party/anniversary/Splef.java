@@ -18,7 +18,7 @@ public class Splef extends FreeplayGame {
     private long lastReset;
 
     public Splef() {
-        setArena(107, 168, 54, 154, 184, 200);
+        setArena(107, 168, 54, 114, 184, 200);
         setExit(137, 205, 52.5, 0, 45);
     }
 
