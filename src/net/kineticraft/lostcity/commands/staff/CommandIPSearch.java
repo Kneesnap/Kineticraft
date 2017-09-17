@@ -21,7 +21,8 @@ public class CommandIPSearch extends StaffCommand {
     protected void onCommand(CommandSender sender, String[] args) {
         QueryTools.queryData(data -> {
             sender.sendMessage(ChatColor.RED + "Accounts with IPs that start with '" + args[0] + "': ");
-            sender.sendMessage(data.filter(k -> k.getLastIP().startsWith(args[0])).map(KCPlayer::getUsername).collect(Collectors.joining(", ")));
+            sender.sendMessage(data.filter(k -> k.getLastIP() != null &&k.getLastIP().startsWith(args[0]))
+                    .map(KCPlayer::getUsername).collect(Collectors.joining(", ")));
         });
     }
 }

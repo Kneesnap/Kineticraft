@@ -171,7 +171,7 @@ public class TextBuilder extends ComponentBuilder {
      * @return this
      */
     public TextBuilder color(ChatColor color) {
-        color(ColorConverter.toBungee(color));
+        color(color.asBungee());
         return this;
     }
 

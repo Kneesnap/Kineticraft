@@ -29,15 +29,16 @@ public class Boost extends FreeplayGame {
     private static final List<Material> BANNED = Arrays.asList(Material.COAL_BLOCK, Material.STAINED_GLASS_PANE, Material.BARRIER);
 
     public Boost() {
-        addSpawnLocation(-47.556, 141, 94.126, 8, 63.4F);
-        setExit(-48.218, 146, 92.5, 0, 0);
+        setArena(-59, -38, 84, 105, 96, 144);
+        addSpawnLocation(-48, 141, 95, 8, 63.4F);
+        setExit(-48, 146, 95, 0, 0);
     }
 
     @Override
     public void onJoin(Player player) {
         super.onJoin(player);
         ItemStack item = ItemManager.createItem(Material.STICK, ChatColor.YELLOW + "Boost Stick", "Official Sniping Gear");
-        if (player.getInventory().contains(item))
+        if (!player.getInventory().contains(item))
             player.getInventory().addItem(item);
     }
 
@@ -45,6 +46,7 @@ public class Boost extends FreeplayGame {
     public void onMove(PlayerMoveEvent evt) {
         if (isPlaying(evt.getPlayer()) && evt.getTo().getY() <= 98) { // They've reached the bottom.
             broadcastPlayers(evt.getPlayer().getName() + " went " + ChatColor.DARK_RED + "SPLAT" + ChatColor.BLUE + ".");
+            evt.getPlayer().setFallDistance(0);
             spawnPlayer(evt.getPlayer());
         }
     }
@@ -75,7 +77,7 @@ public class Boost extends FreeplayGame {
     private boolean boost(Entity source, Entity receiver) {
         if (!(source instanceof Player) || !(receiver instanceof Player) || !isPlaying((Player) source) || !isPlaying((Player) receiver))
             return false;
-        receiver.sendMessage(ChatColor.GREEN + "§aWoosh!");
+        receiver.sendMessage(ChatColor.GREEN + "Whoosh!");
         Vector toSender = source.getVelocity().subtract(receiver.getVelocity());
         toSender.setY(0);
         double distance = toSender.length();

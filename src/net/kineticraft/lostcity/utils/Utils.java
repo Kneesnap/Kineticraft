@@ -1244,6 +1244,21 @@ public class Utils {
     }
 
     /**
+     * Stop NBS music for a player immediately.
+     * @param player
+     */
+    public static void stopNBSNow(Player player) {
+        NoteBlockPlayerMain main = NoteBlockPlayerMain.plugin;
+        if (!main.playingSongs.containsKey(player.getName()))
+            return;
+
+        main.playingSongs.get(player.getName()).forEach(sp -> {
+            getRepeat().remove(sp); // Don't repeat this sound anymore.
+            sp.destroy(); // Delete.
+        });
+    }
+
+    /**
      * Get the closest entity to a given location.
      * @param loc
      * @param radius

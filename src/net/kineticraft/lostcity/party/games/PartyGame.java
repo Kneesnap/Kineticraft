@@ -1,13 +1,20 @@
 package net.kineticraft.lostcity.party.games;
 
+import com.destroystokyo.paper.Title;
 import lombok.Getter;
 import net.kineticraft.lostcity.Core;
+import net.kineticraft.lostcity.party.Arena;
 import net.kineticraft.lostcity.party.Parties;
 import net.kineticraft.lostcity.utils.Utils;
+import net.kineticraft.lostcity.utils.tasks.TaskList;
 import org.bukkit.*;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -17,10 +24,12 @@ import java.util.Set;
  */
 @Getter
 public class PartyGame implements Listener {
-    private Set<Player> players;
+    private Set<Player> players = new HashSet<>();
     private boolean going;
-    private Set<Location> spawnLocations;
+    private Set<Location> spawnLocations = new HashSet<>();
     private Location exitLocation;
+    private TaskList scheduler = new TaskList();
+    private Arena arena;
 
     public PartyGame() {
         Bukkit.getPluginManager().registerEvents(this, Core.getInstance()); // Register this.
@@ -66,6 +75,16 @@ public class PartyGame implements Listener {
     }
 
     /**
+     * Called when a party sign action is performed.
+     * @param action The sign action being performed.
+     * @param player The player who clicked on the sign.
+     * @param sign The sign being clicked on.
+     */
+    public void signAction(String action, Player player, Sign sign) {
+
+    }
+
+    /**
      * Start this game.
      */
     public void start() {
@@ -82,10 +101,11 @@ public class PartyGame implements Listener {
     public void stop() {
         if (!isGoing())
             return;
-        getPlayers().forEach(p -> p.teleport(getExitLocation()));
-        onStop();
-        getPlayers().clear();
         going = false;
+        getScheduler().cancelAll();
+        onStop();
+        new ArrayList<>(getPlayers()).forEach(this::removePlayer); // Remove all players.
+        getPlayers().clear();
     }
 
     /**
@@ -109,15 +129,61 @@ public class PartyGame implements Listener {
     /**
      * Remove a player from this game.
      * @param player
+     * @return removed
      */
-    public void removePlayer(Player player) {
-        if (!isPlaying(player))
-            return;
-        getPlayers().remove(player);
-        if (getExitLocation() != null)
-            player.teleport(getExitLocation());
-        broadcastPlayers(player.getName() + " has left");
-        onLeave(player);
+    public boolean removePlayer(Player player) {
+        if (!getPlayers().remove(player))
+            return false;
+
+        Location exit = getExitLocation();
+        if (exit != null) {
+            player.teleport(exit);
+            Bukkit.getScheduler().runTask(Core.getInstance(), () -> player.teleport(exit));
+        }
+        Utils.stopNBS(player);
+
+        if (isGoing()) { // If the game isn't over
+            broadcastPlayers(player.getName() + " has left");
+            onLeave(player);
+            if (getPlayers().isEmpty())
+                stop(); // There aren't any players left, automatically stop game.
+        }
+
+        return true;
+    }
+
+    /**
+     * Run a countdown timer.
+     * @param onFinish
+     * @param duration - The length of the countdown, in seconds.
+     */
+    protected void countdown(Runnable onFinish, int duration) {
+        for (int i = 0; i < duration; i++) {
+            final int sec = (duration - i);
+            getScheduler().runTaskLater(() -> getPlayers().forEach(p -> p.sendTitle(new Title(ChatColor.YELLOW.toString() + sec + "..."))), i * 20);
+        }
+
+        if (onFinish != null)
+            getScheduler().runTaskLater(onFinish, duration * 20);
+    }
+
+    /**
+     * Play a NBS file for everyone in this game.
+     * @param track
+     * @param repeat
+     */
+    protected void playMusic(String track, boolean repeat) {
+        getPlayers().forEach(p -> playMusic(p, track, repeat)); // We don't play this all under the same player in-case a player leaves or something.
+    }
+
+    /**
+     * Play a NBS file to a given player.
+     * @param player
+     * @param track
+     * @param repeat
+     */
+    protected void playMusic(Player player, String track, boolean repeat) {
+        Utils.playNBS(Arrays.asList(player), track, repeat);
     }
 
     /**
@@ -193,11 +259,19 @@ public class PartyGame implements Listener {
     }
 
     /**
+     * Gets a random spawn location for the player.
+     * @return randSpawn
+     */
+    protected Location randomSpawn() {
+        return Utils.randElement(getSpawnLocations());
+    }
+
+    /**
      * Spawns a player into the game at a random location.
      * @param player
      */
     protected void spawnPlayer(Player player) {
-        Location loc = Utils.randElement(getSpawnLocations());
+        Location loc = randomSpawn();
         if (loc == null)
             return;
         loc.setWorld(Parties.getPartyWorld());
@@ -221,5 +295,19 @@ public class PartyGame implements Listener {
      */
     protected void setExit(double x, double y, double z, float yaw, float pitch) {
         exitLocation = new Location(Parties.getPartyWorld(), x, y, z, yaw, pitch);
+    }
+
+    /**
+     * Set the arena bounds for this game.
+     */
+    protected void setArena(int xMin, int xMax, int zMin, int zMax) {
+        setArena(xMin, xMax, zMin, zMax, 0, 256);
+    }
+
+    /**
+     * Set the arena bounds for this game.
+     */
+    protected void setArena(int xMin, int xMax, int zMin, int zMax, int yMin, int yMax) {
+        arena = new Arena(xMin - 1, xMax + 1, zMin - 1, zMax + 1, yMin, yMax, getWorld());
     }
 }

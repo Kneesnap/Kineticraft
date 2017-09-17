@@ -1,5 +1,6 @@
 package net.kineticraft.lostcity.party.games;
 
+import lombok.Getter;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -7,11 +8,20 @@ import org.bukkit.entity.Player;
  * Represents a player that can be played by one player only.
  * Created by Kneesnap on 9/14/2017.
  */
+@Getter
 public class SinglePlayerGame extends PartyGame {
+    private Player player;
 
     @Override
     public void onJoin(Player player) {
+        this.player = player;
         start();
+    }
+
+    @Override
+    public void stop() {
+        super.stop();
+        player = null;
     }
 
     @Override
@@ -29,13 +39,5 @@ public class SinglePlayerGame extends PartyGame {
      */
     protected void sendMessage(String message) {
         getPlayer().sendMessage(format(message));
-    }
-
-    /**
-     * Get the player playing this game.
-     * @return player
-     */
-    public Player getPlayer() {
-        return getPlayers().iterator().next();
     }
 }

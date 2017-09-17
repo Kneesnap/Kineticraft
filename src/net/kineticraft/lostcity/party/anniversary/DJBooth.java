@@ -1,11 +1,11 @@
 package net.kineticraft.lostcity.party.anniversary;
 
 import com.destroystokyo.paper.Title;
-import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.party.games.SinglePlayerGame;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
+import net.kineticraft.lostcity.utils.ColorConverter;
+import net.kineticraft.lostcity.utils.Utils;
+import org.bukkit.*;
+import org.bukkit.block.Block;
 
 /**
  * Dance with DJ Khaled.
@@ -15,58 +15,77 @@ public class DJBooth extends SinglePlayerGame {
     private byte woolGoal;
     private long startTime;
     private boolean lost;
+    private static final int TIME = 45;
 
     public DJBooth() {
-        addSpawnLocation(26, 69, 80,-96, 90);
+        addSpawnLocation(21, 64, 81, -90, 0);
     }
 
     @Override
     protected void onStart() {
         broadcast(ChatColor.GREEN + getPlayer().getName() + ChatColor.BLUE + " has entered my DJ Booth!");
-        //TODO: Fill Board
-        //TODO: Play Everybody Dance Now
-        countdown();
+        drawBoard(false);
+        playMusic("Everybody Dance Now", false);
+        countdown(() -> {
+            getPlayer().sendTitle(new Title(ChatColor.GREEN + "Start"));
+            lost = false; // Initiate game variables and timer.
+            woolGoal = -1;
+            getScheduler().runTaskTimer(this::updateGoal, 20L, 20L);
+            getScheduler().runTaskTimer(this::djTick, 0L, 60L);
+            startTime = System.currentTimeMillis();
+            getScheduler().runTaskLater(this::stop, TIME * 20); // Stop the game / the player wins.
+        }, 3);
     }
 
     @Override
     public void onStop() {
+        drawBoard(true);
+        boolean win = !lost;
+        getPlayer().sendTitle(new Title(win ? ChatColor.GOLD + "You smart, you very smart." : ChatColor.RED + "Contratulations", win ? null : ChatColor.GRAY + "You played yourself!"));
+        broadcast(getPlayer().getName() + " has " + (win ? ChatColor.GREEN + "defeated" + ChatColor.BLUE : ChatColor.RED + "lost" + ChatColor.BLUE + " to") + " the mighty DJ Khaled!");
         if (lost)
-            return;
-    }
-
-    private void countdown() {
-        for (int i = 0; i < 3; i++) {
-            final int sec = i + 1;
-            Bukkit.getScheduler().runTaskLater(Core.getInstance(),
-                    () -> getPlayer().sendTitle(new Title(ChatColor.YELLOW.toString() + sec + "...")), i * 20);
-        }
-
-        Bukkit.getScheduler().runTaskLater(Core.getInstance(), () -> {
-            getPlayer().sendTitle(new Title(ChatColor.GREEN + "Start"));
-            lost = false;
-            woolGoal = -1;
-            //TODO: Start Ticking the djTick
-            startTime = System.currentTimeMillis();
-            //TODO: djTick
-            //TODO: Send Wool hotbar
-            //TODO: Automatically end in one minute.
-
-        }, 60L);
+            broadcast("Progress: " + ChatColor.YELLOW + (((System.currentTimeMillis() - startTime) / 10) / TIME) + "%");
     }
 
     private void djTick() {
         Location pLoc = getPlayer().getLocation();
         pLoc.setY(63);
         if (woolGoal == -1 || woolGoal == pLoc.getBlock().getData()) {
-            //TODO: Draw Board
-            //TODO: Random wool color.
-            sendMessage("Nice. Now get on " + "TODO" + ChatColor.BLUE + " wool.");
-            //TODO: Send wool hotbar.
+            drawBoard(false);
+            woolGoal = randColor(false); // Generate a new goal.
+            sendMessage("Nice. Now get on " + getGoal() + ChatColor.BLUE + " wool.");
+            updateGoal();
         } else {
             sendMessage("You call those moves? Get lost fool!");
             lost = true;
             stop();
         }
+    }
+
+    private String getGoal() {
+        DyeColor dc = DyeColor.getByWoolData(woolGoal);
+        return ColorConverter.getDye(dc).getChat() + Utils.capitalize(dc.name());
+    }
+
+    private void updateGoal() {
+        if (isGoing() && woolGoal != -1)
+            getPlayer().sendTitle(null, ChatColor.GRAY + "Stand on " + getGoal(), 0, 60, 4);
+    }
+
+    @SuppressWarnings("deprecation")
+    private void drawBoard(boolean disable) {
+        for (int x = 22; x < 32; x++) {
+            for (int z = 73; z < 87; z++) {
+                Block bk = getWorld().getBlockAt(x, 63, z);
+                if (bk.getType() == Material.WOOL && (bk.getData() != 15 || !isGoing())) // If the game isn't going, that means we should reset all parts of the board.
+                    bk.setData(disable ? (byte) 15 : randColor(true)); // If the board is being disabled, set everything to black.
+            }
+        }
+    }
+
+    private byte randColor(boolean allowBlack) {
+        int id = Utils.randInt(0, DyeColor.values().length); // There are certain colors we don't allow below.
+        return id == 2 || id == 7 || id == 8 || id == 12 || (id == 15 && !allowBlack) ? randColor(allowBlack) : (byte) id;
     }
 
     @Override
@@ -76,6 +95,6 @@ public class DJBooth extends SinglePlayerGame {
 
     @Override
     protected String getPrefix() {
-        return getName() + ":";
+        return "DJ Khaled>";
     }
 }

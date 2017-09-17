@@ -6,6 +6,7 @@ import net.kineticraft.lostcity.data.maps.JsonMap;
 import net.kineticraft.lostcity.mechanics.system.BuildType;
 import net.kineticraft.lostcity.config.JsonConfig;
 import net.kineticraft.lostcity.data.lists.StringList;
+import net.kineticraft.lostcity.party.Party;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -22,6 +23,7 @@ public class MainConfig extends JsonConfig {
     private BuildType buildType = BuildType.PRODUCTION;
     private int build;
     private int lastNotesSize;
+    private Party party;
     private StringList swearWords = new StringList();
     private JsonMap<ItemStack> dungeonRewards = new JsonMap<>();
 }

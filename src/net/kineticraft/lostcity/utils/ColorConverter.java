@@ -1,19 +1,51 @@
 package net.kineticraft.lostcity.utils;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
+
+import java.util.stream.Stream;
 
 /**
  * Convert color formats.
  * Created by Kneesnap on 6/12/2017.
  */
-public class ColorConverter {
+@Getter @AllArgsConstructor
+public enum ColorConverter {
+    BLACK(DyeColor.BLACK),
+    DARK_BLUE(DyeColor.BLUE),
+    DARK_GREEN(DyeColor.GREEN),
+    DARK_AQUA(DyeColor.CYAN),
+    DARK_RED(DyeColor.RED),
+    DARK_PURPLE(DyeColor.PURPLE),
+    GOLD(DyeColor.ORANGE, DyeColor.BROWN),
+    GRAY(DyeColor.GRAY),
+    DARK_GRAY(DyeColor.GRAY),
+    BLUE(DyeColor.BLUE),
+    GREEN(DyeColor.LIME),
+    AQUA(DyeColor.LIGHT_BLUE),
+    RED(DyeColor.RED),
+    LIGHT_PURPLE(DyeColor.MAGENTA, DyeColor.PINK),
+    YELLOW(DyeColor.YELLOW),
+    WHITE(DyeColor.SILVER, DyeColor.WHITE);
 
-    /**
-     * Convert the given color to bungee format.
-     * @param color
-     * @return bungeeColor
-     */
-    public static net.md_5.bungee.api.ChatColor toBungee(ChatColor color) {
-        return net.md_5.bungee.api.ChatColor.getByChar(color.getChar());
+    private final DyeColor dye;
+    private final DyeColor alternate; // This is the choice we prefer not to use, unless needed.
+
+    ColorConverter(DyeColor dye) {
+        this(dye, null);
+    }
+
+    public ChatColor getChat() {
+        return ChatColor.valueOf(name());
+    }
+
+    public static ColorConverter getColor(ChatColor c) {
+        return Stream.of(values()).filter(cl -> cl.getChat() == c).findAny().orElse(null);
+    }
+
+    public static ColorConverter getDye(DyeColor dc) {
+        return Stream.of(values()).filter(c -> c.getDye() == dc || c.getAlternate() == dc).findAny().orElse(null);
     }
 }
