@@ -77,16 +77,18 @@ public class Parties extends Mechanic {
             return; // The sign isn't applicable :/
         String action = Utils.capitalize(m.group(1));
         Player p = evt.getPlayer();
+        PartyGame game = getGames().stream().filter(g -> g.getName().equals(sign.getLine(1))).findAny().orElse(null);
 
         if (action.equals("Spawn")) { // Player is teleporting to party spawn.
             getParty().teleportIn(p);
         } else if (action.equals("Join") || action.equals("Play")) { // Player is joining a party-game.
-            PartyGame game = getGames().stream().filter(g -> g.getName().equals(sign.getLine(1))).findAny().orElse(null);
             if (game != null) {
                 game.addPlayer(p);
             } else {
                 p.sendMessage(ChatColor.RED + "Could not find game. Is it enabled?");
             }
+        } else if (action.equals("Goto") && game != null && game.getExitLocation() != null) {
+            p.teleport(game.getExitLocation());
         } else if (action.equals("Leave") || action.equals("Quit")) { // Player is quitting their current game.
             getPlaying(p).forEach(g -> g.removePlayer(p));
         } else {

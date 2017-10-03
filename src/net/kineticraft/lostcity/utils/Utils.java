@@ -353,7 +353,7 @@ public class Utils {
      * @return int
      */
     public static int randInt(int min, int max) {
-        return max + min > 0 ? nextInt(max - min) + min : 0;
+        return max + min > 0 ? nextInt(max - min) + min : randInt(0, max - min) + min;
     }
 
     /**

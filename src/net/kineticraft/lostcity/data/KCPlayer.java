@@ -154,8 +154,7 @@ public class KCPlayer implements Jsonable {
         }
 
         Dog.PUPPER_PATROL.say(ChatColor.RED + getUsername() + ChatColor.WHITE + " has been punished by " + ChatColor.AQUA
-                + punisher.getName() + ChatColor.WHITE + " for " + ChatColor.YELLOW + Utils.capitalize(type.name())
-                + ChatColor.WHITE + ".");
+                + punisher.getName() + ChatColor.WHITE + " for " + ChatColor.YELLOW + type.getDisplay() + ChatColor.WHITE + ".");
 
         getPunishments().add(new Punishment(type, punisher.getName()));
         String expiry = Utils.formatTimeFull(getPunishExpiry());

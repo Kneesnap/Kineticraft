@@ -1,9 +1,4 @@
 &8Changes:
- - Oryx logs /kick.
- - Overall bugfixes.
- - Dungeon #2 code.
- - Started Party code.
- - Rebrand idiot-mode as zen-mode.
- - Added /zen.
- - Zen-mode applies to all sent messages.
- - Expand /mined.
+ - Worked on anniversary party code.
+ - Staff can write colored signs.
+ - Punishments have better descriptions.

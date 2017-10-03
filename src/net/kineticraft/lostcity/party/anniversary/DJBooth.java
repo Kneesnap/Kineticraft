@@ -41,7 +41,7 @@ public class DJBooth extends SinglePlayerGame {
     public void onStop() {
         drawBoard(true);
         boolean win = !lost;
-        getPlayer().sendTitle(new Title(win ? ChatColor.GOLD + "You smart, you very smart." : ChatColor.RED + "Contratulations", win ? null : ChatColor.GRAY + "You played yourself!"));
+        getPlayer().sendTitle(new Title(win ? ChatColor.GOLD + "You smart, you very smart." : ChatColor.RED + "Congratulations", win ? null : ChatColor.GRAY + "You played yourself!"));
         broadcast(getPlayer().getName() + " has " + (win ? ChatColor.GREEN + "defeated" + ChatColor.BLUE : ChatColor.RED + "lost" + ChatColor.BLUE + " to") + " the mighty DJ Khaled!");
         if (lost)
             broadcast("Progress: " + ChatColor.YELLOW + (((System.currentTimeMillis() - startTime) / 10) / TIME) + "%");

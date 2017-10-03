@@ -18,9 +18,9 @@ import java.util.function.Supplier;
  * Created by Kneesnap on 9/14/2017.
  */
 public enum Party {
-    ANNIVERSARY(88, 75, 39, 90, 0, Boost::new, DJBooth::new, Splef::new);
+    ANNIVERSARY(93.5, 75, 39.5, 90, 0, Boost::new, DJBooth::new, Splef::new);
 
-    Party(int x, int y, int z, float yaw, float pitch, Supplier<PartyGame>... maker) {
+    Party(double x, double y, double z, float yaw, float pitch, Supplier<PartyGame>... maker) {
         this.spawn = new Location(Parties.getPartyWorld(), x, y, z, yaw, pitch);
         this.gameMaker = Arrays.asList(maker);
     }

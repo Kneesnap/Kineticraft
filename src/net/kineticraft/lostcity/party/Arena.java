@@ -16,23 +16,23 @@ import java.util.function.Consumer;
 @Getter @AllArgsConstructor
 public class Arena {
     private int xMin;
-    private int xMax;
-    private int zMin;
-    private int zMax;
     private int yMin;
+    private int zMin;
+    private int xMax;
     private int yMax;
+    private int zMax;
     private World world;
 
-    public Arena(int xMin, int xMax, int zMin, int zMax) {
+    public Arena(int xMin, int zMin, int xMax, int zMax) {
         this(xMin, xMax, zMin, zMax, Core.getMainWorld());
     }
 
-    public Arena(int xMin, int xMax, int zMin, int zMax, World world) {
-        this(xMin, xMax, zMin, zMax, 0, 256, world);
+    public Arena(int xMin, int zMin, int xMax, int zMax, World world) {
+        this(xMin, 0, zMin, xMax, 256, zMax, world);
     }
 
-    public Arena(int xMin, int xMax, int zMin, int zMax, int yMin, int yMax) {
-        this(xMin, xMax, zMin, zMax, yMin, yMax, Core.getMainWorld());
+    public Arena(int xMin, int yMin, int zMin, int xMax, int yMax, int zMax) {
+        this(xMin, yMin, zMin, xMax, yMax, zMax, Core.getMainWorld());
     }
 
     /**

@@ -18,8 +18,8 @@ public class Splef extends FreeplayGame {
     private long lastReset;
 
     public Splef() {
-        setArena(107, 168, 54, 114, 184, 200);
-        setExit(137, 205, 52.5, 0, 45);
+        setArena(19, 134, -91, 79, 147, -31);
+        setExit(42.25, 151, -93.25, -140, 0);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -46,12 +46,12 @@ public class Splef extends FreeplayGame {
         getArena().forEachBlock(l -> {
             if (l.getBlock().getType() == Material.AIR)
                 l.getBlock().setType(Material.TNT);
-        }, 192);
+        }, 141);
         lastReset = System.currentTimeMillis();
     }
 
     @Override
     protected Location randomSpawn() {
-        return new Location(getWorld(), Utils.randInt(115, 155), 193, Utils.randInt(67, 107));
+        return new Location(getWorld(), Utils.randInt(31, 70), 142, Utils.randInt(-85, -37));
     }
 }

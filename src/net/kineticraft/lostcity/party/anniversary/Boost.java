@@ -29,9 +29,9 @@ public class Boost extends FreeplayGame {
     private static final List<Material> BANNED = Arrays.asList(Material.COAL_BLOCK, Material.STAINED_GLASS_PANE, Material.BARRIER);
 
     public Boost() {
-        setArena(-59, -38, 84, 105, 96, 144);
-        addSpawnLocation(-48, 141, 95, 8, 63.4F);
-        setExit(-48, 146, 95, 0, 0);
+        setArena(62, 134, 3, 83, 183, 24);
+        addSpawnLocation(72.5, 180, 13.5, -40, 75);
+        setExit(73, 185, 10.5, 0, 0);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class Boost extends FreeplayGame {
 
     @EventHandler
     public void onMove(PlayerMoveEvent evt) {
-        if (isPlaying(evt.getPlayer()) && evt.getTo().getY() <= 98) { // They've reached the bottom.
+        if (isPlaying(evt.getPlayer()) && evt.getTo().getY() <= getArena().getYMin() + 3) { // They've reached the bottom.
             broadcastPlayers(evt.getPlayer().getName() + " went " + ChatColor.DARK_RED + "SPLAT" + ChatColor.BLUE + ".");
             evt.getPlayer().setFallDistance(0);
             spawnPlayer(evt.getPlayer());

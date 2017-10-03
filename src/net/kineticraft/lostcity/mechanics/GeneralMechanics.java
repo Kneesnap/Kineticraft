@@ -23,6 +23,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.weather.LightningStrikeEvent;
@@ -106,6 +107,13 @@ public class GeneralMechanics extends Mechanic {
     public void onSongEnd(SongEndEvent evt) {
         if (Utils.getRepeat().contains(evt.getSongPlayer()))
             Utils.repeatNBS(evt.getSongPlayer());
+    }
+
+    @EventHandler // Lets staff color signs.
+    public void onSignUpdate(SignChangeEvent evt) {
+        if (Utils.isStaff(evt.getPlayer()))
+            for (int i = 0; i < evt.getLines().length; i++)
+                evt.setLine(i, ChatColor.translateAlternateColorCodes('&', evt.getLine(i)));
     }
 
     @Override
