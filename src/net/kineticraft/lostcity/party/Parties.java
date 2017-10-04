@@ -15,18 +15,23 @@ import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.block.Action;
+import org.bukkit.event.block.*;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityToggleGlideEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.server.ServerListPingEvent;
+import org.bukkit.event.weather.WeatherChangeEvent;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -53,7 +58,7 @@ public class Parties extends Mechanic {
 
     @EventHandler(ignoreCancelled = true)
     public void onElytraToggle(EntityToggleGlideEvent evt) { // Disables elytra in party world.
-        evt.setCancelled(evt.isGliding() && evt.getEntity().getWorld().equals(getPartyWorld()));
+        evt.setCancelled(evt.isGliding() && isParty(evt.getEntity()));
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -64,6 +69,45 @@ public class Parties extends Mechanic {
     @EventHandler(ignoreCancelled = true)
     public void onPlayerTeleport(PlayerTeleportEvent evt) {
         evt.setCancelled(playerMove(evt.getPlayer(), evt.getTo()));
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onLeafDecay(LeavesDecayEvent evt) {
+        evt.setCancelled(isParty(evt.getBlock()));
+    }
+
+    @EventHandler(ignoreCancelled = true) // Handles general block-decay. (ie: snow melt)
+    public void onBlockDecay(BlockFadeEvent evt) {
+        evt.setCancelled(isParty(evt.getBlock()));
+    }
+
+    @EventHandler(ignoreCancelled = true) // Prevent ender pearls in the party world.
+    public void onEnderPearl(PlayerTeleportEvent evt) {
+        evt.setCancelled((evt.getCause() == PlayerTeleportEvent.TeleportCause.CHORUS_FRUIT  || evt.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL)
+                && isParty(evt.getTo().getWorld()));
+    }
+
+    @EventHandler(ignoreCancelled = true) // Prevent players from being damaged in the party world unless in a game.
+    public void onPlayerDamage(EntityDamageEvent evt) {
+        if (!(evt.getEntity() instanceof Player))
+            return;
+        Player p = (Player) evt.getEntity();
+        evt.setCancelled(isParty(p) && (checkParty(p, PartyGame::allowDamage) || (evt instanceof EntityDamageByEntityEvent && checkParty(p, PartyGame::allowCombat))));
+    }
+
+    @EventHandler(ignoreCancelled = true) // Prevent block placement by non staff.
+    public void onBlockPlace(BlockPlaceEvent evt) {
+        evt.setCancelled(!Utils.isStaff(evt.getPlayer()) && isParty(evt.getBlock()));
+    }
+
+    @EventHandler
+    public void onBlockBreak(BlockBreakEvent evt) {
+        evt.setCancelled(!Utils.isStaff(evt.getPlayer()) && isParty(evt.getBlock()));
+    }
+
+    @EventHandler(ignoreCancelled = true) // Prevents natural weather conditions in party world.
+    public void onWeather(WeatherChangeEvent evt) {
+        evt.setCancelled(isParty(evt.getWorld()) && evt.toWeatherState());
     }
 
     @EventHandler
@@ -182,6 +226,10 @@ public class Parties extends Mechanic {
         return getGames().stream().filter(g -> g.isPlaying(p)).collect(Collectors.toList());
     }
 
+    private static boolean checkParty(Player p, Predicate<PartyGame> checker) {
+        return getPlaying(p).stream().anyMatch(checker);
+    }
+
     /**
      * Handles if a player exits a game arena.
      * @param player - The player moving somewhere
@@ -197,5 +245,17 @@ public class Parties extends Mechanic {
             }
         }
         return false;
+    }
+
+    private static boolean isParty(Block b) {
+        return isParty(b.getWorld());
+    }
+
+    private static boolean isParty(Entity ent) {
+        return isParty(ent.getWorld());
+    }
+
+    private static boolean isParty(World w) {
+        return w != null && w.equals(getPartyWorld());
     }
 }

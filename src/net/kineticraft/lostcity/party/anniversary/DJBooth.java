@@ -63,8 +63,7 @@ public class DJBooth extends SinglePlayerGame {
     }
 
     private String getGoal() {
-        DyeColor dc = DyeColor.getByWoolData(woolGoal);
-        return ColorConverter.getDye(dc).getChat() + Utils.capitalize(dc.name());
+        return ColorConverter.getDye(DyeColor.getByWoolData(woolGoal)).getDisplayName();
     }
 
     private void updateGoal() {

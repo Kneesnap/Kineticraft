@@ -48,4 +48,12 @@ public enum ColorConverter {
     public static ColorConverter getDye(DyeColor dc) {
         return Stream.of(values()).filter(c -> c.getDye() == dc || c.getAlternate() == dc).findAny().orElse(null);
     }
+
+    /**
+     * Get the colored name of this color.
+     * @return displayName
+     */
+    public String getDisplayName() {
+        return getChat() + Utils.capitalize(name());
+    }
 }

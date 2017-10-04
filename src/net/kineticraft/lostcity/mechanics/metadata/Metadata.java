@@ -27,7 +27,12 @@ public enum Metadata {
     // Entities
     CUTSCENE_KEEP(false),
     NORMAL_SPEED(.1F), // Normal Walkspeed.
-    PLAYER_DAMAGE(0D);
+    PLAYER_DAMAGE(0D),
+
+
+    // Party Stuff
+    DMT_SCORE(0),
+    DMT_CORRECT(false);
 
     private Object fallback;
 

@@ -153,6 +153,22 @@ public class PartyGame implements Listener {
     }
 
     /**
+     * Can players take damage while in this game?
+     * @return allowDamage
+     */
+    public boolean allowDamage() {
+        return allowCombat();
+    }
+
+    /**
+     * Is combat allowed in this game?
+     * @return allowCombat
+     */
+    public boolean allowCombat() {
+        return false;
+    }
+
+    /**
      * Run a countdown timer.
      * @param onFinish
      * @param duration - The length of the countdown, in seconds.
@@ -174,6 +190,10 @@ public class PartyGame implements Listener {
      */
     protected void playMusic(String track, boolean repeat) {
         getPlayers().forEach(p -> playMusic(p, track, repeat)); // We don't play this all under the same player in-case a player leaves or something.
+    }
+
+    protected void playSound(Sound sound, float pitch, float volume) {
+        getPlayers().forEach(p -> p.playSound(p.getLocation(), sound, volume, pitch));
     }
 
     /**

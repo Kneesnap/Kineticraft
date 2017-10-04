@@ -2,6 +2,7 @@ package net.kineticraft.lostcity.party.games;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 /**
@@ -17,5 +18,14 @@ public class MultiplayerGame extends PartyGame {
         broadcast(player.getName() + " has joined." + (getMinPlayers() > 0 ? " (" + getPlayers().size() + "/" + getMinPlayers() + ")" : ""));
         if (getPlayers().size() == getMinPlayers())
             start();
+    }
+
+    @Override
+    protected boolean canAdd(Player player) {
+        if (isGoing()) {
+            player.sendMessage(ChatColor.RED + "You cannot join while this game is in progress.");
+            return false;
+        }
+        return super.canAdd(player);
     }
 }

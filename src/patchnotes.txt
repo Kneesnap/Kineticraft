@@ -2,3 +2,4 @@
  - Worked on anniversary party code.
  - Staff can write colored signs.
  - Punishments have better descriptions.
+ - Switch to NuVotifier from Votifier. (May fix voting issues, no guarantees.)

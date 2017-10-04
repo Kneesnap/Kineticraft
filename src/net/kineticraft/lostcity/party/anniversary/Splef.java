@@ -27,7 +27,6 @@ public class Splef extends FreeplayGame {
         if (evt.getCause() == EntityDamageEvent.DamageCause.LAVA && evt.getEntity() instanceof Player) {
             evt.getEntity().playEffect(EntityEffect.HURT);
             removePlayer((Player) evt.getEntity());
-            evt.setCancelled(true);
             Bukkit.getScheduler().runTask(Core.getInstance(), () -> evt.getEntity().setFireTicks(0)); // Must run a tick late.
         }
     }
