@@ -44,7 +44,7 @@ public class Pictionary extends MultiplayerGame {
     private static final int ARENA_Z = -22;
 
     public Pictionary() {
-        super(2);
+        super(4);
         addSpawnLocation(-53, 69, -47.5, 0, -20);
         setExit(-52, 80, -66, 9, -7.3F);
     }

@@ -1,6 +1,7 @@
 package net.kineticraft.lostcity.party.anniversary;
 
 import net.kineticraft.lostcity.item.ItemManager;
+import net.kineticraft.lostcity.mechanics.FarmLimiter;
 import net.kineticraft.lostcity.party.Parties;
 import net.kineticraft.lostcity.party.games.FreeplayGame;
 import net.kineticraft.lostcity.utils.Utils;
@@ -46,7 +47,7 @@ public class Pinata extends FreeplayGame {
             return;
 
         evt.getPlayer().playSound(evt.getPlayer().getLocation(), Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1F, 1F);
-        if (!Utils.randChance(15))
+        if (!Utils.randChance(20) || FarmLimiter.getEntityCount(evt.getPlayer(), 40) >= 30)
             return;
 
         Location center = new Location(Parties.getPartyWorld(), -74.5, 76, 30);

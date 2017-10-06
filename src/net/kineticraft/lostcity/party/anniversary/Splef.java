@@ -8,6 +8,7 @@ import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 
 /**
@@ -20,6 +21,12 @@ public class Splef extends FreeplayGame {
     public Splef() {
         setArena(19, 134, -91, 79, 147, -31);
         setExit(42.25, 151, -93.25, -140, 0);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onBlockBreak(BlockBreakEvent evt) {
+        if (isPlaying(evt.getPlayer()) && evt.getBlock().getType() == Material.TNT)
+            evt.setCancelled(false); // Allow players to break tnt in splef.
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
