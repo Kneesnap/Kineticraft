@@ -44,7 +44,7 @@ public class Pictionary extends MultiplayerGame {
 
     public Pictionary() {
         super(4);
-        setExit(-47.925, 79, -9.075, 45, 0);
+        setExit(-52, 80, -66, 9, -7.3);
     }
 
     @EventHandler
