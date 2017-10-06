@@ -7,10 +7,9 @@ import net.kineticraft.lostcity.config.Configs;
 import net.kineticraft.lostcity.discord.DiscordAPI;
 import net.kineticraft.lostcity.discord.DiscordChannel;
 import net.kineticraft.lostcity.events.CommandRegisterEvent;
-import net.kineticraft.lostcity.mechanics.system.BuildType;
 import net.kineticraft.lostcity.mechanics.system.Mechanic;
-import net.kineticraft.lostcity.mechanics.system.Restrict;
 import net.kineticraft.lostcity.party.games.PartyGame;
+import net.kineticraft.lostcity.utils.ServerUtils;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -40,7 +39,6 @@ import java.util.stream.Collectors;
  * Handles the wondrous Kineticraft Parties.
  * Created by Kneesnap on 9/14/2017.
  */
-@Restrict(BuildType.PRODUCTION)
 public class Parties extends Mechanic {
     @Getter private static World partyWorld;
 
@@ -237,6 +235,9 @@ public class Parties extends Mechanic {
      * @return Should the player movement be cancelled?
      */
     private static boolean playerMove(Player player, Location to) {
+        if (Utils.isStaff(player)) // If staff, allow into party area.
+            return false;
+
         for (PartyGame pg : getGames()) {
             if (pg.getArena() != null && pg.getArena().contains(to) != pg.isPlaying(player)) {
                 player.sendMessage(ChatColor.RED + (pg.removePlayer(player) ? "Due to leaving the arena, you have been removed from the game."

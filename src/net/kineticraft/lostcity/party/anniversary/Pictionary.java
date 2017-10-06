@@ -43,7 +43,7 @@ public class Pictionary extends MultiplayerGame {
     private static final int ARENA_Z = -22;
 
     public Pictionary() {
-        super(1);
+        super(4);
         setExit(-47.925, 79, -9.075, 45, 0);
     }
 

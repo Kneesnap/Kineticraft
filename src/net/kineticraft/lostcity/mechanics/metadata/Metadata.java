@@ -32,7 +32,10 @@ public enum Metadata {
 
     // Party Stuff
     DMT_SCORE(0),
-    DMT_CORRECT(false);
+    DMT_CORRECT(false),
+
+    PK_MAXY(0),
+    PK_CHECKPOINT(0);
 
     private Object fallback;
 
