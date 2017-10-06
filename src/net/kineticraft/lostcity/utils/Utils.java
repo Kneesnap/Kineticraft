@@ -363,7 +363,7 @@ public class Utils {
      * @return rand
      */
     public static double randDouble(double min, double max) {
-        return ThreadLocalRandom.current().nextDouble(min, max);
+        return min == max ? max : ThreadLocalRandom.current().nextDouble(min, max);
     }
 
     /**

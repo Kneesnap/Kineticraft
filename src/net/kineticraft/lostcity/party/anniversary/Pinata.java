@@ -17,6 +17,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,7 @@ public class Pinata extends FreeplayGame {
     public Pinata() {
         setArena(-111, 61, -5, -41, 127, 63);
         addSpawnLocation(-44, 63, 29, 0, 0);
+        setExit(-33, 62.5, 24.5, 70, 0);
     }
 
     @Override
@@ -43,7 +45,7 @@ public class Pinata extends FreeplayGame {
         if (evt.getAction() != Action.LEFT_CLICK_BLOCK || !isPlaying(evt.getPlayer()))
             return;
 
-        evt.getPlayer().playSound(evt.getPlayer().getLocation(), Sound.BLOCK_NOTE_PLING, 1F, 1F);
+        evt.getPlayer().playSound(evt.getPlayer().getLocation(), Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1F, 1F);
         if (!Utils.randChance(15))
             return;
 
@@ -56,8 +58,9 @@ public class Pinata extends FreeplayGame {
             d.setCustomNameVisible(true);
             d.setCustomName(ChatColor.GREEN + "Pinata");
             d.getAttribute(Attribute.GENERIC_MOVEMENT_SPEED).addModifier(new AttributeModifier("donkey", Utils.randDouble(0, 1), AttributeModifier.Operation.ADD_NUMBER));
+            d.damage(15, evt.getPlayer()); // Brings their health down, and makes all of them start sprinting around.
         }
-        getScheduler().runTaskLater(() -> donkeys.forEach(Entity::remove), 2400L); // Remove donkeys in 2 minutes
+        getScheduler().runTaskLater(() -> donkeys.forEach(Entity::remove), 1200L); // Remove donkeys in 2 minutes
     }
 
     @EventHandler
@@ -65,5 +68,26 @@ public class Pinata extends FreeplayGame {
         if (!(evt.getEntity() instanceof Donkey) || !getArena().contains(evt.getEntity().getLocation()))
             return;
 
+        // This whole section from here below could be done a lot better, but we're short on time.
+        ItemStack drop = Utils.randElement(ItemManager.createItem(Material.WEB, ChatColor.LIGHT_PURPLE + "Cotton Candy"),
+                ItemManager.createItem(Material.TNT, ChatColor.LIGHT_PURPLE + "Pop Rocks"),
+                ItemManager.createItem(Material.RAW_FISH, (byte) 1, ChatColor.LIGHT_PURPLE + "Swedish Fish"),
+                ItemManager.createItem(Material.CAKE, ChatColor.LIGHT_PURPLE + "Kineticraft Birthday Cake"));
+
+        if (Utils.randChance(30)) { // Rare drop
+            drop = Utils.randElement(ItemManager.createItem(Material.EMERALD, ChatColor.AQUA + "Candy"),
+                    ItemManager.createItem(Material.DIAMOND, ChatColor.AQUA + "Rock Candy"),
+                    ItemManager.createItem(Material.SPONGE, ChatColor.AQUA + "Taffy"),
+                    ItemManager.createItem(Material.EXP_BOTTLE, ChatColor.AQUA + "Soda"));
+        } else if (Utils.randChance(10)) { // Uncommon drop
+            drop = Utils.randElement(ItemManager.createItem(Material.NETHER_WARTS, ChatColor.RED + "Twizlers"),
+                    ItemManager.createItem(Material.SEA_LANTERN, ChatColor.RED + "Jaw Breaker"),
+                    ItemManager.createItem(Material.MYCEL, ChatColor.RED + "Fudge"),
+                    ItemManager.createItem(Material.IRON_INGOT, ChatColor.RED + "Hershey's Kiss"),
+                    ItemManager.createItem(Material.MAGMA_CREAM, ChatColor.RED + "Atomic Fireball"));
+        }
+
+        evt.getDrops().clear();
+        evt.getDrops().add(drop);
     }
 }

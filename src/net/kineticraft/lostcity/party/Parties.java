@@ -235,7 +235,7 @@ public class Parties extends Mechanic {
      * @return Should the player movement be cancelled?
      */
     private static boolean playerMove(Player player, Location to) {
-        if (Utils.isStaff(player)) // If staff, allow into party area.
+        if (Utils.isStaff(player) && player.getGameMode() == GameMode.SPECTATOR) // If spectating.
             return false;
 
         for (PartyGame pg : getGames()) {

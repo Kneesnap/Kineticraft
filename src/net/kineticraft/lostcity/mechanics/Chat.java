@@ -33,7 +33,7 @@ public class Chat extends Mechanic {
 
         // Handle mutes.
         KCPlayer pw = KCPlayer.getWrapper(evt.getPlayer());
-        if (pw.isMuted()) {
+        if (pw.isMuted() && !evt.isCancelled()) {
             evt.setCancelled(true);
             evt.getPlayer().sendMessage(ChatColor.RED + "You are muted for "  + pw.getMute().untilExpiry()+ ".");
             evt.getPlayer().sendMessage(ChatColor.RED + "Reason: " + ChatColor.YELLOW + pw.getMute().getReason());
