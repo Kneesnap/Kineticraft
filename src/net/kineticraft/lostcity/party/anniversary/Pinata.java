@@ -75,12 +75,12 @@ public class Pinata extends FreeplayGame {
                 ItemManager.createItem(Material.RAW_FISH, (byte) 1, ChatColor.LIGHT_PURPLE + "Swedish Fish"),
                 ItemManager.createItem(Material.CAKE, ChatColor.LIGHT_PURPLE + "Kineticraft Birthday Cake"));
 
-        if (Utils.randChance(30)) { // Rare drop
+        if (Utils.randChance(250)) { // Rare drop
             drop = Utils.randElement(ItemManager.createItem(Material.EMERALD, ChatColor.AQUA + "Candy"),
                     ItemManager.createItem(Material.DIAMOND, ChatColor.AQUA + "Rock Candy"),
                     ItemManager.createItem(Material.SPONGE, ChatColor.AQUA + "Taffy"),
                     ItemManager.createItem(Material.EXP_BOTTLE, ChatColor.AQUA + "Soda"));
-        } else if (Utils.randChance(10)) { // Uncommon drop
+        } else if (Utils.randChance(150)) { // Uncommon drop
             drop = Utils.randElement(ItemManager.createItem(Material.NETHER_WARTS, ChatColor.RED + "Twizlers"),
                     ItemManager.createItem(Material.SEA_LANTERN, ChatColor.RED + "Jaw Breaker"),
                     ItemManager.createItem(Material.MYCEL, ChatColor.RED + "Fudge"),

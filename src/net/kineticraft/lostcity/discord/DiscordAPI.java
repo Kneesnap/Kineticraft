@@ -38,11 +38,7 @@ public class DiscordAPI extends Mechanic {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true) // Announce chat to discord.
     public void onChat(AsyncPlayerChatEvent evt) {
-        if (evt.getRecipients().size() >= Core.getOnlineAsync().size() - 2) { // Hacky way to make sure they aren't softmuted.
-            sendGame(String.format(evt.getFormat(), "**" + evt.getPlayer().getName() + "**", evt.getMessage()));
-        } else {
-            Core.logInfo(String.format(evt.getFormat(), evt.getPlayer().getName(), evt.getMessage()) + " will not be sent to discord.");
-        }
+        sendGame(String.format(evt.getFormat(), "**" + evt.getPlayer().getName() + "**", evt.getMessage()));
     }
 
     @EventHandler

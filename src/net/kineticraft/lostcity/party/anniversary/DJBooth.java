@@ -51,7 +51,7 @@ public class DJBooth extends SinglePlayerGame {
         Location pLoc = getPlayer().getLocation();
         pLoc.setY(63);
         if (woolGoal == -1 || woolGoal == pLoc.getBlock().getData()) {
-            drawBoard(false);
+            drawBoard (false);
             woolGoal = randColor(false); // Generate a new goal.
             sendMessage("Nice. Now get on " + getGoal() + ChatColor.BLUE + " wool.");
             updateGoal();

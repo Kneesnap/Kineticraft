@@ -36,7 +36,7 @@ public class Pictionary extends MultiplayerGame {
     private List<Player> drawQueue;
 
     private static final ItemStack DRAW_ITEM = ItemManager.createItem(Material.STICK, ChatColor.YELLOW + "Pictionary Stick", "Left-Click: Fill", "Right-Click: Draw");
-    private static final int DRAW_TIME = 90;
+    private static final int DRAW_TIME = 50;
     private static final int MIN_X = -67;
     private static final int MAX_X = -43;
     private static final int MIN_Y = 69;
@@ -83,7 +83,7 @@ public class Pictionary extends MultiplayerGame {
         getPlayers().forEach(pl -> pl.sendMessage(ChatColor.YELLOW + p.getName() + ": " + ChatColor.GRAY + evt.getMessage()));
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onInteract(PlayerInteractEvent evt) {
         if (!evt.getPlayer().equals(currentPainter))
             return;
@@ -100,6 +100,7 @@ public class Pictionary extends MultiplayerGame {
         } else if (evt.getAction() == Action.RIGHT_CLICK_AIR) { // Pen Tool
             penTime = System.currentTimeMillis() + 200;
             placeInk();
+            evt.setCancelled(true); // Prevent "cl
         } else if (evt.getAction() == Action.LEFT_CLICK_AIR) { // Fill
             playSound(Sound.ENTITY_BOBBER_SPLASH, 1.5F, 0.5F);
             floodFill(target);
@@ -121,6 +122,8 @@ public class Pictionary extends MultiplayerGame {
     @Override
     protected void onStart() {
         broadcastPlayers("The game has begun!");
+        currentWord = null;
+        currentPainter = null;
         drawQueue = new ArrayList<>(getPlayers());
 
         for (Player p : getPlayers()) { // Reset player data.

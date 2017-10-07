@@ -23,10 +23,7 @@ import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityToggleGlideEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 
@@ -107,12 +104,17 @@ public class Parties extends Mechanic {
         evt.setCancelled(checkParty(p, PartyGame::allowDamage) || (evt instanceof EntityDamageByEntityEvent && checkParty(p, PartyGame::allowCombat))); // If it is a player, get the true status.
     }
 
+    @EventHandler(ignoreCancelled = true)
+    public void onBucketEmpty(PlayerBucketEmptyEvent evt) {
+        evt.setCancelled(isParty(evt.getPlayer()));
+    }
+
     @EventHandler(ignoreCancelled = true) // Prevent block placement by non staff.
     public void onBlockPlace(BlockPlaceEvent evt) {
         evt.setCancelled(!Utils.isStaff(evt.getPlayer()) && isParty(evt.getBlock()));
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent evt) {
         evt.setCancelled(!Utils.isStaff(evt.getPlayer()) && isParty(evt.getBlock()));
     }
