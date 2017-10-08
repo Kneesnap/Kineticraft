@@ -55,6 +55,11 @@ public class Parties extends Mechanic {
     }
 
     @EventHandler(ignoreCancelled = true)
+    public void onArmorStandManipulate(PlayerArmorStandManipulateEvent evt) {
+        evt.setCancelled(isParty(evt.getRightClicked()) && !Utils.isStaff(evt.getPlayer()));
+    }
+
+    @EventHandler(ignoreCancelled = true)
     public void onItemFrame(PlayerInteractEntityEvent evt) {
         evt.setCancelled(isParty(evt.getRightClicked()) && evt.getRightClicked() instanceof ItemFrame && !Utils.isStaff(evt.getPlayer()));
     }
@@ -251,11 +256,9 @@ public class Parties extends Mechanic {
      * @return Should the player movement be cancelled?
      */
     private static boolean playerMove(Player player, Location to) {
-        if (Utils.isStaff(player) && player.getGameMode() == GameMode.SPECTATOR) // If spectating.
-            return false;
-
         for (PartyGame pg : getGames()) {
-            if (pg.getArena() != null && pg.getArena().contains(to) != pg.isPlaying(player)) {
+            boolean playing = pg.isPlaying(player);
+            if (pg.getArena() != null && pg.getArena().contains(to) != playing && (player.getGameMode() != GameMode.SPECTATOR || playing)) {
                 player.sendMessage(ChatColor.RED + (pg.removePlayer(player) ? "Due to leaving the arena, you have been removed from the game."
                         : "Please do not try to teleport into this game."));
                 return true;

@@ -277,6 +277,9 @@ public class Commands extends Mechanic {
         Player p = evt.getPlayer();
         String input = evt.getMessage();
 
+        if (input.startsWith("/minecraft:") && !Utils.isStaff(p))
+            evt.setCancelled(true); // Prevent /minecraft: prefixed commands.
+
         if (input.startsWith("/ ")) {
             sendStaffChat(p, input.substring(2));
             evt.setCancelled(true);

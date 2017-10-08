@@ -19,22 +19,23 @@ public enum ColorConverter {
     DARK_AQUA(DyeColor.CYAN),
     DARK_RED(DyeColor.RED),
     DARK_PURPLE(DyeColor.PURPLE),
-    GOLD(DyeColor.ORANGE, DyeColor.BROWN),
+    GOLD(DyeColor.ORANGE, DyeColor.BROWN, "Orange"),
     GRAY(DyeColor.GRAY),
     DARK_GRAY(DyeColor.GRAY),
     BLUE(DyeColor.BLUE),
     GREEN(DyeColor.LIME),
     AQUA(DyeColor.LIGHT_BLUE),
     RED(DyeColor.RED),
-    LIGHT_PURPLE(DyeColor.MAGENTA, DyeColor.PINK),
+    LIGHT_PURPLE(DyeColor.MAGENTA, DyeColor.PINK, "Pink"),
     YELLOW(DyeColor.YELLOW),
-    WHITE(DyeColor.SILVER, DyeColor.WHITE);
+    WHITE(DyeColor.SILVER, DyeColor.WHITE, null);
 
     private final DyeColor dye;
     private final DyeColor alternate; // This is the choice we prefer not to use, unless needed.
+    private final String altName;
 
     ColorConverter(DyeColor dye) {
-        this(dye, null);
+        this(dye, null, null);
     }
 
     public ChatColor getChat() {
@@ -54,6 +55,6 @@ public enum ColorConverter {
      * @return displayName
      */
     public String getDisplayName() {
-        return getChat() + Utils.capitalize(name());
+        return getChat() + (getAltName() != null ? getAltName() : Utils.capitalize(name()));
     }
 }

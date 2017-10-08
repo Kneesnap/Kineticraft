@@ -1,5 +1,11 @@
-&8Changes:
- - Anniversary Party ready for activation.
- - Staff can write colored signs.
- - Punishments have better descriptions.
- - Switch to NuVotifier from Votifier. (May fix voting issues, no guarantees.)
+&8Party Changes:
+ - Better handling of staff entering party areas while not playing.
+ - Arena bounds apply only in party area.
+ - DJ Not Nice has a reward for completion.
+ - DJ Not Nice is no longer colorblind. (Calling orange gold)
+ - Remade Piñata game.
+ - Party messages contained to the party area.
+ - Blocked /minecraft: commands.
+ - Potential fix for DJ Not Nice going over 100%.
+ - Prevent /tpa in the party area.
+ - Prevent editting armor stands in party.

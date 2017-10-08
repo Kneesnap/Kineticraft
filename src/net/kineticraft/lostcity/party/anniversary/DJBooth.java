@@ -1,6 +1,7 @@
 package net.kineticraft.lostcity.party.anniversary;
 
 import com.destroystokyo.paper.Title;
+import net.kineticraft.lostcity.item.ItemManager;
 import net.kineticraft.lostcity.party.games.SinglePlayerGame;
 import net.kineticraft.lostcity.utils.ColorConverter;
 import net.kineticraft.lostcity.utils.Utils;
@@ -43,13 +44,22 @@ public class DJBooth extends SinglePlayerGame {
         boolean win = !lost;
         getPlayer().sendTitle(new Title(win ? ChatColor.GOLD + "You smart, you very smart." : ChatColor.RED + "Congratulations", win ? null : ChatColor.GRAY + "You played yourself!"));
         broadcast(getPlayer().getName() + " has " + (win ? ChatColor.GREEN + "defeated" + ChatColor.BLUE : ChatColor.RED + "lost" + ChatColor.BLUE + " to") + " the mighty DJ Khaled!");
-        if (lost)
-            broadcast("Progress: " + ChatColor.YELLOW + (((System.currentTimeMillis() - startTime) / 10) / TIME) + "%");
+        if (win) {
+            Utils.giveItem(getPlayer(), ItemManager.createItem(Material.BEETROOT, ChatColor.RED + "Sick Beats", "\"Don't ever play yourself.\""));
+        } else {
+            broadcast("Progress: " + ChatColor.YELLOW + Math.min((((System.currentTimeMillis() - startTime) / 10) / TIME), 100) + "%");
+        }
     }
 
     private void djTick() {
         Location pLoc = getPlayer().getLocation();
         pLoc.setY(63);
+
+        if (startTime + (TIME * 1000) <= System.currentTimeMillis()) {
+            stop(); // It seems for some reason sometimes stop() does not call. Call it here if that happens.
+            return;
+        }
+
         if (woolGoal == -1 || woolGoal == pLoc.getBlock().getData()) {
             drawBoard (false);
             woolGoal = randColor(false); // Generate a new goal.

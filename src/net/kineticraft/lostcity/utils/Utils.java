@@ -17,6 +17,7 @@ import net.kineticraft.lostcity.item.ItemType;
 import net.kineticraft.lostcity.item.ItemWrapper;
 import net.kineticraft.lostcity.mechanics.metadata.Metadata;
 import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
+import net.kineticraft.lostcity.party.Parties;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.*;
 import org.bukkit.Material;
@@ -156,6 +157,11 @@ public class Utils {
     public static void teleport(Player player, String locationDescription, Location location) {
         if (location == null)
             return;
+
+        if (location.getWorld().equals(Parties.getPartyWorld()) && player.getWorld().equals(Parties.getPartyWorld())) {
+            player.sendMessage(ChatColor.RED + "You may not teleport to another location in the party area.");
+            return;
+        }
 
         if (MetadataManager.hasMetadata(player, Metadata.TELEPORTING)) {
             player.sendMessage(ChatColor.RED + "Please wait until your current teleport finishes.");

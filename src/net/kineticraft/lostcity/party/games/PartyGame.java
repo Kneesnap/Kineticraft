@@ -272,7 +272,7 @@ public class PartyGame implements Listener {
     private void broadcast(String message, boolean serverWide) {
         String fullMsg = format(message);
         if (serverWide) {
-            Bukkit.broadcastMessage(fullMsg);
+            Parties.getPartyWorld().getPlayers().forEach(p -> p.sendMessage(fullMsg));
         } else {
             getPlayers().forEach(p -> p.sendMessage(fullMsg));
         }

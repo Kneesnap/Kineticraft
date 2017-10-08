@@ -30,6 +30,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
@@ -79,6 +80,11 @@ public class Dungeons extends Mechanic {
     @EventHandler
     public void onCommandRegister(CommandRegisterEvent evt) {
         evt.register(new CommandDPlay(), new CommandPuzzleTrigger(), new CommandInvoke(), new CommandDBoss(), new CommandDMusic());
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onBucketEmpty(PlayerBucketEmptyEvent evt) {
+        evt.setCancelled(preventEdit(evt.getPlayer()));
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)

@@ -1,9 +1,11 @@
 package net.kineticraft.lostcity.item;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
 import net.kineticraft.lostcity.mechanics.enchants.CustomEnchant;
 import net.kineticraft.lostcity.utils.Utils;
 import net.minecraft.server.v1_12_R1.ItemStack;
+import net.minecraft.server.v1_12_R1.MojangsonParser;
 import net.minecraft.server.v1_12_R1.NBTTagCompound;
 import org.bukkit.ChatColor;
 import org.bukkit.craftbukkit.v1_12_R1.inventory.CraftItemStack;
@@ -115,6 +117,17 @@ public abstract class ItemWrapper {
      */
     public boolean getTagBoolean(String key) {
         return getTag().getBoolean(key);
+    }
+
+    /**
+     * Set an NBT Tag Compound.
+     * @param key
+     * @param newTag
+     * @param format
+     */
+    @SneakyThrows
+    public void setTag(String key, String newTag, Object... format) {
+        getTag().set(key, MojangsonParser.parse(String.format(newTag, format)));
     }
 
     /**
