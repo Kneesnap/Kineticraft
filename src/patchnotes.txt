@@ -1,6 +1,4 @@
 &8Changes:
- - Teleporting out of the party area removes you from games.
- - New Pinata game released.
- - Crake improvements.
- - Added /check.
- - Added extra checkpoint to parkour.
+ - More Pinata drops.
+ - Hunger loss disabled in party area.
+ - Disabled PvP in Pinata.

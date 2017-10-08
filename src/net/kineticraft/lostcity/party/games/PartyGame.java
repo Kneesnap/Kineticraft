@@ -157,14 +157,22 @@ public class PartyGame implements Listener {
      * @return allowDamage
      */
     public boolean allowDamage() {
-        return allowCombat();
+        return allowMobCombat() || allowPlayerCombat();
     }
 
     /**
-     * Is combat allowed in this game?
+     * Is mob combat allowed in this game?
      * @return allowCombat
      */
-    public boolean allowCombat() {
+    public boolean allowMobCombat() {
+        return false;
+    }
+
+    /**
+     * Is player combat allowed in this game?
+     * @return allowPVP
+     */
+    public boolean allowPlayerCombat() {
         return false;
     }
 

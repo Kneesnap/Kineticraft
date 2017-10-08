@@ -14,15 +14,13 @@ import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.ItemFrame;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityToggleGlideEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
@@ -52,6 +50,12 @@ public class Parties extends Mechanic {
             if (isPartyTime())
                 Bukkit.broadcastMessage(ChatColor.AQUA + "There is a party going on! Do " + ChatColor.YELLOW + "/party" + ChatColor.AQUA + " to attend!");
         }, 0L, 6000L);
+    }
+
+    @EventHandler
+    public void onFoodChange(FoodLevelChangeEvent evt) {
+        if (isParty(evt.getEntity()))
+            evt.setFoodLevel(20);
     }
 
     @EventHandler
@@ -106,6 +110,11 @@ public class Parties extends Mechanic {
                 && isParty(evt.getTo().getWorld()));
     }
 
+    @EventHandler(ignoreCancelled = true) // Block fall damage.
+    public void onFallDamage(EntityDamageEvent evt) {
+        evt.setCancelled(isParty(evt.getEntity()) && evt.getCause() == EntityDamageEvent.DamageCause.FALL);
+    }
+
     @EventHandler(ignoreCancelled = true) // Prevent players from being damaged in the party world unless in a game.
     public void onPlayerDamage(EntityDamageEvent evt) {
         if (!isParty(evt.getEntity()))
@@ -117,12 +126,18 @@ public class Parties extends Mechanic {
         if (!(evt.getEntity() instanceof Player))
             return; // If the damaged isn't a player, ignore this next bit that may uncancel it.
         Player p = (Player) evt.getEntity();
-        evt.setCancelled(!checkParty(p, PartyGame::allowDamage) || (evt instanceof EntityDamageByEntityEvent && !checkParty(p, PartyGame::allowCombat))); // If it is a player, get the true status.
+        evt.setCancelled(!checkParty(p, PartyGame::allowDamage));
+        if (evt instanceof EntityDamageByEntityEvent) { // Handle combat differently.
+            EntityDamageByEntityEvent dmg = (EntityDamageByEntityEvent) evt;
+            boolean isMob = evt.getEntity() instanceof Creature;
+            boolean isPlayer = dmg.getEntity() instanceof Player && dmg.getDamager() instanceof Player;
+            evt.setCancelled((!checkParty(p, PartyGame::allowMobCombat) && isMob) || (!checkParty(p, PartyGame::allowPlayerCombat) && isPlayer));
+        }
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onBucketEmpty(PlayerBucketEmptyEvent evt) {
-        evt.setCancelled(isParty(evt.getPlayer()));
+        evt.setCancelled(isParty(evt.getPlayer()) && !Utils.isStaff(evt.getPlayer()));
     }
 
     @EventHandler(ignoreCancelled = true) // Prevent block placement by non staff.
