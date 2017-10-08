@@ -69,7 +69,7 @@ public class Flight extends Detector {
      */
     private static boolean isSolid(Block bk) {
         Material type = bk.getType();
-        return type.isSolid() || type == Material.CHORUS_PLANT;
+        return type.isSolid() || type == Material.CHORUS_PLANT || type == Material.CHORUS_FLOWER;
     }
 
     /**
@@ -78,7 +78,7 @@ public class Flight extends Detector {
      * @param mat
      * @return nearby
      */
-    private static boolean checkNearby(Location loc, Material... mat) {
+    public static boolean checkNearby(Location loc, Material... mat) {
         List<Material> types = Arrays.asList(mat);
         return Utils.FACES.stream().map(bf -> loc.getBlock().getRelative(bf).getType()).anyMatch(types::contains);
     }

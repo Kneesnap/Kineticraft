@@ -57,6 +57,11 @@ public class Splef extends FreeplayGame {
     }
 
     @Override
+    public boolean allowDamage() {
+        return true;
+    }
+
+    @Override
     protected Location randomSpawn() {
         return new Location(getWorld(), Utils.randInt(31, 70), 142, Utils.randInt(-85, -37));
     }

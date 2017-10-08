@@ -1,6 +1,7 @@
 package net.kineticraft.lostcity.mechanics;
 
 import net.kineticraft.lostcity.Core;
+import net.kineticraft.lostcity.crake.detectors.movement.Flight;
 import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
 import net.kineticraft.lostcity.mechanics.system.Mechanic;
 import net.kineticraft.lostcity.utils.Utils;
@@ -49,8 +50,9 @@ public class Restrictions extends Mechanic {
     public void onVehicleMove(VehicleMoveEvent evt) {
         String fly = evt.getVehicle().getPassengers().stream().filter(e -> e instanceof Player).map(Entity::getName)
                 .collect(Collectors.joining(", "));
-        if (evt.getVehicle().getType() == EntityType.BOAT && !evt.getFrom().getBlock().isLiquid() && fly.length() > 0
-                && evt.getTo().getY() > evt.getFrom().getY() && evt.getVehicle().getVelocity().getY() <= 0)
+
+        if (evt.getVehicle().getType() == EntityType.BOAT && !Flight.checkNearby(evt.getFrom(), Material.WATER, Material.STATIONARY_WATER)
+                && fly.length() > 0 && evt.getTo().getY() > evt.getFrom().getY() && evt.getVehicle().getVelocity().getY() <= 0)
             Core.alertStaff("[BoatFly] " + ChatColor.GRAY + fly + " may be using BoatFly.");
     }
 

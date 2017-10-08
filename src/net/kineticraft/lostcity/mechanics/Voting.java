@@ -10,6 +10,7 @@ import net.kineticraft.lostcity.config.configs.VoteConfig;
 import net.kineticraft.lostcity.data.Jsonable;
 import net.kineticraft.lostcity.data.QueryTools;
 import net.kineticraft.lostcity.data.KCPlayer;
+import net.kineticraft.lostcity.item.ItemManager;
 import net.kineticraft.lostcity.mechanics.system.Mechanic;
 import net.kineticraft.lostcity.utils.Dog;
 import net.kineticraft.lostcity.utils.TextBuilder;
@@ -138,7 +139,7 @@ public class Voting extends Mechanic {
     public static ItemStack generatePartyReward() {
         VoteConfig data = Configs.getVoteData();
         if (data.getParty().isEmpty()) // No vote rewards.
-            return new ItemStack(Material.DIRT);
+            return ItemManager.createItem(Material.DIRT, ChatColor.RED + "Vote Party Error", "This should only happen if there are no vote rewards.");
 
         PartyReward test = Utils.randElement(data.getParty()); // Get the reward we'll attempt to give them.
         return Utils.randChance(test.getChance()) ? test.getItem() : generatePartyReward();

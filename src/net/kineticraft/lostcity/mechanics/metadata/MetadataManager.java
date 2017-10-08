@@ -43,8 +43,11 @@ public class MetadataManager extends Mechanic {
      * @param obj
      * @param type
      */
-    public static void removeMetadata(Metadatable obj, Metadata type) {
+    @SuppressWarnings("unchecked")
+    public static <T> T removeMetadata(Metadatable obj, Metadata type) {
+        T value = (T) getMetadata(obj, type).value();
         obj.removeMetadata(type.getKey(), Core.getInstance());
+        return value;
     }
 
     /**

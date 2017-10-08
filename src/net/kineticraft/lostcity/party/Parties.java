@@ -54,6 +54,12 @@ public class Parties extends Mechanic {
         }, 0L, 6000L);
     }
 
+    @EventHandler
+    public void onTeleport(PlayerTeleportEvent evt) {
+        if (!evt.getTo().getWorld().equals(evt.getFrom().getWorld()) && evt.getFrom().getWorld().equals(getPartyWorld()))
+            getPlaying(evt.getPlayer()).forEach(g -> g.removePlayer(evt.getPlayer()));
+    }
+
     @EventHandler(ignoreCancelled = true)
     public void onArmorStandManipulate(PlayerArmorStandManipulateEvent evt) {
         evt.setCancelled(isParty(evt.getRightClicked()) && !Utils.isStaff(evt.getPlayer()));
@@ -89,6 +95,11 @@ public class Parties extends Mechanic {
         evt.setCancelled(isParty(evt.getBlock()));
     }
 
+    @EventHandler(ignoreCancelled = true)
+    public void onBlockForm(EntityBlockFormEvent evt) {
+        evt.setCancelled(isParty(evt.getBlock()));
+    }
+
     @EventHandler(ignoreCancelled = true) // Prevent ender pearls in the party world.
     public void onEnderPearl(PlayerTeleportEvent evt) {
         evt.setCancelled((evt.getCause() == PlayerTeleportEvent.TeleportCause.CHORUS_FRUIT  || evt.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL)
@@ -106,7 +117,7 @@ public class Parties extends Mechanic {
         if (!(evt.getEntity() instanceof Player))
             return; // If the damaged isn't a player, ignore this next bit that may uncancel it.
         Player p = (Player) evt.getEntity();
-        evt.setCancelled(checkParty(p, PartyGame::allowDamage) || (evt instanceof EntityDamageByEntityEvent && checkParty(p, PartyGame::allowCombat))); // If it is a player, get the true status.
+        evt.setCancelled(!checkParty(p, PartyGame::allowDamage) || (evt instanceof EntityDamageByEntityEvent && !checkParty(p, PartyGame::allowCombat))); // If it is a player, get the true status.
     }
 
     @EventHandler(ignoreCancelled = true)
@@ -271,7 +282,7 @@ public class Parties extends Mechanic {
         return isParty(b.getWorld());
     }
 
-    private static boolean isParty(Entity ent) {
+    public static boolean isParty(Entity ent) {
         return isParty(ent.getWorld());
     }
 

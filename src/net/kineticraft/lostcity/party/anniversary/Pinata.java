@@ -33,20 +33,26 @@ public class Pinata extends FreeplayGame {
     public void onWhackBecky(PlayerInteractEvent evt) {
         if (evt.getAction() != Action.LEFT_CLICK_BLOCK || !isPlaying(evt.getPlayer())
                 || evt.getClickedBlock().getType() != Material.WOOL || evt.getClickedBlock().getY() < 68
-                || !evt.getPlayer().hasPotionEffect(PotionEffectType.LEVITATION))
+                || !(evt.getPlayer().hasPotionEffect(PotionEffectType.LEVITATION) || evt.getPlayer().getVelocity().getY() < -.35))
             return;
 
         evt.getPlayer().playSound(evt.getPlayer().getLocation(), Sound.ENTITY_PLAYER_ATTACK_SWEEP, 1F, 1F);
-        if (!Utils.randChance(20))
+        if (!Utils.randChance(10))
             return;
 
+        int spawn = Utils.randInt(3, 5);
+        for (int i = 0; i < spawn; i++)
+            spawnZombie(); // Spawn 3 -> 5 zombies.
+    }
+
+    private void spawnZombie() {
         Location center = new Location(Parties.getPartyWorld(), -74.5, 76, 30);
-        Zombie z = center.getWorld().spawn(center, Zombie.class);
+        Zombie z = center.getWorld().spawn(Utils.scatter(center, 4, 0, 4), Zombie.class);
         z.setCustomNameVisible(true);
         z.setCustomName(ChatColor.RED + "Piñata");
 
         z.getEquipment().setHelmet(ItemManager.createSkull("eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZn"
-                + "QubmV0L3RleHR1cmUvM2IyNTI2NmQ0MGNlY2Q5M2QwNTMxNTZlNGE0YTc4NDE0MGQwMzQyNTVjNzIxY2MzNzVkMWMzNjQ4MzQyYjZmZCJ9fX0",
+                        + "QubmV0L3RleHR1cmUvM2IyNTI2NmQ0MGNlY2Q5M2QwNTMxNTZlNGE0YTc4NDE0MGQwMzQyNTVjNzIxY2MzNzVkMWMzNjQ4MzQyYjZmZCJ9fX0",
                 "Pinata Skull", "He doesn't want to party anymore."));
         z.getEquipment().setChestplate(new ItemStack(Material.LEATHER_CHESTPLATE));
         z.getEquipment().setLeggings(new ItemStack(Material.LEATHER_LEGGINGS));

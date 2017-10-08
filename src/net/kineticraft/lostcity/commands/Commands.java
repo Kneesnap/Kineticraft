@@ -133,6 +133,7 @@ public class Commands extends Mechanic {
         addCommand(new CommandJS());
         addCommand(new CommandReloadData());
         addCommand(new CommandZen());
+        addCommand(new CommandCheck());
 
         // Register trigger commands
         addCommand(new CommandTPATrigger());

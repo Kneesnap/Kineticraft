@@ -7,6 +7,7 @@ import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.events.CommandRegisterEvent;
 import net.kineticraft.lostcity.mechanics.system.Mechanic;
+import net.kineticraft.lostcity.party.Parties;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
@@ -51,6 +52,9 @@ public class Toggles extends Mechanic {
 
     @EventHandler(ignoreCancelled = true)
     public void onPvP(EntityDamageByEntityEvent evt) {
+        if (Parties.isParty(evt.getDamager()))
+            return;
+
         Player attacker = evt.getDamager() instanceof Player ? (Player) evt.getDamager() :
                 (evt.getDamager() instanceof Projectile && ((Projectile) evt.getDamager()).getShooter() instanceof Player
                 ? (Player) ((Projectile) evt.getDamager()).getShooter() : null); // Yuck, maybe we can make a method for this later.
