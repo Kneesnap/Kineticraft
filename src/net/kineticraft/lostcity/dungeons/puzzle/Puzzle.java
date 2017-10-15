@@ -84,9 +84,11 @@ public abstract class Puzzle implements Listener {
         complete = true;
 
         Bukkit.getScheduler().runTaskLater(Core.getInstance(), () -> { // Cosmetic delay.
-            getDungeon().playCutscene(new PuzzleDoorCutscene(getGateLocation(), getGateFace()));
-            getGateLocation().getBlock().setType(Material.REDSTONE_BLOCK);
             Bukkit.getScheduler().runTaskLater(Core.getInstance(), this::onComplete, 20L);
+
+            if (!getDungeon().playCutscene("_complete")) // Play the custom cutscene end
+                getDungeon().playCutscene(new PuzzleDoorCutscene(getGateLocation(), getGateFace()));
+            getGateLocation().getBlock().setType(Material.REDSTONE_BLOCK);
         }, 35L);
     }
 
@@ -290,5 +292,23 @@ public abstract class Puzzle implements Listener {
      */
     protected Block getBlock(String name) {
         return getDungeon().getBlock(name);
+    }
+
+    /**
+     * Is an event that happens happening in this puzzle's world?
+     * @param w
+     * @return isPuzzle
+     */
+    protected boolean isPuzzle(World w) {
+        return getWorld().equals(w);
+    }
+
+    /**
+     * Is an entity in this puzzle's world?
+     * @param ent
+     * @return isPuzzle
+     */
+    protected boolean isPuzzle(Entity ent) {
+        return isPuzzle(ent.getWorld());
     }
 }

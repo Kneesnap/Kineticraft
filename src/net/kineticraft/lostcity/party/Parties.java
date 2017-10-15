@@ -251,13 +251,21 @@ public class Parties extends Mechanic {
      * @param p - Active party.
      */
     public static void setParty(Party p) {
+        if (p == getParty())
+            return; // Don't allow setting to the active party.
+
         String status = (p != null ? "Kineticraft " + p.getName() + " P" : "p") + "arty has " // Broadcast information to discord.
                 + (p != null ? "started! To participate, type /party in-game!" : "ended! Thanks everyone for an awesome party.");
         DiscordAPI.sendMessage(DiscordChannel.ANNOUNCEMENTS, "@everyone The " + status);
 
+        String name = p != null ? p.getName() : getParty().getName(); // Broadcast in-game.
+        Core.broadcast(ChatColor.AQUA + "The " + ChatColor.YELLOW + name + " Party" + ChatColor.AQUA + " has " + (p != null ? "started" : "ended") + "!");
+
         if (p != null) {
-            p.setup();
-            Bukkit.broadcastMessage(ChatColor.AQUA + "The " + ChatColor.YELLOW + p.getName() + " Party" + ChatColor.AQUA + " has started!");
+            p.setup(); // Setup party.
+        } else {
+            getPartyWorld().getPlayers().forEach(pl -> getPlaying(pl).forEach(g -> g.removePlayer(pl)));
+            getPartyWorld().getPlayers().forEach(Utils::toSpawn); // Teleport all players in the party world out.
         }
         Configs.getMainConfig().setParty(p); // Set the party in the config.
     }

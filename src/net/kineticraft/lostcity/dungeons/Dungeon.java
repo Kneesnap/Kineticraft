@@ -322,9 +322,13 @@ public class Dungeon {
     /**
      * Play a cutscene for all players in the dungeon.
      * @param cutscene
+     * @return cutsceneExists
      */
-    public void playCutscene(String cutscene) {
-        playCutscene(Cutscenes.getCutscenes().get(getInstance(cutscene)));
+    public boolean playCutscene(String cutscene) {
+        Cutscene c = Cutscenes.getCutscenes().get(getInstance(cutscene));
+        if (c != null)
+            playCutscene(c);
+        return c != null;
     }
 
     /**
