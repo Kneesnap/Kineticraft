@@ -21,9 +21,9 @@ public class Frilda extends DungeonBoss {
     public Frilda(Dungeon d) {
         super(new Location(d.getWorld(), -5, 11, 56, 90, 0), EntityType.ZOMBIE, "Frilda", true);
         setGear(Material.STONE_SWORD, Material.LEATHER_HELMET, Material.LEATHER_CHESTPLATE, Material.LEATHER_LEGGINGS, Material.LEATHER_BOOTS);
-        addStage(new MeleeAttack(5, 2.5)); // TODO: Fireball.
+        addStage(new MeleeAttack(5, 2)); // TODO: Fireball.
         addStage(.65, "Argh! How dare you! You're going to regret this!",
-                new MeleeAttack(6, 3.5), new AttackFlameWheel());
+                new MeleeAttack(6, 2.75), new AttackFlameWheel());
     }
 
     private class AttackFlameWheel extends CustomAttack {

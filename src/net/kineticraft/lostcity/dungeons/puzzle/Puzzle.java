@@ -2,6 +2,7 @@ package net.kineticraft.lostcity.dungeons.puzzle;
 
 import lombok.Getter;
 import net.kineticraft.lostcity.Core;
+import net.kineticraft.lostcity.dungeons.ActionSign;
 import net.kineticraft.lostcity.dungeons.Dungeon;
 import net.kineticraft.lostcity.dungeons.Dungeons;
 import net.kineticraft.lostcity.utils.Utils;
@@ -57,7 +58,8 @@ public abstract class Puzzle implements Listener {
      * @return gateLocation.
      */
     public Location getGateLocation() {
-        return getBlock("pz" + (getDungeon().getPuzzles().indexOf(this) + 1)).getLocation();
+        ActionSign bk = getMarker("pz" + (getDungeon().getPuzzles().indexOf(this) + 1));
+        return bk != null ? bk.getSign().getLocation() : null;
     }
 
     /**
@@ -86,9 +88,12 @@ public abstract class Puzzle implements Listener {
         Bukkit.getScheduler().runTaskLater(Core.getInstance(), () -> { // Cosmetic delay.
             Bukkit.getScheduler().runTaskLater(Core.getInstance(), this::onComplete, 20L);
 
-            if (!getDungeon().playCutscene("_complete")) // Play the custom cutscene end
+            boolean hasGate = getGateLocation() != null;
+            if (!getDungeon().playCutscene("_complete") && hasGate) // Play the default cutscene ending if there is a gate and no custom cutscene.
                 getDungeon().playCutscene(new PuzzleDoorCutscene(getGateLocation(), getGateFace()));
-            getGateLocation().getBlock().setType(Material.REDSTONE_BLOCK);
+
+            if (hasGate) // Set the gate marker to a redstone block, if it exists.
+                getGateLocation().getBlock().setType(Material.REDSTONE_BLOCK);
         }, 35L);
     }
 
@@ -181,7 +186,7 @@ public abstract class Puzzle implements Listener {
 
     @PuzzleTrigger
     public void finish(CommandBlock cmd) {
-        if (cmd.getLocation().distance(getGateLocation()) <= 10)
+        if (getGateLocation() == null || cmd.getLocation().distance(getGateLocation()) <= 10)
             complete();
     }
 
@@ -286,12 +291,21 @@ public abstract class Puzzle implements Listener {
     }
 
     /**
-     * Get a location marked by a sign.
+     * Get a sign marker by its type.
      * @param name
      * @return location
      */
-    protected Block getBlock(String name) {
-        return getDungeon().getBlock(name);
+    protected ActionSign getMarker(String name) {
+        return getDungeon().getSign(name);
+    }
+
+    /**
+     * Get all action signs with a given type.
+     * @param type
+     * @return signs
+     */
+    protected List<ActionSign> getSigns(String type) {
+        return getDungeon().getSigns(type);
     }
 
     /**

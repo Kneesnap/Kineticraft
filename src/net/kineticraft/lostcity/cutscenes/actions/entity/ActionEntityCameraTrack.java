@@ -19,7 +19,7 @@ import java.util.List;
  */
 @ActionData(Material.RAILS)
 public class ActionEntityCameraTrack extends ActionEntity {
-    private JsonList<Location> track = new JsonList<>();
+    private JsonList<Location> track = new JsonList<>(Location.class);
     private int perSecond = 5;
     private transient BukkitTask task;
     private transient List<Location> tempTrack;
