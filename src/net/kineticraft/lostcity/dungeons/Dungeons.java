@@ -27,6 +27,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
@@ -115,6 +116,12 @@ public class Dungeons extends Mechanic {
     @EventHandler(ignoreCancelled = true) // Prevent rain and snow in dungeons.
     public void onWeather(WeatherChangeEvent evt) {
         evt.setCancelled(isDungeon(evt.getWorld()) && evt.toWeatherState());
+    }
+
+    @EventHandler
+    public void onFoodChange(FoodLevelChangeEvent evt) {
+        if (isDungeon(evt.getEntity()))
+            evt.setFoodLevel(20);
     }
 
     @EventHandler(ignoreCancelled = true) // Handles special items entering hoppers.

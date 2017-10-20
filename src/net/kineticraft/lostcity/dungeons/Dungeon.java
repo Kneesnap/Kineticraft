@@ -268,6 +268,7 @@ public class Dungeon {
         player.getActivePotionEffects().clear(); // No potion-effects should transfer into the dungeon.
         alert(player.getName() + " joined the dungeon.");
         Utils.giveItem(player, new ItemStack(Material.STONE_SWORD));
+        player.setFoodLevel(20); // Saturate player.
     }
 
     /**
@@ -370,19 +371,7 @@ public class Dungeon {
      * @param c
      */
     public void playCutscene(Cutscene c) {
-        feedAll();
         c.play(getSurvivalPlayers());
-    }
-
-    /**
-     * Feed all players in the dungeon
-     */
-    public void feedAll() {
-        getPlayers().forEach(p -> {
-            p.setFoodLevel(20);
-            p.setSaturation(2);
-            p.setExhaustion(0);
-        }); // Set everyone back to max food. (Balancing)
     }
 
     /**

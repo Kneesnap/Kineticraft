@@ -32,7 +32,6 @@ public abstract class DungeonCommand extends BlockCommand {
             return;
         }
 
-        d.feedAll();
         super.onCommand(sender, args);
         if (deleteOnExecute() && !d.isEditMode())
             bcs.getBlock().setType(Material.AIR); // Delete this command-block on execute, provided we aren't in edit-mode.
