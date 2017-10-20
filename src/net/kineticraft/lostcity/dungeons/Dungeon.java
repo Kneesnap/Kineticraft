@@ -75,8 +75,8 @@ public class Dungeon {
         this.world = Bukkit.getServer().createWorld(creator);
         getWorld().setAutoSave(false);
         getWorld().setDifficulty(Difficulty.EASY);
-        getWorld().setTime(15000); // Set it to night.
         getWorld().setGameRuleValue("commandBlockOutput", "false"); // Prevent command block output spam.
+        getWorld().setGameRuleValue("doDaylightCycle", "false"); // Prevent time changing.
 
         updateSigns();
         getOriginalPlayers().forEach(p -> {

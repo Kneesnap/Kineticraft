@@ -48,7 +48,7 @@ public class ShearFinder extends Puzzle {
             evt.getPlayer().getInventory().remove(Material.SHEARS);
             complete();
         } else {
-            evt.getPlayer().sendMessage(ChatColor.DARK_GREEN + "Mr. Barley: " + ChatColor.GRAY + "We need my shears to move onward. Help me search from them!");
+            evt.getPlayer().sendMessage(ChatColor.DARK_GREEN + "Mr. Barley> " + ChatColor.GREEN + "We need my shears to move onward. Help me search from them!");
         }
     }
 }
