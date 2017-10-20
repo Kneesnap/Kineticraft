@@ -38,6 +38,7 @@ public class CommandTPAHereTrigger extends TriggerCommand {
             }
 
             receiver.sendMessage(ChatColor.GOLD + "Request accepted.");
+            sender.sendMessage(receiver.getDisplayName() + ChatColor.GOLD + " has accepted your request for them to teleport to you.");
             Utils.teleport(receiver, sender.getDisplayName(), player.getLocation());
         }, () -> receiver.sendMessage(ChatColor.GOLD + "Request denied."), "Accept", "Decline");
     }
