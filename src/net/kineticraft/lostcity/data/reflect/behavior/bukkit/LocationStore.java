@@ -45,8 +45,14 @@ public class LocationStore extends SpecialStore<Location> {
         Location loc = (Location) value;
         if (loc != null) {
             item.leftClick(ce -> {
-                if (!ce.getEvent().isShiftClick())
-                    ce.getPlayer().teleport(loc);
+                if (!ce.getEvent().isShiftClick()) {
+                    Location l = loc;
+                    if (loc.getWorld() == null) {
+                        l = l.clone();
+                        l.setWorld(ce.getPlayer().getWorld());
+                    }
+                    ce.getPlayer().teleport(l);
+                }
             }).addLore("Location: " + ChatColor.GOLD + Utils.toCleanString(loc), "").addLoreAction("Left", "Teleport");
         }
         item.shiftClick(ce -> setter.accept(ce.getPlayer().getLocation()))
