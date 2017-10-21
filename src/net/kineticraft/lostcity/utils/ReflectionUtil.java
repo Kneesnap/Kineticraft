@@ -2,6 +2,8 @@ package net.kineticraft.lostcity.utils;
 
 import net.kineticraft.lostcity.Core;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.*;
 import java.util.*;
@@ -116,14 +118,22 @@ public class ReflectionUtil {
      */
     @SuppressWarnings("unchecked")
     public static <T> T forceConstruct(Class<T> clazz) {
+        if (clazz.equals(ItemStack.class)) // Hardcoded override.
+            return (T) new ItemStack(Material.DIRT);
+
         try {
             Constructor c = null;
             int minParams = Integer.MAX_VALUE;
-            for (Constructor cls : clazz.getDeclaredConstructors()) {
+            for (Constructor cls : clazz.getConstructors()) {
                 if (cls.getParameterCount() < minParams) {
                     minParams = cls.getParameterCount();
                     c = cls;
                 }
+            }
+
+            if (minParams == Integer.MAX_VALUE) {
+                Core.alertStaff("Failed to force-construct " + clazz.getSimpleName() + ". No constructor found.");
+                return null;
             }
 
             Object[] args = new Object[minParams];
