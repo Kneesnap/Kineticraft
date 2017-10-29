@@ -4,7 +4,6 @@ import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.cutscenes.Cutscenes;
 import net.kineticraft.lostcity.data.KCPlayer;
-import net.kineticraft.lostcity.mechanics.metadata.Metadata;
 import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
 import net.kineticraft.lostcity.mechanics.system.Mechanic;
 import net.kineticraft.lostcity.utils.PacketUtil;
@@ -91,7 +90,7 @@ public class Vanish extends Mechanic {
 
         evt.setJoinMessage(null);
         Core.alert(EnumRank.MEDIA, null, ChatColor.GRAY + evt.getPlayer().getName() + " joined silently.");
-        MetadataManager.setMetadata(evt.getPlayer(), Metadata.VANISH_TIME, System.currentTimeMillis());
+        MetadataManager.setMetadata(evt.getPlayer(), "vanishTime", System.currentTimeMillis());
     }
 
     @EventHandler

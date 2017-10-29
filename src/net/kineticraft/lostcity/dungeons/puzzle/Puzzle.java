@@ -14,9 +14,12 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.CommandBlock;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -37,12 +40,19 @@ public abstract class Puzzle implements Listener {
     private List<BukkitTask> tasks = new ArrayList<>();
     private Map<Block, Material> fakeBlocks = new HashMap<>();
     private Dungeon dungeon;
+    private HandlerList[] handlers = new HandlerList[0];
 
     private static final Map<Class<? extends Puzzle>, Map<String, Method>> triggers = new HashMap<>();
 
     public Puzzle() {
         Bukkit.getPluginManager().registerEvents(this, Core.getInstance());
     }
+
+    public Puzzle(HandlerList... events) {
+        this();
+        handlers = events;
+    }
+
 
     /**
      * Set the dungeon this puzzle is active in.
@@ -117,6 +127,8 @@ public abstract class Puzzle implements Listener {
     public void onDungeonRemove() {
         removeTasks();
         PlayerInteractEvent.getHandlerList().unregister(this);
+        for (HandlerList hl : getHandlers())
+            hl.unregister(this);
     }
 
     protected void removeTasks() {
@@ -132,6 +144,16 @@ public abstract class Puzzle implements Listener {
      */
     public void onBlockClick(PlayerInteractEvent evt, Block bk, boolean isRightClick) {
 
+    }
+
+    /**
+     * Called when an entity attacks another in the dungeon.
+     * @param attacker
+     * @param defender
+     * @return Should the attack be considered valid?
+     */
+    public boolean onEntityAttack(Player attacker, Entity defender) {
+       return true;
     }
 
     @EventHandler

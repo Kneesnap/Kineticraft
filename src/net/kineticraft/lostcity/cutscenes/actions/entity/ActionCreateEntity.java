@@ -6,10 +6,7 @@ import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.Ageable;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.*;
 
 /**
  * Create an entity cutscene prop.
@@ -26,6 +23,9 @@ public class ActionCreateEntity extends ActionEntity {
         Entity e = getWorld().spawnEntity(fixLocation(location), getEntityType());
         e.setCustomName(ChatColor.GREEN + getEntityName());
         e.setSilent(true);
+
+        if (e instanceof Monster)
+            ((Monster) e).setAI(false);
 
         if (e instanceof Ageable)
             ((Ageable) e).setAdult();

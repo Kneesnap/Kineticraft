@@ -22,6 +22,10 @@ import org.bukkit.inventory.ItemStack;
  */
 public class ShearFinder extends Puzzle {
 
+    public ShearFinder() {
+        super(ItemDespawnEvent.getHandlerList());
+    }
+
     @PuzzleTrigger
     public void summonShears() {
         ItemStack drop = ItemManager.createItem(Material.SHEARS, ChatColor.YELLOW + "Worn Shears", "Mr. Barley's lost shears.");

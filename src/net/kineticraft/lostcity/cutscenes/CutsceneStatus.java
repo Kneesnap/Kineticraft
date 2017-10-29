@@ -3,7 +3,6 @@ package net.kineticraft.lostcity.cutscenes;
 import lombok.Getter;
 import lombok.Setter;
 import net.kineticraft.lostcity.Core;
-import net.kineticraft.lostcity.mechanics.metadata.Metadata;
 import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
@@ -95,16 +94,14 @@ public class CutsceneStatus {
      */
     public void removeEntity(String name) {
         Entity e = getEntityMap().remove(name);
-        boolean remove = !MetadataManager.hasMetadata(e, Metadata.CUTSCENE_KEEP);
+        boolean remove = !MetadataManager.getValue(e, "csKeep", false);
 
         if (remove) {
             e.remove(); // Delete the entity, if it should be removed.
-        } else {
-            if (e instanceof LivingEntity) {// Otherwise, activate its AI.
-                LivingEntity le = (LivingEntity) e;
-                le.setAI(true);
-                le.setInvulnerable(false);
-            }
+        } else if (e instanceof  LivingEntity && MetadataManager.getValue(e, "csInvincible", false)) {
+            LivingEntity le = (LivingEntity) e; // Allow the entity to be attacked.
+            le.setAI(true);
+            le.setInvulnerable(false);
         }
     }
 

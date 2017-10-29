@@ -17,7 +17,6 @@ import net.kineticraft.lostcity.discord.DiscordChannel;
 import net.kineticraft.lostcity.mechanics.DataHandler;
 import net.kineticraft.lostcity.mechanics.Toggles.Toggle;
 import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
-import net.kineticraft.lostcity.mechanics.metadata.Metadata;
 import net.kineticraft.lostcity.mechanics.Punishments.*;
 import net.kineticraft.lostcity.mechanics.Vanish;
 import net.kineticraft.lostcity.mechanics.Voting;
@@ -233,7 +232,7 @@ public class KCPlayer implements Jsonable {
      * @return death
      */
     public Location getSelectedDeath() {
-        int index = getDeaths().size() - MetadataManager.getMetadata(getPlayer(), Metadata.COMPASS_DEATH).asInt() - 1;
+        int index = getDeaths().size() - MetadataManager.getMetadata(getPlayer(), "compassDeath").asInt() - 1;
         PlayerDeath death = getDeaths().getValueSafe(index);
         return death != null ? death.getLocation() : null;
     }
@@ -393,7 +392,7 @@ public class KCPlayer implements Jsonable {
     public void vanish(boolean vanishState) {
         setVanished(vanishState);
         Vanish.hidePlayers(getPlayer());
-        MetadataManager.setMetadata(getPlayer(), Metadata.VANISH_TIME, System.currentTimeMillis());
+        MetadataManager.setMetadata(getPlayer(), "vanishTime", System.currentTimeMillis());
     }
 
     /**
@@ -419,6 +418,14 @@ public class KCPlayer implements Jsonable {
      */
     public String getDisplayName() {
         return getDisplayPrefix() + " " + getUsername();
+    }
+
+    /**
+     * Get this player's name with their rank color applied.
+     * @return displayName
+     */
+    public String getColoredUsername() {
+        return getTemporaryRank().getChatPrefix() + getUsername();
     }
 
     /**

@@ -4,7 +4,6 @@ import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.data.QueryTools;
 import net.kineticraft.lostcity.discord.DiscordSender;
 import net.kineticraft.lostcity.mechanics.Punishments;
-import net.kineticraft.lostcity.mechanics.metadata.Metadata;
 import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
@@ -28,7 +27,7 @@ public class CommandSeen extends PlayerCommand {
         QueryTools.getData(args[0], p -> {
             long now = System.currentTimeMillis();
             long seenTime = now - (p.isOnline() ?
-                    (p.isVanished() ? MetadataManager.getMetadata(p.getPlayer(), Metadata.VANISH_TIME).asLong() : now)
+                    (p.isVanished() ? MetadataManager.getValue(p.getPlayer(), "vanishTime", System.currentTimeMillis()) : now)
                     : Bukkit.getOfflinePlayer(p.getUuid()).getLastPlayed());
 
             sender.sendMessage(ChatColor.GRAY + "Showing report of " + ChatColor.GRAY + p.getUsername() + ChatColor.GRAY + ":");

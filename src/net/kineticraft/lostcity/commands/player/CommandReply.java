@@ -3,7 +3,6 @@ package net.kineticraft.lostcity.commands.player;
 import net.kineticraft.lostcity.commands.CommandType;
 import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.commands.Commands;
-import net.kineticraft.lostcity.mechanics.metadata.Metadata;
 import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -22,7 +21,7 @@ public class CommandReply extends PlayerCommand {
     @Override
     protected void onCommand(CommandSender sender, String[] args) {
         Player player = (Player) sender;
-        String lastMessage = MetadataManager.getMetadata(player, Metadata.LAST_WHISPER).asString();
+        String lastMessage = MetadataManager.getValue(player, "lastWhisper");
 
         if (lastMessage == null) {
             player.sendMessage(ChatColor.RED + "You have nobody whom you can reply to.");

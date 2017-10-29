@@ -1,4 +1,5 @@
 &8Changes:
- - More Pinata drops.
- - Hunger loss disabled in party area.
- - Disabled PvP in Pinata.
+ - Redid metadata system
+ - Cutscene system improvements
+ - Dungeon 2 work.
+ - /mail does not use nicknames.

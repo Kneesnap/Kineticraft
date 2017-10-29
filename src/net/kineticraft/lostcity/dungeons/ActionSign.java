@@ -50,6 +50,6 @@ public class ActionSign {
     public void disable() {
         getDungeon().getSigns().remove(this);
         if (!getDungeon().isEditMode()) // Remove this sign so it isn't reloaded, as long as this isn't edit-mode.
-            getSign().setType(Material.AIR);
+            getSign().getBlock().setType(Material.AIR);
     }
 }

@@ -4,7 +4,6 @@ import net.kineticraft.lostcity.commands.PlayerCommand;
 import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.mechanics.AFK;
 import net.kineticraft.lostcity.mechanics.Chat;
-import net.kineticraft.lostcity.mechanics.metadata.Metadata;
 import net.kineticraft.lostcity.mechanics.metadata.MetadataManager;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.Bukkit;
@@ -41,7 +40,7 @@ public class CommandMessage extends PlayerCommand {
         String rName = Utils.getSenderName(receiver);
         sender.sendMessage(ChatColor.DARK_GRAY.toString() + ChatColor.BOLD + "TO " + rName + message);
         if (sender instanceof Player)
-            MetadataManager.setMetadata((Player) sender, Metadata.LAST_WHISPER, receiver.getName());
+            MetadataManager.setMetadata((Player) sender, "lastWhisper", receiver.getName());
 
         // Send display to receiver.
         if (receiver instanceof Player) {
@@ -50,7 +49,7 @@ public class CommandMessage extends PlayerCommand {
                 return;
 
             p.playSound(p.getLocation(), Sound.ENTITY_ITEM_PICKUP, 1, .75F);
-            MetadataManager.setMetadata(p, Metadata.LAST_WHISPER, sender.getName());
+            MetadataManager.setMetadata(p, "lastWhisper", sender.getName());
         }
 
         receiver.sendMessage(ChatColor.DARK_GRAY.toString() + ChatColor.BOLD + "FROM " + Utils.getSenderName(sender) + message);
