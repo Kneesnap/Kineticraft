@@ -10,6 +10,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Manages Item Functions.
@@ -58,6 +59,19 @@ public class ItemManager {
         meta.setLore(loreList);
         itemStack.setItemMeta(meta);
         return itemStack;
+    }
+
+    /**
+     * Create a skull with cached skin data.
+     * @param skinValue
+     * @param itemName
+     * @param itemLore
+     * @return skullItem
+     */
+    public static ItemStack createSkull(String skinValue, String itemName, String... itemLore) {
+        GenericItem di = new GenericItem(createItem(Material.SKULL_ITEM, (byte) 3, itemName, itemLore));
+        di.setTag("SkullOwner", "{Id:\"%s\",Properties:{textures:[{Value:\"%s\"}]}}", UUID.randomUUID(), skinValue);
+        return di.generateItem();
     }
 
     /**

@@ -17,6 +17,7 @@ public class SkyParkour extends ParkourGame {
         addCheckPoint(12.5, 1, 121.5, 0, 0);
         addCheckPoint(9.725, 38, 126.75, -65, 0);
         addCheckPoint(20.5, 110, 132.5, 0, 0);
+        addCheckPoint(9, 131, 137.5, -175, 0);
         setArena(-3, 0, 119, 28, 255, 148);
         setExit(15.5, 63.5, 109.5, 25, -12);
     }

@@ -72,8 +72,8 @@ public class GUIJsonEditor extends GUI {
         GUIItem gi = addItem(Material.WOOL, ChatColor.YELLOW + itemName);
 
         // Display the current value.
-        if (value == null || value.toString().length() < 50)
-            gi.addLore("Value: " + ChatColor.YELLOW + value, "");
+        String str = value != null ? value.toString() : "null";
+        gi.addLore("Value: " + ChatColor.YELLOW + (str.length() > 35 ? str.substring(0, 35) + "..." : str), "");
 
         // Apply the handler specific code.
         JsonSerializer.getHandler(type).editItem(gi, value, setter, type);

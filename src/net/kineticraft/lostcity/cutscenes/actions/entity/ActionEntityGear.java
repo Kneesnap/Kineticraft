@@ -13,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
  */
 @ActionData(Material.LEATHER_HELMET)
 public class ActionEntityGear extends ActionEntity {
-    private JsonMap<ItemStack> items = new JsonMap<>();
+    private JsonMap<ItemStack> items = new JsonMap<>(ItemStack.class);
 
     @Override
     public void execute() {

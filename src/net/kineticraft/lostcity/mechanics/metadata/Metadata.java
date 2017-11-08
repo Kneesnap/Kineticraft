@@ -8,7 +8,7 @@ import org.bukkit.metadata.MetadataValue;
 
 /**
  * List of all metadata in our custom system.
- *
+ * This system is garbage compared to Kata's Metadata system. Maybe we could swap to that later.
  * Created by Kneesnap on 6/28/2017.
  */
 @AllArgsConstructor @Getter
@@ -33,6 +33,9 @@ public enum Metadata {
     // Party Stuff
     DMT_SCORE(0),
     DMT_CORRECT(false),
+
+    CHECK_GM(null),
+    CHECK_LOCATION(null),
 
     PK_MAXY(0),
     PK_CHECKPOINT(0);

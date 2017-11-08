@@ -41,7 +41,7 @@ public class Arena {
      * @return contains
      */
     public boolean contains(Location loc) {
-        return Utils.inArea(loc, getXMin(), getYMin(), getZMin(), getXMax(), getYMax(), getZMax());
+        return getWorld().equals(loc.getWorld()) && Utils.inArea(loc, getXMin(), getYMin(), getZMin(), getXMax(), getYMax(), getZMax());
     }
 
     /**

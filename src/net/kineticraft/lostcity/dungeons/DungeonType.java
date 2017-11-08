@@ -6,6 +6,7 @@ import net.kineticraft.lostcity.Core;
 import net.kineticraft.lostcity.EnumRank;
 import net.kineticraft.lostcity.data.KCPlayer;
 import net.kineticraft.lostcity.dungeons.dungeons.barleyshope.BarleysHope;
+import net.kineticraft.lostcity.dungeons.dungeons.stickysituation.StickySituation;
 import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -21,7 +22,8 @@ import java.util.function.Function;
 @AllArgsConstructor @Getter
 public enum DungeonType {
 
-    BARLEYS_HOPE(BarleysHope::new, "Barley's Hope", "Save Mr. Barley!", "Mr. Barley has been saved");
+    BARLEYS_HOPE(BarleysHope::new, "Barley's Hope", "Save Mr. Barley!", "Mr. Barley has been saved"),
+    STICKY_SITUATION(StickySituation::new, "Sticky Situation", "Find Hedgemorth!", "Hedgemorth has been slain");
 
     private final Function<List<Player>, Dungeon> construct;
     private final String name;

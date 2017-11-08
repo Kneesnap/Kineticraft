@@ -12,8 +12,8 @@ import net.kineticraft.lostcity.dungeons.puzzle.Puzzle;
 import net.kineticraft.lostcity.utils.TextBuilder;
 import net.kineticraft.lostcity.utils.Utils;
 import net.kineticraft.lostcity.utils.ZipUtil;
+import net.kineticraft.lostcity.utils.tasks.TaskList;
 import org.bukkit.*;
-import org.bukkit.block.Block;
 import org.bukkit.block.CommandBlock;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.*;
@@ -21,6 +21,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -35,8 +36,9 @@ public class Dungeon {
     private World world;
     private List<Player> originalPlayers;
     private List<Puzzle> puzzles = new ArrayList<>();
-    private Map<String, Block> locations = new HashMap<>();
+    private List<ActionSign> signs = new ArrayList<>();
     private List<DungeonBoss> bossesSpawned = new ArrayList<>();
+    private TaskList scheduler = new TaskList(); //WARNING: Gets cleared every time updateSigns is called.
     @Setter private boolean editMode;
 
     public Dungeon(List<Player> players) {
@@ -73,10 +75,10 @@ public class Dungeon {
         this.world = Bukkit.getServer().createWorld(creator);
         getWorld().setAutoSave(false);
         getWorld().setDifficulty(Difficulty.EASY);
-        getWorld().setTime(15000); // Set it to night.
         getWorld().setGameRuleValue("commandBlockOutput", "false"); // Prevent command block output spam.
+        getWorld().setGameRuleValue("doDaylightCycle", "false"); // Prevent time changing.
 
-        updateLocations();
+        updateSigns();
         getOriginalPlayers().forEach(p -> {
             Location l = getWorld().getSpawnLocation();
             l.setYaw(90);
@@ -97,23 +99,54 @@ public class Dungeon {
     }
 
     /**
-     * Reload the locations saved on signs.
+     * Reload the sign markers.
      */
-    public void updateLocations() {
-        getLocations().clear();
+    public void updateSigns() {
+        getSigns().clear();
+        getScheduler().cancelAll(); // Cancel existing spawn tasks.
         Arrays.asList(getWorld().getLoadedChunks()).forEach(c -> Arrays.stream(c.getTileEntities())
                 .filter(te -> te instanceof Sign).map(te -> (Sign) te)
                 .filter(s -> s.getLine(0).startsWith("[") && s.getLine(0).endsWith("]"))
-                .forEach(s -> getLocations().put(s.getLine(0).substring(1, s.getLine(0).length() - 1), s.getBlock())));
+                .map(ActionSign::new).forEach(getSigns()::add));
+
+        // Schedule actions:
+        scheduleAction("Spawn", sign -> { // Allow spawning mobs based on distance.
+            EntityType type = EntityType.valueOf(sign.getLine(1).toUpperCase());
+            int radius = Integer.parseInt(sign.getLine(3));
+            int amount = Integer.parseInt(sign.getLine(2));
+            if (Utils.getNearbyPlayers(sign.getLocation(), radius + 2).isEmpty())
+                return; // If there are no players nearby, it's not time to summon anything.
+
+            for (int i = 0; i < amount; i++) // Spawn the entities.
+                getWorld().spawnEntity(Utils.findSafe(Utils.scatter(sign.getLocation(), radius, 0, radius)), type);
+
+            sign.disable();
+        }, 40L, false); // Activate spawners every minute.
+    }
+
+    private void scheduleAction(String signType, Consumer<ActionSign> action, long interval, boolean allowEditMode) {
+        if (allowEditMode || !isEditMode()) // If this task shouldn't run while the dungeon is being editted, don't register it.
+            getScheduler().runTaskTimer(() -> new ArrayList<>(getSigns(signType)).forEach(action), 0L, interval);
     }
 
     /**
-     * Get a sign location with the given id.
-     * @param name
+     * Get the first found sign with a given-type.
+     * @param type
      * @return location
      */
-    public Block getBlock(String name) {
-        return getLocations().get(name);
+    public ActionSign getSign(String type) {
+        List<ActionSign> signs = getSigns(type);
+        assert !signs.isEmpty();
+        return signs.get(0);
+    }
+
+    /**
+     * Get all signs with a given-type.
+     * @param type
+     * @return signs
+     */
+    public List<ActionSign> getSigns(String type) {
+        return getSigns().stream().filter(s -> s.getType().equalsIgnoreCase(type)).collect(Collectors.toList());
     }
 
     /**
@@ -167,8 +200,9 @@ public class Dungeon {
 
         // Remove players and unload puzzles.
         Core.logInfo("Removing dungeon " + getWorld().getName() + ".");
-        removePlayers();
-        getPuzzles().forEach(Puzzle::onDungeonRemove);
+        getScheduler().cancelAll(); // Stop any dungeon-tasks.
+        removePlayers(); // Remove all players.
+        getPuzzles().forEach(Puzzle::onDungeonRemove); // Disable puzzles.
 
         // Handle saving.
         if (isEditMode()) {
@@ -234,6 +268,7 @@ public class Dungeon {
         player.getActivePotionEffects().clear(); // No potion-effects should transfer into the dungeon.
         alert(player.getName() + " joined the dungeon.");
         Utils.giveItem(player, new ItemStack(Material.STONE_SWORD));
+        player.setFoodLevel(20); // Saturate player.
     }
 
     /**
@@ -322,9 +357,13 @@ public class Dungeon {
     /**
      * Play a cutscene for all players in the dungeon.
      * @param cutscene
+     * @return cutsceneExists
      */
-    public void playCutscene(String cutscene) {
-        playCutscene(Cutscenes.getCutscenes().get(getInstance(cutscene)));
+    public boolean playCutscene(String cutscene) {
+        Cutscene c = Cutscenes.getCutscenes().get(getInstance(cutscene));
+        if (c != null)
+            playCutscene(c);
+        return c != null;
     }
 
     /**
@@ -332,19 +371,7 @@ public class Dungeon {
      * @param c
      */
     public void playCutscene(Cutscene c) {
-        feedAll();
         c.play(getSurvivalPlayers());
-    }
-
-    /**
-     * Feed all players in the dungeon
-     */
-    public void feedAll() {
-        getPlayers().forEach(p -> {
-            p.setFoodLevel(20);
-            p.setSaturation(2);
-            p.setExhaustion(0);
-        }); // Set everyone back to max food. (Balancing)
     }
 
     /**

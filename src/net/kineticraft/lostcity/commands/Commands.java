@@ -133,6 +133,7 @@ public class Commands extends Mechanic {
         addCommand(new CommandJS());
         addCommand(new CommandReloadData());
         addCommand(new CommandZen());
+        addCommand(new CommandCheck());
 
         // Register trigger commands
         addCommand(new CommandTPATrigger());
@@ -276,6 +277,9 @@ public class Commands extends Mechanic {
     public void onCommand(PlayerCommandPreprocessEvent evt) {
         Player p = evt.getPlayer();
         String input = evt.getMessage();
+
+        if (input.startsWith("/minecraft:") && !Utils.isStaff(p))
+            evt.setCancelled(true); // Prevent /minecraft: prefixed commands.
 
         if (input.startsWith("/ ")) {
             sendStaffChat(p, input.substring(2));

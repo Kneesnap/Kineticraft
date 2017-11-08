@@ -157,14 +157,22 @@ public class PartyGame implements Listener {
      * @return allowDamage
      */
     public boolean allowDamage() {
-        return allowCombat();
+        return allowMobCombat() || allowPlayerCombat();
     }
 
     /**
-     * Is combat allowed in this game?
+     * Is mob combat allowed in this game?
      * @return allowCombat
      */
-    public boolean allowCombat() {
+    public boolean allowMobCombat() {
+        return false;
+    }
+
+    /**
+     * Is player combat allowed in this game?
+     * @return allowPVP
+     */
+    public boolean allowPlayerCombat() {
         return false;
     }
 
@@ -272,7 +280,7 @@ public class PartyGame implements Listener {
     private void broadcast(String message, boolean serverWide) {
         String fullMsg = format(message);
         if (serverWide) {
-            Bukkit.broadcastMessage(fullMsg);
+            Parties.getPartyWorld().getPlayers().forEach(p -> p.sendMessage(fullMsg));
         } else {
             getPlayers().forEach(p -> p.sendMessage(fullMsg));
         }

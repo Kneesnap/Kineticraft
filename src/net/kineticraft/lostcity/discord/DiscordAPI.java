@@ -56,7 +56,7 @@ public class DiscordAPI extends Mechanic {
      * @param message
      */
     public static void sendGame(String message) {
-        sendMessage(DiscordChannel.INGAME, message.replaceAll("_", "\\_"));
+        sendMessage(DiscordChannel.INGAME, message.replace("_", "\\_"));
     }
 
     /**

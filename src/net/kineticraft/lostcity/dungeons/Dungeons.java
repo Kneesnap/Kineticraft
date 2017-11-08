@@ -27,9 +27,11 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
@@ -81,6 +83,11 @@ public class Dungeons extends Mechanic {
         evt.register(new CommandDPlay(), new CommandPuzzleTrigger(), new CommandInvoke(), new CommandDBoss(), new CommandDMusic());
     }
 
+    @EventHandler(ignoreCancelled = true)
+    public void onBucketEmpty(PlayerBucketEmptyEvent evt) {
+        evt.setCancelled(preventEdit(evt.getPlayer()));
+    }
+
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onBlockBreak(BlockBreakEvent evt) { // Prevents block destruction.
         evt.setCancelled(preventEdit(evt.getPlayer()));
@@ -109,6 +116,12 @@ public class Dungeons extends Mechanic {
     @EventHandler(ignoreCancelled = true) // Prevent rain and snow in dungeons.
     public void onWeather(WeatherChangeEvent evt) {
         evt.setCancelled(isDungeon(evt.getWorld()) && evt.toWeatherState());
+    }
+
+    @EventHandler
+    public void onFoodChange(FoodLevelChangeEvent evt) {
+        if (isDungeon(evt.getEntity()))
+            evt.setFoodLevel(20);
     }
 
     @EventHandler(ignoreCancelled = true) // Handles special items entering hoppers.

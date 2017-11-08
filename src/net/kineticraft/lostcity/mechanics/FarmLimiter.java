@@ -34,7 +34,7 @@ public class FarmLimiter extends Mechanic {
     @EventHandler(ignoreCancelled = true)
     public void onChickenSpawn(CreatureSpawnEvent evt) {
         evt.setCancelled((evt.getSpawnReason() == SpawnReason.DISPENSE_EGG || evt.getSpawnReason() == SpawnReason.EGG)
-                && getEntityCount(evt.getEntity()) >= 32);// There are more chickens here than we allow, don't spawn another one.
+                && getEntityCount(evt.getEntity(), RADIUS) >= 32);// There are more chickens here than we allow, don't spawn another one.
     }
 
     @EventHandler
@@ -86,7 +86,7 @@ public class FarmLimiter extends Mechanic {
      * @return damageNeeded
      */
     private static double getDamageNeeded(LivingEntity entity) {
-        int entityCount = getEntityCount(entity);
+        int entityCount = getEntityCount(entity, RADIUS);
         double percentNeeded = Math.max(1, entityCount - 3) / 10D; //10% needed for each mob nearby, if > 3 mobs are nearby.
         percentNeeded = Math.max(Math.min(percentNeeded, .75D), .25D); // Restrict the damage amounts between 25% and 75%.
         return percentNeeded * entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
@@ -97,8 +97,8 @@ public class FarmLimiter extends Mechanic {
      * @param entity
      * @return entityCount
      */
-    private static int getEntityCount(Entity entity) {
-        return (int) entity.getWorld().getNearbyEntities(entity.getLocation(), RADIUS, RADIUS, RADIUS).stream()
+    public static int getEntityCount(Entity entity, int radius) {
+        return (int) entity.getWorld().getNearbyEntities(entity.getLocation(), radius, radius, radius).stream()
                 .filter(e -> e.getType() == entity.getType()).count();
     }
 }

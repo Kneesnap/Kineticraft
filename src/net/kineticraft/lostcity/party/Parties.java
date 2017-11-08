@@ -14,16 +14,14 @@ import net.kineticraft.lostcity.utils.Utils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityToggleGlideEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.event.weather.WeatherChangeEvent;
 
@@ -54,6 +52,28 @@ public class Parties extends Mechanic {
         }, 0L, 6000L);
     }
 
+    @EventHandler
+    public void onFoodChange(FoodLevelChangeEvent evt) {
+        if (isParty(evt.getEntity()))
+            evt.setFoodLevel(20);
+    }
+
+    @EventHandler
+    public void onTeleport(PlayerTeleportEvent evt) {
+        if (!evt.getTo().getWorld().equals(evt.getFrom().getWorld()) && evt.getFrom().getWorld().equals(getPartyWorld()))
+            getPlaying(evt.getPlayer()).forEach(g -> g.removePlayer(evt.getPlayer()));
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onArmorStandManipulate(PlayerArmorStandManipulateEvent evt) {
+        evt.setCancelled(isParty(evt.getRightClicked()) && !Utils.isStaff(evt.getPlayer()));
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onItemFrame(PlayerInteractEntityEvent evt) {
+        evt.setCancelled(isParty(evt.getRightClicked()) && evt.getRightClicked() instanceof ItemFrame && !Utils.isStaff(evt.getPlayer()));
+    }
+
     @EventHandler(ignoreCancelled = true)
     public void onElytraToggle(EntityToggleGlideEvent evt) { // Disables elytra in party world.
         evt.setCancelled(evt.isGliding() && isParty(evt.getEntity()));
@@ -79,18 +99,45 @@ public class Parties extends Mechanic {
         evt.setCancelled(isParty(evt.getBlock()));
     }
 
+    @EventHandler(ignoreCancelled = true)
+    public void onBlockForm(EntityBlockFormEvent evt) {
+        evt.setCancelled(isParty(evt.getBlock()));
+    }
+
     @EventHandler(ignoreCancelled = true) // Prevent ender pearls in the party world.
     public void onEnderPearl(PlayerTeleportEvent evt) {
         evt.setCancelled((evt.getCause() == PlayerTeleportEvent.TeleportCause.CHORUS_FRUIT  || evt.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL)
                 && isParty(evt.getTo().getWorld()));
     }
 
+    @EventHandler(ignoreCancelled = true) // Block fall damage.
+    public void onFallDamage(EntityDamageEvent evt) {
+        evt.setCancelled(isParty(evt.getEntity()) && evt.getCause() == EntityDamageEvent.DamageCause.FALL);
+    }
+
     @EventHandler(ignoreCancelled = true) // Prevent players from being damaged in the party world unless in a game.
     public void onPlayerDamage(EntityDamageEvent evt) {
-        if (!(evt.getEntity() instanceof Player))
+        if (!isParty(evt.getEntity()))
             return;
+
+        if (!(evt.getEntity() instanceof LivingEntity))
+            evt.setCancelled(true); // Default to no damage, if the entity isn't alive.
+
+        if (!(evt.getEntity() instanceof Player))
+            return; // If the damaged isn't a player, ignore this next bit that may uncancel it.
         Player p = (Player) evt.getEntity();
-        evt.setCancelled(isParty(p) && (checkParty(p, PartyGame::allowDamage) || (evt instanceof EntityDamageByEntityEvent && checkParty(p, PartyGame::allowCombat))));
+        evt.setCancelled(!checkParty(p, PartyGame::allowDamage));
+        if (evt instanceof EntityDamageByEntityEvent) { // Handle combat differently.
+            EntityDamageByEntityEvent dmg = (EntityDamageByEntityEvent) evt;
+            boolean isMob = evt.getEntity() instanceof Creature;
+            boolean isPlayer = dmg.getEntity() instanceof Player && dmg.getDamager() instanceof Player;
+            evt.setCancelled((!checkParty(p, PartyGame::allowMobCombat) && isMob) || (!checkParty(p, PartyGame::allowPlayerCombat) && isPlayer));
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    public void onBucketEmpty(PlayerBucketEmptyEvent evt) {
+        evt.setCancelled(isParty(evt.getPlayer()) && !Utils.isStaff(evt.getPlayer()));
     }
 
     @EventHandler(ignoreCancelled = true) // Prevent block placement by non staff.
@@ -98,7 +145,7 @@ public class Parties extends Mechanic {
         evt.setCancelled(!Utils.isStaff(evt.getPlayer()) && isParty(evt.getBlock()));
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent evt) {
         evt.setCancelled(!Utils.isStaff(evt.getPlayer()) && isParty(evt.getBlock()));
     }
@@ -204,13 +251,21 @@ public class Parties extends Mechanic {
      * @param p - Active party.
      */
     public static void setParty(Party p) {
+        if (p == getParty())
+            return; // Don't allow setting to the active party.
+
         String status = (p != null ? "Kineticraft " + p.getName() + " P" : "p") + "arty has " // Broadcast information to discord.
                 + (p != null ? "started! To participate, type /party in-game!" : "ended! Thanks everyone for an awesome party.");
         DiscordAPI.sendMessage(DiscordChannel.ANNOUNCEMENTS, "@everyone The " + status);
 
+        String name = p != null ? p.getName() : getParty().getName(); // Broadcast in-game.
+        Core.broadcast(ChatColor.AQUA + "The " + ChatColor.YELLOW + name + " Party" + ChatColor.AQUA + " has " + (p != null ? "started" : "ended") + "!");
+
         if (p != null) {
-            p.setup();
-            Bukkit.broadcastMessage(ChatColor.AQUA + "The " + ChatColor.YELLOW + p.getName() + " Party" + ChatColor.AQUA + " has started!");
+            p.setup(); // Setup party.
+        } else {
+            getPartyWorld().getPlayers().forEach(pl -> getPlaying(pl).forEach(g -> g.removePlayer(pl)));
+            getPartyWorld().getPlayers().forEach(Utils::toSpawn); // Teleport all players in the party world out.
         }
         Configs.getMainConfig().setParty(p); // Set the party in the config.
     }
@@ -235,11 +290,9 @@ public class Parties extends Mechanic {
      * @return Should the player movement be cancelled?
      */
     private static boolean playerMove(Player player, Location to) {
-        if (Utils.isStaff(player)) // If staff, allow into party area.
-            return false;
-
         for (PartyGame pg : getGames()) {
-            if (pg.getArena() != null && pg.getArena().contains(to) != pg.isPlaying(player)) {
+            boolean playing = pg.isPlaying(player);
+            if (pg.getArena() != null && pg.getArena().contains(to) != playing && (player.getGameMode() != GameMode.SPECTATOR || playing)) {
                 player.sendMessage(ChatColor.RED + (pg.removePlayer(player) ? "Due to leaving the arena, you have been removed from the game."
                         : "Please do not try to teleport into this game."));
                 return true;
@@ -252,7 +305,7 @@ public class Parties extends Mechanic {
         return isParty(b.getWorld());
     }
 
-    private static boolean isParty(Entity ent) {
+    public static boolean isParty(Entity ent) {
         return isParty(ent.getWorld());
     }
 
