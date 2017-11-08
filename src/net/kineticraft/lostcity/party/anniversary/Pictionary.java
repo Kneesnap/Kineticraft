@@ -12,7 +12,9 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
@@ -23,7 +25,6 @@ import java.util.Set;
 
 /**
  * Pictionary Game for the anniversary party.
- * TODO: Chat system.
  * Created by Kneesnap on 10/2/2017.
  */
 public class Pictionary extends MultiplayerGame {
@@ -35,7 +36,7 @@ public class Pictionary extends MultiplayerGame {
     private List<Player> drawQueue;
 
     private static final ItemStack DRAW_ITEM = ItemManager.createItem(Material.STICK, ChatColor.YELLOW + "Pictionary Stick", "Left-Click: Fill", "Right-Click: Draw");
-    private static final int DRAW_TIME = 90;
+    private static final int DRAW_TIME = 50;
     private static final int MIN_X = -67;
     private static final int MAX_X = -43;
     private static final int MIN_Y = 69;
@@ -44,10 +45,45 @@ public class Pictionary extends MultiplayerGame {
 
     public Pictionary() {
         super(4);
-        setExit(-52, 80, -66, 9, -7.3);
+        addSpawnLocation(-53, 69, -47.5, 0, -20);
+        setExit(-52, 80, -66, 9, -7.3F);
     }
 
-    @EventHandler
+    @Override
+    public void onJoin(Player player) {
+        super.onJoin(player);
+        spawnPlayer(player);
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onChat(AsyncPlayerChatEvent evt) {
+        Player p = evt.getPlayer();
+        if (!isPlaying(p))
+            return;
+
+        evt.setCancelled(true);
+        if (currentWord != null) {
+            if (p.equals(currentPainter)) {
+                p.sendMessage(ChatColor.RED + "You cannot talk while it is your turn to draw.");
+                return;
+            }
+
+            if (MetadataManager.hasMetadata(p, Metadata.DMT_CORRECT)) {
+                p.sendMessage(ChatColor.RED + "You have already guessed the word this round.");
+                return;
+            } else if (currentWord.equalsIgnoreCase(evt.getMessage())) {
+                broadcastPlayers(ChatColor.GREEN.toString() + ChatColor.BOLD + evt.getPlayer().getName() + " guessed the word! +1 Point!");
+                setScore(p, getScore(p) + 1); // Increase score of guesser
+                setScore(currentPainter, getScore(currentPainter) + 1); // Increase score of drawer.
+                MetadataManager.setMetadata(p, Metadata.DMT_CORRECT, true);
+                return;
+            }
+        }
+
+        getPlayers().forEach(pl -> pl.sendMessage(ChatColor.YELLOW + p.getName() + ": " + ChatColor.GRAY + evt.getMessage()));
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onInteract(PlayerInteractEvent evt) {
         if (!evt.getPlayer().equals(currentPainter))
             return;
@@ -56,7 +92,7 @@ public class Pictionary extends MultiplayerGame {
         if (target.getZ() != ARENA_Z || target.getX() < MIN_X || target.getX() > MAX_X)
             return; // Not clicking on the canvas.
 
-        if (target.getY() >= MAX_Y + 2 && target.getY() <= MAX_Y + 5) { // Pick color.
+        if (target.getY() > MAX_Y && target.getY() <= MAX_Y + 5) { // Pick color.
             penTime = 0;
             currentColor = target.getData();
             updateActionBar();
@@ -64,6 +100,7 @@ public class Pictionary extends MultiplayerGame {
         } else if (evt.getAction() == Action.RIGHT_CLICK_AIR) { // Pen Tool
             penTime = System.currentTimeMillis() + 200;
             placeInk();
+            evt.setCancelled(true); // Prevent "cl
         } else if (evt.getAction() == Action.LEFT_CLICK_AIR) { // Fill
             playSound(Sound.ENTITY_BOBBER_SPLASH, 1.5F, 0.5F);
             floodFill(target);
@@ -85,11 +122,13 @@ public class Pictionary extends MultiplayerGame {
     @Override
     protected void onStart() {
         broadcastPlayers("The game has begun!");
+        currentWord = null;
+        currentPainter = null;
         drawQueue = new ArrayList<>(getPlayers());
 
         for (Player p : getPlayers()) { // Reset player data.
             MetadataManager.removeMetadata(p, Metadata.DMT_CORRECT);
-            MetadataManager.removeMetadata(p, Metadata.DMT_SCORE);
+            setScore(p, 0);
         }
 
         nextPlayer();
@@ -101,8 +140,20 @@ public class Pictionary extends MultiplayerGame {
     @Override
     protected void onStop() {
         broadcastPlayers("The game has ended.");
-        int topPlayer = 0;
-        //TODO Show winner.
+        int topScore = 0;
+        String winner = "";
+        for (Player p : getPlayers()) { // Find player with top score.
+            int tScore = getScore(p);
+            if (tScore > topScore) {
+                topScore = tScore;
+                winner = p.getName();
+            } else if (tScore == topScore) {
+                winner += (winner.length() > 0 ? " and " : "") + p.getName();
+            }
+        }
+
+        broadcast("Game Over! Winner: " + ChatColor.YELLOW + winner + ChatColor.BLUE + " Score: " + ChatColor.YELLOW + topScore);
+        getPlayers().forEach(p -> p.sendMessage(ChatColor.BLUE + "Your Score: " + ChatColor.YELLOW + getScore(p)));
     }
 
     /**
@@ -126,12 +177,16 @@ public class Pictionary extends MultiplayerGame {
      * Finish the current player's drawing and move on to the next player.
      */
     private void nextPlayer() {
+        if ("waitFor".equals(currentWord))
+            return;
+
         if (currentPainter != null) { // If they're not the first drawer.
             broadcastPlayers("Drawing complete. The word was: " + ChatColor.GOLD + currentWord + ChatColor.BLUE + ".");
-            currentPainter.teleport(getExitLocation());
+            spawnPlayer(currentPainter);
         }
+        currentWord = "waitFor";
 
-        for (Player p : getPlayers()) // Reset
+        for (Player p : getPlayers()) // Reset guess state.
             MetadataManager.removeMetadata(p, Metadata.DMT_CORRECT);
 
         if (drawQueue.isEmpty()) { // Game has finished.
@@ -143,7 +198,11 @@ public class Pictionary extends MultiplayerGame {
         getScheduler().runTaskLater(() -> {
             clearCanvas();
             currentWord = Utils.randElement("Nose", "Lime", "Sun", "Pokeball", "Firework", "Obama",
-                    "Lion", "Noteblock", "Fire", "Teacher", "Queen", "Cat", "Violin", "Titanic", "Pirate", "Eggplant", "Camel");
+                    "Lion", "Noteblock", "Fire", "Teacher", "Queen", "Cat", "Violin", "Titanic", "Pirate", "Eggplant", "Camel",
+                    "Pigtails", "Kiss", "Cat", "Magnet", "Snowball", "Buckle", "Bus", "Robot", "Dragon", "Chainsaw",
+                    "Lipstick", "Knee", "Abraham Lincoln", "Alien", "Bear", "Mail", "Piano", "Tricycle", "Sprinkler",
+                    "Computer", "Mermaid", "Socks", "Cow", "Ghost", "Kite", "Heart", "TNT", "Spider", "Bone", "Snowman",
+                    "Potato", "Furby", "Watermelon", "Banana", "Balloon", "Duck", "Strawberry", "Soup", "Lemme Smash");
 
             currentEndTime = System.currentTimeMillis() + (1000 * DRAW_TIME); // Setup variables for next drawer, and announce.
             currentPainter = drawQueue.remove(0);
@@ -172,7 +231,7 @@ public class Pictionary extends MultiplayerGame {
      * @param color
      */
     private void setBlock(Block bk, byte color) {
-        if (bk.getType() == Material.WOOL && bk.getZ() == ARENA_Z)
+        if (bk.getType() == Material.WOOL && bk.getZ() == ARENA_Z && bk.getY() <= MAX_Y)
             bk.setData(color);
     }
 
@@ -198,7 +257,6 @@ public class Pictionary extends MultiplayerGame {
             addQueue(queue, covered, current, originalColor, 0, 1);
             addQueue(queue, covered, current, originalColor, -1, 0);
             addQueue(queue, covered, current, originalColor, 1, 0);
-
         }
     }
 
@@ -208,5 +266,13 @@ public class Pictionary extends MultiplayerGame {
             queue.add(target);
             covered.add(target);
         }
+    }
+
+    private int getScore(Player p) {
+        return MetadataManager.getMetadata(p, Metadata.DMT_SCORE).asInt();
+    }
+
+    private void setScore(Player p, int score) {
+        MetadataManager.setMetadata(p, Metadata.DMT_SCORE, score);
     }
 }
