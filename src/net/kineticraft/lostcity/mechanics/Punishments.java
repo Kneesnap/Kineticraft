@@ -133,7 +133,7 @@ public class Punishments extends Mechanic {
         XRAY("Xraying", 10, Material.DIAMOND),
         GRIEF("Griefing (Minor)", 9, Material.FLINT_AND_STEEL),
         GRIEF_LARGE("Griefing (Major)", 30, Material.TNT),
-        BAN_EVASION("Ban Evasion", -1, Material.ARMOR_STAND),
+        ALT_ACCOUNT("Ban Evasion", -1, Material.ARMOR_STAND),
         PERMANENT("The Ban Hammer has spoken!", -1, Material.GOLD_AXE);
 
         private final String display;
