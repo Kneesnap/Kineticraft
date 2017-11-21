@@ -35,7 +35,7 @@ public class GUIDonor extends GUI {
                 "Right-Click: " + ChatColor.WHITE + "Reset Icon")
                 .leftClick(e -> {
                     getPlayer().sendMessage(ChatColor.GREEN + "Please enter your new icon.");
-                    getPlayer().sendMessage(ChatColor.GREEN + "Visit http://www.thegenxmom.com/hippies/index_files/textsy.html for examples.");
+                    getPlayer().sendMessage(ChatColor.GREEN + "Visit http://azuliadesigns.com/html-character-codes-ascii-entity-unicode-symbols for examples.");
                     Callbacks.listenForChat(getPlayer(), msg -> {
                         String icon = ChatColor.translateAlternateColorCodes('&', msg);
                         String noColor = ChatColor.stripColor(icon);
