@@ -65,7 +65,7 @@ public class FarmLimiter extends Mechanic {
      * @return playerDamage
      */
     private static double getPlayerDamage(Entity entity) {
-        return MetadataManager.getMetadata(entity, "playerDamage").asDouble();
+        return MetadataManager.getValue(entity, "playerDamage", 0D);
     }
 
     /**

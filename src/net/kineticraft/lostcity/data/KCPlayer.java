@@ -232,7 +232,7 @@ public class KCPlayer implements Jsonable {
      * @return death
      */
     public Location getSelectedDeath() {
-        int index = getDeaths().size() - MetadataManager.getMetadata(getPlayer(), "compassDeath").asInt() - 1;
+        int index = getDeaths().size() - MetadataManager.getValue(getPlayer(), "compassDeath", 1) - 1;
         PlayerDeath death = getDeaths().getValueSafe(index);
         return death != null ? death.getLocation() : null;
     }

@@ -55,7 +55,7 @@ public class CompassMechanics extends Mechanic {
             return;
         }
 
-        int newId = MetadataManager.getMetadata(player, "compassDeath").asInt();
+        int newId = MetadataManager.getValue(player, "compassDeath", 0);
         newId = p.getDeaths().hasIndex(newId + 1) ? newId + 1 : 0;
         MetadataManager.setMetadata(player, "compassDeath", newId);
 
