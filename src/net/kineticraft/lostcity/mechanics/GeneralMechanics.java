@@ -87,7 +87,7 @@ public class GeneralMechanics extends Mechanic {
 
         // Attempt to expire claims.
         Bukkit.getScheduler().runTaskTimerAsynchronously(Core.getInstance(), // Avoid concurrent modification by making a new arraylist.
-                () -> Core.logInfo(new ArrayList<>(GriefPrevention.instance.dataStore.getClaims()).stream().filter(GeneralMechanics::attemptExpire).count() + " claims expired."), 0, 200);
+                () -> Core.logInfo(new ArrayList<>(GriefPrevention.instance.dataStore.getClaims()).stream().filter(GeneralMechanics::attemptExpire).count() + " claims expired."), 0, 72000);
 
 
         // Don't allow players on top of the nether.

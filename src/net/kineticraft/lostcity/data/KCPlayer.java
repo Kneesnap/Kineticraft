@@ -152,6 +152,7 @@ public class KCPlayer implements Jsonable {
             return;
         }
 
+
         Dog.PUPPER_PATROL.say(ChatColor.RED + getUsername() + ChatColor.WHITE + " has been punished by " + ChatColor.AQUA
                 + punisher.getName() + ChatColor.WHITE + " for " + ChatColor.YELLOW + type.getDisplay() + ChatColor.WHITE + ".");
 
@@ -159,9 +160,12 @@ public class KCPlayer implements Jsonable {
         String expiry = Utils.formatTimeFull(getPunishExpiry());
         Dog.OFFICER_BORKLEY.say("Arf Arf! Expires: " + ChatColor.YELLOW + expiry + ChatColor.WHITE + ".");
 
-        if (isOnline())
-            getPlayer().kickPlayer(ChatColor.RED + "Oh no! You've been punished for " + ChatColor.YELLOW
-                    + type.getDisplay() + ChatColor.RED + "...");
+        if (isOnline()) {
+            Player p = getPlayer();
+            if (type == PunishmentType.XRAY)
+                Utils.toSpawn(p); // Teleport the player to spawn if banned for xray.
+            p.kickPlayer(ChatColor.RED + "Oh no! You've been punished for " + ChatColor.YELLOW + type.getDisplay() + ChatColor.RED + "...");
+        }
         writeData();
         DiscordAPI.sendMessage(DiscordChannel.ORYX, punisher.getName() + " has punished " + getUsername()
                 + " for " + type.getDisplay() + " (" + expiry + ")");
